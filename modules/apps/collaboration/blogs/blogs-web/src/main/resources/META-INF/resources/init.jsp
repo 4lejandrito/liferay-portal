@@ -162,6 +162,7 @@ PortalPreferences portalPreferences = PortletPreferencesFactoryUtil.getPortalPre
 
 Format dateFormatDate = FastDateFormatFactoryUtil.getDate(locale, timeZone);
 Format dateFormatDateTime = FastDateFormatFactoryUtil.getDateTime(locale, timeZone);
+
 BlogsEntryHelper blogsEntryHelper = new BlogsEntryHelper(resourceBundle);
 %>
 
