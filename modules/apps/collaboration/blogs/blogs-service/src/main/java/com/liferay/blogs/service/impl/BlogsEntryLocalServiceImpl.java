@@ -2229,8 +2229,9 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 	protected void validate(String title, String urlTitle, String content, int status)
 		throws PortalException {
 
-		if (WorkflowConstants.STATUS_APPROVED == status &&
+		if ((WorkflowConstants.STATUS_APPROVED == status) &&
 			Validator.isNull(title)) {
+
 			throw new EntryTitleException("Title is null");
 		}
 
