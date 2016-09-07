@@ -1452,10 +1452,7 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 		BlogsEntry entry = blogsEntryPersistence.findByPrimaryKey(entryId);
 
 		validate(
-			entry.getTitle(),
-			entry.getUrlTitle(),
-			entry.getContent(),
-			status);
+			entry.getTitle(), entry.getUrlTitle(), entry.getContent(), status);
 
 		int oldStatus = entry.getStatus();
 
