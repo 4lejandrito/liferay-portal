@@ -38,6 +38,7 @@ import com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
@@ -2207,6 +2208,21 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 					"Invalid small image for file entry " +
 						smallImageFileEntryId);
 			}
+		}
+	}
+
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link #validate(String, String,
+	 *             String, int)}
+	 */
+	@Deprecated
+	protected void validate(String title, String urlTitle, String content) {
+		try {
+			validate(
+				title, urlTitle, content, WorkflowConstants.STATUS_APPROVED);
+		}
+		catch (PortalException pe) {
+			throw new SystemException(pe);
 		}
 	}
 
