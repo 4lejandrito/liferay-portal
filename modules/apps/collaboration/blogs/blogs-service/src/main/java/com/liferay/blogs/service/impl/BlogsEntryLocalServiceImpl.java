@@ -1221,6 +1221,14 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 
 		BlogsEntry entry = blogsEntryPersistence.findByPrimaryKey(entryId);
 
+		int status = entry.getStatus();
+
+		if (!entry.isPending() && !entry.isDraft()) {
+			status = WorkflowConstants.STATUS_DRAFT;
+		}
+
+		validate(title, urlTitle, content, status);
+
 		String oldUrlTitle = entry.getUrlTitle();
 
 		entry.setTitle(title);
@@ -1236,16 +1244,9 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 		entry.setDisplayDate(displayDate);
 		entry.setAllowPingbacks(allowPingbacks);
 		entry.setAllowTrackbacks(allowTrackbacks);
-
-		if (entry.isPending() || entry.isDraft()) {
-		}
-		else {
-			entry.setStatus(WorkflowConstants.STATUS_DRAFT);
-		}
+		entry.setStatus(status);
 
 		entry.setExpandoBridgeAttributes(serviceContext);
-
-		validate(title, urlTitle, content, entry.getStatus());
 
 		blogsEntryPersistence.update(entry);
 
