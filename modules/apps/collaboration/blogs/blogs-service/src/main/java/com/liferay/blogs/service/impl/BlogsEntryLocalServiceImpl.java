@@ -280,9 +280,7 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 
 		long entryId = counterLocalService.increment();
 
-		int initialStatus = WorkflowConstants.STATUS_DRAFT;
-
-		validate(title, urlTitle, content, initialStatus);
+		validate(title, urlTitle, content, WorkflowConstants.STATUS_DRAFT);
 
 		BlogsEntry entry = blogsEntryPersistence.create(entryId);
 
@@ -303,7 +301,7 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 		entry.setDisplayDate(displayDate);
 		entry.setAllowPingbacks(allowPingbacks);
 		entry.setAllowTrackbacks(allowTrackbacks);
-		entry.setStatus(initialStatus);
+		entry.setStatus(WorkflowConstants.STATUS_DRAFT);
 		entry.setStatusByUserId(userId);
 		entry.setStatusDate(serviceContext.getModifiedDate(null));
 		entry.setExpandoBridgeAttributes(serviceContext);
