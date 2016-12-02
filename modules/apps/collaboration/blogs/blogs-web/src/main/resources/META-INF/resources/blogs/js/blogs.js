@@ -84,7 +84,7 @@ AUI.add(
 
 						instance.setDescription(window[instance.ns('contentEditor')].getText());
 
-						instance.calculateReadingTime = A.debounce(instance.calculateReadingTime, 500, instance);
+						instance._calculateReadingTimeFn = A.debounce(instance._calculateReadingTime, 500, instance);
 					},
 
 					destructor: function() {
@@ -109,6 +109,12 @@ AUI.add(
 						window[instance.ns('descriptionEditor')].setHTML(description);
 
 						instance._syncDescriptionEditorUI();
+					},
+
+					updateReadingTime: function(content) {
+						var instance = this;
+
+						instance._calculateReadingTimeFn(content);
 					},
 
 					_bindUI: function() {
@@ -146,6 +152,50 @@ AUI.add(
 						}
 
 						instance._eventHandles = eventHandles;
+					},
+
+					_calculateReadingTime: function(content) {
+						var instance = this;
+						var constants = instance.get('constants');
+						var readingTimeElement = instance.one('#readingTime');
+
+						if (content !== STR_BLANK) {
+
+							var data = instance.ns(
+								{
+									'content': content
+								}
+							);
+
+							A.io.request(
+								instance.get('calculateReadingTimeURL'),
+								{
+									data: data,
+									dataType: 'JSON',
+									on: {
+										failure: function() {
+											readingTimeElement.hide();
+										},
+										start: function() {
+										},
+										success: function(event, id, obj) {
+											var message = this.get('responseData');
+
+											if (message && message.readingTime && (message.readingTime > 1)) {
+												readingTimeElement.set('innerHTML', Lang.sub(constants.X_MINUTES_READ, [message.readingTime]));
+												readingTimeElement.show();
+											}
+											else {
+												readingTimeElement.hide();
+											}
+										}
+									}
+								}
+							);
+						}
+						else {
+							readingTimeElement.hide();
+						}
 					},
 
 					_checkImagesBeforeSave: function(draft, ajax) {
@@ -372,50 +422,6 @@ AUI.add(
 							instance.one('#workflowAction').val(draft ? constants.ACTION_SAVE_DRAFT : constants.ACTION_PUBLISH);
 
 							submitForm(form);
-						}
-					},
-
-					calculateReadingTime: function(content) {
-						var instance = this;
-						var constants = instance.get('constants');
-						var readingTimeElement = instance.one('#readingTime');
-
-						if (content !== STR_BLANK) {
-
-							var data = instance.ns(
-								{
-									'content': content
-								}
-							);
-
-							A.io.request(
-								instance.get('calculateReadingTimeURL'),
-								{
-									data: data,
-									dataType: 'JSON',
-									on: {
-										failure: function() {
-											readingTimeElement.hide();
-										},
-										start: function() {
-										},
-										success: function(event, id, obj) {
-											var message = this.get('responseData');
-
-											if (message && message.readingTime && (message.readingTime > 1)) {
-												readingTimeElement.set('innerHTML', Lang.sub(constants.X_MINUTES_READ, [message.readingTime]));
-												readingTimeElement.show();
-											}
-											else {
-												readingTimeElement.hide();
-											}
-										}
-									}
-								}
-							);
-						}
-						else {
-							readingTimeElement.hide();
 						}
 					},
 
