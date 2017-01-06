@@ -1964,11 +1964,13 @@ public class MBMessageLocalServiceImpl extends MBMessageLocalServiceBaseImpl {
 
 		subject = HtmlUtil.extractText(body);
 
-		if (subject.length() <= 50) {
-			return subject;
+		int pos = Math.min(subject.length(), 50);
+
+		if (subject.length() > pos) {
+			return subject.substring(0, pos) + StringPool.TRIPLE_PERIOD;
 		}
 
-		return subject.substring(50) + StringPool.TRIPLE_PERIOD;
+		return subject;
 	}
 
 	protected String getMessageURL(
