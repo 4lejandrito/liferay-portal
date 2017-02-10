@@ -31,6 +31,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Sergio González
@@ -41,10 +44,10 @@ public class FormNavigatorEntryUtil {
 		String formNavigatorId, String categoryKey, User user,
 		T formModelBean) {
 
-		@SuppressWarnings("rawtypes")
 		List<FormNavigatorEntry<T>> formNavigatorEntries =
-			(List)_instance._formNavigatorEntries.getService(
-				_getKey(formNavigatorId, categoryKey));
+			_getFormNavigatorEntries(
+				formNavigatorId, categoryKey, formModelBean).collect(
+				Collectors.toList());
 
 		return filterVisibleFormNavigatorEntries(
 			formNavigatorEntries, user, formModelBean);
@@ -59,11 +62,10 @@ public class FormNavigatorEntryUtil {
 			formNavigatorId);
 
 		for (String categoryKey : categoryKeys) {
-
-			@SuppressWarnings("rawtypes")
 			List<FormNavigatorEntry<T>> curFormNavigatorEntries =
-				(List)_instance._formNavigatorEntries.getService(
-					_getKey(formNavigatorId, categoryKey));
+				_getFormNavigatorEntries(
+					formNavigatorId, categoryKey, formModelBean).collect(
+					Collectors.toList());
 
 			if (curFormNavigatorEntries != null) {
 				formNavigatorEntries.addAll(curFormNavigatorEntries);
@@ -121,20 +123,44 @@ public class FormNavigatorEntryUtil {
 			List<FormNavigatorEntry<T>> formNavigatorEntries, User user,
 			T formModelBean) {
 
-		List<FormNavigatorEntry<T>> filterFormNavigatorEntries =
-			new ArrayList<>();
+		return ListUtil.fromCollection(formNavigatorEntries).stream().filter(
+			formNavigatorEntry -> formNavigatorEntry.isVisible(
+				user, formModelBean)).collect(Collectors.toList());
+	}
 
-		if (ListUtil.isEmpty(formNavigatorEntries)) {
-			return filterFormNavigatorEntries;
-		}
+	private static <T> Stream<FormNavigatorEntry<T>> _getFormNavigatorEntries(
+		String formNavigatorId, String categoryKey, T formModelBean) {
 
-		for (FormNavigatorEntry<T> formNavigatorEntry : formNavigatorEntries) {
-			if (formNavigatorEntry.isVisible(user, formModelBean)) {
-				filterFormNavigatorEntries.add(formNavigatorEntry);
-			}
-		}
+		Optional<Stream<FormNavigatorEntry<T>>> formNavigatorEntryStream =
+			_getFormNavigatorEntriesFromConfiguration(
+				formNavigatorId, categoryKey, formModelBean);
 
-		return filterFormNavigatorEntries;
+		return formNavigatorEntryStream.orElse(
+			(Stream)(_instance._formNavigatorEntries.getService(
+				_getKey(formNavigatorId, categoryKey)).stream()));
+	}
+
+	private static <T> Optional<Stream<FormNavigatorEntry<T>>>
+		_getFormNavigatorEntriesFromConfiguration(
+			String formNavigatorId, String categoryKey, T formModelBean) {
+
+		Optional<FormNavigatorEntryConfigurationHelper>
+			formNavigatorEntryConfigurationHelperOptional =
+			_getFormNavigatorEntryConfigurationHelper();
+
+		return formNavigatorEntryConfigurationHelperOptional.map(
+			formNavigatorEntryConfigurationHelper ->
+				formNavigatorEntryConfigurationHelper.getFormNavigatorEntries(
+					formNavigatorId, categoryKey, formModelBean));
+	}
+
+	private static Optional<FormNavigatorEntryConfigurationHelper>
+		_getFormNavigatorEntryConfigurationHelper() {
+
+		Registry registry = RegistryUtil.getRegistry();
+
+		return Optional.ofNullable(
+			registry.getService(FormNavigatorEntryConfigurationHelper.class));
 	}
 
 	private static String _getKey(String formNavigatorId, String categoryKey) {
