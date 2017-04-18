@@ -22,8 +22,10 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,6 +34,8 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 /**
@@ -92,14 +96,32 @@ public class FormNavigatorOSGiCommands {
 			});
 	}
 
+	@Reference(
+		cardinality = ReferenceCardinality.MULTIPLE,
+		policy = ReferencePolicy.DYNAMIC,
+		policyOption = ReferencePolicyOption.GREEDY,
+		unbind = "removeFormNavigatorEntry"
+	)
+	protected void addFormNavigatorEntry(
+		FormNavigatorEntry formNavigatorEntry) {
+
+		_allFormNavigatorEntries.add(formNavigatorEntry);
+	}
+
+	protected void removeFormNavigatorEntry(
+		FormNavigatorEntry formNavigatorEntry) {
+
+		_allFormNavigatorEntries.remove(formNavigatorEntry);
+	}
+
 	private Set<String> _getAllFormNavigatorIds() {
-		Stream<FormNavigatorEntry> formNavigatorEntriesStream =
-			_formNavigatorEntries.stream();
+		Set<String> allFormNavigatorIds = new HashSet<>();
 
-		Stream<String> formNavigatorIdsStream = formNavigatorEntriesStream.map(
-			FormNavigatorEntry::getFormNavigatorId);
+		_allFormNavigatorEntries.forEach(
+			formNavigatorEntry -> allFormNavigatorIds.add(
+				formNavigatorEntry.getFormNavigatorId()));
 
-		return formNavigatorIdsStream.collect(Collectors.toSet());
+		return allFormNavigatorIds;
 	}
 
 	private String _getCategoryLine(
@@ -141,12 +163,10 @@ public class FormNavigatorOSGiCommands {
 		return formNavigatorId + formNavigatorCategoryId;
 	}
 
+	private final List<FormNavigatorEntry> _allFormNavigatorEntries =
+		new CopyOnWriteArrayList<>();
 	private final Collector<CharSequence, ?, String> _collectorCSV =
 		Collectors.joining(StringPool.COMMA);
-
-	@Reference(policyOption = ReferencePolicyOption.GREEDY)
-	private List<FormNavigatorEntry> _formNavigatorEntries;
-
 	private ServiceTrackerMap<String, List<FormNavigatorEntry>>
 		_formNavigatorEntriesMap;
 
