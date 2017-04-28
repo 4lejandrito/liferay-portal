@@ -1432,6 +1432,12 @@ task if the URL is protected.
 - [LPS-68813]: Execute `findSecurityBugs` with the `check` task.
 - [LPS-68813]: Make `findSecurityBugs` task visible in `gradle task`.
 
+### Changed
+- [LPS-67039]: Embed and use [Liferay's PMD rule set file](https://github.com/liferay/liferay-plugins/blob/master/dependencies/net.sourceforge.pmd/rulesets/java/standard-rules.xml).
+- [LPS-71728]: Update the [Liferay Gradle Plugins] dependency to version 3.3.6.
+- [LPS-71728]: Update the [Liferay Gradle Plugins Baseline] dependency to
+version 1.1.5.
+
 [Find Security Bugs]: https://github.com/liferay/liferay-portal/tree/master/modules/third-party/com-h3xstream-findsecbugs
 [Liferay CDN]: https://cdn.lfrs.sl/repository.liferay.com/nexus/content/groups/public
 [Liferay Gradle Plugins]: https://github.com/liferay/liferay-portal/tree/master/modules/sdk/gradle-plugins
@@ -1571,6 +1577,7 @@ task if the URL is protected.
 [LPS-71603]: https://issues.liferay.com/browse/LPS-71603
 [LPS-71686]: https://issues.liferay.com/browse/LPS-71686
 [LPS-71722]: https://issues.liferay.com/browse/LPS-71722
+[LPS-71728]: https://issues.liferay.com/browse/LPS-71728
 [LPS-71795]: https://issues.liferay.com/browse/LPS-71795
 [LPS-71826]: https://issues.liferay.com/browse/LPS-71826
 [LPS-71901]: https://issues.liferay.com/browse/LPS-71901
