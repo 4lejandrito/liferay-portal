@@ -71,6 +71,29 @@ public class WikiContentAlloyEditorLinkBrowseConfigContributor
 				String documentBrowseLinkUrl = jsonObject.getString(
 					"documentBrowseLinkUrl");
 
+				if (documentBrowseLinkUrl == null) {
+					String name = GetterUtil.getString(
+						inputEditorTaglibAttributes.get
+							"liferay-ui:input-editor:name"));
+
+					boolean inlineEdit = GetterUtil.getBoolean(
+						inputEditorTaglibAttributes.get(
+							"liferay-ui:input-editor:inlineEdit"));
+
+					if (!inlineEdit) {
+						String namespace = GetterUtil.getString(
+							inputEditorTaglibAttributes.get(
+								"liferay-ui:input-editor:namespace"));
+
+						name = namespace + name;
+					}
+
+					return _itemSelector.getItemSelectorURL(
+						requestBackedPortletURLFactory, name + "selectItem",
+						getWikiAttachmentItemSelectorCriterion(
+							wikiPageResourcePrimKey);
+				}
+
 				List<ItemSelectorCriterion> itemSelectorCriteria =
 					_itemSelector.getItemSelectorCriteria(
 						documentBrowseLinkUrl);
