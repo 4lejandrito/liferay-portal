@@ -14,7 +14,6 @@
 
 package com.liferay.portal.service.impl;
 
-import com.liferay.exportimport.kernel.staging.StagingUtil;
 import com.liferay.portal.kernel.exception.NoSuchWorkflowDefinitionLinkException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.User;
@@ -49,7 +48,6 @@ public class WorkflowDefinitionLinkLocalServiceImpl
 		throws PortalException {
 
 		User user = userPersistence.findByPrimaryKey(userId);
-		groupId = StagingUtil.getLiveGroupId(groupId);
 		long classNameId = classNameLocalService.getClassNameId(className);
 
 		long workflowDefinitionLinkId = counterLocalService.increment();
@@ -121,7 +119,6 @@ public class WorkflowDefinitionLinkLocalServiceImpl
 			return null;
 		}
 
-		groupId = StagingUtil.getLiveGroupId(groupId);
 		long classNameId = classNameLocalService.getClassNameId(className);
 
 		WorkflowDefinitionLink workflowDefinitionLink = null;
@@ -281,7 +278,6 @@ public class WorkflowDefinitionLinkLocalServiceImpl
 		throws PortalException {
 
 		User user = userPersistence.findByPrimaryKey(userId);
-		groupId = StagingUtil.getLiveGroupId(groupId);
 		long classNameId = classNameLocalService.getClassNameId(className);
 
 		WorkflowDefinitionLink workflowDefinitionLink =
