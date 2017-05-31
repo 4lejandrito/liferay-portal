@@ -19,7 +19,6 @@ import com.liferay.document.library.kernel.model.DLFileShortcutConstants;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
 import com.liferay.document.library.kernel.service.DLAppLocalService;
 import com.liferay.document.library.kernel.service.DLFileShortcutLocalService;
-import com.liferay.exportimport.data.handler.base.BaseStagedModelDataHandler;
 import com.liferay.exportimport.kernel.lar.ExportImportPathUtil;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandler;
@@ -51,7 +50,7 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(immediate = true, service = StagedModelDataHandler.class)
 public class FileShortcutStagedModelDataHandler
-	extends BaseStagedModelDataHandler<FileShortcut> {
+	extends BaseDLStagedModelDataHandler<FileShortcut> {
 
 	public static final String[] CLASS_NAMES = {
 		DLFileShortcutConstants.getClassName(), FileShortcut.class.getName(),

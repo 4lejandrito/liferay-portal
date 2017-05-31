@@ -21,7 +21,6 @@ import com.liferay.document.library.kernel.model.DLFolderConstants;
 import com.liferay.document.library.kernel.service.DLAppLocalService;
 import com.liferay.document.library.kernel.service.DLFileEntryTypeLocalService;
 import com.liferay.document.library.kernel.service.DLFolderLocalService;
-import com.liferay.exportimport.data.handler.base.BaseStagedModelDataHandler;
 import com.liferay.exportimport.kernel.lar.ExportImportPathUtil;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.exportimport.kernel.lar.PortletDataException;
@@ -61,7 +60,7 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(immediate = true, service = StagedModelDataHandler.class)
 public class FolderStagedModelDataHandler
-	extends BaseStagedModelDataHandler<Folder> {
+	extends BaseDLStagedModelDataHandler<Folder> {
 
 	public static final String[] CLASS_NAMES = {
 		DLFolder.class.getName(), Folder.class.getName(),

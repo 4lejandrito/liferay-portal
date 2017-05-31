@@ -20,7 +20,6 @@ import com.liferay.document.library.kernel.service.DLFileEntryTypeLocalService;
 import com.liferay.document.library.kernel.util.DLUtil;
 import com.liferay.dynamic.data.mapping.kernel.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
-import com.liferay.exportimport.data.handler.base.BaseStagedModelDataHandler;
 import com.liferay.exportimport.kernel.lar.ExportImportPathUtil;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.exportimport.kernel.lar.PortletDataException;
@@ -51,7 +50,7 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(immediate = true, service = StagedModelDataHandler.class)
 public class DLFileEntryTypeStagedModelDataHandler
-	extends BaseStagedModelDataHandler<DLFileEntryType> {
+	extends BaseDLStagedModelDataHandler<DLFileEntryType> {
 
 	public static final String[] CLASS_NAMES =
 		{DLFileEntryType.class.getName()};
