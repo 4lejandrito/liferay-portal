@@ -63,7 +63,7 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @Sync
 public class FolderStagedModelDataHandlerTest
-	extends BaseStagedModelDataHandlerTestCase {
+	extends BaseDLStagedModelDataHandlerTestCase {
 
 	@ClassRule
 	@Rule

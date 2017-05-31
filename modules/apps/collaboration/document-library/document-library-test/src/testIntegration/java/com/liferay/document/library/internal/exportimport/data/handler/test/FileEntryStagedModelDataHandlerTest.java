@@ -49,7 +49,6 @@ import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.lar.test.BaseStagedModelDataHandlerTestCase;
 import com.liferay.portal.test.randomizerbumpers.TikaSafeRandomizerBumper;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portlet.documentlibrary.util.test.DLAppTestUtil;
@@ -71,7 +70,7 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @Sync
 public class FileEntryStagedModelDataHandlerTest
-	extends BaseStagedModelDataHandlerTestCase {
+	extends BaseDLStagedModelDataHandlerTestCase {
 
 	@ClassRule
 	@Rule
