@@ -30,6 +30,7 @@ import com.liferay.document.library.web.lar.DLPortletDataHandler;
 import com.liferay.dynamic.data.mapping.kernel.DDMStructure;
 import com.liferay.exportimport.kernel.lar.ExportImportPathUtil;
 import com.liferay.exportimport.kernel.lar.ManifestSummary;
+import com.liferay.exportimport.kernel.lar.PortletDataHandlerKeys;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Repository;
 import com.liferay.portal.kernel.repository.model.FileEntry;
@@ -170,6 +171,11 @@ public class DLPortletDataHandlerTest extends BasePortletDataHandlerTestCase {
 	protected void addParameters(Map<String, String[]> parameterMap) {
 		addBooleanParameter(
 			parameterMap, DLPortletDataHandler.NAMESPACE, "repositories", true);
+
+		parameterMap.put(
+			PortletDataHandlerKeys.PORTLET_DATA, new String[] {"true"});
+		parameterMap.put(
+			PortletDataHandlerKeys.PORTLET_DATA_ALL, new String[] {"true"});
 	}
 
 	protected void addRepositoryEntries() throws Exception {
