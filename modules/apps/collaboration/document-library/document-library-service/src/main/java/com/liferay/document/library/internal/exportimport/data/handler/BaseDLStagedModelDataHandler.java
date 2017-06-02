@@ -40,11 +40,28 @@ public abstract class BaseDLStagedModelDataHandler<T extends StagedModel>
 	}
 
 	private boolean _shouldExport(PortletDataContext portletDataContext) {
+		boolean shouldExportDLAdminPortlet = _shouldExport(
+			"com_liferay_document_library_web_portlet_DLAdminPortlet",
+			portletDataContext);
+
+		boolean shouldExportDLPortlet = _shouldExport(
+			"com_liferay_document_library_web_portlet_DLPortlet",
+			portletDataContext);
+
+		if (shouldExportDLAdminPortlet || shouldExportDLPortlet) {
+			return true;
+		}
+
+		return false;
+	}
+
+	private boolean _shouldExport(
+		String portletId, PortletDataContext portletDataContext) {
+
 		try {
 			Map<String, Boolean> exportPortletControlsMap =
 				ExportImportHelperUtil.getExportPortletControlsMap(
-					portletDataContext.getCompanyId(),
-					"com_liferay_document_library_web_portlet_DLAdminPortlet",
+					portletDataContext.getCompanyId(), portletId,
 					portletDataContext.getParameterMap(),
 					portletDataContext.getType());
 

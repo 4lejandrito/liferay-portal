@@ -73,4 +73,27 @@ public abstract class BaseDLStagedModelDataHandlerTestCase
 		Assert.assertNotNull(readExportedStagedModel(stagedModel));
 	}
 
+	@Test
+	public void testExportsIfTheDLPortletIsExported() throws Exception {
+		StagedModel stagedModel = addStagedModel(
+			stagingGroup, addDependentStagedModelsMap(stagingGroup));
+
+		initExport();
+
+		portletDataContext.getParameterMap().put(
+			PortletDataHandlerKeys.PORTLET_DATA_ALL, new String[] {"false"});
+
+		portletDataContext.getParameterMap().put(
+			PortletDataHandlerKeys.PORTLET_DATA + StringPool.UNDERLINE +
+				DLPortletKeys.DOCUMENT_LIBRARY,
+			new String[] {"true"});
+
+		StagedModelDataHandlerUtil.exportStagedModel(
+			portletDataContext, stagedModel);
+
+		initImport();
+
+		Assert.assertNotNull(readExportedStagedModel(stagedModel));
+	}
+
 }
