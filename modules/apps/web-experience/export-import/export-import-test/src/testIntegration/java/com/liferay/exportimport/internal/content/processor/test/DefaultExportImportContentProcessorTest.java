@@ -25,6 +25,7 @@ import com.liferay.exportimport.kernel.lar.ExportImportHelperUtil;
 import com.liferay.exportimport.kernel.lar.ExportImportPathUtil;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.exportimport.kernel.lar.PortletDataContextFactoryUtil;
+import com.liferay.exportimport.kernel.lar.PortletDataHandlerKeys;
 import com.liferay.exportimport.kernel.model.ExportImportConfiguration;
 import com.liferay.exportimport.kernel.service.ExportImportConfigurationLocalServiceUtil;
 import com.liferay.exportimport.kernel.service.ExportImportLocalServiceUtil;
@@ -238,6 +239,10 @@ public class DefaultExportImportContentProcessorTest {
 	@Test
 	public void testExportDLReferences() throws Exception {
 		_portletDataContextExport.setZipWriter(new TestReaderWriter());
+		_portletDataContextExport.getParameterMap().put(
+			PortletDataHandlerKeys.PORTLET_DATA, new String[] {"true"});
+		_portletDataContextExport.getParameterMap().put(
+			PortletDataHandlerKeys.PORTLET_DATA_ALL, new String[] {"true"});
 
 		String content = replaceParameters(
 			getContent("dl_references.txt"), _fileEntry);
