@@ -141,6 +141,11 @@ public class DefaultExportImportContentProcessorTest {
 				new Date(System.currentTimeMillis() - Time.HOUR), new Date(),
 				testReaderWriter);
 
+		_portletDataContextExport.getParameterMap().put(
+			PortletDataHandlerKeys.PORTLET_DATA, new String[] {"true"});
+		_portletDataContextExport.getParameterMap().put(
+			PortletDataHandlerKeys.PORTLET_DATA_ALL, new String[] {"true"});
+
 		Document document = SAXReaderUtil.createDocument();
 
 		Element manifestRootElement = document.addElement("root");
@@ -239,10 +244,6 @@ public class DefaultExportImportContentProcessorTest {
 	@Test
 	public void testExportDLReferences() throws Exception {
 		_portletDataContextExport.setZipWriter(new TestReaderWriter());
-		_portletDataContextExport.getParameterMap().put(
-			PortletDataHandlerKeys.PORTLET_DATA, new String[] {"true"});
-		_portletDataContextExport.getParameterMap().put(
-			PortletDataHandlerKeys.PORTLET_DATA_ALL, new String[] {"true"});
 
 		String content = replaceParameters(
 			getContent("dl_references.txt"), _fileEntry);
