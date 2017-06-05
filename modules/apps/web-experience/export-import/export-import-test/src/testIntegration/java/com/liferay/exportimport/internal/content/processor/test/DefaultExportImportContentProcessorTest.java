@@ -25,6 +25,7 @@ import com.liferay.exportimport.kernel.lar.ExportImportHelperUtil;
 import com.liferay.exportimport.kernel.lar.ExportImportPathUtil;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.exportimport.kernel.lar.PortletDataContextFactoryUtil;
+import com.liferay.exportimport.kernel.lar.PortletDataHandlerKeys;
 import com.liferay.exportimport.kernel.model.ExportImportConfiguration;
 import com.liferay.exportimport.kernel.service.ExportImportConfigurationLocalServiceUtil;
 import com.liferay.exportimport.kernel.service.ExportImportLocalServiceUtil;
@@ -139,6 +140,11 @@ public class DefaultExportImportContentProcessorTest {
 				new HashMap<String, String[]>(),
 				new Date(System.currentTimeMillis() - Time.HOUR), new Date(),
 				testReaderWriter);
+
+		_portletDataContextExport.getParameterMap().put(
+			PortletDataHandlerKeys.PORTLET_DATA, new String[] {"true"});
+		_portletDataContextExport.getParameterMap().put(
+			PortletDataHandlerKeys.PORTLET_DATA_ALL, new String[] {"true"});
 
 		Document document = SAXReaderUtil.createDocument();
 

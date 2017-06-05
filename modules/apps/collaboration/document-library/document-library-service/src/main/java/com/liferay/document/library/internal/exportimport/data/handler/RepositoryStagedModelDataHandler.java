@@ -17,7 +17,6 @@ package com.liferay.document.library.internal.exportimport.data.handler;
 import com.liferay.document.library.kernel.model.DLFolder;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
 import com.liferay.document.library.kernel.service.DLAppLocalService;
-import com.liferay.exportimport.data.handler.base.BaseStagedModelDataHandler;
 import com.liferay.exportimport.kernel.lar.ExportImportPathUtil;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandler;
@@ -46,7 +45,7 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(immediate = true, service = StagedModelDataHandler.class)
 public class RepositoryStagedModelDataHandler
-	extends BaseStagedModelDataHandler<Repository> {
+	extends BaseDLStagedModelDataHandler<Repository> {
 
 	public static final String[] CLASS_NAMES = {Repository.class.getName()};
 
