@@ -90,6 +90,9 @@ public class PortletDataContextFactoryImpl
 		clonePortletDataContext.setManifestSummary(
 			(ManifestSummary)manifestSummary.clone());
 
+		clonePortletDataContext.setMissingReferencesElement(
+			portletDataContext.getMissingReferencesElement());
+
 		Map<String, Map<?, ?>> cloneNewPrimaryKeysMaps =
 			clonePortletDataContext.getNewPrimaryKeysMaps();
 
