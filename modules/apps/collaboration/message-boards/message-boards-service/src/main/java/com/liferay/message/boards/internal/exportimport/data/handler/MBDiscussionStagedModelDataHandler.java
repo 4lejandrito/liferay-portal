@@ -20,6 +20,7 @@ import com.liferay.exportimport.data.handler.base.BaseStagedModelDataHandler;
 import com.liferay.exportimport.kernel.lar.ExportImportPathUtil;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandler;
+import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerRegistryUtil;
 import com.liferay.exportimport.kernel.lar.StagedModelModifiedDateComparator;
 import com.liferay.message.boards.kernel.model.MBDiscussion;
 import com.liferay.message.boards.kernel.model.MBMessage;
@@ -30,6 +31,7 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.GroupedModel;
 import com.liferay.portal.kernel.model.PersistedModel;
 import com.liferay.portal.kernel.model.StagedModel;
 import com.liferay.portal.kernel.service.PersistedModelLocalService;
@@ -212,7 +214,30 @@ public class MBDiscussionStagedModelDataHandler
 				return null;
 			}
 
-			return (StagedModel)persistedModel;
+			StagedModel stagedModel = (StagedModel)persistedModel;
+
+			StagedModelDataHandler<? extends StagedModel>
+				stagedModelDataHandler =
+					StagedModelDataHandlerRegistryUtil.
+						getStagedModelDataHandler(
+							stagedModel.getModelClassName());
+
+			if (persistedModel instanceof GroupedModel) {
+				GroupedModel groupedModel = (GroupedModel)persistedModel;
+
+				return stagedModelDataHandler.fetchStagedModelByUuidAndGroupId(
+					stagedModel.getUuid(), groupedModel.getGroupId());
+			}
+
+			List<? extends StagedModel> stagedModels =
+				stagedModelDataHandler.fetchStagedModelsByUuidAndCompanyId(
+					stagedModel.getUuid(), stagedModel.getCompanyId());
+
+			if (stagedModels.size() == 1) {
+				return stagedModels.get(0);
+			}
+
+			return null;
 		}
 		catch (PortalException pe) {
 			_log.error(pe);
