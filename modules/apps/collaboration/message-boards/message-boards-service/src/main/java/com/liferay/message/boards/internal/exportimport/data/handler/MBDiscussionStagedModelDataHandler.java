@@ -27,6 +27,13 @@ import com.liferay.message.boards.kernel.model.MBThread;
 import com.liferay.message.boards.kernel.service.MBDiscussionLocalService;
 import com.liferay.message.boards.kernel.service.MBMessageLocalService;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.PersistedModel;
+import com.liferay.portal.kernel.model.StagedModel;
+import com.liferay.portal.kernel.service.PersistedModelLocalService;
+import com.liferay.portal.kernel.service.PersistedModelLocalServiceRegistryUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.xml.Element;
@@ -103,8 +110,23 @@ public class MBDiscussionStagedModelDataHandler
 			PortletDataContext portletDataContext, MBDiscussion discussion)
 		throws Exception {
 
+		StagedModel referencedStagedModel = _getReferencedStagedModel(
+			discussion);
+
+		if (referencedStagedModel == null) {
+			return;
+		}
+
 		Element discussionElement = portletDataContext.getExportDataElement(
 			discussion);
+
+		if (!portletDataContext.isWithinDateRange(
+				referencedStagedModel.getModifiedDate())) {
+
+			portletDataContext.addReferenceElement(
+				discussion, discussionElement, referencedStagedModel,
+				PortletDataContext.REFERENCE_TYPE_DEPENDENCY, true);
+		}
 
 		portletDataContext.addClassedModel(
 			discussionElement, ExportImportPathUtil.getModelPath(discussion),
@@ -175,6 +197,32 @@ public class MBDiscussionStagedModelDataHandler
 
 		_mbMessageLocalService = mbMessageLocalService;
 	}
+
+	private StagedModel _getReferencedStagedModel(MBDiscussion discussion) {
+		try {
+			PersistedModelLocalService persistedModelLocalService =
+				PersistedModelLocalServiceRegistryUtil.
+					getPersistedModelLocalService(discussion.getClassName());
+
+			PersistedModel persistedModel =
+				persistedModelLocalService.getPersistedModel(
+					discussion.getClassPK());
+
+			if (!(persistedModel instanceof StagedModel)) {
+				return null;
+			}
+
+			return (StagedModel)persistedModel;
+		}
+		catch (PortalException pe) {
+			_log.error(pe);
+
+			return null;
+		}
+	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		MBDiscussionStagedModelDataHandler.class);
 
 	private AssetEntryLocalService _assetEntryLocalService;
 	private MBDiscussionLocalService _mbDiscussionLocalService;
