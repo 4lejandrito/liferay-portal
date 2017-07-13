@@ -18,6 +18,7 @@ import com.liferay.comment.page.comments.web.internal.constants.PageCommentsPort
 import com.liferay.exportimport.kernel.lar.BasePortletDataHandler;
 import com.liferay.exportimport.kernel.lar.ExportImportProcessCallbackRegistry;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
+import com.liferay.exportimport.kernel.lar.PortletDataContextFactoryUtil;
 import com.liferay.exportimport.kernel.lar.PortletDataHandler;
 import com.liferay.exportimport.kernel.lar.PortletDataHandlerBoolean;
 import com.liferay.exportimport.kernel.lar.PortletDataHandlerControl;
@@ -161,8 +162,14 @@ public class PageCommentsPortletDataHandler extends BasePortletDataHandler {
 			PortletPreferences portletPreferences, String data)
 		throws Exception {
 
+		PortletDataContext clonedPortletDataContext =
+			PortletDataContextFactoryUtil.clonePortletDataContext(
+				portletDataContext);
+
 		_exportImportProcessCallbackRegistry.registerCallback(
-			new ImportCommentsCallable(_commentManager, portletDataContext));
+			portletDataContext.getExportImportProcessId(),
+			new ImportCommentsCallable(
+				_commentManager, clonedPortletDataContext));
 
 		return null;
 	}
