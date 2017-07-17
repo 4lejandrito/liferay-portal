@@ -20,6 +20,7 @@ import com.liferay.exportimport.data.handler.base.BaseStagedModelDataHandler;
 import com.liferay.exportimport.kernel.lar.ExportImportPathUtil;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandler;
+import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerRegistryUtil;
 import com.liferay.exportimport.kernel.lar.StagedModelModifiedDateComparator;
 import com.liferay.message.boards.kernel.model.MBDiscussion;
 import com.liferay.message.boards.kernel.model.MBMessage;
@@ -27,6 +28,14 @@ import com.liferay.message.boards.kernel.model.MBThread;
 import com.liferay.message.boards.kernel.service.MBDiscussionLocalService;
 import com.liferay.message.boards.kernel.service.MBMessageLocalService;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.GroupedModel;
+import com.liferay.portal.kernel.model.PersistedModel;
+import com.liferay.portal.kernel.model.StagedModel;
+import com.liferay.portal.kernel.service.PersistedModelLocalService;
+import com.liferay.portal.kernel.service.PersistedModelLocalServiceRegistryUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.xml.Element;
@@ -103,8 +112,23 @@ public class MBDiscussionStagedModelDataHandler
 			PortletDataContext portletDataContext, MBDiscussion discussion)
 		throws Exception {
 
+		StagedModel referencedStagedModel = _getReferencedStagedModel(
+			discussion);
+
+		if (referencedStagedModel == null) {
+			return;
+		}
+
 		Element discussionElement = portletDataContext.getExportDataElement(
 			discussion);
+
+		if (!portletDataContext.isWithinDateRange(
+				referencedStagedModel.getModifiedDate())) {
+
+			portletDataContext.addReferenceElement(
+				discussion, discussionElement, referencedStagedModel,
+				PortletDataContext.REFERENCE_TYPE_DEPENDENCY, true);
+		}
 
 		portletDataContext.addClassedModel(
 			discussionElement, ExportImportPathUtil.getModelPath(discussion),
@@ -175,6 +199,55 @@ public class MBDiscussionStagedModelDataHandler
 
 		_mbMessageLocalService = mbMessageLocalService;
 	}
+
+	private StagedModel _getReferencedStagedModel(MBDiscussion discussion) {
+		try {
+			PersistedModelLocalService persistedModelLocalService =
+				PersistedModelLocalServiceRegistryUtil.
+					getPersistedModelLocalService(discussion.getClassName());
+
+			PersistedModel persistedModel =
+				persistedModelLocalService.getPersistedModel(
+					discussion.getClassPK());
+
+			if (!(persistedModel instanceof StagedModel)) {
+				return null;
+			}
+
+			StagedModel stagedModel = (StagedModel)persistedModel;
+
+			StagedModelDataHandler<? extends StagedModel>
+				stagedModelDataHandler =
+					StagedModelDataHandlerRegistryUtil.
+						getStagedModelDataHandler(
+							stagedModel.getModelClassName());
+
+			if (persistedModel instanceof GroupedModel) {
+				GroupedModel groupedModel = (GroupedModel)persistedModel;
+
+				return stagedModelDataHandler.fetchStagedModelByUuidAndGroupId(
+					stagedModel.getUuid(), groupedModel.getGroupId());
+			}
+
+			List<? extends StagedModel> stagedModels =
+				stagedModelDataHandler.fetchStagedModelsByUuidAndCompanyId(
+					stagedModel.getUuid(), stagedModel.getCompanyId());
+
+			if (stagedModels.size() == 1) {
+				return stagedModels.get(0);
+			}
+
+			return null;
+		}
+		catch (PortalException pe) {
+			_log.error(pe);
+
+			return null;
+		}
+	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		MBDiscussionStagedModelDataHandler.class);
 
 	private AssetEntryLocalService _assetEntryLocalService;
 	private MBDiscussionLocalService _mbDiscussionLocalService;
