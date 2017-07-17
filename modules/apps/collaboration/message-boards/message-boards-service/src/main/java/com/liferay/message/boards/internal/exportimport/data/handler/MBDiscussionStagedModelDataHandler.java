@@ -107,6 +107,9 @@ public class MBDiscussionStagedModelDataHandler
 		}
 	}
 
+	/**
+	 * @see com.liferay.ratings.internal.exportimport.data.handler.RatingsEntryStagedModelDataHandler#doExportStagedModel(PortletDataContext, com.liferay.ratings.kernel.model.RatingsEntry)
+	 */
 	@Override
 	protected void doExportStagedModel(
 			PortletDataContext portletDataContext, MBDiscussion discussion)
@@ -200,6 +203,9 @@ public class MBDiscussionStagedModelDataHandler
 		_mbMessageLocalService = mbMessageLocalService;
 	}
 
+	/**
+	 * @see com.liferay.ratings.internal.exportimport.data.handler.RatingsEntryStagedModelDataHandler#_getReferencedStagedModel(com.liferay.ratings.kernel.model.RatingsEntry)
+	 */
 	private StagedModel _getReferencedStagedModel(MBDiscussion discussion) {
 		try {
 			PersistedModelLocalService persistedModelLocalService =

@@ -18,10 +18,14 @@ import com.liferay.exportimport.data.handler.base.BaseStagedModelDataHandler;
 import com.liferay.exportimport.kernel.lar.ExportImportPathUtil;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandler;
+import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerRegistryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.GroupedModel;
+import com.liferay.portal.kernel.model.PersistedModel;
+import com.liferay.portal.kernel.model.StagedModel;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.PersistedModelLocalService;
 import com.liferay.portal.kernel.service.PersistedModelLocalServiceRegistryUtil;
@@ -91,12 +95,29 @@ public class RatingsEntryStagedModelDataHandler
 		return entry.getUuid();
 	}
 
+	/**
+	 * @see com.liferay.message.boards.internal.exportimport.data.handler.MBDiscussionStagedModelDataHandler#doExportStagedModel(PortletDataContext, com.liferay.message.boards.kernel.model.MBDiscussion)
+	 */
 	@Override
 	protected void doExportStagedModel(
 			PortletDataContext portletDataContext, RatingsEntry entry)
 		throws Exception {
 
+		StagedModel referencedStagedModel = _getReferencedStagedModel(entry);
+
+		if (referencedStagedModel == null) {
+			return;
+		}
+
 		Element entryElement = portletDataContext.getExportDataElement(entry);
+
+		if (!portletDataContext.isWithinDateRange(
+				referencedStagedModel.getModifiedDate())) {
+
+			portletDataContext.addReferenceElement(
+				entry, entryElement, referencedStagedModel,
+				PortletDataContext.REFERENCE_TYPE_DEPENDENCY, true);
+		}
 
 		portletDataContext.addClassedModel(
 			entryElement, ExportImportPathUtil.getModelPath(entry), entry);
@@ -152,6 +173,55 @@ public class RatingsEntryStagedModelDataHandler
 		RatingsEntryLocalService ratingsEntryLocalService) {
 
 		_ratingsEntryLocalService = ratingsEntryLocalService;
+	}
+
+	/**
+	 * @see com.liferay.message.boards.internal.exportimport.data.handler.MBDiscussionStagedModelDataHandler#_getReferencedStagedModel(com.liferay.message.boards.kernel.model.MBDiscussion)
+	 */
+	private StagedModel _getReferencedStagedModel(RatingsEntry ratingsEntry) {
+		try {
+			PersistedModelLocalService persistedModelLocalService =
+				PersistedModelLocalServiceRegistryUtil.
+					getPersistedModelLocalService(ratingsEntry.getClassName());
+
+			PersistedModel persistedModel =
+				persistedModelLocalService.getPersistedModel(
+					ratingsEntry.getClassPK());
+
+			if (!(persistedModel instanceof StagedModel)) {
+				return null;
+			}
+
+			StagedModel stagedModel = (StagedModel)persistedModel;
+
+			StagedModelDataHandler<? extends StagedModel>
+				stagedModelDataHandler =
+					StagedModelDataHandlerRegistryUtil.
+						getStagedModelDataHandler(
+							stagedModel.getModelClassName());
+
+			if (persistedModel instanceof GroupedModel) {
+				GroupedModel groupedModel = (GroupedModel)persistedModel;
+
+				return stagedModelDataHandler.fetchStagedModelByUuidAndGroupId(
+					stagedModel.getUuid(), groupedModel.getGroupId());
+			}
+
+			List<? extends StagedModel> stagedModels =
+				stagedModelDataHandler.fetchStagedModelsByUuidAndCompanyId(
+					stagedModel.getUuid(), stagedModel.getCompanyId());
+
+			if (stagedModels.size() == 1) {
+				return stagedModels.get(0);
+			}
+
+			return null;
+		}
+		catch (PortalException pe) {
+			_log.error(pe);
+
+			return null;
+		}
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
