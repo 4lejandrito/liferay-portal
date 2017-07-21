@@ -35,12 +35,23 @@ if (subscriptionId > 0) {
 %>
 
 <liferay-ui:icon-menu direction="left-side" icon="<%= StringPool.BLANK %>" markupView="lexicon" message="<%= StringPool.BLANK %>" showWhenSingleIcon="<%= true %>">
-	<c:if test="<%= !userNotificationEvent.isArchived() %>">
-		<portlet:actionURL name="markAsRead" var="markAsReadURL">
-			<portlet:param name="userNotificationEventId" value="<%= String.valueOf(userNotificationEvent.getUserNotificationEventId()) %>" />
-		</portlet:actionURL>
+	<c:if test="<%= !userNotificationEvent.isActionRequired() %>">
+		<c:choose>
+			<c:when test="<%= !userNotificationEvent.isArchived() %>">
+				<portlet:actionURL name="markAsRead" var="markAsReadURL">
+					<portlet:param name="userNotificationEventId" value="<%= String.valueOf(userNotificationEvent.getUserNotificationEventId()) %>" />
+				</portlet:actionURL>
 
-		<liferay-ui:icon message="mark-as-read" url="<%= markAsReadURL.toString() %>" />
+				<liferay-ui:icon message="mark-as-read" url="<%= markAsReadURL.toString() %>" />
+			</c:when>
+			<c:otherwise>
+				<portlet:actionURL name="markAsUnread" var="markAsUnreadURL">
+					<portlet:param name="userNotificationEventId" value="<%= String.valueOf(userNotificationEvent.getUserNotificationEventId()) %>" />
+				</portlet:actionURL>
+
+				<liferay-ui:icon message="mark-as-unread" url="<%= markAsUnreadURL.toString() %>" />
+			</c:otherwise>
+		</c:choose>
 	</c:if>
 
 	<c:if test="<%= subscriptionId > 0 %>">
