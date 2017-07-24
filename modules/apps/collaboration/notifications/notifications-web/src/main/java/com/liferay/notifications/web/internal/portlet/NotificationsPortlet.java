@@ -64,6 +64,24 @@ import org.osgi.service.component.annotations.Reference;
 )
 public class NotificationsPortlet extends MVCPortlet {
 
+	public void deleteAllNotifications(
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws Exception {
+
+		long[] userNotificationEventIds = ParamUtil.getLongValues(
+			actionRequest, "rowIds");
+
+		for (long userNotificationEventId : userNotificationEventIds) {
+			try {
+				_userNotificationEventLocalService.deleteUserNotificationEvent(
+					userNotificationEventId);
+			}
+			catch (Exception e) {
+				throw new PortletException(e);
+			}
+		}
+	}
+
 	public void deleteUserNotificationEvent(
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
@@ -88,7 +106,19 @@ public class NotificationsPortlet extends MVCPortlet {
 			actionRequest, "rowIds");
 
 		for (long userNotificationEventId : userNotificationEventIds) {
-			updateArchived(userNotificationEventId);
+			updateArchived(userNotificationEventId, true);
+		}
+	}
+
+	public void markAllAsUnread(
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws Exception {
+
+		long[] userNotificationEventIds = ParamUtil.getLongValues(
+			actionRequest, "rowIds");
+
+		for (long userNotificationEventId : userNotificationEventIds) {
+			updateArchived(userNotificationEventId, false);
 		}
 	}
 
@@ -99,7 +129,23 @@ public class NotificationsPortlet extends MVCPortlet {
 		long userNotificationEventId = ParamUtil.getLong(
 			actionRequest, "userNotificationEventId");
 
-		updateArchived(userNotificationEventId);
+		updateArchived(userNotificationEventId, true);
+
+		String redirect = ParamUtil.getString(actionRequest, "redirect");
+
+		if (Validator.isNotNull(redirect)) {
+			actionResponse.sendRedirect(redirect);
+		}
+	}
+
+	public void markAsUnread(
+			ActionRequest actionRequest, ActionResponse actionResponse)
+		throws Exception {
+
+		long userNotificationEventId = ParamUtil.getLong(
+			actionRequest, "userNotificationEventId");
+
+		updateArchived(userNotificationEventId, false);
 
 		String redirect = ParamUtil.getString(actionRequest, "redirect");
 
@@ -124,7 +170,10 @@ public class NotificationsPortlet extends MVCPortlet {
 			String actionName = ParamUtil.getString(
 				actionRequest, ActionRequest.ACTION_NAME);
 
-			if (actionName.equals("deleteUserNotificationEvent")) {
+			if (actionName.equals("deleteAll")) {
+				deleteAllNotifications(actionRequest, actionResponse);
+			}
+			else if (actionName.equals("deleteUserNotificationEvent")) {
 				deleteUserNotificationEvent(actionRequest, actionResponse);
 			}
 			else if (actionName.equals("markAllAsRead")) {
@@ -132,6 +181,12 @@ public class NotificationsPortlet extends MVCPortlet {
 			}
 			else if (actionName.equals("markAsRead")) {
 				markAsRead(actionRequest, actionResponse);
+			}
+			else if (actionName.equals("markAllAsUnread")) {
+				markAllAsUnread(actionRequest, actionResponse);
+			}
+			else if (actionName.equals("markAsUnread")) {
+				markAsUnread(actionRequest, actionResponse);
 			}
 			else if (actionName.equals("unsubscribe")) {
 				unsubscribe(actionRequest, actionResponse);
@@ -165,7 +220,7 @@ public class NotificationsPortlet extends MVCPortlet {
 
 		if (userNotificationEvent != null) {
 			if (!userNotificationEvent.isArchived()) {
-				updateArchived(userNotificationEventId);
+				updateArchived(userNotificationEventId, true);
 			}
 		}
 	}
@@ -234,7 +289,8 @@ public class NotificationsPortlet extends MVCPortlet {
 		_userNotificationEventLocalService = userNotificationEventLocalService;
 	}
 
-	protected void updateArchived(long userNotificationEventId)
+	protected void updateArchived(
+			long userNotificationEventId, boolean archived)
 		throws Exception {
 
 		UserNotificationEvent userNotificationEvent =
@@ -245,7 +301,7 @@ public class NotificationsPortlet extends MVCPortlet {
 			return;
 		}
 
-		userNotificationEvent.setArchived(true);
+		userNotificationEvent.setArchived(archived);
 
 		_userNotificationEventLocalService.updateUserNotificationEvent(
 			userNotificationEvent);
