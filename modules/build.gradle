@@ -108,6 +108,14 @@ gradle.beforeProject {
 			}
 		}
 
+		if (project.plugins.hasPlugin('idea')) {
+			project.idea.module.iml {
+				whenMerged { module ->
+					module.excludeFolders += module.pathFactory.path(project.file("node_modules"))
+				}
+			}
+		}
+
 		pluginManager.withPlugin("com.liferay.ant.plugin") {
 			task buildLang(dependsOn: "build-lang")
 
