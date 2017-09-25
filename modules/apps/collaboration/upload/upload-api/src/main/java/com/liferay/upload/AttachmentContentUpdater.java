@@ -16,7 +16,7 @@ package com.liferay.upload;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.repository.model.FileEntry;
-import com.liferay.upload.util.CheckedFunction;
+import com.liferay.portal.kernel.util.UnsafeFunction;
 
 /**
  * @author Alejandro Tardín
@@ -26,7 +26,7 @@ public interface AttachmentContentUpdater {
 
 	public String updateContent(
 			String content,
-			CheckedFunction<FileEntry, FileEntry, PortalException> saveFile)
+			UnsafeFunction<FileEntry, FileEntry, PortalException> saveFile)
 		throws PortalException;
 
 }
