@@ -661,6 +661,11 @@ public class ServiceBuilder {
 
 			_packagePath = packagePath;
 
+			_classPattern = Pattern.compile(
+				"<class .*name=\"" +
+					_packagePath.replace(StringPool.PERIOD, "\\.") +
+						"\\.model\\.");
+
 			_autoImportDefaultReferences = GetterUtil.getBoolean(
 				rootElement.attributeValue("auto-import-default-references"),
 				_autoImportDefaultReferences);
@@ -2540,9 +2545,9 @@ public class ServiceBuilder {
 					newContent.substring(lastImport);
 		}
 
-		int firstClass = _getFirstClass(newContent);
+		Matcher matcher = _classPattern.matcher(newContent);
 
-		if (firstClass == -1) {
+		if (!matcher.find()) {
 			int x = newContent.indexOf("</hibernate-mapping>");
 
 			if (x != -1) {
@@ -2552,7 +2557,12 @@ public class ServiceBuilder {
 			}
 		}
 		else {
-			int lastClass = _getLastClass(newContent);
+			int firstClass = matcher.start();
+			int lastClass = matcher.start();
+
+			while (matcher.find()) {
+				lastClass = matcher.start();
+			}
 
 			firstClass = newContent.lastIndexOf("<class", firstClass) - 1;
 			lastClass = newContent.indexOf("</class>", lastClass) + 9;
@@ -4526,20 +4536,6 @@ public class ServiceBuilder {
 				" for entity " + entity.getName());
 	}
 
-	private int _getFirstClass(String newContent) {
-		Pattern pattern = Pattern.compile(
-			"<class .*name=\"" +
-				_packagePath.replace(StringPool.PERIOD, "\\.") + "\\.model\\.");
-
-		Matcher matcher = pattern.matcher(newContent);
-
-		if (matcher.find()) {
-			return matcher.start();
-		}
-
-		return -1;
-	}
-
 	private JavaClass _getJavaClass(String fileName) throws IOException {
 		fileName = _normalize(fileName);
 
@@ -4586,22 +4582,6 @@ public class ServiceBuilder {
 		}
 
 		return javaClass;
-	}
-
-	private int _getLastClass(String newContent) {
-		Pattern pattern = Pattern.compile(
-			"<class .*name=\"" +
-				_packagePath.replace(StringPool.PERIOD, "\\.") + "\\.model\\.");
-
-		Matcher matcher = pattern.matcher(newContent);
-
-		int position = -1;
-
-		while (matcher.find()) {
-			position = matcher.start();
-		}
-
-		return position;
 	}
 
 	private String _getMethodKey(JavaMethod javaMethod) {
@@ -6186,6 +6166,7 @@ public class ServiceBuilder {
 	private boolean _build;
 	private long _buildNumber;
 	private boolean _buildNumberIncrement;
+	private Pattern _classPattern;
 	private String _currentTplName;
 	private List<Entity> _ejbList;
 	private Map<String, EntityMapping> _entityMappings;
