@@ -4596,16 +4596,19 @@ public class ServiceBuilder {
 	}
 
 	private int _getLastClass(String newContent) {
-		int lastClass1 = newContent.lastIndexOf(
-			"<class dynamic-update=\"true\" name=\"" + _packagePath +
-				".model.");
-		int lastClass2 = newContent.lastIndexOf(
-			"<class name=\"" + _packagePath + ".model.");
+		Pattern pattern = Pattern.compile(
+			"<class .*name=\"" +
+				_packagePath.replace(StringPool.PERIOD, "\\.") + "\\.model\\.");
 
-		int lastClass3 = newContent.lastIndexOf(
-			"<class lazy=\"true\" name=\"" + _packagePath + ".model.");
+		Matcher matcher = pattern.matcher(newContent);
 
-		return Math.max(Math.max(lastClass1, lastClass2), lastClass3);
+		int position = -1;
+
+		while (matcher.find()) {
+			position = matcher.start();
+		}
+
+		return position;
 	}
 
 	private String _getMethodKey(JavaMethod javaMethod) {
