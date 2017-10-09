@@ -2540,28 +2540,7 @@ public class ServiceBuilder {
 					newContent.substring(lastImport);
 		}
 
-		int firstClass = -1;
-
-		int firstClass1 = newContent.indexOf(
-			"<class dynamic-update=\"true\" name=\"" + _packagePath +
-				".model.");
-		int firstClass2 = newContent.indexOf(
-			"<class name=\"" + _packagePath + ".model.");
-
-		if ((firstClass1 != -1) && (firstClass2 != -1)) {
-			if (firstClass2 < firstClass1) {
-				firstClass = firstClass2;
-			}
-			else {
-				firstClass = firstClass1;
-			}
-		}
-		else if (firstClass1 != -1) {
-			firstClass = firstClass1;
-		}
-		else if (firstClass2 != -1) {
-			firstClass = firstClass2;
-		}
+		int firstClass = _getFirstClass(newContent);
 
 		if (firstClass == -1) {
 			int x = newContent.indexOf("</hibernate-mapping>");
@@ -4545,6 +4524,20 @@ public class ServiceBuilder {
 		throw new IllegalArgumentException(
 			"No entity column exist with column database name " + columnDBName +
 				" for entity " + entity.getName());
+	}
+
+	private int _getFirstClass(String newContent) {
+		Pattern pattern = Pattern.compile(
+			"<class .*name=\"" +
+				_packagePath.replace(StringPool.PERIOD, "\\.") + "\\.model\\.");
+
+		Matcher matcher = pattern.matcher(newContent);
+
+		if (matcher.find()) {
+			return matcher.start();
+		}
+
+		return -1;
 	}
 
 	private JavaClass _getJavaClass(String fileName) throws IOException {
