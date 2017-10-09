@@ -2563,8 +2563,6 @@ public class ServiceBuilder {
 			firstClass = firstClass2;
 		}
 
-		int lastClass = _getLastClass(newContent);
-
 		if (firstClass == -1) {
 			int x = newContent.indexOf("</hibernate-mapping>");
 
@@ -2575,6 +2573,8 @@ public class ServiceBuilder {
 			}
 		}
 		else {
+			int lastClass = _getLastClass(newContent);
+
 			firstClass = newContent.lastIndexOf("<class", firstClass) - 1;
 			lastClass = newContent.indexOf("</class>", lastClass) + 9;
 
