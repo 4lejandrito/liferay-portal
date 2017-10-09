@@ -2563,28 +2563,7 @@ public class ServiceBuilder {
 			firstClass = firstClass2;
 		}
 
-		int lastClass = -1;
-
-		int lastClass1 = newContent.lastIndexOf(
-			"<class dynamic-update=\"true\" name=\"" + _packagePath +
-				".model.");
-		int lastClass2 = newContent.lastIndexOf(
-			"<class name=\"" + _packagePath + ".model.");
-
-		if ((lastClass1 != -1) && (lastClass2 != -1)) {
-			if (lastClass2 > lastClass1) {
-				lastClass = lastClass2;
-			}
-			else {
-				lastClass = lastClass1;
-			}
-		}
-		else if (lastClass1 != -1) {
-			lastClass = lastClass1;
-		}
-		else if (lastClass2 != -1) {
-			lastClass = lastClass2;
-		}
+		int lastClass = _getLastClass(newContent);
 
 		if (firstClass == -1) {
 			int x = newContent.indexOf("</hibernate-mapping>");
@@ -4614,6 +4593,19 @@ public class ServiceBuilder {
 		}
 
 		return javaClass;
+	}
+
+	private int _getLastClass(String newContent) {
+		int lastClass1 = newContent.lastIndexOf(
+			"<class dynamic-update=\"true\" name=\"" + _packagePath +
+				".model.");
+		int lastClass2 = newContent.lastIndexOf(
+			"<class name=\"" + _packagePath + ".model.");
+
+		int lastClass3 = newContent.lastIndexOf(
+			"<class lazy=\"true\" name=\"" + _packagePath + ".model.");
+
+		return Math.max(Math.max(lastClass1, lastClass2), lastClass3);
 	}
 
 	private String _getMethodKey(JavaMethod javaMethod) {
