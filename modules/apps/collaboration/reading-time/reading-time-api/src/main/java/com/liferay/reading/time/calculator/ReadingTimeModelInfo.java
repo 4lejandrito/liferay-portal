@@ -12,26 +12,19 @@
  * details.
  */
 
-package com.liferay.blogs.web.internal.util;
+package com.liferay.reading.time.calculator;
 
-import com.liferay.portal.kernel.util.HtmlUtil;
-import com.liferay.portal.kernel.util.Validator;
+import java.util.Locale;
 
 /**
- * @author Roberto Díaz
+ * @author Alejandro Tardín
  */
-public class BlogsUtil {
+public interface ReadingTimeModelInfo<T> {
 
-	public static int getReadingTimeMinutes(String content) {
-		String strippedContent = HtmlUtil.stripHtml(content);
+	public String getContent(T model);
 
-		if (Validator.isNull(strippedContent)) {
-			return 0;
-		}
+	public String getContentType(T model);
 
-		String[] words = strippedContent.split("(?:\\h|\\v)+");
-
-		return Math.round(words.length / 250F);
-	}
+	public Locale getLocale(T model);
 
 }
