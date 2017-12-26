@@ -22,7 +22,7 @@ import com.liferay.message.boards.kernel.exception.NoSuchThreadException;
 import com.liferay.message.boards.kernel.exception.RequiredMessageException;
 import com.liferay.message.boards.kernel.model.MBMessage;
 import com.liferay.message.boards.kernel.model.MBThread;
-import com.liferay.message.boards.kernel.model.MBThreadConstants;
+import com.liferay.message.boards.constants.MBThreadConstants;
 import com.liferay.message.boards.kernel.service.MBMessageService;
 import com.liferay.message.boards.kernel.service.MBThreadLocalService;
 import com.liferay.message.boards.kernel.service.MBThreadService;
@@ -37,7 +37,7 @@ import com.liferay.portal.kernel.util.ObjectValuePair;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portlet.ActionResponseImpl;
-import com.liferay.portlet.messageboards.MBGroupServiceSettings;
+import com.liferay.message.boards.settings.MBGroupServiceSettings;
 
 import java.io.InputStream;
 

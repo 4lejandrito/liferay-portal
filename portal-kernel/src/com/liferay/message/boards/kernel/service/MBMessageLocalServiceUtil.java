@@ -31,8 +31,11 @@ import com.liferay.portal.kernel.util.ReferenceRegistry;
  * @see MBMessageLocalService
  * @see com.liferay.portlet.messageboards.service.base.MBMessageLocalServiceBaseImpl
  * @see com.liferay.portlet.messageboards.service.impl.MBMessageLocalServiceImpl
+ * @deprecated As of 7.0.0, replaced by {@link
+com.liferay.message.boards.service.impl.MBMessageLocalServiceImpl}
  * @generated
  */
+@Deprecated
 @ProviderType
 public class MBMessageLocalServiceUtil {
 	/*
@@ -337,6 +340,12 @@ public class MBMessageLocalServiceUtil {
 		getService().emptyMessageAttachments(messageId);
 	}
 
+	public static com.liferay.message.boards.kernel.model.MBMessage fetchFirstMessage(
+		long threadId, long parentMessageId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService().fetchFirstMessage(threadId, parentMessageId);
+	}
+
 	public static com.liferay.message.boards.kernel.model.MBMessage fetchMBMessage(
 		long messageId) {
 		return getService().fetchMBMessage(messageId);
@@ -445,6 +454,12 @@ public class MBMessageLocalServiceUtil {
 	public static com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery getExportActionableDynamicQuery(
 		com.liferay.exportimport.kernel.lar.PortletDataContext portletDataContext) {
 		return getService().getExportActionableDynamicQuery(portletDataContext);
+	}
+
+	public static com.liferay.message.boards.kernel.model.MBMessage getFirstMessage(
+		long threadId, long parentMessageId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService().getFirstMessage(threadId, parentMessageId);
 	}
 
 	public static java.util.List<com.liferay.message.boards.kernel.model.MBMessage> getGroupMessages(

@@ -26,7 +26,6 @@ import com.liferay.message.boards.kernel.model.MBMessage;
 import com.liferay.message.boards.kernel.service.MBMessageService;
 import com.liferay.message.boards.kernel.service.persistence.MBCategoryFinder;
 import com.liferay.message.boards.kernel.service.persistence.MBCategoryPersistence;
-import com.liferay.message.boards.kernel.service.persistence.MBDiscussionPersistence;
 import com.liferay.message.boards.kernel.service.persistence.MBMessageFinder;
 import com.liferay.message.boards.kernel.service.persistence.MBMessagePersistence;
 import com.liferay.message.boards.kernel.service.persistence.MBThreadFinder;
@@ -66,8 +65,11 @@ import javax.sql.DataSource;
  * @author Brian Wing Shun Chan
  * @see com.liferay.portlet.messageboards.service.impl.MBMessageServiceImpl
  * @see com.liferay.message.boards.kernel.service.MBMessageServiceUtil
+ * @deprecated As of 7.0.0, replaced by {@link
+            com.liferay.message.boards.service.impl.MBMessageServiceImpl}
  * @generated
  */
+@Deprecated
 public abstract class MBMessageServiceBaseImpl extends BaseServiceImpl
 	implements MBMessageService, IdentifiableOSGiService {
 	/*
@@ -883,44 +885,6 @@ public abstract class MBMessageServiceBaseImpl extends BaseServiceImpl
 	}
 
 	/**
-	 * Returns the message boards discussion local service.
-	 *
-	 * @return the message boards discussion local service
-	 */
-	public com.liferay.message.boards.kernel.service.MBDiscussionLocalService getMBDiscussionLocalService() {
-		return mbDiscussionLocalService;
-	}
-
-	/**
-	 * Sets the message boards discussion local service.
-	 *
-	 * @param mbDiscussionLocalService the message boards discussion local service
-	 */
-	public void setMBDiscussionLocalService(
-		com.liferay.message.boards.kernel.service.MBDiscussionLocalService mbDiscussionLocalService) {
-		this.mbDiscussionLocalService = mbDiscussionLocalService;
-	}
-
-	/**
-	 * Returns the message boards discussion persistence.
-	 *
-	 * @return the message boards discussion persistence
-	 */
-	public MBDiscussionPersistence getMBDiscussionPersistence() {
-		return mbDiscussionPersistence;
-	}
-
-	/**
-	 * Sets the message boards discussion persistence.
-	 *
-	 * @param mbDiscussionPersistence the message boards discussion persistence
-	 */
-	public void setMBDiscussionPersistence(
-		MBDiscussionPersistence mbDiscussionPersistence) {
-		this.mbDiscussionPersistence = mbDiscussionPersistence;
-	}
-
-	/**
 	 * Returns the ratings stats local service.
 	 *
 	 * @return the ratings stats local service
@@ -1184,10 +1148,6 @@ public abstract class MBMessageServiceBaseImpl extends BaseServiceImpl
 	protected MBCategoryPersistence mbCategoryPersistence;
 	@BeanReference(type = MBCategoryFinder.class)
 	protected MBCategoryFinder mbCategoryFinder;
-	@BeanReference(type = com.liferay.message.boards.kernel.service.MBDiscussionLocalService.class)
-	protected com.liferay.message.boards.kernel.service.MBDiscussionLocalService mbDiscussionLocalService;
-	@BeanReference(type = MBDiscussionPersistence.class)
-	protected MBDiscussionPersistence mbDiscussionPersistence;
 	@BeanReference(type = com.liferay.ratings.kernel.service.RatingsStatsLocalService.class)
 	protected com.liferay.ratings.kernel.service.RatingsStatsLocalService ratingsStatsLocalService;
 	@BeanReference(type = RatingsStatsPersistence.class)

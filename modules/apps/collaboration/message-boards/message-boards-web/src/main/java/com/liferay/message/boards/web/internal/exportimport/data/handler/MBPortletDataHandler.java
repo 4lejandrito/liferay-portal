@@ -25,7 +25,7 @@ import com.liferay.exportimport.kernel.lar.StagedModelType;
 import com.liferay.message.boards.constants.MBPortletKeys;
 import com.liferay.message.boards.kernel.constants.MBConstants;
 import com.liferay.message.boards.kernel.model.MBCategory;
-import com.liferay.message.boards.kernel.model.MBCategoryConstants;
+import com.liferay.message.boards.constants.MBCategoryConstants;
 import com.liferay.message.boards.kernel.model.MBMessage;
 import com.liferay.message.boards.kernel.model.MBThread;
 import com.liferay.message.boards.kernel.service.MBCategoryLocalService;
@@ -47,7 +47,7 @@ import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.util.PropsValues;
-import com.liferay.portlet.messageboards.service.permission.MBPermission;
+import com.liferay.message.boards.service.permission.MBPermission;
 
 import java.util.List;
 

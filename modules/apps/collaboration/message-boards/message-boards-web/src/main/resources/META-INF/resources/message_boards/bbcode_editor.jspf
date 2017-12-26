@@ -17,14 +17,14 @@
 <%
 if (Validator.isNull(body)) {
 	if (quote && (curParentMessage != null)) {
-		body = MBUtil.getBBCodeQuoteBody(request, curParentMessage);
+		body = com.liferay.message.boards.web.internal.util.MBUtil.getBBCodeQuoteBody(request, curParentMessage);
 	}
 	else if (splitThread) {
-		body = MBUtil.getBBCodeSplitThreadBody(request);
+		body = com.liferay.message.boards.web.internal.util.MBUtil.getBBCodeSplitThreadBody(request);
 	}
 }
 
-Editor editor = InputEditorTag.getEditor(request, PropsUtil.get(MBUtil.BB_CODE_EDITOR_WYSIWYG_IMPL_KEY));
+Editor editor = InputEditorTag.getEditor(request, PropsUtil.get(com.liferay.message.boards.util.MBUtil.BB_CODE_EDITOR_WYSIWYG_IMPL_KEY));
 
 String bbcodeEditorName = editor.getName();
 

@@ -16,7 +16,7 @@ package com.liferay.message.boards.permission.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.message.boards.kernel.model.MBCategory;
-import com.liferay.message.boards.kernel.model.MBCategoryConstants;
+import com.liferay.message.boards.constants.MBCategoryConstants;
 import com.liferay.message.boards.kernel.model.MBMessage;
 import com.liferay.message.boards.kernel.service.MBCategoryLocalServiceUtil;
 import com.liferay.message.boards.kernel.service.MBMessageLocalServiceUtil;
@@ -29,8 +29,8 @@ import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.service.permission.test.BasePermissionTestCase;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portlet.messageboards.service.permission.MBMessagePermission;
-import com.liferay.portlet.messageboards.service.permission.MBPermission;
+import com.liferay.message.boards.service.permission.MBMessagePermission;
+import com.liferay.message.boards.service.permission.MBPermission;
 
 import org.junit.Assert;
 import org.junit.ClassRule;

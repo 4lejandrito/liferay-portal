@@ -14,6 +14,7 @@
 
 package com.liferay.message.boards.internal.trash;
 
+import com.liferay.message.boards.internal.util.MBUtil;
 import com.liferay.message.boards.kernel.model.MBCategory;
 import com.liferay.message.boards.kernel.model.MBThread;
 import com.liferay.message.boards.kernel.service.MBCategoryLocalService;
@@ -37,8 +38,7 @@ import com.liferay.portal.kernel.trash.TrashRendererFactory;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
-import com.liferay.portlet.messageboards.service.permission.MBCategoryPermission;
-import com.liferay.portlet.messageboards.util.MBUtil;
+import com.liferay.message.boards.service.permission.MBCategoryPermission;
 
 import java.util.ArrayList;
 import java.util.List;

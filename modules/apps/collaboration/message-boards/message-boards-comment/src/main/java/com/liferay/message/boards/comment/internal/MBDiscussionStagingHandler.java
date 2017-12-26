@@ -20,11 +20,11 @@ import com.liferay.exportimport.kernel.lar.PortletDataException;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandler;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerRegistryUtil;
 import com.liferay.exportimport.kernel.lar.StagedModelDataHandlerUtil;
-import com.liferay.message.boards.kernel.model.MBDiscussion;
 import com.liferay.message.boards.kernel.model.MBMessage;
-import com.liferay.message.boards.kernel.model.MBMessageConstants;
-import com.liferay.message.boards.kernel.service.MBDiscussionLocalServiceUtil;
+import com.liferay.message.boards.constants.MBMessageConstants;
 import com.liferay.message.boards.kernel.service.MBMessageLocalServiceUtil;
+import com.liferay.message.boards.model.MBDiscussion;
+import com.liferay.message.boards.service.MBDiscussionLocalServiceUtil;
 import com.liferay.portal.kernel.comment.DiscussionStagingHandler;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Criterion;
@@ -38,7 +38,7 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.StagedModel;
 import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
-import com.liferay.portlet.messageboards.service.permission.MBPermission;
+import com.liferay.message.boards.service.permission.MBPermission;
 
 import java.util.List;
 

@@ -23,8 +23,11 @@ import com.liferay.portal.kernel.service.ServiceWrapper;
  *
  * @author Brian Wing Shun Chan
  * @see MBMessageLocalService
+ * @deprecated As of 7.0.0, replaced by {@link
+com.liferay.message.boards.service.impl.MBMessageLocalServiceImpl}
  * @generated
  */
+@Deprecated
 @ProviderType
 public class MBMessageLocalServiceWrapper implements MBMessageLocalService,
 	ServiceWrapper<MBMessageLocalService> {
@@ -353,6 +356,14 @@ public class MBMessageLocalServiceWrapper implements MBMessageLocalService,
 	}
 
 	@Override
+	public com.liferay.message.boards.kernel.model.MBMessage fetchFirstMessage(
+		long threadId, long parentMessageId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _mbMessageLocalService.fetchFirstMessage(threadId,
+			parentMessageId);
+	}
+
+	@Override
 	public com.liferay.message.boards.kernel.model.MBMessage fetchMBMessage(
 		long messageId) {
 		return _mbMessageLocalService.fetchMBMessage(messageId);
@@ -475,6 +486,13 @@ public class MBMessageLocalServiceWrapper implements MBMessageLocalService,
 	public com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery getExportActionableDynamicQuery(
 		com.liferay.exportimport.kernel.lar.PortletDataContext portletDataContext) {
 		return _mbMessageLocalService.getExportActionableDynamicQuery(portletDataContext);
+	}
+
+	@Override
+	public com.liferay.message.boards.kernel.model.MBMessage getFirstMessage(
+		long threadId, long parentMessageId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _mbMessageLocalService.getFirstMessage(threadId, parentMessageId);
 	}
 
 	@Override

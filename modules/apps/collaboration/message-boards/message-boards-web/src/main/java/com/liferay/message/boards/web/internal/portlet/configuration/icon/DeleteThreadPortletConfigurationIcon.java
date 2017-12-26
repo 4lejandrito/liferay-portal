@@ -16,7 +16,7 @@ package com.liferay.message.boards.web.internal.portlet.configuration.icon;
 
 import com.liferay.message.boards.constants.MBPortletKeys;
 import com.liferay.message.boards.kernel.model.MBCategory;
-import com.liferay.message.boards.kernel.model.MBCategoryConstants;
+import com.liferay.message.boards.constants.MBCategoryConstants;
 import com.liferay.message.boards.kernel.model.MBMessage;
 import com.liferay.message.boards.kernel.model.MBThread;
 import com.liferay.message.boards.web.internal.portlet.action.ActionUtil;
@@ -29,7 +29,7 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portlet.messageboards.service.permission.MBMessagePermission;
+import com.liferay.message.boards.service.permission.MBMessagePermission;
 import com.liferay.trash.TrashHelper;
 
 import javax.portlet.ActionRequest;
