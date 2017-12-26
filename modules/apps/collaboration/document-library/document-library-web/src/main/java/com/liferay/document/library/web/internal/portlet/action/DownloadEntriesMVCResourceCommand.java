@@ -236,10 +236,9 @@ public class DownloadEntriesMVCResourceCommand implements MVCResourceCommand {
 			FileEntry fileEntry, String path, ZipWriter zipWriter)
 		throws Exception {
 
-		String fileName = _sanitizeName(fileEntry.getFileName());
-
 		zipWriter.addEntry(
-			path + StringPool.SLASH + fileName, fileEntry.getContentStream());
+			path + StringPool.SLASH + fileEntry.getFileName(),
+			fileEntry.getContentStream());
 	}
 
 	protected void zipFolder(
@@ -255,11 +254,9 @@ public class DownloadEntriesMVCResourceCommand implements MVCResourceCommand {
 			if (entry instanceof Folder) {
 				Folder folder = (Folder)entry;
 
-				String folderName = _sanitizeName(folder.getName());
-
 				zipFolder(
 					folder.getRepositoryId(), folder.getFolderId(),
-					path.concat(StringPool.SLASH).concat(folderName),
+					path.concat(StringPool.SLASH).concat(folder.getName()),
 					zipWriter);
 			}
 			else if (entry instanceof FileEntry) {
@@ -274,17 +271,6 @@ public class DownloadEntriesMVCResourceCommand implements MVCResourceCommand {
 				zipFileEntry(fileEntry, path, zipWriter);
 			}
 		}
-	}
-
-	private String _sanitizeName(String name) {
-		CharsetEncoder charsetEncoder = CharsetEncoderUtil.getCharsetEncoder(
-			"US-ASCII");
-
-		if (!charsetEncoder.canEncode(name)) {
-			name = HtmlUtil.escapeURL(name);
-		}
-
-		return name;
 	}
 
 	private DLAppService _dlAppService;
