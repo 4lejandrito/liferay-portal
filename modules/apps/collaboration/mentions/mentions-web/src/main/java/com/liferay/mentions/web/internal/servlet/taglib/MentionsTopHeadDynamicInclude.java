@@ -64,7 +64,9 @@ public class MentionsTopHeadDynamicInclude extends BaseDynamicInclude {
 
 		PrintWriter printWriter = response.getWriter();
 
-		String content = "<link href=\"".concat(themeDisplay.getCDNBaseURL() + PortalUtil.getPathContext(request));
+		String content = "<link href=\"".concat(themeDisplay.getCDNBaseURL());
+
+		content.concat(PortalUtil.getPathContext(request));
 
 		printWriter.println(content.concat(_postfix));
 	}
