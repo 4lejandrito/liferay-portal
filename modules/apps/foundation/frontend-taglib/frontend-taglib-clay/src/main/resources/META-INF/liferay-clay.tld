@@ -1108,6 +1108,12 @@
 		</attribute>
 		<attribute>
 			<description></description>
+			<name>namespace</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description></description>
 			<name>searchActionURL</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -1127,6 +1133,12 @@
 		<attribute>
 			<description></description>
 			<name>searchInputName</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description></description>
+			<name>searchValue</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
