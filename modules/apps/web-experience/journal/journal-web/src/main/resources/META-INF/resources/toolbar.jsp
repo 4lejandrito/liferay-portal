@@ -20,6 +20,15 @@
 String searchContainerId = ParamUtil.getString(request, "searchContainerId");
 %>
 
+<clay:management-toolbar
+	actionItems="<%= journalDisplayContext.getActionItemsItemList() %>"
+	componentId="journalWebManagementToolbar"
+	creationMenu="<%= journalDisplayContext.getCreationMenu() %>"
+	filterItems="<%= journalDisplayContext.getFilterItemsItemList() %>"
+	namespace="<%= renderResponse.getNamespace() %>"
+	searchContainerId="<%= searchContainerId %>"
+/>
+
 <liferay-frontend:management-bar
 	disabled="<%= journalDisplayContext.isDisabledManagementBar() %>"
 	includeCheckBox='<%= !user.isDefaultUser() && journalDisplayContext.isShowEditActions() && !Objects.equals(journalDisplayContext.getTabs1(), "versions") %>'
