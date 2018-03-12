@@ -14,25 +14,19 @@
 
 package com.liferay.frontend.taglib.clay.servlet.taglib.util;
 
-import com.liferay.petra.function.UnsafeConsumer;
-
-import java.util.ArrayList;
-import java.util.function.Consumer;
-
 /**
- * @author Brian Wing Shun Chan
+ * @author Carlos Lancha
  */
-public class NavigationItemList extends ArrayList<NavigationItem> {
+public class ViewTypeItem extends NavigationItem {
 
-	public NavigationItemList() {
+	public String getIcon() {
+		return _icon;
 	}
 
-	public <E extends Exception> void add(UnsafeConsumer<NavigationItem, E> consumer) throws E {
-		NavigationItem navigationItem = new NavigationItem();
-
-		consumer.accept(navigationItem);
-
-		add(navigationItem);
+	public void setIcon(String icon) {
+		_icon = icon;
 	}
+
+	private String _icon;
 
 }

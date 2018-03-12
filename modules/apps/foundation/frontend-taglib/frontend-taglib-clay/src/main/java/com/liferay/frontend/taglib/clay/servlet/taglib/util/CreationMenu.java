@@ -14,25 +14,35 @@
 
 package com.liferay.frontend.taglib.clay.servlet.taglib.util;
 
+import com.liferay.portal.kernel.json.JSON;
+
 import com.liferay.petra.function.UnsafeConsumer;
 
-import java.util.ArrayList;
+import java.io.Serializable;
+
 import java.util.function.Consumer;
 
 /**
- * @author Brian Wing Shun Chan
+ * @author Carlos Lancha
  */
-public class NavigationItemList extends ArrayList<NavigationItem> {
+public class CreationMenu implements Serializable {
 
-	public NavigationItemList() {
+ 	public CreationMenu() {
 	}
 
-	public <E extends Exception> void add(UnsafeConsumer<NavigationItem, E> consumer) throws E {
-		NavigationItem navigationItem = new NavigationItem();
+  public <E extends Exception> void addDropdownItemList(UnsafeConsumer<DropdownItemList, E> consumer) throws E {
+    DropdownItemList dropdownItemList = new DropdownItemList();
 
-		consumer.accept(navigationItem);
+    consumer.accept(dropdownItemList);
 
-		add(navigationItem);
-	}
+    _dropdownItemList = dropdownItemList;
+  }
+
+	@JSON(name = "items")
+  public DropdownItemList getDropdownItems() {
+    return _dropdownItemList;
+  }
+
+  private DropdownItemList _dropdownItemList = new DropdownItemList();
 
 }

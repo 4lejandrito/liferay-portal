@@ -14,25 +14,23 @@
 
 package com.liferay.frontend.taglib.clay.servlet.taglib.util;
 
-import com.liferay.petra.function.UnsafeConsumer;
+import javax.portlet.RenderResponse;
 
-import java.util.ArrayList;
-import java.util.function.Consumer;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.PageContext;
 
 /**
- * @author Brian Wing Shun Chan
+ * @author Carlos Lancha
  */
-public class NavigationItemList extends ArrayList<NavigationItem> {
+public class JSPViewTypeItemList extends ViewTypeItemList {
 
-	public NavigationItemList() {
+	public JSPViewTypeItemList(PageContext pageContext) {
+		renderResponse = (RenderResponse)pageContext.findAttribute(
+			"renderResponse");
+		request = (HttpServletRequest)pageContext.getRequest();
 	}
 
-	public <E extends Exception> void add(UnsafeConsumer<NavigationItem, E> consumer) throws E {
-		NavigationItem navigationItem = new NavigationItem();
-
-		consumer.accept(navigationItem);
-
-		add(navigationItem);
-	}
+	protected RenderResponse renderResponse;
+	protected HttpServletRequest request;
 
 }
