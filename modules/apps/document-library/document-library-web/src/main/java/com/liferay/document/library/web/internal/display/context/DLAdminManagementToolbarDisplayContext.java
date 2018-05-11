@@ -237,6 +237,10 @@ public class DLAdminManagementToolbarDisplayContext {
 	}
 
 	public List<DropdownItem> getFilterDropdownItems() {
+		if (_isSearch()) {
+			return null;
+		}
+
 		return new DropdownItemList() {
 			{
 				addGroup(
@@ -249,7 +253,7 @@ public class DLAdminManagementToolbarDisplayContext {
 									_request, "filter-by-navigation"));
 						}));
 
-				if (!_isSearch() && !_isNavigationRecent()) {
+				if (!_isNavigationRecent()) {
 					addGroup(
 						dropdownGroupItem -> {
 							dropdownGroupItem.setDropdownItems(
@@ -294,10 +298,18 @@ public class DLAdminManagementToolbarDisplayContext {
 	}
 
 	public String getSortingOrder() {
+		if (_isSearch()) {
+			return null;
+		}
+
 		return _dlAdminDisplayContext.getOrderByType();
 	}
 
 	public PortletURL getSortingURL() {
+		if (_isSearch()) {
+			return null;
+		}
+
 		PortletURL currentSortingURL = _getCurrentSortingURL();
 
 		currentSortingURL.setParameter(
