@@ -298,24 +298,17 @@ public class JSLoaderModule {
 			String jsSubmodulesExport = GetterUtil.getString(
 				headers.get("Liferay-JS-Submodules-Export"));
 
-			if (Validator.isNull(jsSubmodulesExport)) {
-				jsSubmodulesExport = GetterUtil.getString(
-					headers.get("Liferay-Export-JS-Submodules"));
-
-				if (Validator.isNotNull(jsSubmodulesExport) &&
-					_log.isWarnEnabled()) {
-
-					_log.warn(
-						"Liferay-Export-JS-Submodules is deprecated and " +
-							"renamed to Liferay-JS-Submodules-Export");
-				}
-			}
-
 			if (Validator.isNotNull(jsSubmodulesExport)) {
 				_unversionedMapsConfiguration = normalize(
 					generateMapsConfiguration(
 						_unversionedConfiguration,
 						StringUtil.split(jsSubmodulesExport)));
+
+				if (_log.isWarnEnabled()) {
+					_log.warn(
+						"Liferay-JS-Submodules-Export is deprecated and " +
+							"replaced with Liferay-JS-Submodules-Bridge");
+				}
 			}
 		}
 		catch (IOException ioe) {
