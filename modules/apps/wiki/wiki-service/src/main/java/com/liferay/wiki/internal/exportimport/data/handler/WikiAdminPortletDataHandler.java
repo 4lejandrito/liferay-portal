@@ -98,7 +98,7 @@ public class WikiAdminPortletDataHandler extends BasePortletDataHandler {
 		finally {
 			WikiCacheThreadLocal.setClearCache(clearCache);
 
-			_portalCache.removeAll();
+			portalCache.removeAll();
 		}
 	}
 
@@ -120,7 +120,7 @@ public class WikiAdminPortletDataHandler extends BasePortletDataHandler {
 				WikiPage.class.getName()));
 		setStagingControls(getExportControls());
 
-		_portalCache = _multiVMPool.getPortalCache(
+		portalCache = multiVMPool.getPortalCache(
 			WikiPageDisplay.class.getName());
 	}
 
@@ -218,7 +218,7 @@ public class WikiAdminPortletDataHandler extends BasePortletDataHandler {
 		if (ExportImportDateUtil.isRangeFromLastPublishDate(
 				portletDataContext)) {
 
-			_staging.populateLastPublishDateCounts(
+			staging.populateLastPublishDateCounts(
 				portletDataContext,
 				new StagedModelType[] {
 					new StagedModelType(WikiNode.class.getName()),
@@ -261,12 +261,12 @@ public class WikiAdminPortletDataHandler extends BasePortletDataHandler {
 	}
 
 	@Reference
-	private MultiVMPool _multiVMPool;
+	protected MultiVMPool multiVMPool;
 
-	private PortalCache<?, ?> _portalCache;
+	protected PortalCache<?, ?> portalCache;
 
 	@Reference
-	private Staging _staging;
+	protected Staging staging;
 
 	private WikiNodeLocalService _wikiNodeLocalService;
 	private WikiPageLocalService _wikiPageLocalService;
