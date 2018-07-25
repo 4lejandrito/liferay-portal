@@ -16,6 +16,7 @@ package com.liferay.sharing.document.library.internal.security.permission.resour
 
 import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.service.DLFileEntryLocalService;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
@@ -29,6 +30,7 @@ import com.liferay.sharing.constants.SharingEntryActionKey;
 import com.liferay.sharing.service.SharingEntryLocalService;
 
 import java.util.Dictionary;
+import java.util.Map;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -104,15 +106,30 @@ public class SharingEntryDLFileEntryModelResourcePermissionRegistrar {
 			throws PortalException {
 
 			if (SharingEntryActionKey.isSupportedActionId(actionId)) {
-				SharingEntryActionKey sharingEntryActionKey =
-					SharingEntryActionKey.parseFromActionId(actionId);
+				Map<Object, Object> permissionChecksMap =
+					permissionChecker.getPermissionChecksMap();
 
-				long classNameId = _classNameLocalService.getClassNameId(name);
+				String cacheKey = StringBundler.concat(
+					permissionChecker.getUserId(), name,
+					dlFileEntry.getFileEntryId(), actionId);
 
-				if (_sharingEntryLocalService.hasSharingPermission(
+				Boolean contains = (Boolean)permissionChecksMap.get(cacheKey);
+
+				if (contains == null) {
+					SharingEntryActionKey sharingEntryActionKey =
+						SharingEntryActionKey.parseFromActionId(actionId);
+
+					long classNameId = _classNameLocalService.getClassNameId(
+						name);
+
+					contains = _sharingEntryLocalService.hasSharingPermission(
 						permissionChecker.getUserId(), classNameId,
-						dlFileEntry.getFileEntryId(), sharingEntryActionKey)) {
+						dlFileEntry.getFileEntryId(), sharingEntryActionKey);
 
+					permissionChecksMap.put(cacheKey, contains);
+				}
+
+				if (contains) {
 					return true;
 				}
 			}
