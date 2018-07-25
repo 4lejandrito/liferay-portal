@@ -31,7 +31,6 @@ import com.liferay.portal.kernel.util.Validator;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Map;
 
 import org.osgi.service.component.annotations.Activate;
@@ -140,7 +139,7 @@ public class AssetAutoTaggerConfigurationFactoryImpl
 						maximumNumberOfTagsPerAsset(),
 					_assetAutoTaggerCompanyConfiguration.
 						maximumNumberOfTagsPerAsset()),
-				new MaximumNumberOfTagsPerAssetComparator());
+				Integer::compareTo);
 		}
 
 		@Override
@@ -159,28 +158,6 @@ public class AssetAutoTaggerConfigurationFactoryImpl
 
 		private AssetAutoTaggerCompanyConfiguration
 			_assetAutoTaggerCompanyConfiguration;
-
-		private class MaximumNumberOfTagsPerAssetComparator
-			implements Comparator<Integer> {
-
-			@Override
-			public int compare(
-				Integer maximumNumberOfTagsPerAsset1,
-				Integer maximumNumberOfTagsPerAsset2) {
-
-				if (maximumNumberOfTagsPerAsset1 == 0) {
-					return 1;
-				}
-
-				if (maximumNumberOfTagsPerAsset2 == 0) {
-					return -1;
-				}
-
-				return maximumNumberOfTagsPerAsset1 -
-					maximumNumberOfTagsPerAsset2;
-			}
-
-		}
 
 	}
 
