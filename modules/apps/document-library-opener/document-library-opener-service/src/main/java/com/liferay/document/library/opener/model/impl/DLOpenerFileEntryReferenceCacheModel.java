@@ -66,7 +66,7 @@ public class DLOpenerFileEntryReferenceCacheModel implements CacheModel<DLOpener
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(19);
+		StringBundler sb = new StringBundler(21);
 
 		sb.append("{dlOpenerFileEntryReferenceId=");
 		sb.append(dlOpenerFileEntryReferenceId);
@@ -86,6 +86,8 @@ public class DLOpenerFileEntryReferenceCacheModel implements CacheModel<DLOpener
 		sb.append(referenceKey);
 		sb.append(", fileEntryId=");
 		sb.append(fileEntryId);
+		sb.append(", type=");
+		sb.append(type);
 		sb.append("}");
 
 		return sb.toString();
@@ -130,6 +132,7 @@ public class DLOpenerFileEntryReferenceCacheModel implements CacheModel<DLOpener
 		}
 
 		dlOpenerFileEntryReferenceImpl.setFileEntryId(fileEntryId);
+		dlOpenerFileEntryReferenceImpl.setType(type);
 
 		dlOpenerFileEntryReferenceImpl.resetOriginalValues();
 
@@ -151,6 +154,8 @@ public class DLOpenerFileEntryReferenceCacheModel implements CacheModel<DLOpener
 		referenceKey = objectInput.readUTF();
 
 		fileEntryId = objectInput.readLong();
+
+		type = objectInput.readInt();
 	}
 
 	@Override
@@ -182,6 +187,8 @@ public class DLOpenerFileEntryReferenceCacheModel implements CacheModel<DLOpener
 		}
 
 		objectOutput.writeLong(fileEntryId);
+
+		objectOutput.writeInt(type);
 	}
 
 	public long dlOpenerFileEntryReferenceId;
@@ -193,4 +200,5 @@ public class DLOpenerFileEntryReferenceCacheModel implements CacheModel<DLOpener
 	public long modifiedDate;
 	public String referenceKey;
 	public long fileEntryId;
+	public int type;
 }
