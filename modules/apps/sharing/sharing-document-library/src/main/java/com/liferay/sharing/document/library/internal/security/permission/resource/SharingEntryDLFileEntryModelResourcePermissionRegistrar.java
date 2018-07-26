@@ -16,7 +16,6 @@ package com.liferay.sharing.document.library.internal.security.permission.resour
 
 import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.service.DLFileEntryLocalService;
-import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
@@ -27,10 +26,10 @@ import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portlet.documentlibrary.constants.DLConstants;
 import com.liferay.sharing.constants.SharingEntryActionKey;
+import com.liferay.sharing.document.library.internal.cache.SharingEntryDLFileEntryModelResourcePermissionCache;
 import com.liferay.sharing.service.SharingEntryLocalService;
 
 import java.util.Dictionary;
-import java.util.Map;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -94,6 +93,10 @@ public class SharingEntryDLFileEntryModelResourcePermissionRegistrar {
 	private ServiceRegistration<ModelResourcePermission> _serviceRegistration;
 
 	@Reference
+	private SharingEntryDLFileEntryModelResourcePermissionCache
+		_sharingEntryDLFileEntryModelResourcePermissionCache;
+
+	@Reference
 	private SharingEntryLocalService _sharingEntryLocalService;
 
 	private class SharingDLFileEntryModelPermissionLogic
@@ -106,14 +109,10 @@ public class SharingEntryDLFileEntryModelResourcePermissionRegistrar {
 			throws PortalException {
 
 			if (SharingEntryActionKey.isSupportedActionId(actionId)) {
-				Map<Object, Object> permissionChecksMap =
-					permissionChecker.getPermissionChecksMap();
-
-				String cacheKey = StringBundler.concat(
-					permissionChecker.getUserId(), name,
-					dlFileEntry.getFileEntryId(), actionId);
-
-				Boolean contains = (Boolean)permissionChecksMap.get(cacheKey);
+				Boolean contains =
+					_sharingEntryDLFileEntryModelResourcePermissionCache.get(
+						permissionChecker.getUserId(), name,
+						dlFileEntry.getFileEntryId(), actionId);
 
 				if (contains == null) {
 					SharingEntryActionKey sharingEntryActionKey =
@@ -126,7 +125,9 @@ public class SharingEntryDLFileEntryModelResourcePermissionRegistrar {
 						permissionChecker.getUserId(), classNameId,
 						dlFileEntry.getFileEntryId(), sharingEntryActionKey);
 
-					permissionChecksMap.put(cacheKey, contains);
+					_sharingEntryDLFileEntryModelResourcePermissionCache.put(
+						permissionChecker.getUserId(), name,
+						dlFileEntry.getFileEntryId(), actionId, contains);
 				}
 
 				if (contains) {
