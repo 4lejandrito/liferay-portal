@@ -16,7 +16,10 @@ package com.liferay.frontend.editor.configuration.web.internal.portlet.action;
 
 import com.liferay.frontend.editor.configuration.web.internal.constants.EditorConfigurationPortletKeys;
 import com.liferay.portal.kernel.editor.configuration.EditorConfiguration;
+<<<<<<< HEAD
 import com.liferay.portal.kernel.editor.configuration.EditorConfigurationFactoryUtil;
+=======
+>>>>>>> edc4792... LPS-84073 Adding edit action
 import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactory;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactoryUtil;
