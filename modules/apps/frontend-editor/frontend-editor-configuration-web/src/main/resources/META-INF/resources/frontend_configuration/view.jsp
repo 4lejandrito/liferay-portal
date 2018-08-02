@@ -21,7 +21,11 @@ List<Portlet> portlets = (List<Portlet>)request.getAttribute("portlets");
 List<String> editorNames = (List<String>)request.getAttribute("editorNames");
 %>
 
-<aui:form action="THE URL" cssClass="container-fluid container-fluid-max-xl container-form-lg" method="post" name="fm">
+<portlet:actionURL name="/editor_configuration/edit" var="editURL">
+	<portlet:param name="mvcActionCommand" value="/editor_configuration/edit" />
+</portlet:actionURL>
+
+<aui:form action="<%= editURL %>" cssClass="container-fluid container-fluid-max-xl container-form-lg" method="post" name="fm">
 	<div class="sheet sheet-xl">
 		<aui:row>
 			<aui:col width="<%= 33 %>">
@@ -72,6 +76,10 @@ List<String> editorNames = (List<String>)request.getAttribute("editorNames");
 				<aui:input label="custom-configuration" name="customConfiguration" type="textarea" />
 			</aui:col>
 		</aui:row>
+
+		<aui:button-row>
+			<aui:button type="submit" />
+		</aui:button-row>
 	</div>
 </aui:form>
 

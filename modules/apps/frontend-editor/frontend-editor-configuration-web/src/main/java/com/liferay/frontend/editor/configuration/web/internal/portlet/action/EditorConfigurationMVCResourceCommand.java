@@ -17,7 +17,6 @@ package com.liferay.frontend.editor.configuration.web.internal.portlet.action;
 import com.liferay.frontend.editor.configuration.web.internal.constants.EditorConfigurationPortletKeys;
 import com.liferay.frontend.editor.configuration.web.internal.editor.configuration.EditorConfigurationFactoryExtended;
 import com.liferay.portal.kernel.editor.configuration.EditorConfiguration;
-import com.liferay.portal.kernel.editor.configuration.EditorConfigurationFactory;
 import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactory;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactoryUtil;
@@ -72,8 +71,7 @@ public class EditorConfigurationMVCResourceCommand
 			_editorConfigurationFactory.getEditorConfiguration(
 				portletName, editorConfigKey, editorName, attributes,
 				themeDisplay,
-				_getRequestBackedPortletURLFactory(resourceRequest),
-				false);
+				_getRequestBackedPortletURLFactory(resourceRequest), false);
 
 		JSONPortletResponseUtil.writeJSON(
 			resourceRequest, resourceResponse,
