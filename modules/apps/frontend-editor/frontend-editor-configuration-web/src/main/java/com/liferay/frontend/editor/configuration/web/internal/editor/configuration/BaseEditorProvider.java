@@ -14,13 +14,12 @@
 
 package com.liferay.frontend.editor.configuration.web.internal.editor.configuration;
 
+import com.liferay.osgi.service.tracker.collections.list.ServiceTrackerList;
+import com.liferay.osgi.service.tracker.collections.list.ServiceTrackerListFactory;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.osgi.util.StringPlus;
+import com.liferay.portal.kernel.editor.configuration.EditorConfigTransformer;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.registry.Registry;
-import com.liferay.registry.RegistryUtil;
-import com.liferay.registry.ServiceReference;
-import com.liferay.registry.ServiceTracker;
-import com.liferay.registry.ServiceTrackerCustomizer;
-import com.liferay.registry.util.StringPlus;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,24 +30,22 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
+
 /**
  * @author Sergio González
  * @author Preston Crary
  */
 public abstract class BaseEditorProvider<T> {
 
-	public BaseEditorProvider(Class<T> editorContributorClass) {
-		Registry registry = RegistryUtil.getRegistry();
+	public void activate(
+		Class<T> editorContributorClass, BundleContext bundleContext) {
 
-		_serviceTracker = registry.trackServices(
-			editorContributorClass,
-			new EditorContributorServiceTrackerCustomizer());
-
-		_serviceTracker.open();
-	}
-
-	public void destroy() {
-		_serviceTracker.close();
+		_serviceTracker = ServiceTrackerListFactory.open(
+			bundleContext, editorContributorClass, null,
+			new EditorContributorServiceTrackerCustomizer(bundleContext));
 	}
 
 	protected void visitEditorContributors(
@@ -69,9 +66,11 @@ public abstract class BaseEditorProvider<T> {
 		}
 	}
 
+	private ServiceTrackerMap<String, EditorConfigTransformer>
+		_editorConfigTransformerServiceTrackerMap;
 	private final AtomicReference<List<EditorContributorProvider<T>>>
 		_editorContributorsProviders = new AtomicReference<>();
-	private final ServiceTracker<T, ?> _serviceTracker;
+	private ServiceTrackerList<T, ?> _serviceTracker;
 
 	private static class EditorContributorProvider<T>
 		implements Comparable<EditorContributorProvider<T>> {
@@ -178,11 +177,16 @@ public abstract class BaseEditorProvider<T> {
 	private class EditorContributorServiceTrackerCustomizer
 		implements ServiceTrackerCustomizer<T, T> {
 
+		public EditorContributorServiceTrackerCustomizer(
+			BundleContext bundleContext) {
+
+			_bundleContext = bundleContext;
+		}
+
 		@Override
 		public T addingService(ServiceReference<T> serviceReference) {
-			Registry registry = RegistryUtil.getRegistry();
-
-			T editorOptionsContributor = registry.getService(serviceReference);
+			T editorOptionsContributor = _bundleContext.getService(
+				serviceReference);
 
 			List<String> portletNames = StringPlus.asList(
 				serviceReference.getProperty("javax.portlet.name"));
@@ -239,9 +243,7 @@ public abstract class BaseEditorProvider<T> {
 		public void removedService(
 			ServiceReference<T> serviceReference, T editorContributor) {
 
-			Registry registry = RegistryUtil.getRegistry();
-
-			registry.ungetService(serviceReference);
+			_bundleContext.ungetService(serviceReference);
 
 			_editorContributorsProviders.updateAndGet(
 				editorContributorProviders -> {
@@ -260,6 +262,8 @@ public abstract class BaseEditorProvider<T> {
 					return editorContributorProviders;
 				});
 		}
+
+		private final BundleContext _bundleContext;
 
 	}
 

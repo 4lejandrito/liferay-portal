@@ -19,9 +19,12 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactory;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import org.osgi.service.component.annotations.Component;
 
 import java.util.Map;
+
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Sergio González
@@ -30,8 +33,9 @@ import java.util.Map;
 public class EditorConfigProvider
 	extends BaseEditorProvider<EditorConfigContributor> {
 
-	public EditorConfigProvider() {
-		super(EditorConfigContributor.class);
+	@Activate
+	public void activate(BundleContext bundleContext) {
+		super.activate(EditorConfigContributor.class, bundleContext);
 	}
 
 	public JSONObject getConfigJSONObject(

@@ -18,9 +18,12 @@ import com.liferay.portal.kernel.editor.configuration.EditorOptions;
 import com.liferay.portal.kernel.editor.configuration.EditorOptionsContributor;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactory;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import org.osgi.service.component.annotations.Component;
 
 import java.util.Map;
+
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Sergio González
@@ -29,8 +32,9 @@ import java.util.Map;
 public class EditorOptionsProvider
 	extends BaseEditorProvider<EditorOptionsContributor> {
 
-	public EditorOptionsProvider() {
-		super(EditorOptionsContributor.class);
+	@Activate
+	public void activate(BundleContext bundleContext) {
+		super.activate(EditorOptionsContributor.class, bundleContext);
 	}
 
 	public EditorOptions getEditorOptions(

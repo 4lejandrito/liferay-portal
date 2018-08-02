@@ -14,27 +14,23 @@
 
 package com.liferay.frontend.editor.configuration.web.internal.editor.configuration;
 
-import com.liferay.portal.editor.configuration.EditorConfigProvider;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.portal.editor.configuration.EditorConfigurationImpl;
-import com.liferay.portal.editor.configuration.EditorOptionsProvider;
 import com.liferay.portal.kernel.editor.configuration.EditorConfigTransformer;
 import com.liferay.portal.kernel.editor.configuration.EditorConfiguration;
 import com.liferay.portal.kernel.editor.configuration.EditorConfigurationFactory;
 import com.liferay.portal.kernel.editor.configuration.EditorOptions;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactory;
-import com.liferay.portal.kernel.security.auto.login.AutoLogin;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.servlet.filters.autologin.AutoLoginFilter;
-import com.liferay.registry.Registry;
-import com.liferay.registry.RegistryUtil;
-import com.liferay.registry.ServiceTracker;
-import com.liferay.registry.collections.ServiceTrackerCollections;
-import com.liferay.registry.collections.ServiceTrackerMap;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 import java.util.Map;
+
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Sergio González
@@ -42,6 +38,13 @@ import java.util.Map;
 @Component
 public class EditorConfigurationFactoryImpl
 	implements EditorConfigurationFactory {
+
+	@Activate
+	public void activate(BundleContext bundleContext) {
+		_editorConfigTransformerServiceTrackerMap =
+			ServiceTrackerMapFactory.openSingleValueMap(
+				bundleContext, EditorConfigTransformer.class, "editor.name");
+	}
 
 	@Override
 	public EditorConfiguration getEditorConfiguration(
@@ -73,14 +76,12 @@ public class EditorConfigurationFactoryImpl
 	}
 
 	@Reference
-	private static EditorConfigProvider _editorConfigProvider;
+	private EditorConfigProvider _editorConfigProvider;
 
-	private static final ServiceTrackerMap<String, EditorConfigTransformer>
-		_editorConfigTransformerServiceTrackerMap =
-			ServiceTrackerCollections.openSingleValueMap(
-				EditorConfigTransformer.class, "editor.name");
+	private ServiceTrackerMap<String, EditorConfigTransformer>
+		_editorConfigTransformerServiceTrackerMap;
 
 	@Reference
-	private static EditorOptionsProvider _editorOptionsProvider;
+	private EditorOptionsProvider _editorOptionsProvider;
 
 }
