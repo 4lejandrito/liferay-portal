@@ -34,9 +34,14 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Sergio González
  */
-@Component
+@Component(
+	service = {
+		EditorConfigurationFactory.class,
+		EditorConfigurationFactoryExtended.class
+	}
+)
 public class EditorConfigurationFactoryImpl
-	implements EditorConfigurationFactory {
+	implements EditorConfigurationFactoryExtended {
 
 	@Activate
 	public void activate(BundleContext bundleContext) {
@@ -51,6 +56,20 @@ public class EditorConfigurationFactoryImpl
 		Map<String, Object> inputEditorTaglibAttributes,
 		ThemeDisplay themeDisplay,
 		RequestBackedPortletURLFactory requestBackedPortletURLFactory) {
+
+		return getEditorConfiguration(
+			portletName, editorConfigKey, editorName,
+			inputEditorTaglibAttributes, themeDisplay,
+			requestBackedPortletURLFactory, true);
+	}
+
+	@Override
+	public EditorConfiguration getEditorConfiguration(
+		String portletName, String editorConfigKey, String editorName,
+		Map<String, Object> inputEditorTaglibAttributes,
+		ThemeDisplay themeDisplay,
+		RequestBackedPortletURLFactory requestBackedPortletURLFactory,
+		boolean useCustomConfiguration) {
 
 		JSONObject configJSONObject = _editorConfigProvider.getConfigJSONObject(
 			portletName, editorConfigKey, editorName,
