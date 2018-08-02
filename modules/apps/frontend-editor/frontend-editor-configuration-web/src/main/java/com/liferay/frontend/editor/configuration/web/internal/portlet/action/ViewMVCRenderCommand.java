@@ -16,11 +16,15 @@ package com.liferay.frontend.editor.configuration.web.internal.portlet.action;
 
 import com.liferay.frontend.editor.configuration.web.internal.constants.EditorConfigurationPortletKeys;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
+import com.liferay.portal.kernel.service.PortletLocalService;
+
+import java.util.Arrays;
 
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Alejandro Tardín
@@ -39,7 +43,16 @@ public class ViewMVCRenderCommand implements MVCRenderCommand {
 	public String render(
 		RenderRequest renderRequest, RenderResponse renderResponse) {
 
-		return "/view.jsp";
+		renderRequest.setAttribute(
+			"editorNames", Arrays.asList("alloyeditor", "ckeditor"));
+
+		renderRequest.setAttribute(
+			"portlets", _portletLocalService.getPortlets());
+
+		return "/frontend_configuration/view.jsp";
 	}
+
+	@Reference
+	private PortletLocalService _portletLocalService;
 
 }
