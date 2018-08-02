@@ -16,7 +16,7 @@ package com.liferay.frontend.editor.configuration.web.internal.portlet.action;
 
 import com.liferay.frontend.editor.configuration.web.internal.constants.EditorConfigurationPortletKeys;
 import com.liferay.portal.kernel.editor.configuration.EditorConfiguration;
-import com.liferay.portal.kernel.editor.configuration.EditorConfigurationFactory;
+import com.liferay.portal.kernel.editor.configuration.EditorConfigurationFactoryUtil;
 import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactory;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactoryUtil;
@@ -35,7 +35,6 @@ import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Alejandro Tardín
@@ -68,7 +67,7 @@ public class EditorConfigurationMVCResourceCommand
 		Map<String, Object> attributes = new HashMap<>();
 
 		EditorConfiguration editorConfiguration =
-			_editorConfigurationFactory.getEditorConfiguration(
+			EditorConfigurationFactoryUtil.getEditorConfiguration(
 				portletName, editorConfigKey, editorName, attributes,
 				themeDisplay,
 				_getRequestBackedPortletURLFactory(resourceRequest));
@@ -91,8 +90,5 @@ public class EditorConfigurationMVCResourceCommand
 
 		return RequestBackedPortletURLFactoryUtil.create(portletRequest);
 	}
-
-	@Reference
-	private EditorConfigurationFactory _editorConfigurationFactory;
 
 }
