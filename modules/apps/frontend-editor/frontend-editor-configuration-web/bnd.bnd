@@ -1,0 +1,4 @@
+Bundle-Name: Liferay Frontend Editor Configuration Web
+Bundle-SymbolicName: com.liferay.frontend.editor.configuration.web
+Bundle-Version: 3.0.0
+-dsannotations-options: inherit
