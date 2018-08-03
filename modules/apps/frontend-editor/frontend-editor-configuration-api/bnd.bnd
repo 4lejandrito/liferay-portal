@@ -1,0 +1,3 @@
+Bundle-Name: Liferay Frontend Editor Configuration API
+Bundle-SymbolicName: com.liferay.frontend.editor.configuration.api
+Bundle-Version: 3.0.0
