@@ -15,10 +15,14 @@
 package com.liferay.frontend.editor.configuration.web.internal.portlet.action;
 
 import com.liferay.frontend.editor.configuration.web.internal.constants.EditorConfigurationPortletKeys;
+import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
 import com.liferay.portal.kernel.service.PortletLocalService;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -46,8 +50,12 @@ public class ViewMVCRenderCommand implements MVCRenderCommand {
 		renderRequest.setAttribute(
 			"editorNames", Arrays.asList("alloyeditor", "ckeditor"));
 
-		renderRequest.setAttribute(
-			"portlets", _portletLocalService.getPortlets());
+		List<Portlet> portlets = _portletLocalService.getPortlets();
+
+		Collections.sort(
+			portlets, Comparator.comparing(Portlet::getDisplayName));
+
+		renderRequest.setAttribute("portlets", portlets);
 
 		return "/frontend_configuration/view.jsp";
 	}
