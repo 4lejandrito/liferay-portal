@@ -14,12 +14,15 @@
 
 package com.liferay.frontend.editor.configuration.web.internal.portlet.action;
 
+import com.liferay.frontend.editor.api.EditorRenderer;
 import com.liferay.frontend.editor.configuration.web.internal.constants.EditorConfigurationPortletKeys;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
+import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
 import com.liferay.portal.kernel.service.PortletLocalService;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -27,6 +30,8 @@ import java.util.List;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -43,12 +48,18 @@ import org.osgi.service.component.annotations.Reference;
 )
 public class ViewMVCRenderCommand implements MVCRenderCommand {
 
+	@Activate
+	public void activate(BundleContext bundleContext) {
+		_editorRenderers = ServiceTrackerMapFactory.openSingleValueMap(
+			bundleContext, EditorRenderer.class, "name");
+	}
+
 	@Override
 	public String render(
 		RenderRequest renderRequest, RenderResponse renderResponse) {
 
 		renderRequest.setAttribute(
-			"editorNames", Arrays.asList("alloyeditor", "ckeditor"));
+			"editorNames", new ArrayList<>(_editorRenderers.keySet()));
 
 		List<Portlet> portlets = _portletLocalService.getPortlets();
 
@@ -59,6 +70,8 @@ public class ViewMVCRenderCommand implements MVCRenderCommand {
 
 		return "/frontend_configuration/view.jsp";
 	}
+
+	private ServiceTrackerMap<String, EditorRenderer> _editorRenderers;
 
 	@Reference
 	private PortletLocalService _portletLocalService;
