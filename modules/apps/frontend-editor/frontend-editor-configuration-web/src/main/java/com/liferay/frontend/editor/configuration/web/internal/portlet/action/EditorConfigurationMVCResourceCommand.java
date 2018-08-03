@@ -14,12 +14,13 @@
 
 package com.liferay.frontend.editor.configuration.web.internal.portlet.action;
 
+import com.liferay.frontend.editor.configuration.model.EditorConfigurationEntry;
+import com.liferay.frontend.editor.configuration.service.EditorConfigurationEntryLocalService;
 import com.liferay.frontend.editor.configuration.web.internal.constants.EditorConfigurationPortletKeys;
 import com.liferay.portal.kernel.editor.configuration.EditorConfiguration;
-<<<<<<< HEAD
 import com.liferay.portal.kernel.editor.configuration.EditorConfigurationFactoryUtil;
-=======
->>>>>>> edc4792... LPS-84073 Adding edit action
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactory;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactoryUtil;
@@ -38,6 +39,7 @@ import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Alejandro Tardín
@@ -75,9 +77,23 @@ public class EditorConfigurationMVCResourceCommand
 				themeDisplay,
 				_getRequestBackedPortletURLFactory(resourceRequest));
 
+		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
+
+		jsonObject.put(
+			"defaultConfiguration", editorConfiguration.getConfigJSONObject());
+
+		EditorConfigurationEntry editorConfigurationEntry =
+			_editorConfigurationEntryLocalService.fetchEditorConfigurationEntry(
+				portletName, editorName, editorConfigKey);
+
+		if (editorConfigurationEntry != null) {
+			jsonObject.put(
+				"customConfiguration",
+				editorConfigurationEntry.getConfiguration());
+		}
+
 		JSONPortletResponseUtil.writeJSON(
-			resourceRequest, resourceResponse,
-			editorConfiguration.getConfigJSONObject());
+			resourceRequest, resourceResponse, jsonObject);
 	}
 
 	private RequestBackedPortletURLFactory _getRequestBackedPortletURLFactory(
@@ -93,5 +109,9 @@ public class EditorConfigurationMVCResourceCommand
 
 		return RequestBackedPortletURLFactoryUtil.create(portletRequest);
 	}
+
+	@Reference
+	private EditorConfigurationEntryLocalService
+		_editorConfigurationEntryLocalService;
 
 }
