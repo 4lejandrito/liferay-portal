@@ -14,8 +14,8 @@
 
 package com.liferay.frontend.editor.configuration.web.internal.portlet.action;
 
+import com.liferay.frontend.editor.configuration.service.EditorConfigurationEntryLocalService;
 import com.liferay.frontend.editor.configuration.web.internal.constants.EditorConfigurationPortletKeys;
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -24,6 +24,7 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Alejandro Tardín
@@ -54,7 +55,13 @@ public class EditEditorConfigurationMVCActionCommand
 		boolean useCustomConfiguration = ParamUtil.getBoolean(
 			actionRequest, "useCustomConfiguration");
 
-		throw new PortalException("Not implemented");
+		_editorConfigurationEntryLocalService.updateEditorConfigurationEntry(
+			portletName, editorName, editorConfigKey, useCustomConfiguration,
+			customConfiguration);
 	}
+
+	@Reference
+	private EditorConfigurationEntryLocalService
+		_editorConfigurationEntryLocalService;
 
 }

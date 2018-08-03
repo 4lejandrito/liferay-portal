@@ -14,9 +14,13 @@
 
 package com.liferay.frontend.editor.configuration.web.internal.portlet.action;
 
+import com.liferay.frontend.editor.configuration.model.EditorConfigurationEntry;
+import com.liferay.frontend.editor.configuration.service.EditorConfigurationEntryLocalService;
 import com.liferay.frontend.editor.configuration.web.internal.constants.EditorConfigurationPortletKeys;
 import com.liferay.frontend.editor.configuration.web.internal.editor.configuration.EditorConfigurationFactoryExtended;
 import com.liferay.portal.kernel.editor.configuration.EditorConfiguration;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactory;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactoryUtil;
@@ -73,9 +77,23 @@ public class EditorConfigurationMVCResourceCommand
 				themeDisplay,
 				_getRequestBackedPortletURLFactory(resourceRequest), false);
 
+		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
+
+		jsonObject.put(
+			"defaultConfiguration", editorConfiguration.getConfigJSONObject());
+
+		EditorConfigurationEntry editorConfigurationEntry =
+			_editorConfigurationEntryLocalService.fetchEditorConfigurationEntry(
+				portletName, editorName, editorConfigKey);
+
+		if (editorConfigurationEntry != null) {
+			jsonObject.put(
+				"customConfiguration",
+				editorConfigurationEntry.getConfiguration());
+		}
+
 		JSONPortletResponseUtil.writeJSON(
-			resourceRequest, resourceResponse,
-			editorConfiguration.getConfigJSONObject());
+			resourceRequest, resourceResponse, jsonObject);
 	}
 
 	private RequestBackedPortletURLFactory _getRequestBackedPortletURLFactory(
@@ -91,6 +109,10 @@ public class EditorConfigurationMVCResourceCommand
 
 		return RequestBackedPortletURLFactoryUtil.create(portletRequest);
 	}
+
+	@Reference
+	private EditorConfigurationEntryLocalService
+		_editorConfigurationEntryLocalService;
 
 	@Reference
 	private EditorConfigurationFactoryExtended _editorConfigurationFactory;
