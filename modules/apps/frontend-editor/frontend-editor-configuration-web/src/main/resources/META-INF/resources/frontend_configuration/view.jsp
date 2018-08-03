@@ -91,6 +91,7 @@ List<String> editorNames = (List<String>)request.getAttribute("editorNames");
 	var editorConfigKey = document.getElementById('<portlet:namespace/>editorConfigKey');
 	var defaultConfiguration = document.getElementById('<portlet:namespace/>defaultConfiguration');
 	var customConfiguration = document.getElementById('<portlet:namespace/>customConfiguration');
+	var useCustomConfiguration = document.getElementById('<portlet:namespace/>useCustomConfiguration');
 
 	editorNameSelect.addEventListener('change', fetchEditorConfiguration);
 	portletNameSelect.addEventListener('change', fetchEditorConfiguration);
@@ -108,6 +109,10 @@ List<String> editorNames = (List<String>)request.getAttribute("editorNames");
 				success: function(responseData) {
 					defaultConfiguration.value = responseData.defaultConfiguration ? JSON.stringify(responseData.defaultConfiguration, undefined, 2) : '';
 					customConfiguration.value = responseData.customConfiguration ? JSON.stringify(responseData.customConfiguration, undefined, 2) : '';
+
+					if (responseData.useCustomConfiguration !== undefined) {
+						useCustomConfiguration.checked = responseData.useCustomConfiguration;
+					}
 				}
 			}
 		);
