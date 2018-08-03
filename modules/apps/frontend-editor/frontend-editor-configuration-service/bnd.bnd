@@ -1,0 +1,5 @@
+Bundle-Name: Liferay Frontend Editor Configuration Service
+Bundle-SymbolicName: com.liferay.frontend.editor.configuration.service
+Bundle-Version: 1.0.0
+Liferay-Require-SchemaVersion: 1.0.0
+Liferay-Service: true
