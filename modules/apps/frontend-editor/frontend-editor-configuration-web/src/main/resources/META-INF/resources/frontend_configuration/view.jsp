@@ -35,7 +35,7 @@ List<String> editorNames = (List<String>)request.getAttribute("editorNames");
 					for (Portlet portlet : portlets) {
 					%>
 
-						<aui:option label="<%= portlet.getDisplayName() %>" value="<%= portlet.getPortletName() %>" />
+						<aui:option label='<%= portlet.getDisplayName() + " (" + portlet.getPortletName() + ")" %>' value="<%= portlet.getPortletName() %>" />
 
 					<%
 					}
@@ -106,12 +106,8 @@ List<String> editorNames = (List<String>)request.getAttribute("editorNames");
 					<portlet:namespace />editorConfigKey: editorConfigKey.value
 				},
 				success: function(responseData) {
-					if (responseData.defaultConfiguration) {
-						defaultConfiguration.value = JSON.stringify(responseData.defaultConfiguration, undefined, 2);
-					}
-					if (responseData.customConfiguration) {
-						customConfiguration.value = JSON.stringify(responseData.customConfiguration, undefined, 2);
-					}
+					defaultConfiguration.value = responseData.defaultConfiguration ? JSON.stringify(responseData.defaultConfiguration, undefined, 2) : '';
+					customConfiguration.value = responseData.customConfiguration ? JSON.stringify(responseData.customConfiguration, undefined, 2) : '';
 				}
 			}
 		);
