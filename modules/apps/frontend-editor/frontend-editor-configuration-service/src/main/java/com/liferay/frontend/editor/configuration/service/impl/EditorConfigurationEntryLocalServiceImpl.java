@@ -14,6 +14,7 @@
 
 package com.liferay.frontend.editor.configuration.service.impl;
 
+import com.liferay.frontend.editor.configuration.model.EditorConfigurationEntry;
 import com.liferay.frontend.editor.configuration.service.base.EditorConfigurationEntryLocalServiceBaseImpl;
 
 /**
@@ -38,5 +39,19 @@ public class EditorConfigurationEntryLocalServiceImpl
 	 *
 	 * Never reference this class directly. Always use {@link com.liferay.frontend.editor.configuration.service.EditorConfigurationEntryLocalServiceUtil} to access the editor configuration entry local service.
 	 */
+	@Override
+	public EditorConfigurationEntry fetchEditorConfigurationEntry(
+		String portletName, String editorName, String editorConfigKey) {
+
+		return null;
+	}
+
+	@Override
+	public EditorConfigurationEntry updateEditorConfigurationEntry(
+		String portletName, String editorName, String editorConfigKey,
+		boolean enabled, String configuration) {
+
+		return null;
+	}
 
 }
