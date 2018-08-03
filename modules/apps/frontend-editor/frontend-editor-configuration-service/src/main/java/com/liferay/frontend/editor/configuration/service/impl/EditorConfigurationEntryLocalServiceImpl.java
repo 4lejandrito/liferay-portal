@@ -43,7 +43,8 @@ public class EditorConfigurationEntryLocalServiceImpl
 	public EditorConfigurationEntry fetchEditorConfigurationEntry(
 		String portletName, String editorName, String editorConfigKey) {
 
-		return null;
+		return editorConfigurationEntryPersistence.fetchByP_E_E(
+			portletName, editorName, editorConfigKey);
 	}
 
 	@Override
@@ -51,7 +52,28 @@ public class EditorConfigurationEntryLocalServiceImpl
 		String portletName, String editorName, String editorConfigKey,
 		boolean enabled, String configuration) {
 
-		return null;
+		EditorConfigurationEntry editorConfigurationEntry =
+			fetchEditorConfigurationEntry(
+				portletName, editorName, editorConfigKey);
+
+		if (editorConfigurationEntry != null) {
+			editorConfigurationEntry.setConfiguration(configuration);
+			editorConfigurationEntry.setEnabled(enabled);
+		}
+		else {
+			long editorConfigurationEntryId = counterLocalService.increment();
+
+			editorConfigurationEntry =
+				editorConfigurationEntryPersistence.create(
+					editorConfigurationEntryId);
+
+			editorConfigurationEntry.setPortletName(portletName);
+			editorConfigurationEntry.setEditorName(editorName);
+			editorConfigurationEntry.setEditorConfigKey(editorConfigKey);
+			editorConfigurationEntry.setEnabled(enabled);
+		}
+
+		return updateEditorConfigurationEntry(editorConfigurationEntry);
 	}
 
 }
