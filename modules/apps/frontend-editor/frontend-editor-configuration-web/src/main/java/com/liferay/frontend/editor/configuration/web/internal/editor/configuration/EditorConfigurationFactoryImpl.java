@@ -74,7 +74,7 @@ public class EditorConfigurationFactoryImpl
 		JSONObject configJSONObject = _editorConfigProvider.getConfigJSONObject(
 			portletName, editorConfigKey, editorName,
 			inputEditorTaglibAttributes, themeDisplay,
-			requestBackedPortletURLFactory);
+			requestBackedPortletURLFactory, useCustomConfiguration);
 
 		EditorOptions editorOptions = _editorOptionsProvider.getEditorOptions(
 			portletName, editorConfigKey, editorName,
