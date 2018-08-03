@@ -91,6 +91,9 @@ public class EditorConfigurationMVCResourceCommand
 				"customConfiguration",
 				JSONFactoryUtil.createJSONObject(
 					editorConfigurationEntry.getConfiguration()));
+
+			jsonObject.put(
+				"useCustomConfiguration", editorConfigurationEntry.isEnabled());
 		}
 
 		JSONPortletResponseUtil.writeJSON(
