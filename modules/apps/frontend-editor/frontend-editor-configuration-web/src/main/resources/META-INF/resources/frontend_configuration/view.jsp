@@ -85,7 +85,7 @@ List<String> editorNames = (List<String>)request.getAttribute("editorNames");
 
 <liferay-portlet:resourceURL id="/editor_configuration/configuration" varImpl="editorConfigurationURL" />
 
-<aui:script sandbox="<%= true %>" use="escape">
+<aui:script sandbox="<%= true %>" use="aui-url">
 	var editorNameSelect = document.getElementById('<portlet:namespace/>editorName');
 	var portletNameSelect = document.getElementById('<portlet:namespace/>portletName');
 	var editorConfigKey = document.getElementById('<portlet:namespace/>editorConfigKey');
@@ -98,21 +98,21 @@ List<String> editorNames = (List<String>)request.getAttribute("editorNames");
 	editorConfigKey.addEventListener('change', fetchEditorConfiguration);
 
 	function fetchEditorConfiguration() {
+
+		var url = new A.Url('<%= editorConfigurationURL %>');
+
+		url.setParameter('<portlet:namespace />portletName', portletNameSelect.value);
+		url.setParameter('<portlet:namespace />editorName', editorNameSelect.value);
+		url.setParameter('<portlet:namespace />editorConfigKey', editorConfigKey.value);
+
 		$.ajax(
-			'<%= editorConfigurationURL.toString() %>',
+			url.toString(),
 			{
-				data: {
-					<portlet:namespace />portletName: portletNameSelect.value,
-					<portlet:namespace />editorName: editorNameSelect.value,
-					<portlet:namespace />editorConfigKey: editorConfigKey.value
-				},
+				type: 'GET',
 				success: function(responseData) {
 					defaultConfiguration.value = responseData.defaultConfiguration ? JSON.stringify(responseData.defaultConfiguration, undefined, 2) : '';
 					customConfiguration.value = responseData.customConfiguration ? JSON.stringify(responseData.customConfiguration, undefined, 2) : '';
-
-					if (responseData.useCustomConfiguration !== undefined) {
-						useCustomConfiguration.checked = responseData.useCustomConfiguration;
-					}
+					useCustomConfiguration.checked = responseData.useCustomConfiguration;
 				}
 			}
 		);
