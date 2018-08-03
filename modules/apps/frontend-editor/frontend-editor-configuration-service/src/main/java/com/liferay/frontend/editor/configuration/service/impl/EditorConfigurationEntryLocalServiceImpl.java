@@ -16,6 +16,7 @@ package com.liferay.frontend.editor.configuration.service.impl;
 
 import com.liferay.frontend.editor.configuration.model.EditorConfigurationEntry;
 import com.liferay.frontend.editor.configuration.service.base.EditorConfigurationEntryLocalServiceBaseImpl;
+import com.liferay.petra.string.StringPool;
 
 /**
  * The implementation of the editor configuration entry local service.
@@ -43,8 +44,17 @@ public class EditorConfigurationEntryLocalServiceImpl
 	public EditorConfigurationEntry fetchEditorConfigurationEntry(
 		String portletName, String editorName, String editorConfigKey) {
 
-		return editorConfigurationEntryPersistence.fetchByP_E_E(
-			portletName, editorName, editorConfigKey);
+		EditorConfigurationEntry editorConfigurationEntry =
+			editorConfigurationEntryPersistence.fetchByP_E_E(
+				portletName, editorName, editorConfigKey);
+
+		if (editorConfigurationEntry == null) {
+			editorConfigurationEntry =
+				editorConfigurationEntryPersistence.fetchByP_E_E(
+					portletName, editorName, StringPool.BLANK);
+		}
+
+		return editorConfigurationEntry;
 	}
 
 	@Override
@@ -53,7 +63,7 @@ public class EditorConfigurationEntryLocalServiceImpl
 		boolean enabled, String configuration) {
 
 		EditorConfigurationEntry editorConfigurationEntry =
-			fetchEditorConfigurationEntry(
+			editorConfigurationEntryPersistence.fetchByP_E_E(
 				portletName, editorName, editorConfigKey);
 
 		if (editorConfigurationEntry != null) {
@@ -70,6 +80,7 @@ public class EditorConfigurationEntryLocalServiceImpl
 			editorConfigurationEntry.setPortletName(portletName);
 			editorConfigurationEntry.setEditorName(editorName);
 			editorConfigurationEntry.setEditorConfigKey(editorConfigKey);
+			editorConfigurationEntry.setConfiguration(configuration);
 			editorConfigurationEntry.setEnabled(enabled);
 		}
 
