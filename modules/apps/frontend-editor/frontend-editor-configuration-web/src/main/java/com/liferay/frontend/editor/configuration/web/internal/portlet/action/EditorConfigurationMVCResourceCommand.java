@@ -71,6 +71,8 @@ public class EditorConfigurationMVCResourceCommand
 
 		Map<String, Object> attributes = new HashMap<>();
 
+		attributes.put("liferay-ui:input-editor:useCustomConfiguration", false);
+
 		EditorConfiguration editorConfiguration =
 			EditorConfigurationFactoryUtil.getEditorConfiguration(
 				portletName, editorConfigKey, editorName, attributes,
