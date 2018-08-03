@@ -1,5 +1,3 @@
-Bundle-Name: Liferay Frontend Editor Configuration Web
-Bundle-SymbolicName: com.liferay.frontend.editor.configuration.web
+Bundle-Name: Liferay Frontend Editor Configuration API
+Bundle-SymbolicName: com.liferay.frontend.editor.configuration.api
 Bundle-Version: 3.0.0
-Web-ContextPath: /frontend-editor-configuration-web
--dsannotations-options: inherit
