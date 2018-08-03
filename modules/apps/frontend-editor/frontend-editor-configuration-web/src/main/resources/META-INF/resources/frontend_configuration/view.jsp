@@ -106,8 +106,12 @@ List<String> editorNames = (List<String>)request.getAttribute("editorNames");
 					<portlet:namespace />editorConfigKey: editorConfigKey.value
 				},
 				success: function(responseData) {
-					defaultConfiguration.value = JSON.stringify(responseData.defaultConfiguration, undefined, 2);
-					customConfiguration.value = JSON.stringify(responseData.customConfiguration, undefined, 2);
+					if (responseData.defaultConfiguration) {
+						defaultConfiguration.value = JSON.stringify(responseData.defaultConfiguration, undefined, 2);
+					}
+					if (responseData.customConfiguration) {
+						customConfiguration.value = JSON.stringify(responseData.customConfiguration, undefined, 2);
+					}
 				}
 			}
 		);
