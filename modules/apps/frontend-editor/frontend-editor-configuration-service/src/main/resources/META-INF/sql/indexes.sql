@@ -1,0 +1,2 @@
+create unique index IX_5BF21F4E on EditorConfigurationEntry (portletName[$COLUMN_LENGTH:75$], editorName[$COLUMN_LENGTH:75$], editorConfigKey[$COLUMN_LENGTH:75$]);
+create index IX_288AEF43 on EditorConfigurationEntry (uuid_[$COLUMN_LENGTH:75$], companyId);
