@@ -187,6 +187,18 @@ public class EditorConfigurationEntryLocalServiceWrapper
 	}
 
 	/**
+	* NOTE FOR DEVELOPERS:
+	*
+	* Never reference this class directly. Always use {@link EditorConfigurationEntryLocalServiceUtil} to access the editor configuration entry local service.
+	*/
+	@Override
+	public com.liferay.frontend.editor.configuration.model.EditorConfigurationEntry fetchEditorConfigurationEntry(
+		String portletName, String editorName, String editorConfigKey) {
+		return _editorConfigurationEntryLocalService.fetchEditorConfigurationEntry(portletName,
+			editorName, editorConfigKey);
+	}
+
+	/**
 	* Returns the editor configuration entry with the matching UUID and company.
 	*
 	* @param uuid the editor configuration entry's UUID
@@ -301,6 +313,14 @@ public class EditorConfigurationEntryLocalServiceWrapper
 	public com.liferay.frontend.editor.configuration.model.EditorConfigurationEntry updateEditorConfigurationEntry(
 		com.liferay.frontend.editor.configuration.model.EditorConfigurationEntry editorConfigurationEntry) {
 		return _editorConfigurationEntryLocalService.updateEditorConfigurationEntry(editorConfigurationEntry);
+	}
+
+	@Override
+	public com.liferay.frontend.editor.configuration.model.EditorConfigurationEntry updateEditorConfigurationEntry(
+		String portletName, String editorName, String editorConfigKey,
+		boolean enabled, String configuration) {
+		return _editorConfigurationEntryLocalService.updateEditorConfigurationEntry(portletName,
+			editorName, editorConfigKey, enabled, configuration);
 	}
 
 	@Override

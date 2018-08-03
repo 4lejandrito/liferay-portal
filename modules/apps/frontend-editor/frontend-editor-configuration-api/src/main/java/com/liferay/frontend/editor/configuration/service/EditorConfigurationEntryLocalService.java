@@ -176,6 +176,15 @@ public interface EditorConfigurationEntryLocalService extends BaseLocalService,
 		long editorConfigurationEntryId);
 
 	/**
+	* NOTE FOR DEVELOPERS:
+	*
+	* Never reference this class directly. Always use {@link EditorConfigurationEntryLocalServiceUtil} to access the editor configuration entry local service.
+	*/
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public EditorConfigurationEntry fetchEditorConfigurationEntry(
+		String portletName, String editorName, String editorConfigKey);
+
+	/**
 	* Returns the editor configuration entry with the matching UUID and company.
 	*
 	* @param uuid the editor configuration entry's UUID
@@ -263,4 +272,8 @@ public interface EditorConfigurationEntryLocalService extends BaseLocalService,
 	@Indexable(type = IndexableType.REINDEX)
 	public EditorConfigurationEntry updateEditorConfigurationEntry(
 		EditorConfigurationEntry editorConfigurationEntry);
+
+	public EditorConfigurationEntry updateEditorConfigurationEntry(
+		String portletName, String editorName, String editorConfigKey,
+		boolean enabled, String configuration);
 }
