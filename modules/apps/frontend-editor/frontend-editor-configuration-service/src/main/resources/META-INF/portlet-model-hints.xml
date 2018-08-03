@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="com.liferay.frontend.editor.configuration.model.EditorConfigurationEntry">
+		<field name="uuid" type="String" />
+		<field name="editorConfigurationEntryId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="portletName" type="String" />
+		<field name="editorName" type="String" />
+		<field name="editorConfigKey" type="String" />
+		<field name="configuration" type="String" />
+		<field name="enabled" type="boolean" />
+	</model>
+</model-hints>
