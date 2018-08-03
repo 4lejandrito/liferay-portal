@@ -16,6 +16,9 @@ package com.liferay.portal.kernel.editor.configuration;
 
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactory;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
+import com.liferay.registry.ServiceTracker;
 
 import java.util.Map;
 
@@ -37,15 +40,28 @@ public class EditorConfigurationFactoryUtil {
 	}
 
 	public static EditorConfigurationFactory getEditorConfigurationFactory() {
-		return _editorConfigurationFactory;
+		return _serviceTracker.getService();
 	}
 
+	/**
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	public void setEditorConfigurationFactory(
 		EditorConfigurationFactory editorConfigurationFactory) {
-
-		_editorConfigurationFactory = editorConfigurationFactory;
 	}
 
-	private static EditorConfigurationFactory _editorConfigurationFactory;
+	private static final
+		ServiceTracker<EditorConfigurationFactory, EditorConfigurationFactory>
+			_serviceTracker;
+
+	static {
+		Registry registry = RegistryUtil.getRegistry();
+
+		_serviceTracker = registry.trackServices(
+			EditorConfigurationFactory.class);
+
+		_serviceTracker.open();
+	}
 
 }

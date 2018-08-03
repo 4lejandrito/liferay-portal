@@ -34,7 +34,9 @@ import java.util.function.Consumer;
 /**
  * @author Sergio González
  * @author Preston Crary
+ * @deprecated As of Judson (7.1.x), with no direct replacement
  */
+@Deprecated
 public abstract class BaseEditorProvider<T> {
 
 	public BaseEditorProvider(Class<T> editorContributorClass) {

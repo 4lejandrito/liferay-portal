@@ -24,7 +24,9 @@ import java.util.Map;
 
 /**
  * @author Sergio González
+ * @deprecated As of Judson (7.1.x), with no direct replacement
  */
+@Deprecated
 public class EditorConfigProvider
 	extends BaseEditorProvider<EditorConfigContributor> {
 
