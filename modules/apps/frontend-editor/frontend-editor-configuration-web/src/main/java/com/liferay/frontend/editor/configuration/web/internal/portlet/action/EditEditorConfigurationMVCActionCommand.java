@@ -45,13 +45,12 @@ public class EditEditorConfigurationMVCActionCommand
 			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws Exception {
 
-		String portletName = ParamUtil.getString(actionRequest, "portletName");
-		String editorName = ParamUtil.getString(actionRequest, "editorName");
-		String editorConfigKey = ParamUtil.getString(
-			actionRequest, "editorConfigKey");
 		String customConfiguration = ParamUtil.getString(
 			actionRequest, "customConfiguration");
-
+		String editorConfigKey = ParamUtil.getString(
+			actionRequest, "editorConfigKey");
+		String editorName = ParamUtil.getString(actionRequest, "editorName");
+		String portletName = ParamUtil.getString(actionRequest, "portletName");
 		boolean useCustomConfiguration = ParamUtil.getBoolean(
 			actionRequest, "useCustomConfiguration");
 

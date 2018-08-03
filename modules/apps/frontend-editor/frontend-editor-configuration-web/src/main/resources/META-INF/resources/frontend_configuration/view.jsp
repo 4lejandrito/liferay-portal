@@ -17,8 +17,8 @@
 <%@ include file="/init.jsp" %>
 
 <%
-List<Portlet> portlets = (List<Portlet>)request.getAttribute("portlets");
 List<String> editorNames = (List<String>)request.getAttribute("editorNames");
+List<Portlet> portlets = (List<Portlet>)request.getAttribute("portlets");
 %>
 
 <portlet:actionURL name="/editor_configuration/edit" var="editURL">
@@ -86,24 +86,24 @@ List<String> editorNames = (List<String>)request.getAttribute("editorNames");
 <liferay-portlet:resourceURL id="/editor_configuration/configuration" varImpl="editorConfigurationURL" />
 
 <aui:script sandbox="<%= true %>" use="aui-url">
+	var customConfiguration = document.getElementById('<portlet:namespace/>customConfiguration');
+	var defaultConfiguration = document.getElementById('<portlet:namespace/>defaultConfiguration');
+	var editorConfigKey = document.getElementById('<portlet:namespace/>editorConfigKey');
 	var editorNameSelect = document.getElementById('<portlet:namespace/>editorName');
 	var portletNameSelect = document.getElementById('<portlet:namespace/>portletName');
-	var editorConfigKey = document.getElementById('<portlet:namespace/>editorConfigKey');
-	var defaultConfiguration = document.getElementById('<portlet:namespace/>defaultConfiguration');
-	var customConfiguration = document.getElementById('<portlet:namespace/>customConfiguration');
 	var useCustomConfiguration = document.getElementById('<portlet:namespace/>useCustomConfiguration');
 
+	editorConfigKey.addEventListener('change', fetchEditorConfiguration);
 	editorNameSelect.addEventListener('change', fetchEditorConfiguration);
 	portletNameSelect.addEventListener('change', fetchEditorConfiguration);
-	editorConfigKey.addEventListener('change', fetchEditorConfiguration);
 
 	function fetchEditorConfiguration() {
 
 		var url = new A.Url('<%= editorConfigurationURL %>');
 
-		url.setParameter('<portlet:namespace />portletName', portletNameSelect.value);
-		url.setParameter('<portlet:namespace />editorName', editorNameSelect.value);
 		url.setParameter('<portlet:namespace />editorConfigKey', editorConfigKey.value);
+		url.setParameter('<portlet:namespace />editorName', editorNameSelect.value);
+		url.setParameter('<portlet:namespace />portletName', portletNameSelect.value);
 
 		$.ajax(
 			url.toString(),

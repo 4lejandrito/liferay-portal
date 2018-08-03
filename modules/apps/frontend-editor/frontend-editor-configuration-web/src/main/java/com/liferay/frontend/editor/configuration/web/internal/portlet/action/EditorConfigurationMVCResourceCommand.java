@@ -60,18 +60,18 @@ public class EditorConfigurationMVCResourceCommand
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws Exception {
 
-		String portletName = ParamUtil.getString(
-			resourceRequest, "portletName");
-		String editorName = ParamUtil.getString(resourceRequest, "editorName");
-		String editorConfigKey = ParamUtil.getString(
-			resourceRequest, "editorConfigKey");
-
-		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
 		Map<String, Object> attributes = new HashMap<>();
 
 		attributes.put("liferay-ui:input-editor:useCustomConfiguration", false);
+
+		String editorConfigKey = ParamUtil.getString(
+			resourceRequest, "editorConfigKey");
+		String editorName = ParamUtil.getString(resourceRequest, "editorName");
+		String portletName = ParamUtil.getString(
+			resourceRequest, "portletName");
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
 
 		EditorConfiguration editorConfiguration =
 			EditorConfigurationFactoryUtil.getEditorConfiguration(

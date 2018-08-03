@@ -59,17 +59,17 @@ public class CustomEditorConfigurationEditorConfigContributor
 			true);
 
 		if (useCustomConfiguration) {
-			PortletDisplay portletDisplay = themeDisplay.getPortletDisplay();
-
-			String portletName = portletDisplay.getPortletName();
+			String editorConfigKey = GetterUtil.getString(
+				inputEditorTaglibAttributes.get(
+					"liferay-ui:input-editor:name"));
 
 			String editorName = GetterUtil.getString(
 				inputEditorTaglibAttributes.get(
 					"liferay-ui:input-editor:editorName"));
 
-			String editorConfigKey = GetterUtil.getString(
-				inputEditorTaglibAttributes.get(
-					"liferay-ui:input-editor:name"));
+			PortletDisplay portletDisplay = themeDisplay.getPortletDisplay();
+
+			String portletName = portletDisplay.getPortletName();
 
 			EditorConfigurationEntry editorConfigurationEntry =
 				_editorConfigurationEntryLocalService.
