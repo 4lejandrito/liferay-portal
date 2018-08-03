@@ -32,9 +32,11 @@ import com.liferay.frontend.editor.configuration.service.base.EditorConfiguratio
  */
 public class EditorConfigurationEntryLocalServiceImpl
 	extends EditorConfigurationEntryLocalServiceBaseImpl {
-	/*
+
+	/**
 	 * NOTE FOR DEVELOPERS:
 	 *
 	 * Never reference this class directly. Always use {@link com.liferay.frontend.editor.configuration.service.EditorConfigurationEntryLocalServiceUtil} to access the editor configuration entry local service.
 	 */
+
 }
