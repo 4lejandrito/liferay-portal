@@ -58,6 +58,15 @@ public class SharingEntryServiceWrapper implements SharingEntryService,
 			expirationDate, serviceContext);
 	}
 
+	@Override
+	public com.liferay.sharing.model.SharingEntry deleteSharingEntry(
+		long sharingEntryId,
+		com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _sharingEntryService.deleteSharingEntry(sharingEntryId,
+			serviceContext);
+	}
+
 	/**
 	* Returns the OSGi service identifier.
 	*
