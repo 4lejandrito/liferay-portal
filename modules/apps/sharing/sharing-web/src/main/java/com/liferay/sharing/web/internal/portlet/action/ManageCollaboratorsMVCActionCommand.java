@@ -20,8 +20,12 @@ import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.sharing.constants.SharingPortletKeys;
+import com.liferay.sharing.model.SharingEntry;
+import com.liferay.sharing.service.SharingEntryLocalService;
 import com.liferay.sharing.service.SharingEntryService;
+import com.liferay.sharing.web.internal.display.SharingEntryPermissionDisplayActionKey;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -56,7 +60,39 @@ public class ManageCollaboratorsMVCActionCommand extends BaseMVCActionCommand {
 			_sharingEntryService.deleteSharingEntry(
 				sharingEntryId, serviceContext);
 		}
+
+		String[] sharingEntryIdSharingEntryPermissionDisplayActionKeyActionIdPairs =
+			ParamUtil.getStringValues(
+				actionRequest,
+				"sharingEntryIdSharingEntryPermissionDisplayActionKeyActionIdPairs");
+
+		for (String sharingEntryIdSharingEntryPermissionDisplayActionKeyActionIdPair :
+				sharingEntryIdSharingEntryPermissionDisplayActionKeyActionIdPairs) {
+
+			String[] parts = StringUtil.split(
+				sharingEntryIdSharingEntryPermissionDisplayActionKeyActionIdPair);
+
+			long sharingEntryId = Long.valueOf(parts[0]);
+
+			SharingEntryPermissionDisplayActionKey
+				sharingEntryPermissionDisplayActionKey =
+					SharingEntryPermissionDisplayActionKey.parseFromActionId(
+						parts[1]);
+
+			SharingEntry sharingEntry =
+				_sharingEntryLocalService.getSharingEntry(sharingEntryId);
+
+			_sharingEntryService.updateSharingEntry(
+				sharingEntryId,
+				sharingEntryPermissionDisplayActionKey.
+					getSharingEntryActionKeys(),
+				sharingEntry.isShareable(), sharingEntry.getExpirationDate(),
+				serviceContext);
+		}
 	}
+
+	@Reference
+	private SharingEntryLocalService _sharingEntryLocalService;
 
 	@Reference
 	private SharingEntryService _sharingEntryService;
