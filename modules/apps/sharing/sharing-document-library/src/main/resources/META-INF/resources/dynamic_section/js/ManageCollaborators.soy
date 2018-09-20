@@ -12,8 +12,10 @@
 	{@param? _handleCancelButtonClick: any}
 	{@param? _handleSaveButtonClick: any}
 
-	<div id="manageCollaborators">
-		<button class="btn btn-link" data-onclick="{$_handleManageCollaboratorsButtonClick}" type="button">{msg desc=""}manage-collaborators{/msg}</button>
+	<div id="manageCollaborators" class="manage-collaborators">
+		<div class="form-group">
+			<button class="btn btn-link" data-onclick="{$_handleManageCollaboratorsButtonClick}" type="button">{msg desc=""}manage-collaborators{/msg}</button>
+		</div>
 
 		{if $_collaboratorsDialogOpen}
 			{call .collaboratorsDialog}
@@ -44,7 +46,7 @@
 		{/param}
 
 		{param footer kind="html"}
-			<button class="btn btn-link" data-onclick="{$_handleCancelButtonClick}" type="button">{msg desc=""}cancel{/msg}</button>
+			<button class="btn btn-default" data-onclick="{$_handleCancelButtonClick}" type="button">{msg desc=""}cancel{/msg}</button>
 			<button class="btn btn-primary" data-onclick="{$_handleSaveButtonClick}" type="button">{msg desc=""}save{/msg}</button>
 		{/param}
 
@@ -124,7 +126,7 @@
 
 			<div class="autofit-col">
 				<button
-					class="btn btn-link"
+					class="btn"
 					data-collaborator-id="{$user.id}"
 					data-onclick="{$_handleDeleteCollaborator}"
 				>
