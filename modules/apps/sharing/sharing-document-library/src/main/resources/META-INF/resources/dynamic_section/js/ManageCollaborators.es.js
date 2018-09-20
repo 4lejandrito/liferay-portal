@@ -10,7 +10,7 @@ import {Config} from 'metal-state';
 
 class ManageCollaborators extends Component {
 	attached() {
-		this._deletedCollaborators = [];
+		this._sharingEntryIdsToDelete = [];
 	}
 
 	_handleManageCollaboratorsButtonClick() {
@@ -54,7 +54,7 @@ class ManageCollaborators extends Component {
 
 		if (collaboratorElement) {
 			collaboratorElement.remove();
-			this._deletedCollaborators.push(collaboratorId);
+			this._sharingEntryIdsToDelete.push(collaboratorId);
 		}
 
 	}
