@@ -24,8 +24,11 @@ import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.sharing.constants.SharingEntryActionKey;
+import com.liferay.sharing.model.SharingEntry;
 import com.liferay.sharing.security.permission.SharingPermissionChecker;
+import com.liferay.sharing.service.SharingEntryLocalService;
 import com.liferay.sharing.web.internal.display.SharingEntryPermissionDisplay;
+import com.liferay.sharing.web.internal.display.SharingEntryPermissionDisplayActionKey;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,6 +48,30 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(immediate = true, service = SharingUtil.class)
 public class SharingUtil {
+
+	public SharingEntryPermissionDisplayActionKey
+		getSharingEntryPermissionDisplayActionKey(SharingEntry sharingEntry) {
+
+		if (_sharingEntryLocalService.hasSharingPermission(
+				sharingEntry, SharingEntryActionKey.UPDATE)) {
+
+			return SharingEntryPermissionDisplayActionKey.UPDATE;
+		}
+
+		if (_sharingEntryLocalService.hasSharingPermission(
+				sharingEntry, SharingEntryActionKey.ADD_DISCUSSION)) {
+
+			return SharingEntryPermissionDisplayActionKey.COMMENTS;
+		}
+
+		if (_sharingEntryLocalService.hasSharingPermission(
+				sharingEntry, SharingEntryActionKey.VIEW)) {
+
+			return SharingEntryPermissionDisplayActionKey.VIEW;
+		}
+
+		return null;
+	}
 
 	public List<SharingEntryPermissionDisplay>
 		getSharingEntryPermissionDisplays(
@@ -134,5 +161,8 @@ public class SharingUtil {
 
 	private ServiceTrackerMap<Long, SharingPermissionChecker>
 		_serviceTrackerMap;
+
+	@Reference
+	private SharingEntryLocalService _sharingEntryLocalService;
 
 }
