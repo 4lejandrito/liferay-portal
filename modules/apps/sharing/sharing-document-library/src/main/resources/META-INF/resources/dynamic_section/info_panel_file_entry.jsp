@@ -1,3 +1,9 @@
+<%@ page import="javax.portlet.PortletURL" %>
+<%@ page import="com.liferay.portal.kernel.portlet.PortletProviderUtil" %>
+<%@ page import="com.liferay.sharing.model.SharingEntry" %>
+<%@ page import="com.liferay.portal.kernel.portlet.PortletProvider" %>
+<%@ page import="javax.portlet.ActionRequest" %>
+<%@ page import="javax.portlet.PortletRequest" %>
 <%--
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
@@ -16,6 +22,15 @@
 
 <%@ include file="/dynamic_section/init.jsp" %>
 
+<%
+	JSONArray collaboratorsJSONArray = JSONFactoryUtil.createJSONArray();
+
+	String portletId = PortletProviderUtil.getPortletId(SharingEntry.class.getName(), PortletProvider.Action.EDIT);
+
+	PortletURL sharingEntryEditURL = liferayPortletResponse.createLiferayPortletURL(portletId, PortletRequest.ACTION_PHASE);
+
+	sharingEntryEditURL.setParameter(ActionRequest.ACTION_NAME, "/sharing/manage_collaborators");
+%>
 <div class="autofit-row sidebar-panel widget-metadata">
 	<div class="autofit-col inline-item-before">
 
@@ -40,6 +55,12 @@
 			List<User> sharingEntryToUsers = (List<User>)request.getAttribute("info_panel_file_entry.jsp-sharingEntryToUsers");
 
 			for (User sharingEntryToUser : sharingEntryToUsers) {
+
+				JSONObject userJSONObject = JSONFactoryUtil.createJSONObject();
+				userJSONObject.put("id", sharingEntryToUser.getUserId());
+				userJSONObject.put("name", sharingEntryToUser.getFullName());
+				userJSONObject.put("imageSrc", sharingEntryToUser.getPortraitURL(themeDisplay));
+				collaboratorsJSONArray.put(userJSONObject);
 			%>
 
 				<div class="autofit-col">
@@ -70,3 +91,20 @@
 		</div>
 	</div>
 </div>
+
+<div id="<portlet:namespace />ManageCollaborators_<%= fileEntry.getFileEntryId() %>"></div>
+
+<liferay-util:html-top>
+	<link href="<%= PortalUtil.getStaticResourceURL(request, StringBundler.concat(themeDisplay.getCDNBaseURL(), PortalUtil.getPathProxy(), application.getContextPath(), "/dynamic_section/css/ManageCollaborators.css")) %>" rel="stylesheet" type="text/css" />
+</liferay-util:html-top>
+
+<aui:script require="sharing-document-library/dynamic_section/js/ManageCollaborators.es">
+	new sharingDocumentLibraryDynamic_sectionJsManageCollaboratorsEs.default(
+		{
+			collaborators: <%= collaboratorsJSONArray %>,
+			spritemap: '<%= themeDisplay.getPathThemeImages() %>/lexicon/icons.svg',
+			uri: '<%= sharingEntryEditURL.toString() %>'
+		},
+		<portlet:namespace />ManageCollaborators_<%= fileEntry.getFileEntryId()%>
+	);
+</aui:script>
