@@ -62,9 +62,10 @@ public class ManageCollaboratorsMVCActionCommand extends BaseMVCActionCommand {
 		}
 
 		String[] sharingEntryIdSharingEntryPermissionDisplayActionIdPairs =
-			ParamUtil.getStringValues(
+			ParamUtil.getParameterValues(
 				actionRequest,
-				"sharingEntryIdSharingEntryPermissionDisplayActionIdPairs");
+				"sharingEntryIdSharingEntryPermissionDisplayActionIdPairs",
+				new String[0], false);
 
 		for (String sharingEntryIdSharingEntryPermissionDisplayActionIdPair :
 				sharingEntryIdSharingEntryPermissionDisplayActionIdPairs) {
