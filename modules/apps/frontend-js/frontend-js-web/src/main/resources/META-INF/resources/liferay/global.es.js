@@ -5,12 +5,14 @@ import unescape from './util/unescape.es';
 
 Liferay.Util.navigate = navigate;
 Liferay.Util.objectToFormData = objectToFormData;
-Liferay.Util.openToast = Liferay.lazyLoad(
-	'frontend-js-web/liferay/toast/commands/OpenToast.es',
-	function(toastCommands, ...args) {
-		toastCommands.openToast(...args);
-	}
-);
+Liferay.Util.openToast = (...args) => {
+	Liferay.Loader.require(
+		'frontend-js-web/liferay/toast/commands/OpenToast.es',
+		commands => {
+			commands.openToast(...args)
+		}
+	);
+};
 Liferay.Util.unescape = unescape;
 
 export {portlet};
