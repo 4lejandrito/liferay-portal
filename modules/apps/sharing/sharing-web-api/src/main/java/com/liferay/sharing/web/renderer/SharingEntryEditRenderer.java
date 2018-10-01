@@ -12,36 +12,22 @@
  * details.
  */
 
-package com.liferay.sharing.web.internal.renderer;
+package com.liferay.sharing.web.renderer;
 
-import com.liferay.asset.kernel.model.AssetRenderer;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
-import com.liferay.sharing.web.renderer.SharingEntryEditRenderer;
 
 import javax.portlet.PortletURL;
 
 /**
- * @author Alejandro Tardín
+ * @author Sergio González
  */
-public class AssetRendererSharingEntryEditRenderer
-	implements SharingEntryEditRenderer<AssetRenderer> {
+public interface SharingEntryEditRenderer<T> {
 
-	@Override
 	public PortletURL getURLEdit(
-			AssetRenderer assetRenderer,
-			LiferayPortletRequest liferayPortletRequest,
+			T entry, LiferayPortletRequest liferayPortletRequest,
 			LiferayPortletResponse liferayPortletResponse)
-		throws PortalException {
-
-		try {
-			return assetRenderer.getURLEdit(
-				liferayPortletRequest, liferayPortletResponse);
-		}
-		catch (Exception e) {
-			throw new PortalException(e);
-		}
-	}
+		throws PortalException;
 
 }
