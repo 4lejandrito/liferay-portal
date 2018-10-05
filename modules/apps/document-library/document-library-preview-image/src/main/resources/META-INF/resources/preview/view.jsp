@@ -43,8 +43,8 @@ String randomNamespace = PortalUtil.generateRandomKey(request, "portlet_document
 </div>
 
 <soy:component-renderer
-	context="{}"
-	module="document-library-preview-image/js/FragmentEntryDisplay.es"
+	context="<%= new HashMap<>() %>"
+	module="document-library-preview-image/js/ImagePreviewer.es"
 	templateNamespace="com.liferay.document.library.preview.ImagePreviewer.render"
 />
 
