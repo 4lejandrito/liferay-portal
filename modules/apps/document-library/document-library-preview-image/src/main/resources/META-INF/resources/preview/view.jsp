@@ -42,6 +42,12 @@ String randomNamespace = PortalUtil.generateRandomKey(request, "portlet_document
 	</div>
 </div>
 
+<soy:component-renderer
+	context="{}"
+	module="document-library-preview-image/js/FragmentEntryDisplay.es"
+	templateNamespace="com.liferay.document.library.preview.ImagePreviewer.render"
+/>
+
 <aui:script use="aui-base">
 	var currentImage = A.one('.lfr-preview-file-image-current');
 
