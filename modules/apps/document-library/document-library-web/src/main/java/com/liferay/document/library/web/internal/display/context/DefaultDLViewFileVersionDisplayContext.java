@@ -377,6 +377,8 @@ public class DefaultDLViewFileVersionDisplayContext
 				dlPreviewRenderer.render(request, response);
 			}
 			catch (Exception e) {
+				// TODO: improve log
+				e.printStackTrace();
 				JSPRenderer jspRenderer = new JSPRenderer(
 					"/document_library/view_file_entry_preview_error.jsp");
 
