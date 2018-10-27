@@ -79,6 +79,10 @@ public class FlagsTag extends ComponentRendererTag {
 
 			putValue("label", label);
 
+			String message = GetterUtil.getString(
+				context.get("message"), LanguageUtil.get(request, "flag"));
+			putValue("message", message);
+
 			putValue(
 				"pathTermsOfUse",
 				themeDisplay.getPathMain() + "/portal/terms_of_use");
