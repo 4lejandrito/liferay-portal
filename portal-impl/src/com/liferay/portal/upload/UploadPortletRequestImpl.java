@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -218,65 +217,22 @@ public class UploadPortletRequestImpl
 
 	@Override
 	public String getParameter(String name) {
-		String parameter = _uploadServletRequest.getParameter(
-			_namespace.concat(name));
-
-		if (parameter == null) {
-			parameter = _uploadServletRequest.getParameter(name);
-		}
-
-		if (parameter == null && _portletRequest != null) {
-			parameter = _portletRequest.getParameter(name);
-		}
-
-		return parameter;
+		return _portletRequest.getParameter(name);
 	}
 
 	@Override
 	public Map<String, String[]> getParameterMap() {
-		Map<String, String[]> map = new HashMap<>();
-
-		Enumeration<String> enu = getParameterNames();
-
-		while (enu.hasMoreElements()) {
-			String name = enu.nextElement();
-
-			map.put(name, getParameterValues(name));
-		}
-
-		return map;
+		return _portletRequest.getParameterMap();
 	}
 
 	@Override
 	public Enumeration<String> getParameterNames() {
-		List<String> parameterNames = new ArrayList<>();
-
-		Enumeration<String> enu = _uploadServletRequest.getParameterNames();
-
-		while (enu.hasMoreElements()) {
-			String name = enu.nextElement();
-
-			if (name.startsWith(_namespace)) {
-				parameterNames.add(name.substring(_namespace.length()));
-			}
-			else {
-				parameterNames.add(name);
-			}
-		}
-
-		return Collections.enumeration(parameterNames);
+		return _portletRequest.getParameterNames();
 	}
 
 	@Override
 	public String[] getParameterValues(String name) {
-		String[] parameterValues = _uploadServletRequest.getParameterValues(
-			_namespace.concat(name));
-
-		if (parameterValues == null) {
-			parameterValues = _uploadServletRequest.getParameterValues(name);
-		}
-
-		return parameterValues;
+		return _portletRequest.getParameterValues(name);
 	}
 
 	@Override
