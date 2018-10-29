@@ -225,6 +225,10 @@ public class UploadPortletRequestImpl
 			parameter = _uploadServletRequest.getParameter(name);
 		}
 
+		if (parameter == null && _portletRequest != null) {
+			parameter = _portletRequest.getParameter(name);
+		}
+
 		return parameter;
 	}
 
