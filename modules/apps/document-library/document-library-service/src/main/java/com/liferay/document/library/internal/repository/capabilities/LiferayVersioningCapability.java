@@ -135,7 +135,10 @@ public class LiferayVersioningCapability
 	@Activate
 	protected void activate(BundleContext bundleContext) {
 		_versionPurgedListeners = ServiceTrackerListFactory.open(
-			bundleContext, VersionPurger.VersionPurgedListener.class);
+			bundleContext, VersionPurger.VersionPurgedListener.class,
+			"(|(repository.class.name=com.liferay.portal.repository." +
+				"liferayrepository.LiferayRepository)" +
+					"(repository.class.name=*))");
 	}
 
 	@Deactivate

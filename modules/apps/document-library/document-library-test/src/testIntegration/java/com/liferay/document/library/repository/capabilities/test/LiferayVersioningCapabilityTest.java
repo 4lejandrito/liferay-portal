@@ -45,7 +45,9 @@ import com.liferay.registry.ServiceRegistration;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -142,12 +144,10 @@ public class LiferayVersioningCapabilityTest {
 
 				List<FileVersion> deletedFileVersions = new ArrayList<>();
 
-				Registry registry = RegistryUtil.getRegistry();
-
 				ServiceRegistration<VersionPurger.VersionPurgedListener>
-					capabilityServiceRegistration = registry.registerService(
-						VersionPurger.VersionPurgedListener.class,
-						deletedFileVersions::add);
+					versionPurgedListenerServiceRegistration =
+						_registerVersionPurgedListener(
+							deletedFileVersions::add);
 
 				try {
 					for (int i = 0; i < 10; i++) {
@@ -159,7 +159,7 @@ public class LiferayVersioningCapabilityTest {
 						deletedFileVersions.size());
 				}
 				finally {
-					capabilityServiceRegistration.unregister();
+					versionPurgedListenerServiceRegistration.unregister();
 				}
 			});
 	}
@@ -187,6 +187,21 @@ public class LiferayVersioningCapabilityTest {
 			fileEntry.getMimeType(), fileEntry.getTitle(),
 			fileEntry.getDescription(), RandomTestUtil.randomString(),
 			DLVersionNumberIncrease.MINOR, content.getBytes(), serviceContext);
+	}
+
+	private ServiceRegistration<VersionPurger.VersionPurgedListener>
+		_registerVersionPurgedListener(
+			VersionPurger.VersionPurgedListener versionPurgedListener) {
+
+		Registry registry = RegistryUtil.getRegistry();
+
+		Map<String, Object> properties = new HashMap<>();
+
+		properties.put("repository.class.name", "*");
+
+		return registry.registerService(
+			VersionPurger.VersionPurgedListener.class, versionPurgedListener,
+			properties);
 	}
 
 	private void _withMaximumNumberOfVersionsConfigured(
