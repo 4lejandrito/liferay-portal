@@ -179,7 +179,8 @@ public class LiferayVersioningCapability
 
 	@Reference(
 		policy = ReferencePolicy.DYNAMIC,
-		policyOption = ReferencePolicyOption.GREEDY
+		policyOption = ReferencePolicyOption.GREEDY,
+		target = "(|(repository.class.name=com.liferay.portal.repository.liferayrepository.LiferayRepository)(repository.class.name=*))"
 	)
 	private volatile VersionPurger _versionPurger;
 

@@ -35,6 +35,7 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(
 	configurationPid = "com.liferay.document.library.configuration.DLConfiguration",
+	property = "repository.class.name=com.liferay.portal.repository.liferayrepository.LiferayRepository",
 	service = VersionPurger.class
 )
 public class VersionPurgerImpl implements VersionPurger {
