@@ -106,7 +106,7 @@ public class DLPreviewLayoutTypeController
 
 	private static final String _URL =
 		"${liferay:mainPath}/portal/layout?p_l_id=${liferay:plid}" +
-			"&p_v_l_s_g_id=${liferay:pvlsgid}";
+			"&p_v_l_s_g_id=${liferay:pvlsgid}&p_p_state=pop_up";
 
 	private static final String _VIEW_PAGE = "/preview/layout/view.jsp";
 
