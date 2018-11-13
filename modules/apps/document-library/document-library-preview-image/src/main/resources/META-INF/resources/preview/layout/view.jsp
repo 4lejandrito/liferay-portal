@@ -16,4 +16,8 @@
 
 <%@ include file="/preview/init.jsp" %>
 
-Works!
+<%
+FileEntry fileEntry = (FileEntry)request.getAttribute("fileEntry");
+%>
+
+<%= fileEntry.getTitle() %>
