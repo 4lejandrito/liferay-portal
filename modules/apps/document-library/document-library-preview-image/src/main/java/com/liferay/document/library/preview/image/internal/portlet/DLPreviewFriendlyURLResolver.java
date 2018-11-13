@@ -14,17 +14,20 @@
 
 package com.liferay.document.library.preview.image.internal.portlet;
 
+import com.liferay.document.library.kernel.service.DLAppService;
 import com.liferay.document.library.preview.image.internal.constants.DLPreviewLayoutTypeControllerConstants;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutFriendlyURLComposite;
 import com.liferay.portal.kernel.portlet.FriendlyURLResolver;
+import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.Portal;
 
@@ -51,11 +54,19 @@ public class DLPreviewFriendlyURLResolver implements FriendlyURLResolver {
 
 		String urlSeparator = getURLSeparator();
 
+		long fileEntryId = GetterUtil.getLong(
+			friendlyURL.substring(urlSeparator.length()));
+
+		FileEntry fileEntry = _dlAppService.getFileEntry(fileEntryId);
+
 		HttpServletRequest request = (HttpServletRequest)requestContext.get(
 			"request");
 
-		_portal.addPageSubtitle("Subtitle", request);
-		_portal.addPageDescription("Description", request);
+		request.setAttribute("fileEntry", fileEntry);
+
+		_portal.addPageSubtitle(fileEntry.getFileName(), request);
+		_portal.addPageDescription(fileEntry.getDescription(), request);
+		_portal.addPageTitle(fileEntry.getTitle(), request);
 
 		Layout layout = getAssetDisplayLayout(groupId);
 
@@ -110,6 +121,9 @@ public class DLPreviewFriendlyURLResolver implements FriendlyURLResolver {
 			DLPreviewLayoutTypeControllerConstants.LAYOUT_TYPE_DL_PREVIEW, true,
 			null, serviceContext);
 	}
+
+	@Reference
+	private DLAppService _dlAppService;
 
 	@Reference
 	private GroupLocalService _groupLocalService;
