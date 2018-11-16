@@ -1,3 +1,4 @@
+<%--
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
@@ -11,14 +12,15 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
+--%>
 
-package com.liferay.document.library.preview.image.internal.constants;
+<%@ include file="/init.jsp" %>
 
-/**
- * @author Alejandro Tardín
- */
-public class DLPreviewLayoutTypeControllerConstants {
+<%
+long fileEntryId = (long)request.getAttribute("fileEntryId");
+%>
 
-	public static final String LAYOUT_TYPE_DL_PREVIEW = "dl_preview";
-
-}
+<liferay-portlet:runtime
+	portletName="<%= DLPortletKeys.DOCUMENT_LIBRARY %>"
+	queryString='<%= "mvcRenderCommandName=/document_library/view_file_entry&fileEntryId=" + fileEntryId %>'
+/>

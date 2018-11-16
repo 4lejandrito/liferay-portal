@@ -1,4 +1,3 @@
-<%--
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
@@ -12,12 +11,14 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
---%>
 
-<%@ include file="/preview/init.jsp" %>
+package com.liferay.document.library.web.internal.constants;
 
-<%
-FileEntry fileEntry = (FileEntry)request.getAttribute("fileEntry");
-%>
+/**
+ * @author Alejandro Tardín
+ */
+public class DLPreviewLayoutTypeControllerConstants {
 
-<%= fileEntry.getTitle() %>
+	public static final String LAYOUT_TYPE_DL_PREVIEW = "dl_preview";
+
+}

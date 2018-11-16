@@ -12,10 +12,10 @@
  * details.
  */
 
-package com.liferay.document.library.preview.image.internal.portlet;
+package com.liferay.document.library.web.internal.portlet;
 
 import com.liferay.document.library.kernel.service.DLAppService;
-import com.liferay.document.library.preview.image.internal.constants.DLPreviewLayoutTypeControllerConstants;
+import com.liferay.document.library.web.internal.constants.DLPreviewLayoutTypeControllerConstants;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
@@ -62,7 +62,7 @@ public class DLPreviewFriendlyURLResolver implements FriendlyURLResolver {
 		HttpServletRequest request = (HttpServletRequest)requestContext.get(
 			"request");
 
-		request.setAttribute("fileEntry", fileEntry);
+		request.setAttribute("fileEntryId", fileEntryId);
 
 		_portal.addPageSubtitle(fileEntry.getFileName(), request);
 		_portal.addPageDescription(fileEntry.getDescription(), request);

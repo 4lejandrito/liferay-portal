@@ -12,9 +12,9 @@
  * details.
  */
 
-package com.liferay.document.library.preview.image.internal.controller;
+package com.liferay.document.library.web.internal.controller;
 
-import com.liferay.document.library.preview.image.internal.constants.DLPreviewLayoutTypeControllerConstants;
+import com.liferay.document.library.web.internal.constants.DLPreviewLayoutTypeControllerConstants;
 import com.liferay.portal.kernel.io.unsync.UnsyncStringWriter;
 import com.liferay.portal.kernel.model.LayoutConstants;
 import com.liferay.portal.kernel.model.LayoutTypeController;
@@ -97,7 +97,7 @@ public class DLPreviewLayoutTypeController
 	}
 
 	@Reference(
-		target = "(osgi.web.symbolicname=com.liferay.document.library.preview.image)",
+		target = "(osgi.web.symbolicname=com.liferay.document.library.web)",
 		unbind = "-"
 	)
 	protected void setServletContext(ServletContext servletContext) {
@@ -108,6 +108,7 @@ public class DLPreviewLayoutTypeController
 		"${liferay:mainPath}/portal/layout?p_l_id=${liferay:plid}" +
 			"&p_v_l_s_g_id=${liferay:pvlsgid}&p_p_state=pop_up";
 
-	private static final String _VIEW_PAGE = "/preview/layout/view.jsp";
+	private static final String _VIEW_PAGE =
+		"/document_library/preview/layout/view.jsp";
 
 }
