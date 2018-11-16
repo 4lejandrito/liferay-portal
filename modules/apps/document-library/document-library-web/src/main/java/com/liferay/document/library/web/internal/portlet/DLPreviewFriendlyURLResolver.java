@@ -64,7 +64,6 @@ public class DLPreviewFriendlyURLResolver implements FriendlyURLResolver {
 
 		request.setAttribute("fileEntryId", fileEntryId);
 
-		_portal.addPageSubtitle(fileEntry.getFileName(), request);
 		_portal.addPageDescription(fileEntry.getDescription(), request);
 		_portal.addPageTitle(fileEntry.getTitle(), request);
 
