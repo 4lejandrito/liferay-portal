@@ -87,7 +87,7 @@ public class DLPreviewFriendlyURLResolver implements FriendlyURLResolver {
 
 	@Override
 	public String getURLSeparator() {
-		return "/dm/";
+		return "/document/";
 	}
 
 	protected Layout getAssetDisplayLayout(long groupId)
