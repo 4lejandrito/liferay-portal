@@ -30,6 +30,7 @@ import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.UnicodeProperties;
 
 import java.util.List;
 import java.util.Map;
@@ -115,10 +116,19 @@ public class DLPreviewFriendlyURLResolver implements FriendlyURLResolver {
 		serviceContext.setAttribute(
 			"layout.instanceable.allowed", Boolean.TRUE);
 
-		return _layoutLocalService.addLayout(
+		Layout layout = _layoutLocalService.addLayout(
 			defaultUserId, groupId, false, 0, "DL Preview Page", null, null,
 			DLPreviewLayoutTypeControllerConstants.LAYOUT_TYPE_DL_PREVIEW, true,
 			null, serviceContext);
+
+		UnicodeProperties typeSettingsProperties =
+			layout.getTypeSettingsProperties();
+
+		typeSettingsProperties.setProperty("visible", Boolean.FALSE.toString());
+
+		_layoutLocalService.updateLayout(layout);
+
+		return layout;
 	}
 
 	@Reference
