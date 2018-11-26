@@ -112,7 +112,54 @@ AUI.add(
 						var url = instance.get('editEntryUrl');
 
 						if (action === 'editTags') {
-							url = instance.get('editTagsUrl');
+							var editTagsDialog = Liferay.Util.Window.getWindow(
+								{
+									dialog: {
+										bodyContent: '<div>loading...</div>',
+										height: 250,
+										hideOn: [],
+										resizable: false,
+										width: 700
+									},
+									title: Liferay.Language.get('edit-tags')
+								}
+							);
+
+							editTagsDialog.after(
+								'render',
+								function(event) {
+									A.io.request(
+										instance.get('editTagsUrl'),
+										{
+											form: instance._searchContainer.getForm().getDOM(),
+											on: {
+												success: function(event, id, xhr) {
+													var response = xhr.responseText;
+
+													$(editTagsDialog.get('bodyContent').getDOM()).html(response);
+												}
+											}
+										}
+									);
+								}
+							);
+
+							return editTagsDialog.render().show();
+							/*return Liferay.Util.openWindow(
+								{
+									dialog: {
+										centered: true,
+										constrain: true,
+										cssClass: 'edit-tags-dialog',
+										destroyOnHide: true,
+										modal: true,
+										width: 800
+									},
+									id: 'editTags',
+									title: Liferay.Language.get('edit-tags'),
+									uri: instance.get('editTagsUrl')
+								}
+							);*/
 						}
 
 						if (action === 'move' || action === 'moveEntries') {
