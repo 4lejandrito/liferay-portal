@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.portlet.PortletContainerUtil;
 import com.liferay.portal.kernel.portlet.PortletJSONUtil;
 import com.liferay.portal.kernel.portlet.PortletProvider;
 import com.liferay.portal.kernel.portlet.PortletProviderUtil;
+import com.liferay.portal.kernel.portlet.RestrictPortletServletRequest;
 import com.liferay.portal.kernel.service.PortletLocalServiceUtil;
 import com.liferay.portal.kernel.servlet.BufferCacheServletResponse;
 import com.liferay.portal.kernel.settings.ModifiableSettings;
@@ -32,6 +33,7 @@ import com.liferay.portal.kernel.settings.SettingsFactoryUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ClassUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -186,12 +188,18 @@ public class TemplateProcessor implements ColumnProcessor {
 
 	@Override
 	public String processPortlet(String portletId) throws Exception {
-		_request.setAttribute(WebKeys.RENDER_PORTLET_RESOURCE, Boolean.TRUE);
+		HttpServletRequest originalRequest =
+			PortalUtil.getOriginalServletRequest(_request);
+
+		RestrictPortletServletRequest request =
+			new RestrictPortletServletRequest(originalRequest);
+
+		request.setAttribute(WebKeys.RENDER_PORTLET_RESOURCE, Boolean.TRUE);
 
 		BufferCacheServletResponse bufferCacheServletResponse =
 			new BufferCacheServletResponse(_response);
 
-		ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
+		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
 		Portlet portlet = PortletLocalServiceUtil.getPortletById(
@@ -200,20 +208,20 @@ public class TemplateProcessor implements ColumnProcessor {
 		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
 
 		PortletJSONUtil.populatePortletJSONObject(
-			_request, StringPool.BLANK, portlet, jsonObject);
+			request, StringPool.BLANK, portlet, jsonObject);
 
 		try {
 			PortletJSONUtil.writeHeaderPaths(_response, jsonObject);
 
 			PortletContainerUtil.render(
-				_request, bufferCacheServletResponse, portlet);
+				request, bufferCacheServletResponse, portlet);
 
 			PortletJSONUtil.writeFooterPaths(_response, jsonObject);
 
 			return bufferCacheServletResponse.getString();
 		}
 		finally {
-			_request.removeAttribute(WebKeys.RENDER_PORTLET_RESOURCE);
+			request.removeAttribute(WebKeys.RENDER_PORTLET_RESOURCE);
 		}
 	}
 
