@@ -4,6 +4,19 @@ dependencies {
 	compileOnly group: "org.apache.aries.jax.rs", name: "org.apache.aries.jax.rs.jaxb.json.cxf-jettison", version: "1.0.0"
 }
 
+deploy {
+	finalizedBy deployConfigs
+}
+
+deployConfigs {
+	ext {
+		autoClean = false
+	}
+
+	from "configs"
+	into new File(liferay.liferayHome, "osgi/configs")
+}
+
 deployDependencies {
 	from (configurations.compileOnly) {
 		include "org.apache.aries.jax.rs.jaxb.json.cxf-jettison*.jar"
