@@ -35,11 +35,14 @@ context.put("imageURL", DLUtil.getPreviewURL(fileVersion.getFileEntry(), fileVer
 context.put("spritemap", themeDisplay.getPathThemeImages() + "/lexicon/icons.svg");
 %>
 
+
 <liferay-util:html-top
 	outputKey="document_library_preview_image_css"
 >
 	<link href="<%= PortalUtil.getStaticResourceURL(request, application.getContextPath() + "/preview/css/main.css") %>" rel="stylesheet" type="text/css" />
 </liferay-util:html-top>
+
+<liferay-ui:message key="alejandro" />
 
 <soy:component-renderer
 	componentId='<%= renderResponse.getNamespace() + randomNamespace + "previewImage" %>'
