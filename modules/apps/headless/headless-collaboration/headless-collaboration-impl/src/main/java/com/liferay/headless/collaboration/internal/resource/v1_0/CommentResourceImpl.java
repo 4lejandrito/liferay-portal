@@ -39,8 +39,10 @@ import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.search.filter.TermFilter;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.odata.entity.EntityModel;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
@@ -49,8 +51,8 @@ import com.liferay.portal.vulcan.util.SearchUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.osgi.service.component.annotations.Component;
@@ -66,6 +68,17 @@ import org.osgi.service.component.annotations.ServiceScope;
 )
 public class CommentResourceImpl
 	extends BaseCommentResourceImpl implements EntityModelResource {
+
+	@Override
+	public boolean deleteComment(Long commentId) throws Exception {
+		DiscussionPermission discussionPermission = _getDiscussionPermission();
+
+		discussionPermission.checkDeletePermission(commentId);
+
+		_commentManager.deleteComment(commentId);
+
+		return true;
+	}
 
 	@Override
 	public Page<Comment> getBlogPostingCommentsPage(
@@ -91,7 +104,11 @@ public class CommentResourceImpl
 		com.liferay.portal.kernel.comment.Comment comment =
 			_commentManager.fetchComment(commentId);
 
-		_checkViewPermission(comment);
+		DiscussionPermission discussionPermission = _getDiscussionPermission();
+
+		discussionPermission.checkViewPermission(
+			comment.getCommentId(), comment.getGroupId(),
+			comment.getClassName(), comment.getClassPK());
 
 		return CommentUtil.toComment(comment, _portal);
 	}
@@ -109,23 +126,55 @@ public class CommentResourceImpl
 		return _commentEntityModel;
 	}
 
-	private void _checkViewPermission(
-			com.liferay.portal.kernel.comment.Comment comment)
+	@Override
+	public Comment postBlogPostingComment(Long blogPostingId, Comment comment)
 		throws Exception {
 
-		if (comment == null) {
-			throw new NotFoundException();
-		}
+		BlogsEntry blogsEntry = _blogsEntryService.getEntry(blogPostingId);
 
-		PermissionChecker permissionChecker =
-			PermissionThreadLocal.getPermissionChecker();
+		DiscussionPermission discussionPermission = _getDiscussionPermission();
 
-		DiscussionPermission discussionPermission =
-			_commentManager.getDiscussionPermission(permissionChecker);
+		discussionPermission.checkAddPermission(
+			blogsEntry.getCompanyId(), blogsEntry.getGroupId(),
+			blogsEntry.getModelClassName(), blogsEntry.getEntryId());
 
-		discussionPermission.checkViewPermission(
-			permissionChecker.getCompanyId(), comment.getGroupId(),
-			comment.getClassName(), comment.getClassPK());
+		long commentId = _commentManager.addComment(
+			_getUserId(), blogsEntry.getGroupId(),
+			blogsEntry.getModelClassName(), blogsEntry.getEntryId(),
+			comment.getText(), _createServiceContextFunction());
+
+		return CommentUtil.toComment(
+			_commentManager.fetchComment(commentId), _portal);
+	}
+
+	@Override
+	public Comment putComment(Long commentId, Comment comment)
+		throws Exception {
+
+		com.liferay.portal.kernel.comment.Comment currentComment =
+			_commentManager.fetchComment(commentId);
+
+		DiscussionPermission discussionPermission = _getDiscussionPermission();
+
+		discussionPermission.checkUpdatePermission(commentId);
+
+		_commentManager.updateComment(
+			currentComment.getUserId(), currentComment.getClassName(),
+			currentComment.getClassPK(), commentId, "", comment.getText(),
+			_createServiceContextFunction());
+
+		return CommentUtil.toComment(
+			_commentManager.fetchComment(commentId), _portal);
+	}
+
+	private Function<String, ServiceContext> _createServiceContextFunction() {
+		return className -> {
+			ServiceContext serviceContext = new ServiceContext();
+
+			serviceContext.setWorkflowAction(WorkflowConstants.ACTION_PUBLISH);
+
+			return serviceContext;
+		};
 	}
 
 	private Page<Comment> _getComments(
@@ -171,6 +220,20 @@ public class CommentResourceImpl
 			transform(
 				comments, comment -> CommentUtil.toComment(comment, _portal)),
 			pagination, comments.size());
+	}
+
+	private DiscussionPermission _getDiscussionPermission() {
+		PermissionChecker permissionChecker =
+			PermissionThreadLocal.getPermissionChecker();
+
+		return _commentManager.getDiscussionPermission(permissionChecker);
+	}
+
+	private long _getUserId() {
+		PermissionChecker permissionChecker =
+			PermissionThreadLocal.getPermissionChecker();
+
+		return permissionChecker.getUserId();
 	}
 
 	private static final CommentEntityModel _commentEntityModel =
