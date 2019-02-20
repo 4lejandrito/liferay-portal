@@ -153,9 +153,9 @@ public class CommentResourceImpl
 			},
 			searchContext -> {
 				searchContext.setAttribute("discussion", Boolean.TRUE);
-				searchContext.setCompanyId(company.getCompanyId());
 				searchContext.setAttribute(
 					"searchPermissionContext", StringPool.BLANK);
+				searchContext.setCompanyId(contextCompany.getCompanyId());
 			},
 			_searchResultPermissionFilterFactory, sorts);
 
