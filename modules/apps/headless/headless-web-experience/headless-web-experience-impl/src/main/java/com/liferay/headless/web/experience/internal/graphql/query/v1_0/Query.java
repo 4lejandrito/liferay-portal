@@ -56,14 +56,14 @@ CommentResource commentResource = _getCommentResource(); commentResource.setCont
 
 	@GraphQLField
 	@GraphQLInvokeDetached
-	public Collection<Comment> getCommentCommentsPage( @GraphQLName("comment-id") Long commentId , @GraphQLName("pageSize") int pageSize , @GraphQLName("page") int page ) throws Exception {
+	public Collection<Comment> getCommentCommentsPage( @GraphQLName("comment-id") Long commentId , @GraphQLName("filter") Filter filter , @GraphQLName("pageSize") int pageSize , @GraphQLName("page") int page , @GraphQLName("Sort[]") Sort[] sorts ) throws Exception {
 				CommentResource commentResource = _getCommentResource();
 
 				commentResource.setContextCompany(CompanyLocalServiceUtil.getCompany(CompanyThreadLocal.getCompanyId()));
 
 				Page paginationPage = commentResource.getCommentCommentsPage(
 
-					commentId , Pagination.of(pageSize, page)
+					commentId , filter , Pagination.of(pageSize, page) , sorts
 				);
 
 				return paginationPage.getItems();
@@ -72,14 +72,14 @@ CommentResource commentResource = _getCommentResource(); commentResource.setCont
 
 	@GraphQLField
 	@GraphQLInvokeDetached
-	public Collection<Comment> getStructuredContentCommentsPage( @GraphQLName("structured-content-id") Long structuredContentId , @GraphQLName("pageSize") int pageSize , @GraphQLName("page") int page ) throws Exception {
+	public Collection<Comment> getStructuredContentCommentsPage( @GraphQLName("structured-content-id") Long structuredContentId , @GraphQLName("filter") Filter filter , @GraphQLName("pageSize") int pageSize , @GraphQLName("page") int page , @GraphQLName("Sort[]") Sort[] sorts ) throws Exception {
 				CommentResource commentResource = _getCommentResource();
 
 				commentResource.setContextCompany(CompanyLocalServiceUtil.getCompany(CompanyThreadLocal.getCompanyId()));
 
 				Page paginationPage = commentResource.getStructuredContentCommentsPage(
 
-					structuredContentId , Pagination.of(pageSize, page)
+					structuredContentId , filter , Pagination.of(pageSize, page) , sorts
 				);
 
 				return paginationPage.getItems();

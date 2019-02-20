@@ -20,6 +20,8 @@ import com.liferay.headless.collaboration.dto.v1_0.Comment;
 import com.liferay.headless.collaboration.resource.v1_0.BlogPostingImageResource;
 import com.liferay.headless.collaboration.resource.v1_0.BlogPostingResource;
 import com.liferay.headless.collaboration.resource.v1_0.CommentResource;
+import com.liferay.portal.kernel.search.Sort;
+import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.vulcan.pagination.Page;
@@ -90,14 +92,14 @@ BlogPostingImageResource blogPostingImageResource = _getBlogPostingImageResource
 
 	@GraphQLField
 	@GraphQLInvokeDetached
-	public Collection<Comment> getBlogPostingCommentsPage( @GraphQLName("blog-posting-id") Long blogPostingId , @GraphQLName("pageSize") int pageSize , @GraphQLName("page") int page ) throws Exception {
+	public Collection<Comment> getBlogPostingCommentsPage( @GraphQLName("blog-posting-id") Long blogPostingId , @GraphQLName("filter") Filter filter , @GraphQLName("pageSize") int pageSize , @GraphQLName("page") int page , @GraphQLName("Sort[]") Sort[] sorts ) throws Exception {
 				CommentResource commentResource = _getCommentResource();
 
 				commentResource.setContextCompany(CompanyLocalServiceUtil.getCompany(CompanyThreadLocal.getCompanyId()));
 
 				Page paginationPage = commentResource.getBlogPostingCommentsPage(
 
-					blogPostingId , Pagination.of(pageSize, page)
+					blogPostingId , filter , Pagination.of(pageSize, page) , sorts
 				);
 
 				return paginationPage.getItems();
@@ -112,14 +114,14 @@ CommentResource commentResource = _getCommentResource(); commentResource.setCont
 
 	@GraphQLField
 	@GraphQLInvokeDetached
-	public Collection<Comment> getCommentCommentsPage( @GraphQLName("comment-id") Long commentId , @GraphQLName("pageSize") int pageSize , @GraphQLName("page") int page ) throws Exception {
+	public Collection<Comment> getCommentCommentsPage( @GraphQLName("comment-id") Long commentId , @GraphQLName("filter") Filter filter , @GraphQLName("pageSize") int pageSize , @GraphQLName("page") int page , @GraphQLName("Sort[]") Sort[] sorts ) throws Exception {
 				CommentResource commentResource = _getCommentResource();
 
 				commentResource.setContextCompany(CompanyLocalServiceUtil.getCompany(CompanyThreadLocal.getCompanyId()));
 
 				Page paginationPage = commentResource.getCommentCommentsPage(
 
-					commentId , Pagination.of(pageSize, page)
+					commentId , filter , Pagination.of(pageSize, page) , sorts
 				);
 
 				return paginationPage.getItems();
