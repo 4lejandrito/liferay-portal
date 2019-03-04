@@ -23,6 +23,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.xcontent.*;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -109,7 +110,7 @@ public class AutoTaggingServiceImpl implements AutoTaggingService {
 			{
 				builder.field("query");
 				{
-					try (XContentParser p = XContentFactory.xContent(XContentType.JSON).createParser(NamedXContentRegistry.EMPTY, businessrule)) {
+					try (XContentParser p = XContentFactory.xContent(XContentType.JSON).createParser(NamedXContentRegistry.EMPTY, DeprecationHandler.THROW_UNSUPPORTED_OPERATION, businessrule)) {
 						builder.copyCurrentStructure(p);
 					}
 				}
@@ -118,10 +119,10 @@ public class AutoTaggingServiceImpl implements AutoTaggingService {
 			}
 			builder.endObject();
 
-			System.out.println(builder.string());
+			System.out.println(Strings.toString(builder));
 
 			Map<String, String> params = Collections.emptyMap();
-			HttpEntity entity = new NStringEntity(builder.string(), ContentType.APPLICATION_JSON);
+			HttpEntity entity = new NStringEntity(Strings.toString(builder), ContentType.APPLICATION_JSON);
 			RestHighLevelClient client = getClient();
 			RestClient lowclient = client.getLowLevelClient();
 			if (id.isEmpty()) {
@@ -185,7 +186,7 @@ public class AutoTaggingServiceImpl implements AutoTaggingService {
 				builder.endObject();
 			}
 			builder.endObject();
-			_log.debug("percolate json: " + builder.string());
+			_log.debug("percolate json: " + Strings.toString(builder));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -195,8 +196,8 @@ public class AutoTaggingServiceImpl implements AutoTaggingService {
 
 		try {
 			Map<String, String> params = Collections.emptyMap();
-			HttpEntity entity = new NStringEntity(builder.string(), ContentType.APPLICATION_JSON);
-			Response response = client.performRequest("GET","/" + _autotaggingConfiguration.ElasticIndex() + "/_search",params,entity);
+			HttpEntity entity = new NStringEntity(Strings.toString(builder), ContentType.APPLICATION_JSON);
+			Response response = client.performRequest("GET", "/" + _autotaggingConfiguration.ElasticIndex() + "/_search",params,entity);
 			client.close();
 
 			String responseBody = EntityUtils.toString(response.getEntity());
@@ -301,7 +302,7 @@ public class AutoTaggingServiceImpl implements AutoTaggingService {
 			}
 			builder.endObject();
 
-			String jsonString = builder.string();
+			String jsonString = Strings.toString(builder);
 			System.out.printf("Mapping Request %s\n",jsonString);
 
 			RestClient lowclient = client.getLowLevelClient();
