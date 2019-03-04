@@ -1,17 +1,3 @@
-buildscript {
-	dependencies {
-		classpath group: "com.liferay", name: "com.liferay.gradle.plugins", version: "3.12.48"
-	}
-
-	repositories {
-		maven {
-			url "https://repository-cdn.liferay.com/nexus/content/groups/public"
-		}
-	}
-}
-
-//apply plugin: "com.liferay.plugin"
-
 dependencies {
 	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel", version: "3.0.0"
 	compileOnly group: "com.liferay.portal", name: "com.liferay.util.taglib", version: "2.0.0"
@@ -20,35 +6,9 @@ dependencies {
 	compileOnly group: "jstl", name: "jstl", version: "1.2"
 	compileOnly group: "org.osgi", name: "osgi.cmpn", version: "6.0.0"
 	compileOnly project(":modules:elastic-auto-tagger:auto-tagging-api")
-	//compileOnly project(":modules:elastic-auto-tagger:auto-tagging-service")
-
-	// https://mvnrepository.com/artifact/com.liferay/com.liferay.frontend.taglib.clay
 	compileOnly group: 'com.liferay', name: 'com.liferay.frontend.taglib.clay', version: '1.2.5'
 
-	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
 	compileInclude group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.7'
-	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
 	compileInclude group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.7'
-	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations
 	compileInclude group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.7'
-
-
-
-
 }
-
-repositories {
-	maven {
-		url "https://repository-cdn.liferay.com/nexus/content/groups/public"
-	}
-}
-
-/*
-task copyToDocker{
-	copy{
-		from ('build/libs'){
-			exclude '*.txt'
-		}
-		into '/tmp/deploy'
-	}
-}*/
