@@ -5,7 +5,7 @@ dependencies {
 	compileOnly group: "javax.servlet", name: "javax.servlet-api", version: "3.0.1"
 	compileOnly group: "jstl", name: "jstl", version: "1.2"
 	compileOnly group: "org.osgi", name: "osgi.cmpn", version: "6.0.0"
-	compileOnly project(":modules:elastic-auto-tagger:auto-tagging-api")
+	compileOnly project(":apps:auto-tagging:auto-tagging-api")
 	compileOnly group: 'com.liferay', name: 'com.liferay.frontend.taglib.clay', version: '1.2.5'
 
 	compileInclude group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.7'
