@@ -227,10 +227,14 @@ public class EditFileEntryMVCActionCommand extends BaseMVCActionCommand {
 			ServiceContext serviceContext = ServiceContextFactory.getInstance(
 				DLFileEntry.class.getName(), actionRequest);
 
-			_dlAppService.addFileEntry(
+			FileEntry fileEntry = _dlAppService.addFileEntry(
 				repositoryId, folderId, uniqueFileName, mimeType,
 				uniqueFileName, description, changeLog, inputStream, size,
 				serviceContext);
+
+			_assetDisplayPageEntryFormProcessor.process(
+				DLFileEntry.class.getName(), fileEntry.getFileEntryId(),
+				actionRequest);
 
 			validFileNameKVPs.add(
 				new KeyValuePair(uniqueFileName, selectedFileName));
