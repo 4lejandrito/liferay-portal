@@ -20,15 +20,18 @@ import com.liferay.asset.auto.tagger.constants.AssetAutoTaggerConstants;
 import com.liferay.asset.auto.tagger.web.internal.constants.PortalSettingsAssetAutoTaggerConstants;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.settings.portlet.action.PortalSettingsFormContributor;
 import com.liferay.portal.settings.portlet.action.PortalSettingsParameterUtil;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
+
+import java.util.Optional;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import java.util.Optional;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Alejandro Tardín
@@ -61,7 +64,7 @@ public class AssetAutoTaggerPortalSettingsFormContributor
 	public void validateForm(
 		ActionRequest actionRequest, ActionResponse actionResponse) {
 
-		ThemeDisplay themeDisplay = (ThemeDisplay) actionRequest.getAttribute(
+		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
 		String maximumNumberOfTagsPerAsset =
@@ -76,16 +79,17 @@ public class AssetAutoTaggerPortalSettingsFormContributor
 		int systemMaximumNumberOfTagsPerAsset =
 			assetAutoTaggerConfiguration.getSystemNumberOfTagsPerAsset();
 
-		if (systemMaximumNumberOfTagsPerAsset != 0 &&
-				systemMaximumNumberOfTagsPerAsset <
-				Integer.parseInt(maximumNumberOfTagsPerAsset)) {
+		if ((systemMaximumNumberOfTagsPerAsset != 0) &&
+			(systemMaximumNumberOfTagsPerAsset < GetterUtil.getInteger(
+				maximumNumberOfTagsPerAsset))) {
+
 			SessionErrors.add(
 				actionRequest, "maximumNumberOfTagsPerAssetInvalid");
 		}
 	}
 
-
 	@Reference
 	private AssetAutoTaggerConfigurationFactory
 		_assetAutoTaggerConfigurationFactory;
+
 }

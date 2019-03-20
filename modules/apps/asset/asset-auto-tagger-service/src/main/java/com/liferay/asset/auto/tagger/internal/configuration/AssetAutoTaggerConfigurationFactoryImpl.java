@@ -77,7 +77,7 @@ public class AssetAutoTaggerConfigurationFactoryImpl
 
 	@Override
 	public AssetAutoTaggerConfiguration
-	getSystemAssetAutoTaggerConfiguration() {
+		getSystemAssetAutoTaggerConfiguration() {
 
 		return new AssetAutoTaggerConfiguration() {
 
@@ -153,7 +153,7 @@ public class AssetAutoTaggerConfigurationFactoryImpl
 			if ((systemMaximumNumberOfTagsPerAsset > 0) &&
 				((companyMaximumNumberOfTagsPerAsset == 0) ||
 				 (systemMaximumNumberOfTagsPerAsset <
-				  companyMaximumNumberOfTagsPerAsset))) {
+					 companyMaximumNumberOfTagsPerAsset))) {
 
 				return systemMaximumNumberOfTagsPerAsset;
 			}
@@ -196,7 +196,7 @@ public class AssetAutoTaggerConfigurationFactoryImpl
 			throws PortalException {
 
 			_group = group;
-	
+
 			_assetAutoTaggerCompanyConfiguration =
 				new CompanyAssetAutoTaggerConfiguration(
 					_companyLocalService.getCompany(_group.getCompanyId()));
@@ -230,7 +230,7 @@ public class AssetAutoTaggerConfigurationFactoryImpl
 					_group.getTypeSettingsProperties();
 
 				if (typeSettingsProperties.containsKey(
-					"assetAutoTaggingEnabled")) {
+						"assetAutoTaggingEnabled")) {
 
 					return GetterUtil.getBoolean(
 						typeSettingsProperties.get("assetAutoTaggingEnabled"));
@@ -238,9 +238,9 @@ public class AssetAutoTaggerConfigurationFactoryImpl
 
 				AssetAutoTaggerGroupConfiguration
 					assetAutoTaggerGroupConfiguration =
-					_configurationProvider.getGroupConfiguration(
-						AssetAutoTaggerGroupConfiguration.class,
-						_group.getGroupId());
+						_configurationProvider.getGroupConfiguration(
+							AssetAutoTaggerGroupConfiguration.class,
+							_group.getGroupId());
 
 				return assetAutoTaggerGroupConfiguration.enabled();
 			}
