@@ -77,12 +77,18 @@ public class AssetAutoTaggerConfigurationFactoryImpl
 
 	@Override
 	public AssetAutoTaggerConfiguration
-		getSystemAssetAutoTaggerConfiguration() {
+	getSystemAssetAutoTaggerConfiguration() {
 
 		return new AssetAutoTaggerConfiguration() {
 
 			@Override
 			public int getMaximumNumberOfTagsPerAsset() {
+				return _assetAutoTaggerSystemConfiguration.
+					maximumNumberOfTagsPerAsset();
+			}
+
+			@Override
+			public int getSystemNumberOfTagsPerAsset() {
 				return _assetAutoTaggerSystemConfiguration.
 					maximumNumberOfTagsPerAsset();
 			}
@@ -147,12 +153,21 @@ public class AssetAutoTaggerConfigurationFactoryImpl
 			if ((systemMaximumNumberOfTagsPerAsset > 0) &&
 				((companyMaximumNumberOfTagsPerAsset == 0) ||
 				 (systemMaximumNumberOfTagsPerAsset <
-					 companyMaximumNumberOfTagsPerAsset))) {
+				  companyMaximumNumberOfTagsPerAsset))) {
 
 				return systemMaximumNumberOfTagsPerAsset;
 			}
 
 			return companyMaximumNumberOfTagsPerAsset;
+		}
+
+		@Override
+		public int getSystemNumberOfTagsPerAsset() {
+			int systemMaximumNumberOfTagsPerAsset =
+				_assetAutoTaggerSystemConfiguration.
+					maximumNumberOfTagsPerAsset();
+
+			return systemMaximumNumberOfTagsPerAsset;
 		}
 
 		@Override
@@ -194,6 +209,12 @@ public class AssetAutoTaggerConfigurationFactoryImpl
 		}
 
 		@Override
+		public int getSystemNumberOfTagsPerAsset() {
+			return _assetAutoTaggerCompanyConfiguration.
+				getSystemNumberOfTagsPerAsset();
+		}
+
+		@Override
 		public boolean isAvailable() {
 			return _assetAutoTaggerCompanyConfiguration.isEnabled();
 		}
@@ -209,7 +230,7 @@ public class AssetAutoTaggerConfigurationFactoryImpl
 					_group.getTypeSettingsProperties();
 
 				if (typeSettingsProperties.containsKey(
-						"assetAutoTaggingEnabled")) {
+					"assetAutoTaggingEnabled")) {
 
 					return GetterUtil.getBoolean(
 						typeSettingsProperties.get("assetAutoTaggingEnabled"));
@@ -217,9 +238,9 @@ public class AssetAutoTaggerConfigurationFactoryImpl
 
 				AssetAutoTaggerGroupConfiguration
 					assetAutoTaggerGroupConfiguration =
-						_configurationProvider.getGroupConfiguration(
-							AssetAutoTaggerGroupConfiguration.class,
-							_group.getGroupId());
+					_configurationProvider.getGroupConfiguration(
+						AssetAutoTaggerGroupConfiguration.class,
+						_group.getGroupId());
 
 				return assetAutoTaggerGroupConfiguration.enabled();
 			}

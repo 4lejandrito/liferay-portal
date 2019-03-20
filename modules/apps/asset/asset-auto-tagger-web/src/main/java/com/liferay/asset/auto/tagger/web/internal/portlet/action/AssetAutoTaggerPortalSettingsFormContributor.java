@@ -14,8 +14,13 @@
 
 package com.liferay.asset.auto.tagger.web.internal.portlet.action;
 
+import com.liferay.asset.auto.tagger.configuration.AssetAutoTaggerConfiguration;
+import com.liferay.asset.auto.tagger.configuration.AssetAutoTaggerConfigurationFactory;
 import com.liferay.asset.auto.tagger.constants.AssetAutoTaggerConstants;
 import com.liferay.asset.auto.tagger.web.internal.constants.PortalSettingsAssetAutoTaggerConstants;
+import com.liferay.portal.kernel.servlet.SessionErrors;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.settings.portlet.action.PortalSettingsFormContributor;
 
 import java.util.Optional;
@@ -24,7 +29,9 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletException;
 
+import com.liferay.portal.settings.portlet.action.PortalSettingsParameterUtil;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Alejandro Tardín
@@ -55,8 +62,33 @@ public class AssetAutoTaggerPortalSettingsFormContributor
 
 	@Override
 	public void validateForm(
-			ActionRequest actionRequest, ActionResponse actionResponse)
+		ActionRequest actionRequest, ActionResponse actionResponse)
 		throws PortletException {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay) actionRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+
+		String maximumNumberOfTagsPerAsset =
+			PortalSettingsParameterUtil.getString(
+				actionRequest, this, "maximumNumberOfTagsPerAsset");
+
+		AssetAutoTaggerConfiguration assetAutoTaggerConfiguration =
+			_assetAutoTaggerConfigurationFactory.
+				getCompanyAssetAutoTaggerConfiguration(
+					themeDisplay.getCompany());
+		int systemMaximumNumberOfTagsPerAsset =
+			assetAutoTaggerConfiguration.getSystemNumberOfTagsPerAsset();
+
+		if (systemMaximumNumberOfTagsPerAsset <=
+			Integer.parseInt(maximumNumberOfTagsPerAsset)) {
+			SessionErrors.add(
+				actionRequest, "facebookConnectGraphURLInvalid");
+		}
 	}
 
+
+	@Reference
+	private AssetAutoTaggerConfigurationFactory
+		_assetAutoTaggerConfigurationFactory;
 }
