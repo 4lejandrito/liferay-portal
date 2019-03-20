@@ -22,16 +22,13 @@ import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.settings.portlet.action.PortalSettingsFormContributor;
-
-import java.util.Optional;
-
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.PortletException;
-
 import com.liferay.portal.settings.portlet.action.PortalSettingsParameterUtil;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
+import java.util.Optional;
 
 /**
  * @author Alejandro Tardín
@@ -62,12 +59,10 @@ public class AssetAutoTaggerPortalSettingsFormContributor
 
 	@Override
 	public void validateForm(
-		ActionRequest actionRequest, ActionResponse actionResponse)
-		throws PortletException {
+		ActionRequest actionRequest, ActionResponse actionResponse) {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay) actionRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
-
 
 		String maximumNumberOfTagsPerAsset =
 			PortalSettingsParameterUtil.getString(
@@ -77,13 +72,15 @@ public class AssetAutoTaggerPortalSettingsFormContributor
 			_assetAutoTaggerConfigurationFactory.
 				getCompanyAssetAutoTaggerConfiguration(
 					themeDisplay.getCompany());
+
 		int systemMaximumNumberOfTagsPerAsset =
 			assetAutoTaggerConfiguration.getSystemNumberOfTagsPerAsset();
 
-		if (systemMaximumNumberOfTagsPerAsset <=
-			Integer.parseInt(maximumNumberOfTagsPerAsset)) {
+		if (systemMaximumNumberOfTagsPerAsset != 0 &&
+				systemMaximumNumberOfTagsPerAsset <
+				Integer.parseInt(maximumNumberOfTagsPerAsset)) {
 			SessionErrors.add(
-				actionRequest, "facebookConnectGraphURLInvalid");
+				actionRequest, "maximumNumberOfTagsPerAssetInvalid");
 		}
 	}
 

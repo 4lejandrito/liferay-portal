@@ -20,9 +20,10 @@
 AssetAutoTaggerConfiguration assetAutoTaggerConfiguration = (AssetAutoTaggerConfiguration)request.getAttribute(AssetAutoTaggerConfiguration.class.getName());
 %>
 
+<liferay-ui:error key="maximumNumberOfTagsPerAssetInvalid" message="maximum-number-of-tags-per-asset-invalid" />
+
 <aui:input id="<%= PortalSettingsAssetAutoTaggerConstants.FORM_PARAMETER_NAMESPACE + ActionRequest.ACTION_NAME %>" name="<%= ActionRequest.ACTION_NAME %>" type="hidden" value="<%= PortalSettingsAssetAutoTaggerConstants.ACTION_NAME %>" />
 
 <aui:input helpMessage="instance-asset-auto-tagging-help" label="enable-auto-tagging-of-assets-on-this-instance" name='<%= PortalSettingsAssetAutoTaggerConstants.FORM_PARAMETER_NAMESPACE + "enabled" %>' type="checkbox" value="<%= assetAutoTaggerConfiguration.isEnabled() %>" />
-<liferay-ui:error key="facebookConnectGraphURLInvalid" message="the-facebook-connect-graph-url-is-invalid" />
 
 <aui:input label="maximum-number-of-tags-per-asset" name='<%= PortalSettingsAssetAutoTaggerConstants.FORM_PARAMETER_NAMESPACE + "maximumNumberOfTagsPerAsset" %>' type="number" value="<%= assetAutoTaggerConfiguration.getMaximumNumberOfTagsPerAsset() %>" />

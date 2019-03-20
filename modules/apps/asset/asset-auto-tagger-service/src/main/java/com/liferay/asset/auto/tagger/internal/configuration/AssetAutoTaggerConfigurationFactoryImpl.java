@@ -196,7 +196,7 @@ public class AssetAutoTaggerConfigurationFactoryImpl
 			throws PortalException {
 
 			_group = group;
-
+	
 			_assetAutoTaggerCompanyConfiguration =
 				new CompanyAssetAutoTaggerConfiguration(
 					_companyLocalService.getCompany(_group.getCompanyId()));
