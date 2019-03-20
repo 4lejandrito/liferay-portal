@@ -240,7 +240,7 @@ AUI.add(
 						var formNode = instance.formNode;
 
 						var field = formNode.one('.' + instance.formValidator.get('errorClass'));
-						var fieldWrapper = field.ancestor('form > div');
+						var fieldWrapper = field && field.ancestor('form > div');
 
 						if (field && fieldWrapper) {
 							var formTabs = formNode.one('.lfr-nav');
