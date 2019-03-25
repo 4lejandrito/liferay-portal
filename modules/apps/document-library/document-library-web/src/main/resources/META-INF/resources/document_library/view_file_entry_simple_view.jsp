@@ -26,6 +26,12 @@ FileVersion fileVersion = fileEntry.getFileVersion();
 DLViewFileVersionDisplayContext dlViewFileVersionDisplayContext = dlDisplayContextProvider.getDLViewFileVersionDisplayContext(request, response, fileVersion);
 %>
 
+<liferay-util:html-top
+	outputKey="document_library_preview_css"
+>
+	<link href="<%= PortalUtil.getStaticResourceURL(request, application.getContextPath() + "/document_library/css/document_library_preview.css") %>" rel="stylesheet" type="text/css" />
+</liferay-util:html-top>
+
 <div class="view">
 	<div class="body-row">
 		<aui:model-context bean="<%= fileVersion %>" model="<%= DLFileVersion.class %>" />
