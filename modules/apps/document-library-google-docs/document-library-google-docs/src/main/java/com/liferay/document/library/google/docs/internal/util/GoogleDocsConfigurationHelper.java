@@ -17,6 +17,10 @@ package com.liferay.document.library.google.docs.internal.util;
 import com.liferay.document.library.google.drive.configuration.DLGoogleDriveCompanyConfiguration;
 import com.liferay.portal.kernel.module.configuration.ConfigurationException;
 import com.liferay.portal.kernel.module.configuration.ConfigurationProviderUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.util.PrefsPropsUtil;
+
+import javax.portlet.PortletPreferences;
 
 /**
  * @author Iván Zaera
@@ -29,17 +33,24 @@ public class GoogleDocsConfigurationHelper {
 		_dlGoogleDriveCompanyConfiguration =
 			ConfigurationProviderUtil.getCompanyConfiguration(
 				DLGoogleDriveCompanyConfiguration.class, companyId);
+
+		_portletPreferences = PrefsPropsUtil.getPreferences(companyId);
 	}
 
 	public String getGoogleAppsAPIKey() {
-		return _dlGoogleDriveCompanyConfiguration.clientSecret();
+		return GetterUtil.getString(
+			_dlGoogleDriveCompanyConfiguration.clientSecret(),
+			_portletPreferences.getValue("googleAppsAPIKey", ""));
 	}
 
 	public String getGoogleClientId() {
-		return _dlGoogleDriveCompanyConfiguration.clientId();
+		return GetterUtil.getString(
+			_dlGoogleDriveCompanyConfiguration.clientId(),
+			_portletPreferences.getValue("googleClientId", ""));
 	}
 
 	private final DLGoogleDriveCompanyConfiguration
 		_dlGoogleDriveCompanyConfiguration;
+	private final PortletPreferences _portletPreferences;
 
 }
