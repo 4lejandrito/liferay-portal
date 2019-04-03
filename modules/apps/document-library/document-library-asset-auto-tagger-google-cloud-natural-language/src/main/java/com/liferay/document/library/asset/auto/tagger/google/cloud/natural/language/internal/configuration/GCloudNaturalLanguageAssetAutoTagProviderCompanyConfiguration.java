@@ -42,9 +42,7 @@ public interface GCloudNaturalLanguageAssetAutoTagProviderCompanyConfiguration {
 	@ExtendedAttributeDefinition(
 		descriptionArguments = GCloudNaturalLanguageAssetAutoTagProviderConstants.API_KEY_DOCS_URL
 	)
-	@Meta.AD(
-		description = "api-key-description", name = "api-key", required = true
-	)
+	@Meta.AD(description = "api-key-description", name = "api-key")
 	public String apiKey();
 
 	/**

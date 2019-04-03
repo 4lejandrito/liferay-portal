@@ -19,6 +19,7 @@
 <%
 GCloudNaturalLanguageAssetAutoTagProviderCompanyConfiguration gCloudNaturalLanguageAssetAutoTagProviderCompanyConfiguration = (GCloudNaturalLanguageAssetAutoTagProviderCompanyConfiguration)request.getAttribute(GCloudNaturalLanguageAssetAutoTagProviderCompanyConfiguration.class.getName());
 %>
+
 <liferay-ui:error key="endpointEnabledWithoutAPIKey" message="endpoint-enabled-without-api-key" />
 
 <aui:input name="<%= ActionRequest.ACTION_NAME %>" type="hidden" value="/portal_settings/document_library_asset_auto_tagger_google_cloud_natural_language" />

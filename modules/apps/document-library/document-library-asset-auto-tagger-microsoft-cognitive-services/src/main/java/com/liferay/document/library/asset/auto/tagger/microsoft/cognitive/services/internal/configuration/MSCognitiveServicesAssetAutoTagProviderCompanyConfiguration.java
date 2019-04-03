@@ -41,9 +41,7 @@ public interface MSCognitiveServicesAssetAutoTagProviderCompanyConfiguration {
 	@ExtendedAttributeDefinition(
 		descriptionArguments = MSCognitiveServicesAssetAutoTagProviderConstants.API_KEY_DOCS_URL
 	)
-	@Meta.AD(
-		description = "api-key-description", name = "api-key", required = true
-	)
+	@Meta.AD(description = "api-key-description", name = "api-key")
 	public String apiKey();
 
 	/**
