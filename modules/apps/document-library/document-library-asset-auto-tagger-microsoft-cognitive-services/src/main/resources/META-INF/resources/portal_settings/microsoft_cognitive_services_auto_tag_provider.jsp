@@ -20,6 +20,8 @@
 MSCognitiveServicesAssetAutoTagProviderCompanyConfiguration MSCognitiveServicesAssetAutoTagProviderCompanyConfiguration = (MSCognitiveServicesAssetAutoTagProviderCompanyConfiguration)request.getAttribute(MSCognitiveServicesAssetAutoTagProviderCompanyConfiguration.class.getName());
 %>
 
+<liferay-ui:error key="endpointEnabledWithoutAPIKey" message="endpoint-enabled-without-api-key" />
+
 <aui:input name="<%= ActionRequest.ACTION_NAME %>" type="hidden" value="/portal_settings/document_library_asset_auto_tagger_microsoft_cognitive_services" />
 
 <aui:input id="enabled" label="enabled" name='<%= PortalSettingsMSCognitiveServicesAssetAutoTagProviderConstants.FORM_PARAMETER_NAMESPACE + "enabled" %>' type="checkbox" value="<%= MSCognitiveServicesAssetAutoTagProviderCompanyConfiguration.enabled() %>" />

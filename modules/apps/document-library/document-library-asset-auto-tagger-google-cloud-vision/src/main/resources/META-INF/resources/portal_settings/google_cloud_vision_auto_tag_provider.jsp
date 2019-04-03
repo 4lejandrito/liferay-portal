@@ -20,6 +20,8 @@
 GCloudVisionAssetAutoTagProviderCompanyConfiguration gCloudVisionAssetAutoTagProviderCompanyConfiguration = (GCloudVisionAssetAutoTagProviderCompanyConfiguration)request.getAttribute(GCloudVisionAssetAutoTagProviderCompanyConfiguration.class.getName());
 %>
 
+<liferay-ui:error key="endpointEnabledWithoutAPIKey" message="endpoint-enabled-without-api-key" />
+
 <aui:input name="<%= ActionRequest.ACTION_NAME %>" type="hidden" value="/portal_settings/document_library_asset_auto_tagger_google_cloud_vision" />
 
 <aui:input id="enabled" label="enabled" name='<%= PortalSettingsGCloudVisionAssetAutoTagProviderConstants.FORM_PARAMETER_NAMESPACE + "enabled" %>' type="checkbox" value="<%= gCloudVisionAssetAutoTagProviderCompanyConfiguration.enabled() %>" />
