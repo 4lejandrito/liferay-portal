@@ -325,7 +325,11 @@ public class ConfigurationModelToDDMFormConverter {
 			return;
 		}
 
-		ddmFormField.setRequired(required);
+		Map<String, String> extensionAttributes = _getExtensionAttributes(
+			attributeDefinition);
+
+		ddmFormField.setRequired(
+			Boolean.valueOf(extensionAttributes.get("required")) || required);
 	}
 
 	protected void setDDMFormFieldTip(
