@@ -188,8 +188,25 @@ public abstract class BaseStatusResourceTestCase {
 	}
 
 	protected void assertValid(Status status) {
-		throw new UnsupportedOperationException(
-			"This method needs to be implemented");
+		boolean valid = true;
+
+		for (String additionalAssertFieldName :
+				getAdditionalAssertFieldNames()) {
+
+			if (Objects.equals("actionInProgress", additionalAssertFieldName)) {
+				if (status.getActionInProgress() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
+			throw new IllegalArgumentException(
+				"Invalid additional assert field name " +
+					additionalAssertFieldName);
+		}
+
+		Assert.assertTrue(valid);
 	}
 
 	protected void assertValid(Page<Status> page) {
@@ -209,12 +226,35 @@ public abstract class BaseStatusResourceTestCase {
 		Assert.assertTrue(valid);
 	}
 
+	protected String[] getAdditionalAssertFieldNames() {
+		return new String[0];
+	}
+
 	protected boolean equals(Status status1, Status status2) {
 		if (status1 == status2) {
 			return true;
 		}
 
-		return false;
+		for (String additionalAssertFieldName :
+				getAdditionalAssertFieldNames()) {
+
+			if (Objects.equals("actionInProgress", additionalAssertFieldName)) {
+				if (!Objects.equals(
+						status1.getActionInProgress(),
+						status2.getActionInProgress())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			throw new IllegalArgumentException(
+				"Invalid additional assert field name " +
+					additionalAssertFieldName);
+		}
+
+		return true;
 	}
 
 	protected Collection<EntityField> getEntityFields() throws Exception {
@@ -280,7 +320,9 @@ public abstract class BaseStatusResourceTestCase {
 	}
 
 	protected Status randomIrrelevantStatus() {
-		return randomStatus();
+		Status randomIrrelevantStatus = randomStatus();
+
+		return randomIrrelevantStatus;
 	}
 
 	protected Status randomPatchStatus() {

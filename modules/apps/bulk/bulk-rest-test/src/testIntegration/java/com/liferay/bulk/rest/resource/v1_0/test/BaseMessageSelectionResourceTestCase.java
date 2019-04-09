@@ -222,8 +222,25 @@ public abstract class BaseMessageSelectionResourceTestCase {
 	}
 
 	protected void assertValid(MessageSelection messageSelection) {
-		throw new UnsupportedOperationException(
-			"This method needs to be implemented");
+		boolean valid = true;
+
+		for (String additionalAssertFieldName :
+				getAdditionalAssertFieldNames()) {
+
+			if (Objects.equals("description", additionalAssertFieldName)) {
+				if (messageSelection.getDescription() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
+			throw new IllegalArgumentException(
+				"Invalid additional assert field name " +
+					additionalAssertFieldName);
+		}
+
+		Assert.assertTrue(valid);
 	}
 
 	protected void assertValid(Page<MessageSelection> page) {
@@ -243,6 +260,10 @@ public abstract class BaseMessageSelectionResourceTestCase {
 		Assert.assertTrue(valid);
 	}
 
+	protected String[] getAdditionalAssertFieldNames() {
+		return new String[0];
+	}
+
 	protected boolean equals(
 		MessageSelection messageSelection1,
 		MessageSelection messageSelection2) {
@@ -251,7 +272,26 @@ public abstract class BaseMessageSelectionResourceTestCase {
 			return true;
 		}
 
-		return false;
+		for (String additionalAssertFieldName :
+				getAdditionalAssertFieldNames()) {
+
+			if (Objects.equals("description", additionalAssertFieldName)) {
+				if (!Objects.equals(
+						messageSelection1.getDescription(),
+						messageSelection2.getDescription())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			throw new IllegalArgumentException(
+				"Invalid additional assert field name " +
+					additionalAssertFieldName);
+		}
+
+		return true;
 	}
 
 	protected Collection<EntityField> getEntityFields() throws Exception {
@@ -321,7 +361,10 @@ public abstract class BaseMessageSelectionResourceTestCase {
 	}
 
 	protected MessageSelection randomIrrelevantMessageSelection() {
-		return randomMessageSelection();
+		MessageSelection randomIrrelevantMessageSelection =
+			randomMessageSelection();
+
+		return randomIrrelevantMessageSelection;
 	}
 
 	protected MessageSelection randomPatchMessageSelection() {

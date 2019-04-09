@@ -258,8 +258,37 @@ public abstract class BaseTaxonomyCategoryResourceTestCase {
 	}
 
 	protected void assertValid(TaxonomyCategory taxonomyCategory) {
-		throw new UnsupportedOperationException(
-			"This method needs to be implemented");
+		boolean valid = true;
+
+		for (String additionalAssertFieldName :
+				getAdditionalAssertFieldNames()) {
+
+			if (Objects.equals(
+					"taxonomyCategoryId", additionalAssertFieldName)) {
+
+				if (taxonomyCategory.getTaxonomyCategoryId() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals(
+					"taxonomyCategoryName", additionalAssertFieldName)) {
+
+				if (taxonomyCategory.getTaxonomyCategoryName() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
+			throw new IllegalArgumentException(
+				"Invalid additional assert field name " +
+					additionalAssertFieldName);
+		}
+
+		Assert.assertTrue(valid);
 	}
 
 	protected void assertValid(Page<TaxonomyCategory> page) {
@@ -279,6 +308,10 @@ public abstract class BaseTaxonomyCategoryResourceTestCase {
 		Assert.assertTrue(valid);
 	}
 
+	protected String[] getAdditionalAssertFieldNames() {
+		return new String[0];
+	}
+
 	protected boolean equals(
 		TaxonomyCategory taxonomyCategory1,
 		TaxonomyCategory taxonomyCategory2) {
@@ -287,7 +320,41 @@ public abstract class BaseTaxonomyCategoryResourceTestCase {
 			return true;
 		}
 
-		return false;
+		for (String additionalAssertFieldName :
+				getAdditionalAssertFieldNames()) {
+
+			if (Objects.equals(
+					"taxonomyCategoryId", additionalAssertFieldName)) {
+
+				if (!Objects.equals(
+						taxonomyCategory1.getTaxonomyCategoryId(),
+						taxonomyCategory2.getTaxonomyCategoryId())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals(
+					"taxonomyCategoryName", additionalAssertFieldName)) {
+
+				if (!Objects.equals(
+						taxonomyCategory1.getTaxonomyCategoryName(),
+						taxonomyCategory2.getTaxonomyCategoryName())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			throw new IllegalArgumentException(
+				"Invalid additional assert field name " +
+					additionalAssertFieldName);
+		}
+
+		return true;
 	}
 
 	protected Collection<EntityField> getEntityFields() throws Exception {
@@ -364,7 +431,10 @@ public abstract class BaseTaxonomyCategoryResourceTestCase {
 	}
 
 	protected TaxonomyCategory randomIrrelevantTaxonomyCategory() {
-		return randomTaxonomyCategory();
+		TaxonomyCategory randomIrrelevantTaxonomyCategory =
+			randomTaxonomyCategory();
+
+		return randomIrrelevantTaxonomyCategory;
 	}
 
 	protected TaxonomyCategory randomPatchTaxonomyCategory() {

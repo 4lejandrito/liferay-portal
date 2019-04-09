@@ -104,25 +104,20 @@ public abstract class BaseTaxonomyVocabularyResourceTestCase {
 	}
 
 	@Test
-	public void testPostContentSpaceTaxonomyVocabulariesCommonPage()
-		throws Exception {
-
+	public void testPostSiteTaxonomyVocabulariesCommonPage() throws Exception {
 		Assert.assertTrue(true);
 	}
 
 	protected Page<TaxonomyVocabulary>
-			invokePostContentSpaceTaxonomyVocabulariesCommonPage(
-				Long contentSpaceId,
-				DocumentBulkSelection documentBulkSelection)
+			invokePostSiteTaxonomyVocabulariesCommonPage(
+				Long siteId, DocumentBulkSelection documentBulkSelection)
 		throws Exception {
 
 		Http.Options options = _createHttpOptions();
 
 		String location =
 			_resourceURL +
-				_toPath(
-					"/content-spaces/{contentSpaceId}/taxonomy-vocabularies/common",
-					contentSpaceId);
+				_toPath("/sites/{siteId}/taxonomy-vocabularies/common", siteId);
 
 		options.setLocation(location);
 
@@ -141,18 +136,15 @@ public abstract class BaseTaxonomyVocabularyResourceTestCase {
 	}
 
 	protected Http.Response
-			invokePostContentSpaceTaxonomyVocabulariesCommonPageResponse(
-				Long contentSpaceId,
-				DocumentBulkSelection documentBulkSelection)
+			invokePostSiteTaxonomyVocabulariesCommonPageResponse(
+				Long siteId, DocumentBulkSelection documentBulkSelection)
 		throws Exception {
 
 		Http.Options options = _createHttpOptions();
 
 		String location =
 			_resourceURL +
-				_toPath(
-					"/content-spaces/{contentSpaceId}/taxonomy-vocabularies/common",
-					contentSpaceId);
+				_toPath("/sites/{siteId}/taxonomy-vocabularies/common", siteId);
 
 		options.setLocation(location);
 
@@ -224,8 +216,61 @@ public abstract class BaseTaxonomyVocabularyResourceTestCase {
 	}
 
 	protected void assertValid(TaxonomyVocabulary taxonomyVocabulary) {
-		throw new UnsupportedOperationException(
-			"This method needs to be implemented");
+		boolean valid = true;
+
+		for (String additionalAssertFieldName :
+				getAdditionalAssertFieldNames()) {
+
+			if (Objects.equals("multiValued", additionalAssertFieldName)) {
+				if (taxonomyVocabulary.getMultiValued() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("name", additionalAssertFieldName)) {
+				if (taxonomyVocabulary.getName() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("required", additionalAssertFieldName)) {
+				if (taxonomyVocabulary.getRequired() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals(
+					"taxonomyCategories", additionalAssertFieldName)) {
+
+				if (taxonomyVocabulary.getTaxonomyCategories() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals(
+					"taxonomyVocabularyId", additionalAssertFieldName)) {
+
+				if (taxonomyVocabulary.getTaxonomyVocabularyId() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
+			throw new IllegalArgumentException(
+				"Invalid additional assert field name " +
+					additionalAssertFieldName);
+		}
+
+		Assert.assertTrue(valid);
 	}
 
 	protected void assertValid(Page<TaxonomyVocabulary> page) {
@@ -245,6 +290,10 @@ public abstract class BaseTaxonomyVocabularyResourceTestCase {
 		Assert.assertTrue(valid);
 	}
 
+	protected String[] getAdditionalAssertFieldNames() {
+		return new String[0];
+	}
+
 	protected boolean equals(
 		TaxonomyVocabulary taxonomyVocabulary1,
 		TaxonomyVocabulary taxonomyVocabulary2) {
@@ -253,7 +302,74 @@ public abstract class BaseTaxonomyVocabularyResourceTestCase {
 			return true;
 		}
 
-		return false;
+		for (String additionalAssertFieldName :
+				getAdditionalAssertFieldNames()) {
+
+			if (Objects.equals("multiValued", additionalAssertFieldName)) {
+				if (!Objects.equals(
+						taxonomyVocabulary1.getMultiValued(),
+						taxonomyVocabulary2.getMultiValued())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("name", additionalAssertFieldName)) {
+				if (!Objects.equals(
+						taxonomyVocabulary1.getName(),
+						taxonomyVocabulary2.getName())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("required", additionalAssertFieldName)) {
+				if (!Objects.equals(
+						taxonomyVocabulary1.getRequired(),
+						taxonomyVocabulary2.getRequired())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals(
+					"taxonomyCategories", additionalAssertFieldName)) {
+
+				if (!Objects.equals(
+						taxonomyVocabulary1.getTaxonomyCategories(),
+						taxonomyVocabulary2.getTaxonomyCategories())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals(
+					"taxonomyVocabularyId", additionalAssertFieldName)) {
+
+				if (!Objects.equals(
+						taxonomyVocabulary1.getTaxonomyVocabularyId(),
+						taxonomyVocabulary2.getTaxonomyVocabularyId())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			throw new IllegalArgumentException(
+				"Invalid additional assert field name " +
+					additionalAssertFieldName);
+		}
+
+		return true;
 	}
 
 	protected Collection<EntityField> getEntityFields() throws Exception {
@@ -346,7 +462,10 @@ public abstract class BaseTaxonomyVocabularyResourceTestCase {
 	}
 
 	protected TaxonomyVocabulary randomIrrelevantTaxonomyVocabulary() {
-		return randomTaxonomyVocabulary();
+		TaxonomyVocabulary randomIrrelevantTaxonomyVocabulary =
+			randomTaxonomyVocabulary();
+
+		return randomIrrelevantTaxonomyVocabulary;
 	}
 
 	protected TaxonomyVocabulary randomPatchTaxonomyVocabulary() {

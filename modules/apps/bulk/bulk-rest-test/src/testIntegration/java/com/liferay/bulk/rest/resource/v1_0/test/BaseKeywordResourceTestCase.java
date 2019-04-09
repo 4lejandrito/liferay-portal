@@ -298,8 +298,25 @@ public abstract class BaseKeywordResourceTestCase {
 	}
 
 	protected void assertValid(Keyword keyword) {
-		throw new UnsupportedOperationException(
-			"This method needs to be implemented");
+		boolean valid = true;
+
+		for (String additionalAssertFieldName :
+				getAdditionalAssertFieldNames()) {
+
+			if (Objects.equals("name", additionalAssertFieldName)) {
+				if (keyword.getName() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
+			throw new IllegalArgumentException(
+				"Invalid additional assert field name " +
+					additionalAssertFieldName);
+		}
+
+		Assert.assertTrue(valid);
 	}
 
 	protected void assertValid(Page<Keyword> page) {
@@ -319,12 +336,32 @@ public abstract class BaseKeywordResourceTestCase {
 		Assert.assertTrue(valid);
 	}
 
+	protected String[] getAdditionalAssertFieldNames() {
+		return new String[0];
+	}
+
 	protected boolean equals(Keyword keyword1, Keyword keyword2) {
 		if (keyword1 == keyword2) {
 			return true;
 		}
 
-		return false;
+		for (String additionalAssertFieldName :
+				getAdditionalAssertFieldNames()) {
+
+			if (Objects.equals("name", additionalAssertFieldName)) {
+				if (!Objects.equals(keyword1.getName(), keyword2.getName())) {
+					return false;
+				}
+
+				continue;
+			}
+
+			throw new IllegalArgumentException(
+				"Invalid additional assert field name " +
+					additionalAssertFieldName);
+		}
+
+		return true;
 	}
 
 	protected Collection<EntityField> getEntityFields() throws Exception {
@@ -393,7 +430,9 @@ public abstract class BaseKeywordResourceTestCase {
 	}
 
 	protected Keyword randomIrrelevantKeyword() {
-		return randomKeyword();
+		Keyword randomIrrelevantKeyword = randomKeyword();
+
+		return randomIrrelevantKeyword;
 	}
 
 	protected Keyword randomPatchKeyword() {
