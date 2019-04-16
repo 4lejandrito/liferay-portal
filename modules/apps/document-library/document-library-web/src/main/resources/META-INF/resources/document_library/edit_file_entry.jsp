@@ -457,16 +457,6 @@ if (portletTitleBasedNavigation) {
 					</c:otherwise>
 				</c:choose>
 
-				<aui:fieldset collapsed="<%= true %>" collapsible="<%= true %>" label="display-page-template">
-					<liferay-asset:select-asset-display-page
-						classNameId="<%= PortalUtil.getClassNameId(DLFileEntry.class) %>"
-						classPK="<%= (fileEntry != null) ? fileEntry.getFileEntryId() : 0 %>"
-						groupId="<%= scopeGroupId %>"
-						showPortletLayouts="<%= true %>"
-						showViewInContextLink="<%= true %>"
-					/>
-				</aui:fieldset>
-
 				<c:if test="<%= (folder == null) || folder.isSupportsMetadata() %>">
 					<liferay-expando:custom-attributes-available
 						className="<%= DLFileEntryConstants.getClassName() %>"
@@ -483,6 +473,16 @@ if (portletTitleBasedNavigation) {
 				</c:if>
 
 				<c:if test="<%= (folder == null) || folder.isSupportsSocial() %>">
+					<aui:fieldset collapsed="<%= true %>" collapsible="<%= true %>" label="display-page-template">
+						<liferay-asset:select-asset-display-page
+							classNameId="<%= PortalUtil.getClassNameId(DLFileEntry.class) %>"
+							classPK="<%= (fileEntry != null) ? fileEntry.getFileEntryId() : 0 %>"
+							groupId="<%= scopeGroupId %>"
+							showPortletLayouts="<%= true %>"
+							showViewInContextLink="<%= true %>"
+						/>
+					</aui:fieldset>
+
 					<aui:fieldset collapsed="<%= true %>" collapsible="<%= true %>" label="categorization">
 						<liferay-asset:asset-categories-selector
 							className="<%= DLFileEntry.class.getName() %>"
