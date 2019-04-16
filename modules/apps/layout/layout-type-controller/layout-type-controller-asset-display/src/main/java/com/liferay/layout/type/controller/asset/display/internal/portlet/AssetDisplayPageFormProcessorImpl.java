@@ -18,6 +18,7 @@ import com.liferay.asset.display.page.constants.AssetDisplayPageConstants;
 import com.liferay.asset.display.page.model.AssetDisplayPageEntry;
 import com.liferay.asset.display.page.portlet.AssetDisplayPageEntryFormProcessor;
 import com.liferay.asset.display.page.service.AssetDisplayPageEntryLocalService;
+import com.liferay.asset.kernel.service.AssetEntryLocalService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
@@ -25,6 +26,8 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
+
+import java.util.Objects;
 
 import javax.portlet.PortletRequest;
 
@@ -43,10 +46,16 @@ public class AssetDisplayPageFormProcessorImpl
 			String className, long classPK, PortletRequest portletRequest)
 		throws PortalException {
 
+		long classNameId = _portal.getClassNameId(className);
+
+		if (Objects.isNull(
+				_assetEntryLocalService.fetchEntry(classNameId, classPK))) {
+
+			return;
+		}
+
 		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
-
-		long classNameId = _portal.getClassNameId(className);
 
 		AssetDisplayPageEntry assetDisplayPageEntry =
 			_assetDisplayPageEntryLocalService.fetchAssetDisplayPageEntry(
@@ -87,6 +96,9 @@ public class AssetDisplayPageFormProcessorImpl
 	@Reference
 	private AssetDisplayPageEntryLocalService
 		_assetDisplayPageEntryLocalService;
+
+	@Reference
+	private AssetEntryLocalService _assetEntryLocalService;
 
 	@Reference
 	private Portal _portal;
