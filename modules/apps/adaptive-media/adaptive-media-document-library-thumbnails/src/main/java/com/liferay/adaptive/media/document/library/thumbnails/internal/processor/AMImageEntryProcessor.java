@@ -32,12 +32,15 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.FileVersion;
+import com.liferay.portal.kernel.repository.model.FileVersionWrapper;
+import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.PrefsPropsUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portlet.documentlibrary.util.ImageProcessorImpl;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import java.util.Arrays;
@@ -315,14 +318,33 @@ public class AMImageEntryProcessor implements DLProcessor, ImageProcessor {
 			AMAsyncProcessor<FileVersion, ?> amAsyncProcessor =
 				_amAsyncProcessorLocator.locateForClass(FileVersion.class);
 
+			byte[] bytes = FileUtil.getBytes(
+				fileVersion.getContentStream(false));
+
 			amAsyncProcessor.triggerProcess(
-				fileVersion, String.valueOf(fileVersion.getFileVersionId()));
+				new FileVersionWrapper(fileVersion) {
+
+					@Override
+					public InputStream getContentStream(
+						boolean incrementCounter) {
+
+						return new ByteArrayInputStream(bytes);
+					}
+
+				},
+				String.valueOf(fileVersion.getFileVersionId()));
 		}
 		catch (PortalException pe) {
 			_log.error(
 				"Unable to create lazy adaptive media for file version " +
 					fileVersion.getFileVersionId(),
 				pe);
+		}
+		catch (IOException ioe) {
+			_log.error(
+				"Unable to create lazy adaptive media for file version " +
+					fileVersion.getFileVersionId(),
+				ioe);
 		}
 	}
 
