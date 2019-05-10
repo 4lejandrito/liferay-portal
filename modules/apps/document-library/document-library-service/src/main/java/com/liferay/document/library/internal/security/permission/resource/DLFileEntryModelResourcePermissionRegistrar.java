@@ -78,17 +78,15 @@ public class DLFileEntryModelResourcePermissionRegistrar {
 					consumer.accept(
 						new DLFileEntryWorkflowedModelPermissionLogic(
 							modelResourcePermission));
-
-					consumer.accept(
-						_dlFileEntryDynamicModelResourcePermissionLogic);
-
 					consumer.accept(
 						(permissionChecker, name, fileEntry, actionId) -> {
 							String className = fileEntry.getClassName();
 							long classPK = fileEntry.getClassPK();
 
 							if (Validator.isNull(className) || (classPK <= 0)) {
-								return null;
+								return _dynamicContains(
+									permissionChecker, name, fileEntry,
+									actionId, null);
 							}
 
 							Boolean hasResourcePermission =
@@ -100,7 +98,9 @@ public class DLFileEntryModelResourcePermissionRegistrar {
 							if ((hasResourcePermission != null) &&
 								!hasResourcePermission) {
 
-								return false;
+								return _dynamicContains(
+									permissionChecker, name, fileEntry,
+									actionId, false);
 							}
 
 							Boolean hasBaseModelPermission =
@@ -113,10 +113,14 @@ public class DLFileEntryModelResourcePermissionRegistrar {
 							if ((hasBaseModelPermission != null) &&
 								!hasBaseModelPermission) {
 
-								return false;
+								return _dynamicContains(
+									permissionChecker, name, fileEntry,
+									actionId, false);
 							}
 
-							return null;
+							return _dynamicContains(
+								permissionChecker, name, fileEntry, actionId,
+								null);
 						});
 
 					if (PropsValues.PERMISSIONS_VIEW_DYNAMIC_INHERITANCE) {
@@ -132,6 +136,22 @@ public class DLFileEntryModelResourcePermissionRegistrar {
 	@Deactivate
 	public void deactivate() {
 		_serviceRegistration.unregister();
+	}
+
+	private Boolean _dynamicContains(
+			PermissionChecker permissionChecker, String name,
+			DLFileEntry fileEntry, String actionId, Boolean defaultValue)
+		throws PortalException {
+
+		Boolean contains =
+			_dlFileEntryDynamicModelResourcePermissionLogic.contains(
+				permissionChecker, name, fileEntry, actionId);
+
+		if (contains != null) {
+			return contains;
+		}
+
+		return defaultValue;
 	}
 
 	private UnsafeFunction<DLFileEntry, DLFolder, PortalException>
