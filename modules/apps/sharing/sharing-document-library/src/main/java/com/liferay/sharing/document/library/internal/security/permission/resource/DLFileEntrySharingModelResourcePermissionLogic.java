@@ -12,17 +12,17 @@
  * details.
  */
 
-package com.liferay.sharing.internal.security.permission.resource;
+package com.liferay.sharing.document.library.internal.security.permission.resource;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.GroupedModel;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermissionLogic;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.sharing.configuration.SharingConfiguration;
 import com.liferay.sharing.configuration.SharingConfigurationFactory;
 import com.liferay.sharing.security.permission.SharingEntryAction;
-import com.liferay.sharing.security.permission.resource.SharingModelResourcePermissionLogic;
 import com.liferay.sharing.service.SharingEntryLocalService;
 
 import org.osgi.service.component.annotations.Component;
@@ -33,10 +33,13 @@ import org.osgi.service.component.annotations.Reference;
  * @author Sergio González
  */
 @Component(
-	immediate = true, service = SharingModelResourcePermissionLogic.class
+	immediate = true,
+	property = "model.class.name=com.liferay.document.library.kernel.model.DLFileEntry",
+	service = ModelResourcePermissionLogic.class
 )
-public class SharingModelResourcePermissionLogicImpl<T extends GroupedModel>
-	implements SharingModelResourcePermissionLogic<T> {
+public class DLFileEntrySharingModelResourcePermissionLogic
+	<T extends GroupedModel>
+		implements ModelResourcePermissionLogic<T> {
 
 	@Override
 	public Boolean contains(
