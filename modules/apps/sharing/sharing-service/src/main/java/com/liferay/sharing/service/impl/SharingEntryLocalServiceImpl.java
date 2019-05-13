@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.IndexerRegistry;
 import com.liferay.portal.kernel.search.SearchException;
+import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
 import com.liferay.portal.kernel.service.ResourcePermissionService;
@@ -297,7 +298,9 @@ public class SharingEntryLocalServiceImpl
 			sharingEntry);
 
 		try {
-			_setPermissions(sharingEntry, Collections.emptyList(), null);
+			if (PermissionThreadLocal.getPermissionChecker() != null) {
+				_setPermissions(sharingEntry, Collections.emptyList(), null);
+			}
 		}
 		catch (PortalException pe) {
 			_log.error(
