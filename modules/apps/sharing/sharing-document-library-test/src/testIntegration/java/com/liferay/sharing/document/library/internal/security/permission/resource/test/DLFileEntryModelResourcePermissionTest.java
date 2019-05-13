@@ -64,7 +64,7 @@ import org.junit.runner.RunWith;
  * @author Sergio González
  */
 @RunWith(Arquillian.class)
-public class SharingEntryDLFileEntryModelResourcePermissionLogicTest {
+public class DLFileEntryModelResourcePermissionTest {
 
 	@ClassRule
 	@Rule
