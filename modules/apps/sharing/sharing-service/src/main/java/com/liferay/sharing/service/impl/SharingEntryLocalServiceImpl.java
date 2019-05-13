@@ -17,11 +17,17 @@ package com.liferay.sharing.service.impl;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.ResourceConstants;
+import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.RoleConstants;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.IndexerRegistry;
 import com.liferay.portal.kernel.search.SearchException;
 import com.liferay.portal.kernel.service.GroupLocalService;
+import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
+import com.liferay.portal.kernel.service.ResourcePermissionService;
+import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.DateUtil;
@@ -38,7 +44,9 @@ import com.liferay.sharing.security.permission.SharingEntryAction;
 import com.liferay.sharing.service.base.SharingEntryLocalServiceBaseImpl;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -192,6 +200,8 @@ public class SharingEntryLocalServiceImpl
 			indexer.reindex(className, classPK);
 		}
 
+		_setPermissions(sharingEntry, sharingEntryActions, serviceContext);
+
 		return newSharingEntry;
 	}
 
@@ -285,6 +295,17 @@ public class SharingEntryLocalServiceImpl
 
 		SharingEntry deletedSharingEntry = sharingEntryPersistence.remove(
 			sharingEntry);
+
+		try {
+			_setPermissions(sharingEntry, Collections.emptyList(), null);
+		}
+		catch (PortalException pe) {
+			_log.error(
+				StringBundler.concat(
+					"Unable to update sharing permissions for ", className,
+					" and primary key ", String.valueOf(classPK)),
+				pe);
+		}
 
 		Indexer<Object> indexer = _indexerRegistry.getIndexer(className);
 
@@ -705,7 +726,58 @@ public class SharingEntryLocalServiceImpl
 			actionIds -> sharingEntry.setActionIds(actionIds)
 		);
 
+		_setPermissions(sharingEntry, sharingEntryActions, serviceContext);
+
 		return sharingEntryPersistence.update(sharingEntry);
+	}
+
+	private String[] _getActionIds(
+		Collection<SharingEntryAction> sharingEntryActions) {
+
+		Stream<SharingEntryAction> sharingEntryActionStream =
+			sharingEntryActions.stream();
+
+		return sharingEntryActionStream.map(
+			SharingEntryAction::getActionId
+		).toArray(
+			String[]::new
+		);
+	}
+
+	private Role _getSharingRole(User user, ServiceContext serviceContext)
+		throws PortalException {
+
+		String roleName = "SHARING_" + user.getUserId();
+
+		Role role = _roleLocalService.fetchRole(user.getCompanyId(), roleName);
+
+		if (role == null) {
+			role = _roleLocalService.addRole(
+				user.getUserId(), null, 0, roleName, new HashMap<>(),
+				new HashMap<>(), RoleConstants.TYPE_REGULAR, null,
+				serviceContext);
+
+			_userLocalService.addRoleUser(role.getRoleId(), user.getUserId());
+		}
+
+		return role;
+	}
+
+	private void _setPermissions(
+			SharingEntry sharingEntry,
+			Collection<SharingEntryAction> sharingEntryActions,
+			ServiceContext serviceContext)
+		throws PortalException {
+
+		Role role = _getSharingRole(
+			_userLocalService.getUser(sharingEntry.getToUserId()),
+			serviceContext);
+
+		_resourcePermissionLocalService.setResourcePermissions(
+			sharingEntry.getCompanyId(), sharingEntry.getClassName(),
+			ResourceConstants.SCOPE_INDIVIDUAL,
+			String.valueOf(sharingEntry.getClassPK()), role.getRoleId(),
+			_getActionIds(sharingEntryActions));
 	}
 
 	private void _validateExpirationDate(Date expirationDate)
@@ -761,6 +833,12 @@ public class SharingEntryLocalServiceImpl
 
 	@ServiceReference(type = Portal.class)
 	private Portal _portal;
+
+	@ServiceReference(type = ResourcePermissionLocalService.class)
+	private ResourcePermissionLocalService _resourcePermissionLocalService;
+
+	@ServiceReference(type = RoleLocalService.class)
+	private RoleLocalService _roleLocalService;
 
 	@ServiceReference(type = UserLocalService.class)
 	private UserLocalService _userLocalService;
