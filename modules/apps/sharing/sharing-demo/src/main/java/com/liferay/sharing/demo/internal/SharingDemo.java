@@ -26,6 +26,8 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.Folder;
+import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
+import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
@@ -69,6 +71,9 @@ public class SharingDemo extends BasePortalInstanceLifecycleListener {
 		serviceContext.setAddGuestPermissions(true);
 		serviceContext.setScopeGroupId(group.getGroupId());
 		serviceContext.setUserId(sharerUser.getUserId());
+
+		PermissionThreadLocal.setPermissionChecker(
+			PermissionCheckerFactoryUtil.create(sharerUser));
 
 		for (int i = 0; i < 15; i++) {
 			User user = _basicUserDemoDataCreator.create(
