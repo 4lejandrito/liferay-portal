@@ -16,11 +16,11 @@ package com.liferay.sharing.notifications.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.portal.kernel.model.BaseModel;
-import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserNotificationEventLocalService;
+import com.liferay.portal.kernel.test.context.ContextUserReplace;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
@@ -35,6 +35,7 @@ import com.liferay.sharing.constants.SharingPortletKeys;
 import com.liferay.sharing.model.SharingEntry;
 import com.liferay.sharing.security.permission.SharingEntryAction;
 import com.liferay.sharing.service.SharingEntryLocalService;
+import com.liferay.sharing.util.SharingTestUtil;
 
 import java.util.Arrays;
 
@@ -66,18 +67,24 @@ public class AddOrUpdateSharingUserNotificationTest
 
 	@Override
 	protected BaseModel<?> addBaseModel() throws Exception {
+		BaseModel shareableModel = SharingTestUtil.getShareableModel();
+
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = group.getGroupId();
+			shareableModel.getModelClassName());
+		long classPK = (Long)shareableModel.getPrimaryKeyObj();
 
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(
 				group.getGroupId(), TestPropsValues.getUserId());
 
-		return _sharingEntryLocalService.addOrUpdateSharingEntry(
-			_fromUser.getUserId(), user.getUserId(), classNameId, classPK,
-			group.getGroupId(), true, Arrays.asList(SharingEntryAction.VIEW),
-			null, serviceContext);
+		try (ContextUserReplace contextUserReplace = new ContextUserReplace(
+				_fromUser)) {
+
+			return _sharingEntryLocalService.addOrUpdateSharingEntry(
+				_fromUser.getUserId(), user.getUserId(), classNameId, classPK,
+				group.getGroupId(), true,
+				Arrays.asList(SharingEntryAction.VIEW), null, serviceContext);
+		}
 	}
 
 	@Override
@@ -103,12 +110,17 @@ public class AddOrUpdateSharingUserNotificationTest
 			ServiceContextTestUtil.getServiceContext(
 				group.getGroupId(), TestPropsValues.getUserId());
 
-		return _sharingEntryLocalService.addOrUpdateSharingEntry(
-			sharingEntry.getUserId(), sharingEntry.getToUserId(),
-			sharingEntry.getClassNameId(), sharingEntry.getClassPK(),
-			sharingEntry.getGroupId(), sharingEntry.isShareable(),
-			Arrays.asList(SharingEntryAction.VIEW, SharingEntryAction.UPDATE),
-			sharingEntry.getExpirationDate(), serviceContext);
+		try (ContextUserReplace contextUserReplace = new ContextUserReplace(
+				_fromUser)) {
+
+			return _sharingEntryLocalService.addOrUpdateSharingEntry(
+				sharingEntry.getUserId(), sharingEntry.getToUserId(),
+				sharingEntry.getClassNameId(), sharingEntry.getClassPK(),
+				sharingEntry.getGroupId(), sharingEntry.isShareable(),
+				Arrays.asList(
+					SharingEntryAction.VIEW, SharingEntryAction.UPDATE),
+				sharingEntry.getExpirationDate(), serviceContext);
+		}
 	}
 
 	@Inject

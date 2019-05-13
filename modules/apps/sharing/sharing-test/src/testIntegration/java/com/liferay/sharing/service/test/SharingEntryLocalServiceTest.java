@@ -15,12 +15,18 @@
 package com.liferay.sharing.service.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.document.library.kernel.model.DLFileEntry;
+import com.liferay.document.library.kernel.model.DLFolderConstants;
+import com.liferay.document.library.kernel.service.DLAppLocalService;
+import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.messaging.Destination;
 import com.liferay.portal.kernel.messaging.DestinationNames;
 import com.liferay.portal.kernel.messaging.MessageBus;
 import com.liferay.portal.kernel.messaging.MessageBusUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -32,6 +38,7 @@ import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.service.test.ServiceTestUtil;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
@@ -78,6 +85,8 @@ public class SharingEntryLocalServiceTest {
 		_toUser = UserTestUtil.addUser();
 		_user = UserTestUtil.addOmniAdminUser();
 
+		_fileEntry = _addFileEntry();
+
 		ServiceTestUtil.setUser(TestPropsValues.getUser());
 	}
 
@@ -86,8 +95,8 @@ public class SharingEntryLocalServiceTest {
 		throws Exception {
 
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		Assert.assertEquals(
 			0,
@@ -113,8 +122,8 @@ public class SharingEntryLocalServiceTest {
 		throws Exception {
 
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		Assert.assertEquals(
 			0,
@@ -148,8 +157,8 @@ public class SharingEntryLocalServiceTest {
 		throws Exception {
 
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		_sharingEntryLocalService.addOrUpdateSharingEntry(
 			_fromUser.getUserId(), _toUser.getUserId(), classNameId, classPK,
@@ -162,8 +171,8 @@ public class SharingEntryLocalServiceTest {
 		throws Exception {
 
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getClassPK();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		Instant instant = Instant.now();
 
@@ -177,8 +186,8 @@ public class SharingEntryLocalServiceTest {
 	@Test
 	public void testAddSharingEntry() throws Exception {
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		Assert.assertEquals(
 			0,
@@ -200,8 +209,8 @@ public class SharingEntryLocalServiceTest {
 	@Test
 	public void testAddSharingEntryActionIds() throws Exception {
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getClassPK();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		SharingEntry sharingEntry = _sharingEntryLocalService.addSharingEntry(
 			_fromUser.getUserId(), _toUser.getUserId(), classNameId, classPK,
@@ -265,8 +274,8 @@ public class SharingEntryLocalServiceTest {
 		throws Exception {
 
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		_sharingEntryLocalService.addSharingEntry(
 			_fromUser.getUserId(), _toUser.getUserId(), classNameId, classPK,
@@ -279,8 +288,8 @@ public class SharingEntryLocalServiceTest {
 		throws Exception {
 
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		Assert.assertEquals(
 			0,
@@ -306,8 +315,8 @@ public class SharingEntryLocalServiceTest {
 		throws Exception {
 
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		Instant instant = Instant.now();
 
@@ -323,8 +332,8 @@ public class SharingEntryLocalServiceTest {
 		throws Exception {
 
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		_sharingEntryLocalService.addSharingEntry(
 			_fromUser.getUserId(), _toUser.getUserId(), classNameId, classPK,
@@ -338,8 +347,8 @@ public class SharingEntryLocalServiceTest {
 		throws Exception {
 
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		_sharingEntryLocalService.addSharingEntry(
 			_fromUser.getUserId(), _fromUser.getUserId(), classNameId, classPK,
@@ -353,8 +362,8 @@ public class SharingEntryLocalServiceTest {
 		throws Exception {
 
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		_sharingEntryLocalService.addSharingEntry(
 			_fromUser.getUserId(), _toUser.getUserId(), classNameId, classPK,
@@ -368,8 +377,8 @@ public class SharingEntryLocalServiceTest {
 		throws Exception {
 
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		_sharingEntryLocalService.addSharingEntry(
 			_fromUser.getUserId(), _toUser.getUserId(), classNameId, classPK,
@@ -386,20 +395,22 @@ public class SharingEntryLocalServiceTest {
 				new DisableSchedulerDestination()) {
 
 			long classNameId = _classNameLocalService.getClassNameId(
-				Group.class.getName());
+				DLFileEntry.class.getName());
 
 			ServiceContext serviceContext =
 				ServiceContextTestUtil.getServiceContext(_group.getGroupId());
 
 			_sharingEntryLocalService.addSharingEntry(
 				_fromUser.getUserId(), _toUser.getUserId(), classNameId,
-				_group.getGroupId(), _group.getGroupId(), true,
+				_fileEntry.getFileEntryId(), _group.getGroupId(), true,
 				Arrays.asList(SharingEntryAction.VIEW), null, serviceContext);
+
+			FileEntry fileEntry = _addFileEntry();
 
 			SharingEntry sharingEntry =
 				_sharingEntryLocalService.addSharingEntry(
 					_fromUser.getUserId(), _toUser.getUserId(), classNameId,
-					group.getGroupId(), group.getGroupId(), true,
+					fileEntry.getFileEntryId(), group.getGroupId(), true,
 					Arrays.asList(SharingEntryAction.VIEW), null,
 					serviceContext);
 
@@ -425,24 +436,18 @@ public class SharingEntryLocalServiceTest {
 	@Test
 	public void testDeleteGroupSharingEntries() throws Exception {
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
+			DLFileEntry.class.getName());
 
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(_group.getGroupId());
 
 		for (int i = 0; i < 3; i++) {
-			Group group = GroupTestUtil.addGroup();
+			FileEntry fileEntry = _addFileEntry();
 
-			try {
-				_sharingEntryLocalService.addSharingEntry(
-					_fromUser.getUserId(), _toUser.getUserId(), classNameId,
-					group.getGroupId(), _group.getGroupId(), true,
-					Arrays.asList(SharingEntryAction.VIEW), null,
-					serviceContext);
-			}
-			finally {
-				_groupLocalService.deleteGroup(group);
-			}
+			_sharingEntryLocalService.addSharingEntry(
+				_fromUser.getUserId(), _toUser.getUserId(), classNameId,
+				fileEntry.getFileEntryId(), _group.getGroupId(), true,
+				Arrays.asList(SharingEntryAction.VIEW), null, serviceContext);
 		}
 
 		Assert.assertEquals(
@@ -468,19 +473,23 @@ public class SharingEntryLocalServiceTest {
 
 		try {
 			long classNameId = _classNameLocalService.getClassNameId(
-				Group.class.getName());
+				DLFileEntry.class.getName());
 
 			ServiceContext serviceContext =
 				ServiceContextTestUtil.getServiceContext(_group.getGroupId());
 
-			_sharingEntryLocalService.addSharingEntry(
-				_fromUser.getUserId(), _toUser.getUserId(), classNameId,
-				group1.getGroupId(), group1.getGroupId(), true,
-				Arrays.asList(SharingEntryAction.VIEW), null, serviceContext);
+			FileEntry fileEntry1 = _addFileEntry();
 
 			_sharingEntryLocalService.addSharingEntry(
 				_fromUser.getUserId(), _toUser.getUserId(), classNameId,
-				group2.getGroupId(), group2.getGroupId(), true,
+				fileEntry1.getFileEntryId(), group1.getGroupId(), true,
+				Arrays.asList(SharingEntryAction.VIEW), null, serviceContext);
+
+			FileEntry fileEntry2 = _addFileEntry();
+
+			_sharingEntryLocalService.addSharingEntry(
+				_fromUser.getUserId(), _toUser.getUserId(), classNameId,
+				fileEntry2.getFileEntryId(), group2.getGroupId(), true,
 				Arrays.asList(SharingEntryAction.VIEW), null, serviceContext);
 
 			Assert.assertEquals(
@@ -514,8 +523,8 @@ public class SharingEntryLocalServiceTest {
 	@Test(expected = NoSuchEntryException.class)
 	public void testDeleteNonexistingSharingEntry() throws Exception {
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		_sharingEntryLocalService.deleteSharingEntry(
 			_toUser.getUserId(), classNameId, classPK);
@@ -524,8 +533,8 @@ public class SharingEntryLocalServiceTest {
 	@Test
 	public void testDeleteSharingEntries() throws Exception {
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK1 = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK1 = _fileEntry.getFileEntryId();
 
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(_group.getGroupId());
@@ -538,7 +547,9 @@ public class SharingEntryLocalServiceTest {
 		Group group = GroupTestUtil.addGroup();
 
 		try {
-			long classPK2 = group.getGroupId();
+			FileEntry fileEntry = _addFileEntry();
+
+			long classPK2 = fileEntry.getFileEntryId();
 
 			_sharingEntryLocalService.addSharingEntry(
 				_fromUser.getUserId(), _toUser.getUserId(), classNameId,
@@ -584,8 +595,8 @@ public class SharingEntryLocalServiceTest {
 	@Test
 	public void testDeleteSharingEntry() throws Exception {
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		SharingEntry sharingEntry = _sharingEntryLocalService.addSharingEntry(
 			_fromUser.getUserId(), _toUser.getUserId(), classNameId, classPK,
@@ -608,24 +619,18 @@ public class SharingEntryLocalServiceTest {
 	@Test
 	public void testDeleteToUserSharingEntries() throws Exception {
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
+			DLFileEntry.class.getName());
 
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(_group.getGroupId());
 
 		for (int i = 0; i < 3; i++) {
-			Group group = GroupTestUtil.addGroup();
+			FileEntry fileEntry = _addFileEntry();
 
-			try {
-				_sharingEntryLocalService.addSharingEntry(
-					_fromUser.getUserId(), _toUser.getUserId(), classNameId,
-					group.getGroupId(), _group.getGroupId(), true,
-					Arrays.asList(SharingEntryAction.VIEW), null,
-					serviceContext);
-			}
-			finally {
-				_groupLocalService.deleteGroup(group);
-			}
+			_sharingEntryLocalService.addSharingEntry(
+				_fromUser.getUserId(), _toUser.getUserId(), classNameId,
+				fileEntry.getFileEntryId(), _group.getGroupId(), true,
+				Arrays.asList(SharingEntryAction.VIEW), null, serviceContext);
 		}
 
 		Assert.assertEquals(
@@ -648,8 +653,8 @@ public class SharingEntryLocalServiceTest {
 
 		try {
 			long classNameId = _classNameLocalService.getClassNameId(
-				Group.class.getName());
-			long classPK1 = _group.getGroupId();
+				DLFileEntry.class.getName());
+			long classPK1 = _fileEntry.getFileEntryId();
 
 			ServiceContext serviceContext =
 				ServiceContextTestUtil.getServiceContext(_group.getGroupId());
@@ -663,7 +668,9 @@ public class SharingEntryLocalServiceTest {
 					Arrays.asList(SharingEntryAction.VIEW),
 					Date.from(now.plus(2, ChronoUnit.DAYS)), serviceContext);
 
-			long classPK2 = group.getGroupId();
+			FileEntry fileEntry = _addFileEntry();
+
+			long classPK2 = fileEntry.getFileEntryId();
 
 			now = Instant.now();
 
@@ -700,8 +707,8 @@ public class SharingEntryLocalServiceTest {
 		throws Exception {
 
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		_sharingEntryLocalService.addSharingEntry(
 			_fromUser.getUserId(), _toUser.getUserId(), classNameId, classPK,
@@ -730,8 +737,8 @@ public class SharingEntryLocalServiceTest {
 		throws Exception {
 
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		_sharingEntryLocalService.addSharingEntry(
 			_fromUser.getUserId(), _toUser.getUserId(), classNameId, classPK,
@@ -760,8 +767,8 @@ public class SharingEntryLocalServiceTest {
 		throws Exception {
 
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		_sharingEntryLocalService.addSharingEntry(
 			_fromUser.getUserId(), _toUser.getUserId(), classNameId, classPK,
@@ -790,8 +797,8 @@ public class SharingEntryLocalServiceTest {
 		throws Exception {
 
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		_sharingEntryLocalService.addSharingEntry(
 			_fromUser.getUserId(), _toUser.getUserId(), classNameId, classPK,
@@ -818,8 +825,8 @@ public class SharingEntryLocalServiceTest {
 		throws Exception {
 
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		_sharingEntryLocalService.addSharingEntry(
 			_fromUser.getUserId(), _toUser.getUserId(), classNameId, classPK,
@@ -847,8 +854,8 @@ public class SharingEntryLocalServiceTest {
 		throws Exception {
 
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		_sharingEntryLocalService.addSharingEntry(
 			_fromUser.getUserId(), _toUser.getUserId(), classNameId, classPK,
@@ -876,8 +883,8 @@ public class SharingEntryLocalServiceTest {
 		throws Exception {
 
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		_sharingEntryLocalService.addSharingEntry(
 			_user.getUserId(), _toUser.getUserId(), classNameId, classPK,
@@ -926,8 +933,8 @@ public class SharingEntryLocalServiceTest {
 		throws Exception {
 
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		Assert.assertFalse(
 			_sharingEntryLocalService.hasSharingPermission(
@@ -948,8 +955,8 @@ public class SharingEntryLocalServiceTest {
 		throws Exception {
 
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		_sharingEntryLocalService.addSharingEntry(
 			_fromUser.getUserId(), _toUser.getUserId(), classNameId, classPK,
@@ -974,8 +981,8 @@ public class SharingEntryLocalServiceTest {
 	@Test
 	public void testRetrievesUniqueSharedByMeSharingEntries() throws Exception {
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(_group.getGroupId());
@@ -1024,8 +1031,8 @@ public class SharingEntryLocalServiceTest {
 	@Test
 	public void testUpdateSharingEntry() throws Exception {
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(_group.getGroupId());
@@ -1079,8 +1086,8 @@ public class SharingEntryLocalServiceTest {
 		throws Exception {
 
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(_group.getGroupId());
@@ -1100,8 +1107,8 @@ public class SharingEntryLocalServiceTest {
 		throws Exception {
 
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(_group.getGroupId());
@@ -1126,8 +1133,8 @@ public class SharingEntryLocalServiceTest {
 		throws Exception {
 
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(_group.getGroupId());
@@ -1148,8 +1155,8 @@ public class SharingEntryLocalServiceTest {
 		throws Exception {
 
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(_group.getGroupId());
@@ -1174,8 +1181,8 @@ public class SharingEntryLocalServiceTest {
 		throws Exception {
 
 		long classNameId = _classNameLocalService.getClassNameId(
-			Group.class.getName());
-		long classPK = _group.getGroupId();
+			DLFileEntry.class.getName());
+		long classPK = _fileEntry.getFileEntryId();
 
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(_group.getGroupId());
@@ -1191,6 +1198,15 @@ public class SharingEntryLocalServiceTest {
 			serviceContext);
 	}
 
+	private FileEntry _addFileEntry() throws PortalException {
+		return _dlAppLocalService.addFileEntry(
+			_user.getUserId(), _group.getGroupId(),
+			DLFolderConstants.DEFAULT_PARENT_FOLDER_ID,
+			StringUtil.randomString(), "text/plain", StringUtil.randomString(),
+			StringUtil.randomString(), StringPool.BLANK, "test".getBytes(),
+			ServiceContextTestUtil.getServiceContext(_group.getGroupId()));
+	}
+
 	private void _expireSharingEntry(SharingEntry sharingEntry) {
 		Instant instant = Instant.now();
 
@@ -1203,6 +1219,11 @@ public class SharingEntryLocalServiceTest {
 
 	@Inject
 	private ClassNameLocalService _classNameLocalService;
+
+	@Inject
+	private DLAppLocalService _dlAppLocalService;
+
+	private FileEntry _fileEntry;
 
 	@DeleteAfterTestRun
 	private User _fromUser;

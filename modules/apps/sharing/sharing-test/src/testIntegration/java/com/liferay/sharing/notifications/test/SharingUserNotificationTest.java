@@ -15,12 +15,17 @@
 package com.liferay.sharing.notifications.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.asset.kernel.AssetRendererFactoryRegistryUtil;
+import com.liferay.asset.kernel.model.AssetRenderer;
+import com.liferay.asset.kernel.model.AssetRendererFactory;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserNotificationEventLocalService;
+import com.liferay.portal.kernel.test.context.ContextUserReplace;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
@@ -36,6 +41,7 @@ import com.liferay.sharing.constants.SharingPortletKeys;
 import com.liferay.sharing.model.SharingEntry;
 import com.liferay.sharing.security.permission.SharingEntryAction;
 import com.liferay.sharing.service.SharingEntryLocalService;
+import com.liferay.sharing.util.SharingTestUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -73,12 +79,13 @@ public class SharingUserNotificationTest extends BaseUserNotificationTestCase {
 
 		User toUser = UserTestUtil.addUser();
 
-		_share(group, _fromUser, toUser);
-		_share(group, user, toUser);
+		BaseModel shareableModel = SharingTestUtil.getShareableModel();
+
+		_share(shareableModel, _fromUser, toUser);
+		_share(shareableModel, user, toUser);
 
 		List<JSONObject> userNotificationEventsJSONObjects =
-			getUserNotificationEventsJSONObjects(
-				toUser.getUserId(), group.getPrimaryKey());
+			getUserNotificationEventsJSONObjects(toUser.getUserId(), 0);
 
 		Assert.assertEquals(
 			userNotificationEventsJSONObjects.toString(), 2,
@@ -88,20 +95,20 @@ public class SharingUserNotificationTest extends BaseUserNotificationTestCase {
 			userNotificationEventsJSONObjects.get(0);
 
 		Assert.assertEquals(
-			_getExpectedNotificationMessage(user),
+			_getExpectedNotificationMessage(user, shareableModel),
 			userNotificationEventsJSONObject.getString("message"));
 
 		userNotificationEventsJSONObject =
 			userNotificationEventsJSONObjects.get(1);
 
 		Assert.assertEquals(
-			_getExpectedNotificationMessage(_fromUser),
+			_getExpectedNotificationMessage(_fromUser, shareableModel),
 			userNotificationEventsJSONObject.getString("message"));
 	}
 
 	@Override
 	protected BaseModel<?> addBaseModel() throws Exception {
-		return _share(group, _fromUser, user);
+		return _share(SharingTestUtil.getShareableModel(), _fromUser, user);
 	}
 
 	@Override
@@ -125,15 +132,30 @@ public class SharingUserNotificationTest extends BaseUserNotificationTestCase {
 			ServiceContextTestUtil.getServiceContext(
 				group.getGroupId(), TestPropsValues.getUserId());
 
-		return _sharingEntryLocalService.updateSharingEntry(
-			user.getUserId(), ((SharingEntry)baseModel).getSharingEntryId(),
-			Arrays.asList(SharingEntryAction.VIEW), false, null,
-			serviceContext);
+		try (ContextUserReplace contextUserReplace = new ContextUserReplace(
+				user)) {
+
+			return _sharingEntryLocalService.updateSharingEntry(
+				user.getUserId(), ((SharingEntry)baseModel).getSharingEntryId(),
+				Arrays.asList(SharingEntryAction.VIEW), false, null,
+				serviceContext);
+		}
 	}
 
-	private String _getExpectedNotificationMessage(User fromUser) {
+	private String _getExpectedNotificationMessage(
+			User fromUser, BaseModel model)
+		throws PortalException {
+
+		AssetRendererFactory<?> assetRendererFactory =
+			AssetRendererFactoryRegistryUtil.getAssetRendererFactoryByClassName(
+				model.getModelClassName());
+
+		AssetRenderer<?> assetRenderer = assetRendererFactory.getAssetRenderer(
+			(Long)model.getPrimaryKeyObj());
+
 		return fromUser.getFullName() + " has shared " +
-			group.getName(LocaleUtil.getDefault()) + " with you for viewing.";
+			assetRenderer.getTitle(LocaleUtil.getDefault()) +
+				" with you for viewing.";
 	}
 
 	private SharingEntry _share(BaseModel model, User fromUser, User toUser)
@@ -147,10 +169,14 @@ public class SharingUserNotificationTest extends BaseUserNotificationTestCase {
 			ServiceContextTestUtil.getServiceContext(
 				group.getGroupId(), fromUser.getUserId());
 
-		return _sharingEntryLocalService.addOrUpdateSharingEntry(
-			fromUser.getUserId(), toUser.getUserId(), classNameId, classPK,
-			group.getGroupId(), true, Arrays.asList(SharingEntryAction.VIEW),
-			null, serviceContext);
+		try (ContextUserReplace contextUserReplace = new ContextUserReplace(
+				fromUser)) {
+
+			return _sharingEntryLocalService.addOrUpdateSharingEntry(
+				fromUser.getUserId(), toUser.getUserId(), classNameId, classPK,
+				group.getGroupId(), true,
+				Arrays.asList(SharingEntryAction.VIEW), null, serviceContext);
+		}
 	}
 
 	@Inject
