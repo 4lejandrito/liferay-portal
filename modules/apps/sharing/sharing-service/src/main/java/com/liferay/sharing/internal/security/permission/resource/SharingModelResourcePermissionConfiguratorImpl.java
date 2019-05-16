@@ -60,12 +60,10 @@ public class SharingModelResourcePermissionConfiguratorImpl
 		ModelResourcePermission<T> modelResourcePermission,
 		Consumer<ModelResourcePermissionLogic<T>> consumer) {
 
-		if (_sharingSystemConfiguration.enabled()) {
-			consumer.accept(
-				new SharingModelResourcePermissionLogicImpl<>(
-					_classNameLocalService.getClassNameId(
-						modelResourcePermission.getModelName())));
-		}
+		consumer.accept(
+			new SharingModelResourcePermissionLogicImpl<>(
+				_classNameLocalService.getClassNameId(
+					modelResourcePermission.getModelName())));
 	}
 
 	private static Map<String, SharingEntryAction> _getSharingEntryActions() {
