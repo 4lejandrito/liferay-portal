@@ -35,6 +35,7 @@ import java.util.function.Consumer;
 
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -51,6 +52,8 @@ public class SharingModelResourcePermissionConfiguratorImpl
 
 	@Activate
 	public void activate(Map<String, Object> properties) {
+		_active = true;
+
 		_sharingSystemConfiguration = ConfigurableUtil.createConfigurable(
 			SharingSystemConfiguration.class, properties);
 	}
@@ -64,6 +67,11 @@ public class SharingModelResourcePermissionConfiguratorImpl
 			new SharingModelResourcePermissionLogicImpl<>(
 				_classNameLocalService.getClassNameId(
 					modelResourcePermission.getModelName())));
+	}
+
+	@Deactivate
+	public void deactivate() {
+		_active = false;
 	}
 
 	private static Map<String, SharingEntryAction> _getSharingEntryActions() {
@@ -81,6 +89,8 @@ public class SharingModelResourcePermissionConfiguratorImpl
 
 	private static final Map<String, SharingEntryAction> _sharingEntryActions =
 		_getSharingEntryActions();
+
+	private volatile boolean _active;
 
 	@Reference
 	private ClassNameLocalService _classNameLocalService;
@@ -106,7 +116,7 @@ public class SharingModelResourcePermissionConfiguratorImpl
 				String actionId)
 			throws PortalException {
 
-			if (!_sharingSystemConfiguration.enabled()) {
+			if (!_active || !_sharingSystemConfiguration.enabled()) {
 				return null;
 			}
 
