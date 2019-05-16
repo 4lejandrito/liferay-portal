@@ -106,6 +106,10 @@ public class SharingModelResourcePermissionConfiguratorImpl
 				String actionId)
 			throws PortalException {
 
+			if (!_sharingSystemConfiguration.enabled()) {
+				return null;
+			}
+
 			SharingEntryAction sharingEntryAction = _sharingEntryActions.get(
 				actionId);
 
