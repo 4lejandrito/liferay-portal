@@ -192,14 +192,18 @@ class MBPortlet extends PortletBase {
 	 */
 
 	updateRemovedAttachments_() {
+		let searchContainer = this.searchContainer_;
+
+		searchContainer.getData(true).forEach(
+			(id, i) => searchContainer.deleteRow(i, id)
+		);
+
 		fetch(
 			this.getAttachmentsURL
 		).then(
 			res => res.json()
 		).then(
 			(attachments) => {
-				let searchContainer = this.searchContainer_;
-
 				if (attachments.active.length > 0) {
 					attachments.active.forEach(
 						attachment => {
