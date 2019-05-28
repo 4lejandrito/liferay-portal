@@ -2,6 +2,7 @@ import {Config} from 'metal-state';
 import {debounce} from 'metal-debounce';
 import Component from 'metal-component';
 import Soy from 'metal-soy';
+import 'clay-button';
 
 import templates from './ImagePreviewer.soy';
 
