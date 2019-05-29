@@ -7,13 +7,12 @@ describe(
 		it(
 			'should render a creation image previwer',
 			() => {
-
 				const imagePreviewer = new ImagePreviewer(
 					{
 						element: document.body,
 						imageURL: 'image.jpg',
 						spritemap: 'icons.svg'
-					},
+					}
 				);
 
 				expect(imagePreviewer).toMatchSnapshot();
