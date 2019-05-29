@@ -213,19 +213,19 @@ ImagePreviewer.STATE = {
 	 * The current zoom value that is shown in the toolbar.
 	 * @type {Number}
 	 */
-	currentZoom: Config.number(),
+	currentZoom: Config.number().internal(),
 
 	/**
 	 * The height of the <img> element.
 	 * @type {Number}
 	 */
-	imageHeight: Config.number(),
+	imageHeight: Config.number().internal(),
 
 	/**
 	 * The margin of the <img> element
 	 * @type {String}
 	 */
-	imageMargin: Config.string(),
+	imageMargin: Config.string().internal(),
 
 	/**
 	 * The "src" attribute of the <img> element
@@ -237,7 +237,7 @@ ImagePreviewer.STATE = {
 	 * The width of the <img> element.
 	 * @type {Number}
 	 */
-	imageWidth: Config.number(),
+	imageWidth: Config.number().internal(),
 
 	/**
 	 * Path to icon images.
@@ -249,13 +249,13 @@ ImagePreviewer.STATE = {
 	 * Flag that indicate if 'zoom in' is disabled.
 	 * @type {Boolean}
 	 */
-	zoomInDisabled: Config.bool(),
+	zoomInDisabled: Config.bool().internal(),
 
 	/**
 	 * Flag that indicate if 'zoom out' is disabled.
 	 * @type {Boolean}
 	 */
-	zoomOutDisabled: Config.bool()
+	zoomOutDisabled: Config.bool().internal()
 };
 
 Soy.register(ImagePreviewer, templates);
