@@ -18,8 +18,14 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.servlet.taglib.BaseJSPDynamicInclude;
 import com.liferay.portal.kernel.servlet.taglib.DynamicInclude;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.sharing.web.internal.constants.SharingWebKeys;
+
+import java.io.IOException;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -29,6 +35,20 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(immediate = true, service = DynamicInclude.class)
 public class SharingTopHeadJSPDynamicInclude extends BaseJSPDynamicInclude {
+
+	@Override
+	public void include(
+			HttpServletRequest httpServletRequest,
+			HttpServletResponse httpServletResponse, String key)
+		throws IOException {
+
+		if (GetterUtil.getBoolean(
+				httpServletRequest.getAttribute(
+					SharingWebKeys.REQUIRES_SHARING_JAVASCRIPT))) {
+
+			super.include(httpServletRequest, httpServletResponse, key);
+		}
+	}
 
 	@Override
 	public void register(DynamicIncludeRegistry dynamicIncludeRegistry) {
