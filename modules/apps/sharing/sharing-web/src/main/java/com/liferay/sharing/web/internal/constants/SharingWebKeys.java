@@ -25,9 +25,6 @@ public class SharingWebKeys {
 	public static final String MANAGE_COLLABORATORS_DIALOG_ID =
 		"manageCollaboratorsDialog";
 
-	public static final String REQUIRES_SHARING_JAVASCRIPT =
-		"requiresSharingJavaScript";
-
 	public static final String SHARING_DIALOG_ID = "sharingDialog";
 
 }
