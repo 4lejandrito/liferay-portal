@@ -55,6 +55,8 @@ if (messageFormat.equals("bbcode")) {
 	}
 }
 
+String redirect = ParamUtil.getString(request, "redirect");
+
 boolean showPermanentLink = GetterUtil.getBoolean(request.getAttribute("edit-message.jsp-showPermanentLink"));
 %>
 
@@ -126,7 +128,7 @@ boolean showPermanentLink = GetterUtil.getBoolean(request.getAttribute("edit-mes
 
 		<aui:form action="<%= editMessageURL %>" method="post" name='<%= "addQuickReplyFm" + replyToMessageId %>' onSubmit='<%= "event.preventDefault(); " %>'>
 			<aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= Constants.ADD %>" />
-			<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
+			<aui:input name="redirect" type="hidden" value="<%= redirect %>" />
 			<aui:input name="messageId" type="hidden" value="<%= message.getMessageId() %>" />
 			<aui:input name="mbCategoryId" type="hidden" value="<%= categoryId %>" />
 			<aui:input name="threadId" type="hidden" value="<%= threadId %>" />
@@ -199,7 +201,7 @@ boolean showPermanentLink = GetterUtil.getBoolean(request.getAttribute("edit-mes
 
 		<portlet:renderURL var="advancedReplyURL">
 			<portlet:param name="mvcRenderCommandName" value="/message_boards/edit_message" />
-			<portlet:param name="redirect" value="<%= currentURL %>" />
+			<portlet:param name="redirect" value="<%= redirect %>" />
 			<portlet:param name="mbCategoryId" value="<%= String.valueOf(message.getCategoryId()) %>" />
 			<portlet:param name="threadId" value="<%= String.valueOf(message.getThreadId()) %>" />
 			<portlet:param name="parentMessageId" value="<%= String.valueOf(message.getMessageId()) %>" />
