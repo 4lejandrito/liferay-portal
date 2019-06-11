@@ -21,7 +21,9 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import java.io.IOException;
@@ -111,8 +113,13 @@ public abstract class BasePanelCategory implements PanelCategory {
 			(ThemeDisplay)httpServletRequest.getAttribute(
 				WebKeys.THEME_DISPLAY);
 
-		String ppid = ParamUtil.getString(
-			httpServletRequest, "selPpid", themeDisplay.getPpid());
+		String ppid = HttpUtil.getParameter(
+			themeDisplay.getURLCurrent(), "panel_app_p_p_id", false);
+
+		if (Validator.isNull(ppid)) {
+			ppid = ParamUtil.getString(
+				httpServletRequest, "selPpid", themeDisplay.getPpid());
+		}
 
 		return panelCategoryHelper.containsPortlet(
 			ppid, getKey(), themeDisplay.getPermissionChecker(), group);

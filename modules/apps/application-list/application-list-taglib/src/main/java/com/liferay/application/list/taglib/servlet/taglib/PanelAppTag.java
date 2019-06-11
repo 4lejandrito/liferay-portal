@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.service.PortletLocalServiceUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -150,8 +151,14 @@ public class PanelAppTag extends BasePanelTag {
 			active = _active.booleanValue();
 		}
 		else {
-			active = Objects.equals(
-				themeDisplay.getPpid(), _panelApp.getPortletId());
+			String ppid = HttpUtil.getParameter(
+				themeDisplay.getURLCurrent(), "panel_app_p_p_id", false);
+
+			if (Validator.isNull(ppid)) {
+				ppid = themeDisplay.getPpid();
+			}
+
+			active = Objects.equals(ppid, _panelApp.getPortletId());
 		}
 
 		httpServletRequest.setAttribute(
