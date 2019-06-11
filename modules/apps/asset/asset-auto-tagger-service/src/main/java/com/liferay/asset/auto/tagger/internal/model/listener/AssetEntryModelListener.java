@@ -48,8 +48,12 @@ public class AssetEntryModelListener extends BaseModelListener<AssetEntry> {
 	public void onAfterCreate(AssetEntry assetEntry)
 		throws ModelListenerException {
 
+		_registerCallback(assetEntry);
+	}
+
+	private void _registerCallback(AssetEntry assetEntry) {
 		TransactionCommitCallbackUtil.registerCallback(
-			(Callable<Void>)() -> {
+			(Callable<Void>) () -> {
 				if (!ListUtil.isEmpty(assetEntry.getTags())) {
 					return null;
 				}
@@ -67,6 +71,13 @@ public class AssetEntryModelListener extends BaseModelListener<AssetEntry> {
 
 				return null;
 			});
+	}
+
+	@Override
+	public void onAfterUpdate(AssetEntry assetEntry)
+		throws ModelListenerException {
+
+		_registerCallback(assetEntry);
 	}
 
 	@Override
