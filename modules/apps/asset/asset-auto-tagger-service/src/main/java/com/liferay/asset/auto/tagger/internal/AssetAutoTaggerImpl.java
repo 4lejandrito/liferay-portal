@@ -119,15 +119,19 @@ public class AssetAutoTaggerImpl implements AssetAutoTagger {
 									serviceContext);
 							}
 
-							_assetTagLocalService.addAssetEntryAssetTag(
-								assetEntry.getEntryId(), assetTag);
 
-							_assetAutoTaggerEntryLocalService.
-								addAssetAutoTaggerEntry(assetEntry, assetTag);
+							if(!_assetTagLocalService.hasAssetEntryAssetTag(
+									assetEntry.getEntryId(), assetTag.getTagId())) {
+									_assetTagLocalService.addAssetEntryAssetTag(
+										assetEntry.getEntryId(), assetTag);
 
-							_assetTagLocalService.incrementAssetCount(
-								assetTag.getTagId(),
-								assetEntry.getClassNameId());
+								_assetAutoTaggerEntryLocalService.
+									addAssetAutoTaggerEntry(assetEntry, assetTag);
+
+								_assetTagLocalService.incrementAssetCount(
+									assetTag.getTagId(),
+									assetEntry.getClassNameId());
+							}
 						}
 						catch (AssetTagException ate) {
 							if (_log.isWarnEnabled()) {
