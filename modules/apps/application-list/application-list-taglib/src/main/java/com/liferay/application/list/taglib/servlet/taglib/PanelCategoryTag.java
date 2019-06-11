@@ -25,7 +25,6 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.SessionClicks;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import java.util.List;
@@ -167,21 +166,10 @@ public class PanelCategoryTag extends BasePanelTag {
 			_panelCategory.getKey(), themeDisplay.getPermissionChecker(), group,
 			themeDisplay.getUser());
 
-		String portletId = themeDisplay.getPpid();
-
-		if (Validator.isNotNull(portletId) &&
-			panelCategoryHelper.containsPortlet(
-				portletId, _panelCategory.getKey())) {
-
-			httpServletRequest.setAttribute(
-				"liferay-application-list:panel-category:headerActive",
-				Boolean.TRUE);
-		}
-		else {
-			httpServletRequest.setAttribute(
-				"liferay-application-list:panel-category:headerActive",
-				Boolean.FALSE);
-		}
+		httpServletRequest.setAttribute(
+			"liferay-application-list:panel-category:headerActive",
+			_panelCategory.isActive(
+				httpServletRequest, panelCategoryHelper, group));
 
 		httpServletRequest.setAttribute(
 			"liferay-application-list:panel-category:notificationsCount",
