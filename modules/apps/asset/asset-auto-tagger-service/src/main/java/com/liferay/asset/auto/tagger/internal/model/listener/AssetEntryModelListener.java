@@ -51,35 +51,6 @@ public class AssetEntryModelListener extends BaseModelListener<AssetEntry> {
 		_registerCallback(assetEntry);
 	}
 
-	private void _registerCallback(AssetEntry assetEntry) {
-		TransactionCommitCallbackUtil.registerCallback(
-			(Callable<Void>) () -> {
-				if (!ListUtil.isEmpty(assetEntry.getTags())) {
-					return null;
-				}
-
-				if (!_assetAutoTaggerImpl.isAutoTaggable(assetEntry)) {
-					return null;
-				}
-
-				Message message = new Message();
-
-				message.setPayload(assetEntry);
-
-				_messageBus.sendMessage(
-					AssetAutoTaggerDestinationNames.ASSET_AUTO_TAGGER, message);
-
-				return null;
-			});
-	}
-
-	@Override
-	public void onAfterUpdate(AssetEntry assetEntry)
-		throws ModelListenerException {
-
-		_registerCallback(assetEntry);
-	}
-
 	@Override
 	public void onAfterRemoveAssociation(
 			Object classPK, String associationClassName,
@@ -96,6 +67,13 @@ public class AssetEntryModelListener extends BaseModelListener<AssetEntry> {
 					assetAutoTaggerEntry);
 			}
 		}
+	}
+
+	@Override
+	public void onAfterUpdate(AssetEntry assetEntry)
+		throws ModelListenerException {
+
+		_registerCallback(assetEntry);
 	}
 
 	@Activate
@@ -115,6 +93,28 @@ public class AssetEntryModelListener extends BaseModelListener<AssetEntry> {
 	protected void deactivate() {
 		_messageBus.removeDestination(
 			AssetAutoTaggerDestinationNames.ASSET_AUTO_TAGGER);
+	}
+
+	private void _registerCallback(AssetEntry assetEntry) {
+		TransactionCommitCallbackUtil.registerCallback(
+			(Callable<Void>)() -> {
+				if (!ListUtil.isEmpty(assetEntry.getTags())) {
+					return null;
+				}
+
+				if (!_assetAutoTaggerImpl.isAutoTaggable(assetEntry)) {
+					return null;
+				}
+
+				Message message = new Message();
+
+				message.setPayload(assetEntry);
+
+				_messageBus.sendMessage(
+					AssetAutoTaggerDestinationNames.ASSET_AUTO_TAGGER, message);
+
+				return null;
+			});
 	}
 
 	@Reference

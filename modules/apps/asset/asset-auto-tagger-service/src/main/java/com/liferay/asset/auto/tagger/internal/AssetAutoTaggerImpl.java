@@ -118,13 +118,16 @@ public class AssetAutoTaggerImpl implements AssetAutoTagger {
 									serviceContext);
 							}
 
-							if(!_assetTagLocalService.hasAssetEntryAssetTag(
-									assetEntry.getEntryId(), assetTag.getTagId())) {
+							if (!_assetTagLocalService.hasAssetEntryAssetTag(
+									assetEntry.getEntryId(),
+									assetTag.getTagId())) {
+
 								_assetTagLocalService.addAssetEntryAssetTag(
-										assetEntry.getEntryId(), assetTag);
+									assetEntry.getEntryId(), assetTag);
 
 								_assetAutoTaggerEntryLocalService.
-									addAssetAutoTaggerEntry(assetEntry, assetTag);
+									addAssetAutoTaggerEntry(
+										assetEntry, assetTag);
 
 								_assetTagLocalService.incrementAssetCount(
 									assetTag.getTagId(),
@@ -132,15 +135,19 @@ public class AssetAutoTaggerImpl implements AssetAutoTagger {
 							}
 						}
 						catch (Exception pe) {
-
 							AssetTag assetTag = _assetTagLocalService.fetchTag(
 								assetEntry.getGroupId(),
 								StringUtil.toLowerCase(assetTagName));
 
-							if(assetTag==null||! _assetTagLocalService.hasAssetEntryAssetTag(
-									assetEntry.getEntryId(), assetTag.getTagId())){
-								_log.error(String.format(
-									"Unable to add auto tag: %s", assetTagName),
+							if ((assetTag == null) ||
+								!_assetTagLocalService.hasAssetEntryAssetTag(
+									assetEntry.getEntryId(),
+									assetTag.getTagId())) {
+
+								_log.error(
+									String.format(
+										"Unable to add auto tag: %s",
+										assetTagName),
 									pe);
 							}
 						}
