@@ -30,6 +30,7 @@ import com.liferay.portal.kernel.portlet.PortletURLUtil;
 import com.liferay.portal.kernel.service.PortletLocalServiceUtil;
 import com.liferay.portal.kernel.theme.PortletDisplay;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.webdav.WebDAVUtil;
@@ -162,7 +163,10 @@ public class DLAdminNavigationDisplayContext {
 		viewMetadataSetsURL.setParameter(
 			"showManageTemplates", Boolean.FALSE.toString());
 
-		navigationItem.setHref(viewMetadataSetsURL.toString());
+		navigationItem.setHref(
+			HttpUtil.setParameter(
+				viewMetadataSetsURL.toString(), "panel_app_p_p_id",
+				DLPortletKeys.DOCUMENT_LIBRARY_ADMIN));
 
 		navigationItem.setLabel(
 			LanguageUtil.get(
