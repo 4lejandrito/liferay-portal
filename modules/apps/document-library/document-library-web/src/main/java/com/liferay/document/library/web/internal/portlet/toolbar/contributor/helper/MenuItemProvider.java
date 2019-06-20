@@ -76,8 +76,9 @@ public class MenuItemProvider {
 	}
 
 	public MenuItem getAddFileMenuItem(
-		Folder folder, ThemeDisplay themeDisplay,
-		PortletRequest portletRequest) {
+			Folder folder, ThemeDisplay themeDisplay,
+			PortletRequest portletRequest)
+		throws PortalException {
 
 		long folderId = _getFolderId(folder);
 
@@ -107,7 +108,7 @@ public class MenuItemProvider {
 			"mvcRenderCommandName", "/document_library/edit_file_entry");
 		portletURL.setParameter(Constants.CMD, Constants.ADD);
 		portletURL.setParameter(
-			"redirect", PortalUtil.getCurrentURL(portletRequest));
+			"redirect", PortalUtil.getLayoutFullURL(themeDisplay));
 		portletURL.setParameter(
 			"repositoryId",
 			String.valueOf(_getRepositoryId(folder, themeDisplay)));
@@ -119,8 +120,9 @@ public class MenuItemProvider {
 	}
 
 	public MenuItem getAddFolderMenuItem(
-		Folder folder, ThemeDisplay themeDisplay,
-		PortletRequest portletRequest) {
+			Folder folder, ThemeDisplay themeDisplay,
+			PortletRequest portletRequest)
+		throws PortalException {
 
 		long folderId = _getFolderId(folder);
 
@@ -148,7 +150,7 @@ public class MenuItemProvider {
 		portletURL.setParameter(
 			"mvcRenderCommandName", "/document_library/edit_folder");
 		portletURL.setParameter(
-			"redirect", PortalUtil.getCurrentURL(portletRequest));
+			"redirect", PortalUtil.getLayoutFullURL(themeDisplay));
 		portletURL.setParameter(
 			"repositoryId",
 			String.valueOf(_getRepositoryId(folder, themeDisplay)));
@@ -161,8 +163,9 @@ public class MenuItemProvider {
 	}
 
 	public MenuItem getAddMultipleFilesMenuItem(
-		Folder folder, ThemeDisplay themeDisplay,
-		PortletRequest portletRequest) {
+			Folder folder, ThemeDisplay themeDisplay,
+			PortletRequest portletRequest)
+		throws PortalException {
 
 		if ((folder != null) && !folder.isSupportsMultipleUpload()) {
 			return null;
@@ -196,7 +199,7 @@ public class MenuItemProvider {
 			"mvcRenderCommandName",
 			"/document_library/upload_multiple_file_entries");
 		portletURL.setParameter(
-			"redirect", PortalUtil.getCurrentURL(portletRequest));
+			"redirect", PortalUtil.getLayoutFullURL(themeDisplay));
 		portletURL.setParameter(
 			"repositoryId",
 			String.valueOf(_getRepositoryId(folder, themeDisplay)));
@@ -208,8 +211,9 @@ public class MenuItemProvider {
 	}
 
 	public URLMenuItem getAddRepositoryMenuItem(
-		Folder folder, ThemeDisplay themeDisplay,
-		PortletRequest portletRequest) {
+			Folder folder, ThemeDisplay themeDisplay,
+			PortletRequest portletRequest)
+		throws PortalException {
 
 		if (folder != null) {
 			return null;
@@ -241,7 +245,7 @@ public class MenuItemProvider {
 		portletURL.setParameter(
 			"mvcRenderCommandName", "/document_library/edit_repository");
 		portletURL.setParameter(
-			"redirect", PortalUtil.getCurrentURL(portletRequest));
+			"redirect", PortalUtil.getLayoutFullURL(themeDisplay));
 
 		urlMenuItem.setURL(portletURL.toString());
 
@@ -249,8 +253,9 @@ public class MenuItemProvider {
 	}
 
 	public URLMenuItem getAddShortcutMenuItem(
-		Folder folder, ThemeDisplay themeDisplay,
-		PortletRequest portletRequest) {
+			Folder folder, ThemeDisplay themeDisplay,
+			PortletRequest portletRequest)
+		throws PortalException {
 
 		if ((folder != null) && !folder.isSupportsShortcuts()) {
 			return null;
@@ -282,7 +287,7 @@ public class MenuItemProvider {
 		portletURL.setParameter(
 			"mvcRenderCommandName", "/document_library/edit_file_shortcut");
 		portletURL.setParameter(
-			"redirect", PortalUtil.getCurrentURL(portletRequest));
+			"redirect", PortalUtil.getLayoutFullURL(themeDisplay));
 		portletURL.setParameter(
 			"repositoryId",
 			String.valueOf(_getRepositoryId(folder, themeDisplay)));
@@ -319,7 +324,7 @@ public class MenuItemProvider {
 			"mvcRenderCommandName", "/document_library/edit_file_entry");
 		portletURL.setParameter(Constants.CMD, Constants.ADD);
 		portletURL.setParameter(
-			"redirect", PortalUtil.getCurrentURL(portletRequest));
+			"redirect", PortalUtil.getLayoutFullURL(themeDisplay));
 		portletURL.setParameter(
 			"repositoryId",
 			String.valueOf(_getRepositoryId(folder, themeDisplay)));
