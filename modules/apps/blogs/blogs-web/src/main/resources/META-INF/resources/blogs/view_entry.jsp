@@ -37,6 +37,8 @@ String entryTitle = BlogsEntryUtil.getDisplayTitle(resourceBundle, entry);
 
 AssetEntry assetEntry = BlogsEntryAssetEntryUtil.getAssetEntry(request, entry);
 
+request.setAttribute(BlogsWebConstants.BLOGS_ENTRY_ASSET_ENTRY_VIEW_COUNT, assetEntry.getViewCount() + 1);
+
 AssetEntryServiceUtil.incrementViewCounter(assetEntry);
 
 assetHelper.addLayoutTags(request, AssetTagLocalServiceUtil.getTags(BlogsEntry.class.getName(), entry.getEntryId()));

@@ -129,10 +129,10 @@ BlogsPortletInstanceConfiguration blogsPortletInstanceConfiguration = BlogsPortl
 										<c:if test="<%= blogsPortletInstanceConfiguration.enableViewCount() %>">
 
 											<%
-											AssetEntry assetEntry = BlogsEntryAssetEntryUtil.getAssetEntry(request, entry);
+											int viewCount = BlogsEntryAssetEntryUtil.getViewCount(request, entry);
 											%>
 
-											- <liferay-ui:message arguments="<%= assetEntry.getViewCount() %>" key='<%= (assetEntry.getViewCount() == 1) ? "x-view" : "x-views" %>' />
+											- <liferay-ui:message arguments="<%= viewCount %>" key='<%= (viewCount == 1) ? "x-view" : "x-views" %>' />
 										</c:if>
 									</div>
 								</div>

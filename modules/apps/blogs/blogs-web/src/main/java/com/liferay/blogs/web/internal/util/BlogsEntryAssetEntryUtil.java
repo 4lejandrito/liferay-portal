@@ -19,6 +19,7 @@ import com.liferay.asset.kernel.service.AssetEntryLocalServiceUtil;
 import com.liferay.blogs.model.BlogsEntry;
 import com.liferay.blogs.web.constants.BlogsWebConstants;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.util.GetterUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -43,6 +44,23 @@ public class BlogsEntryAssetEntryUtil {
 		}
 
 		return assetEntry;
+	}
+
+	public static int getViewCount(
+			HttpServletRequest httpServletRequest, BlogsEntry blogsEntry)
+		throws PortalException {
+
+		int viewCount = GetterUtil.getInteger(
+			httpServletRequest.getAttribute(
+				BlogsWebConstants.BLOGS_ENTRY_ASSET_ENTRY_VIEW_COUNT));
+
+		if (viewCount != 0) {
+			return viewCount;
+		}
+
+		AssetEntry assetEntry = getAssetEntry(httpServletRequest, blogsEntry);
+
+		return assetEntry.getViewCount();
 	}
 
 }

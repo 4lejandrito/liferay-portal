@@ -25,6 +25,9 @@ public class BlogsWebConstants {
 	public static final String BLOGS_ENTRY_ASSET_ENTRY =
 		"BLOGS_ENTRY_ASSET_ENTRY";
 
+	public static final String BLOGS_ENTRY_ASSET_ENTRY_VIEW_COUNT =
+		"BLOGS_ENTRY_ASSET_ENTRY_VIEW_COUNT";
+
 	public static final String BLOGS_PORTLET_INSTANCE_CONFIGURATION =
 		"BLOGS_PORTLET_INSTANCE_CONFIGURATION";
 
