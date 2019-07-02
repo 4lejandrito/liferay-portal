@@ -14,10 +14,14 @@
 
 package com.liferay.journal.web.internal.info.display.url.provider;
 
-import com.liferay.asset.info.display.url.provider.BaseAssetInfoEditURLProvider;
+import com.liferay.asset.info.display.url.provider.AssetInfoEditURLProvider;
 import com.liferay.info.display.url.provider.InfoEditURLProvider;
+import com.liferay.journal.model.JournalArticle;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Jürgen Kappler
@@ -27,5 +31,20 @@ import org.osgi.service.component.annotations.Component;
 	service = InfoEditURLProvider.class
 )
 public class JournalAssetInfoEditURLProvider
-	extends BaseAssetInfoEditURLProvider {
+	implements InfoEditURLProvider<JournalArticle> {
+
+	@Override
+	public String getURL(
+			JournalArticle journalArticle,
+			HttpServletRequest httpServletRequest)
+		throws Exception {
+
+		return _assetInfoEditURLProvider.getURL(
+			JournalArticle.class.getName(), journalArticle.getResourcePrimKey(),
+			httpServletRequest);
+	}
+
+	@Reference
+	private AssetInfoEditURLProvider _assetInfoEditURLProvider;
+
 }
