@@ -27,15 +27,13 @@ PortletURL portletURL = renderResponse.createRenderURL();
 portletURL.setParameter("mvcRenderCommandName", "/blogs/view");
 %>
 
-<c:if test="<%= SessionMessages.contains(renderRequest, portletDisplay.getId() + SessionMessages.KEY_SUFFIX_DELETE_SUCCESS_DATA) %>">
-	<portlet:actionURL name="/blogs/edit_entry" var="restoreTrashEntriesURL">
-		<portlet:param name="<%= Constants.CMD %>" value="<%= Constants.RESTORE %>" />
-	</portlet:actionURL>
+<portlet:actionURL name="/blogs/edit_entry" var="restoreTrashEntriesURL">
+	<portlet:param name="<%= Constants.CMD %>" value="<%= Constants.RESTORE %>" />
+</portlet:actionURL>
 
-	<liferay-trash:undo
-		portletURL="<%= restoreTrashEntriesURL %>"
-	/>
-</c:if>
+<liferay-trash:undo
+	portletURL="<%= restoreTrashEntriesURL %>"
+/>
 
 <aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
 
