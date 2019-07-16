@@ -20,6 +20,8 @@ import com.liferay.blogs.model.impl.BlogsEntryImpl;
 import com.liferay.blogs.model.impl.BlogsEntryModelImpl;
 import com.liferay.blogs.service.persistence.BlogsEntryPersistence;
 import com.liferay.blogs.service.persistence.impl.constants.BlogsPersistenceConstants;
+import com.liferay.multichannel.service.ChannelScopeRelLocalServiceUtil;
+import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
@@ -31,21 +33,25 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.SQLQuery;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.dao.orm.SessionFactory;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.sanitizer.Sanitizer;
 import com.liferay.portal.kernel.sanitizer.SanitizerException;
 import com.liferay.portal.kernel.sanitizer.SanitizerUtil;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.security.permission.InlineSQLHelperUtil;
+import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
@@ -4252,7 +4258,18 @@ public class BlogsEntryPersistenceImpl
 
 			query.append(_SQL_SELECT_BLOGSENTRY_WHERE);
 
-			query.append(_FINDER_COLUMN_G_S_GROUPID_2);
+			List<Group> channelGroups = _getChannelGroups(groupId);
+
+			if (channelGroups.size() == 1) {
+				query.append(_FINDER_COLUMN_G_S_GROUPID_2);
+			}
+			else {
+				query.append(
+					String.format(
+						"(blogsEntry.groupId IN (%s)) AND ",
+						ListUtil.toString(
+							channelGroups, Group.GROUP_ID_ACCESSOR)));
+			}
 
 			query.append(_FINDER_COLUMN_G_S_STATUS_2);
 
@@ -4275,7 +4292,9 @@ public class BlogsEntryPersistenceImpl
 
 				QueryPos qPos = QueryPos.getInstance(q);
 
-				qPos.add(groupId);
+				if (channelGroups.size() == 1) {
+					qPos.add(groupId);
+				}
 
 				qPos.add(status);
 
@@ -4664,7 +4683,17 @@ public class BlogsEntryPersistenceImpl
 				_FILTER_SQL_SELECT_BLOGSENTRY_NO_INLINE_DISTINCT_WHERE_1);
 		}
 
-		query.append(_FINDER_COLUMN_G_S_GROUPID_2);
+		List<Group> channelGroups = _getChannelGroups(groupId);
+
+		if (channelGroups.size() == 1) {
+			query.append(_FINDER_COLUMN_G_S_GROUPID_2);
+		}
+		else {
+			query.append(
+				String.format(
+					"(blogsEntry.groupId IN (%s)) AND ",
+					ListUtil.toString(channelGroups, Group.GROUP_ID_ACCESSOR)));
+		}
 
 		query.append(_FINDER_COLUMN_G_S_STATUS_2);
 
@@ -4692,9 +4721,19 @@ public class BlogsEntryPersistenceImpl
 			}
 		}
 
-		String sql = InlineSQLHelperUtil.replacePermissionCheck(
-			query.toString(), BlogsEntry.class.getName(),
-			_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN, groupId);
+		String sql = null;
+
+		if (channelGroups.size() == 1) {
+			sql = InlineSQLHelperUtil.replacePermissionCheck(
+				query.toString(), BlogsEntry.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN, groupId);
+		}
+		else {
+			sql = InlineSQLHelperUtil.replacePermissionCheck(
+				query.toString(), BlogsEntry.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN,
+				ListUtil.toLongArray(channelGroups, Group.GROUP_ID_ACCESSOR));
+		}
 
 		Session session = null;
 
@@ -4712,7 +4751,9 @@ public class BlogsEntryPersistenceImpl
 
 			QueryPos qPos = QueryPos.getInstance(q);
 
-			qPos.add(groupId);
+			if (channelGroups.size() == 1) {
+				qPos.add(groupId);
+			}
 
 			qPos.add(status);
 
@@ -15138,7 +15179,17 @@ public class BlogsEntryPersistenceImpl
 				_FILTER_SQL_SELECT_BLOGSENTRY_NO_INLINE_DISTINCT_WHERE_1);
 		}
 
-		query.append(_FINDER_COLUMN_G_LTD_S_GROUPID_2);
+		List<Group> channelGroups = _getChannelGroups(groupId);
+
+		if (channelGroups.size() == 1) {
+			query.append(_FINDER_COLUMN_G_LTD_S_GROUPID_2);
+		}
+		else {
+			query.append(
+				String.format(
+					"(blogsEntry.groupId IN (%s)) AND ",
+					ListUtil.toString(channelGroups, Group.GROUP_ID_ACCESSOR)));
+		}
 
 		boolean bindDisplayDate = false;
 
@@ -15177,9 +15228,19 @@ public class BlogsEntryPersistenceImpl
 			}
 		}
 
-		String sql = InlineSQLHelperUtil.replacePermissionCheck(
-			query.toString(), BlogsEntry.class.getName(),
-			_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN, groupId);
+		String sql = null;
+
+		if (channelGroups.size() == 1) {
+			sql = InlineSQLHelperUtil.replacePermissionCheck(
+				query.toString(), BlogsEntry.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN, groupId);
+		}
+		else {
+			sql = InlineSQLHelperUtil.replacePermissionCheck(
+				query.toString(), BlogsEntry.class.getName(),
+				_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN,
+				ListUtil.toLongArray(channelGroups, Group.GROUP_ID_ACCESSOR));
+		}
 
 		Session session = null;
 
@@ -15197,7 +15258,9 @@ public class BlogsEntryPersistenceImpl
 
 			QueryPos qPos = QueryPos.getInstance(q);
 
-			qPos.add(groupId);
+			if (channelGroups.size() == 1) {
+				qPos.add(groupId);
+			}
 
 			if (bindDisplayDate) {
 				qPos.add(new Timestamp(displayDate.getTime()));
@@ -15213,6 +15276,22 @@ public class BlogsEntryPersistenceImpl
 		}
 		finally {
 			closeSession(session);
+		}
+	}
+
+	private List<Group> _getChannelGroups(long groupId) {
+
+		try {
+			return ChannelScopeRelLocalServiceUtil.getChannelGroups(groupId);
+		}
+		catch (PortalException pe) {
+			Group group = GroupLocalServiceUtil.fetchGroup(groupId);
+
+			if (group == null) {
+				return ReflectionUtil.throwException(pe);
+			}
+
+			return Collections.singletonList(group);
 		}
 	}
 
