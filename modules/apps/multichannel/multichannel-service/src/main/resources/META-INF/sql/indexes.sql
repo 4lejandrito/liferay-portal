@@ -1,0 +1,1 @@
+create index IX_D999EF80 on ChannelScopeRel (channelId);
