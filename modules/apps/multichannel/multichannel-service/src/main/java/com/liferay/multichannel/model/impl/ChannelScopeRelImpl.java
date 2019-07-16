@@ -28,7 +28,7 @@ import org.osgi.annotation.versioning.ProviderType;
 @ProviderType
 public class ChannelScopeRelImpl extends ChannelScopeRelBaseImpl {
 
-	/*
+	/**
 	 * NOTE FOR DEVELOPERS:
 	 *
 	 * Never reference this class directly. All methods that expect a channel scope rel model instance should use the {@link com.liferay.multichannel.model.ChannelScopeRel} interface instead.
