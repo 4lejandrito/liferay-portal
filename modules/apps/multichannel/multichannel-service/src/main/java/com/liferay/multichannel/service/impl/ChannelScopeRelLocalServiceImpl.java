@@ -14,23 +14,19 @@
 
 package com.liferay.multichannel.service.impl;
 
+import com.liferay.multichannel.model.ChannelScopeRel;
 import com.liferay.multichannel.service.base.ChannelScopeRelLocalServiceBaseImpl;
 import com.liferay.portal.aop.AopService;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.Group;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The implementation of the channel scope rel local service.
- *
- * <p>
- * All custom service methods should be put in this class. Whenever methods are added, rerun ServiceBuilder to copy their definitions into the <code>com.liferay.multichannel.service.ChannelScopeRelLocalService</code> interface.
- *
- * <p>
- * This is a local service. Methods of this service will not have security checks based on the propagated JAAS credentials because this service can only be accessed from within the same VM.
- * </p>
- *
- * @author Brian Wing Shun Chan
- * @see ChannelScopeRelLocalServiceBaseImpl
+ * @author Adolfo Pérez
  */
 @Component(
 	property = "model.class.name=com.liferay.multichannel.model.ChannelScopeRel",
@@ -39,9 +35,22 @@ import org.osgi.service.component.annotations.Component;
 public class ChannelScopeRelLocalServiceImpl
 	extends ChannelScopeRelLocalServiceBaseImpl {
 
-	/*
-	 * NOTE FOR DEVELOPERS:
-	 *
-	 * Never reference this class directly. Use <code>com.liferay.multichannel.service.ChannelScopeRelLocalService</code> via injection or a <code>org.osgi.util.tracker.ServiceTracker</code> or use <code>com.liferay.multichannel.service.ChannelScopeRelLocalServiceUtil</code>.
-	 */
+	public List<Group> getChannelGroups(long groupId) throws PortalException {
+		List<Group> groups = new ArrayList<>(
+			channelScopeRelPersistence.findByChannelId(
+				groupId
+			).size() + 1);
+
+		groups.add(groupLocalService.getGroup(groupId));
+
+		for (ChannelScopeRel channelScopeRel :
+				channelScopeRelPersistence.findByChannelId(groupId)) {
+
+			groups.add(
+				groupLocalService.getGroup(channelScopeRel.getScopeId()));
+		}
+
+		return groups;
+	}
+
 }
