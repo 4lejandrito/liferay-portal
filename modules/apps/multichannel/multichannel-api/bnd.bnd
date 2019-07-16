@@ -1,0 +1,8 @@
+Bundle-Name: Liferay Multichannel API
+Bundle-SymbolicName: com.liferay.multichannel.api
+Bundle-Version: 1.0.0
+Export-Package:\
+	com.liferay.multichannel.exception,\
+	com.liferay.multichannel.model,\
+	com.liferay.multichannel.service,\
+	com.liferay.multichannel.service.persistence
