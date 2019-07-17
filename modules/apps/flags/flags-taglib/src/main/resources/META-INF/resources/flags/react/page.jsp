@@ -1,3 +1,5 @@
+<%@ page import="com.liferay.petra.string.StringPool" %>
+<%@ page import="com.liferay.portal.kernel.util.StringUtil" %>
 <%--
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
@@ -20,13 +22,11 @@
 String className = (String)request.getAttribute("liferay-flags:flags:className");
 long classPK = GetterUtil.getLong(request.getAttribute("liferay-flags:flags:classPK"));
 String contentTitle = (String)request.getAttribute("liferay-flags:flags:contentTitle");
-
+String id = StringUtil.randomId() + StringPool.UNDERLINE + "id";
 
 String namespace = PortalUtil.getPortletNamespace(PortletKeys.FLAGS);
 
 JSONObject dataJSONObject = JSONUtil.put(
-		namespace + "className", className
-	).put(
 		namespace + "classPK", classPK
 	).put(
 		namespace + "contentTitle", contentTitle
@@ -43,14 +43,15 @@ boolean enabled = GetterUtil.getBoolean(request.getAttribute("liferay-flags:flag
 //ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(WebKeys.THEME_DISPLAY);
 %>
 
-<div id="testFlagsRect"></div>
+<div id="<%= id %>"></div>
 
-<aui:script require='<%= npmResolvedPackageName + "/flags/react/js/index.es as FlagsComponent" %>'>
+<aui:script require='<%= "flags/react/js/index.es as FlagsComponent" %>'>
 	new FlagsComponent.default(
-		'testFlagsRect',
+		'<%= id %>',
 		{
 			className: '<%= className %>',
-			dataJSONObject: <%= dataJSONObject %>,
+			companyName: '<%= false %>',
+			formData: <%= dataJSONObject %>,
 			enabled: <%= enabled %>,
 			message: 'Report',
 			reasons: {
@@ -61,7 +62,8 @@ boolean enabled = GetterUtil.getBoolean(request.getAttribute("liferay-flags:flag
 				'spam': 'Spam',
 				'violent-or-repulsive-content': 'Violent or Repulsive Content'
 			},
-			urlTermsOfUse: 'https://google.com',
+			urlTermsOfUse: Liferay.ThemeDisplay.getPathMain() + '/portal/terms_of_use',
+//			pathTermsOfUse: Liferay.ThemeDisplay.getPathMain() + '/portal/terms_of_use',
 			spritemap: Liferay.ThemeDisplay.getPathThemeImages() + '/lexicon/icons.svg'
 		}
 	);
