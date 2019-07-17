@@ -1,10 +1,27 @@
 package com.liferay.flags.taglib.servlet.taglib.react;
 
+import com.liferay.flags.configuration.FlagsGroupServiceConfiguration;
 import com.liferay.flags.taglib.internal.servlet.ServletContextUtil;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.module.configuration.ConfigurationProviderUtil;
+import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.PortletKeys;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.taglib.util.IncludeTag;
 
+import javax.portlet.ActionRequest;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletURL;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.PageContext;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FlagsTag extends IncludeTag {
 
@@ -43,6 +60,48 @@ public class FlagsTag extends IncludeTag {
 		_reportedUserId = reportedUserId;
 	}
 
+	private Map<String, String> _getReasons(long companyId)
+		throws PortalException {
+
+		FlagsGroupServiceConfiguration flagsGroupServiceConfiguration =
+			ConfigurationProviderUtil.getCompanyConfiguration(
+				FlagsGroupServiceConfiguration.class, companyId);
+
+		Map<String, String> reasons = new HashMap<>();
+
+		for (String reason : flagsGroupServiceConfiguration.reasons()) {
+			reasons.put(reason, LanguageUtil.get(request, reason));
+		}
+
+		return reasons;
+	}
+
+	private String _getURI() {
+		PortletURL portletURL = PortletURLFactoryUtil.create(
+			request, PortletKeys.FLAGS, PortletRequest.ACTION_PHASE);
+
+		portletURL.setParameter(ActionRequest.ACTION_NAME, "/flags/edit_entry");
+
+		return portletURL.toString();
+	}
+
+	private boolean _isFlagsEnabled(ThemeDisplay themeDisplay)
+		throws PortalException {
+
+		FlagsGroupServiceConfiguration flagsGroupServiceConfiguration =
+			ConfigurationProviderUtil.getCompanyConfiguration(
+				FlagsGroupServiceConfiguration.class,
+				themeDisplay.getCompanyId());
+
+		if (flagsGroupServiceConfiguration.guestUsersEnabled() ||
+			themeDisplay.isSignedIn()) {
+
+			return true;
+		}
+
+		return false;
+	}
+
 	@Override
 	protected void cleanUp() {
 		super.cleanUp();
@@ -63,6 +122,7 @@ public class FlagsTag extends IncludeTag {
 
 	@Override
 	protected void setAttributes(HttpServletRequest httpServletRequest) {
+
 		httpServletRequest.setAttribute(
 			"liferay-flags:flags:className", _className);
 		httpServletRequest.setAttribute(
@@ -78,6 +138,50 @@ public class FlagsTag extends IncludeTag {
 		httpServletRequest.setAttribute(
 			"liferay-flags:flags:reportedUserId",
 			String.valueOf(_reportedUserId));
+
+		try {
+			ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(WebKeys.THEME_DISPLAY);
+
+
+			httpServletRequest.setAttribute(
+				"liferay-flags:flags:companyName",
+				themeDisplay.getCompany().getName()
+			);
+			httpServletRequest.setAttribute(
+				"liferay-flags:flags:flagsEnabled",
+				_isFlagsEnabled(themeDisplay)
+			);
+			httpServletRequest.setAttribute(
+				"liferay-flags:flags:reasons",
+				_getReasons(themeDisplay.getCompanyId()));
+			httpServletRequest.setAttribute(
+				"liferay-flags:flags:portletNamespace",
+				PortalUtil.getPortletNamespace(PortletKeys.FLAGS));
+
+			boolean signedIn = themeDisplay.isSignedIn();
+
+			httpServletRequest.setAttribute(
+				"liferay-flags:flags:signedIn", signedIn);
+
+			if (signedIn) {
+				User user = themeDisplay.getUser();
+
+				httpServletRequest.setAttribute(
+					"liferay-flags:flags:reporterEmailAddress", user.getEmailAddress());
+			}
+
+			httpServletRequest.setAttribute(
+				"liferay-flags:flags:uri", _getURI());
+
+			httpServletRequest.setAttribute(
+				"liferay-flags:flags:reasons",
+				_getReasons(themeDisplay.getCompanyId()));
+
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+		}
+
 	}
 
 	private static final String _PAGE = "/flags/react/page.jsp";
@@ -89,4 +193,6 @@ public class FlagsTag extends IncludeTag {
 	private boolean _label = true;
 	private String _message;
 	private long _reportedUserId;
+
+	private static final Log _log = LogFactoryUtil.getLog(FlagsTag.class);
 }
