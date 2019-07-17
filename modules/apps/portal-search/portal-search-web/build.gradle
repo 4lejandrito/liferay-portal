@@ -19,6 +19,7 @@ dependencies {
 	compileOnly project(":apps:frontend-taglib:frontend-taglib-clay")
 	compileOnly project(":apps:frontend-taglib:frontend-taglib-soy")
 	compileOnly project(":apps:layout:layout-page-template-api")
+	compileOnly project(":apps:multichannel:multichannel-api")
 	compileOnly project(":apps:petra:petra-xml")
 	compileOnly project(":apps:portal-search:portal-search-api")
 	compileOnly project(":apps:portal-search:portal-search-web-api")

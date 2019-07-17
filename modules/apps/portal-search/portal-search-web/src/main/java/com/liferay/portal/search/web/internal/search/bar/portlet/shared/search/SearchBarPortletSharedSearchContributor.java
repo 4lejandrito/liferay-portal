@@ -14,6 +14,7 @@
 
 package com.liferay.portal.search.web.internal.search.bar.portlet.shared.search;
 
+import com.liferay.multichannel.service.ChannelScopeRelLocalServiceUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutTypePortlet;
@@ -136,6 +137,14 @@ public class SearchBarPortletSharedSearchContributor
 
 			for (Group group : groups) {
 				groupIds.add(group.getGroupId());
+			}
+
+			List<Group> channelGroups =
+				ChannelScopeRelLocalServiceUtil.getChannelGroups(
+					themeDisplay.getScopeGroupId());
+
+			for (Group channelGroup : channelGroups) {
+				groupIds.add(channelGroup.getGroupId());
 			}
 
 			return ArrayUtil.toLongArray(groupIds);

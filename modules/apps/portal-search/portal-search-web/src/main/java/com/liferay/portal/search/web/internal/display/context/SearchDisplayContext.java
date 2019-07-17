@@ -14,8 +14,10 @@
 
 package com.liferay.portal.search.web.internal.display.context;
 
+import com.liferay.multichannel.service.ChannelScopeRelLocalServiceUtil;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.search.Document;
@@ -568,7 +570,16 @@ public class SearchDisplayContext {
 			groupId -> {
 				SearchContext searchContext = searchSettings.getSearchContext();
 
-				searchContext.setGroupIds(new long[] {groupId});
+				try {
+					searchContext.setGroupIds(
+						ListUtil.toLongArray(
+							ChannelScopeRelLocalServiceUtil.getChannelGroups(
+								groupId),
+							Group.GROUP_ID_ACCESSOR));
+				}
+				catch (PortalException p) {
+					searchContext.setGroupIds(new long[] {groupId});
+				}
 			});
 	}
 
