@@ -17,7 +17,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import Button from '../../common/Button.es';
 import UserIcon from '../../common/UserIcon.es';
+import {deleteFragmentEntryLinkComment} from '../../../utils/FragmentsEditorFetchUtils.es';
 
 const FragmentComment = props => (
 	<article className="fragments-editor__fragment-comment small">
@@ -32,11 +34,18 @@ const FragmentComment = props => (
 				<p className="m-0 text-secondary">{props.dateDescription}</p>
 			</div>
 		</div>
-
 		<p
 			className="text-secondary"
 			dangerouslySetInnerHTML={{__html: props.body}}
 		/>
+		<Button
+			displayType="link"
+			onClick={() => deleteFragmentEntryLinkComment(props.commentId)}
+			small
+			type="button"
+		>
+			{Liferay.Language.get('delete')}
+		</Button>
 	</article>
 );
 
