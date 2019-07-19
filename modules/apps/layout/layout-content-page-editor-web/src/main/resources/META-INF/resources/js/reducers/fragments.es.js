@@ -23,7 +23,8 @@ import {
 	UPDATE_EDITABLE_VALUE_ERROR,
 	UPDATE_EDITABLE_VALUE_LOADING,
 	UPDATE_FRAGMENT_ENTRY_LINK_CONTENT,
-	ADD_FRAGMENT_ENTRY_LINK_COMMENT
+	ADD_FRAGMENT_ENTRY_LINK_COMMENT,
+	DELETE_FRAGMENT_ENTRY_LINK_COMMENT
 } from '../actions/actions.es';
 import {
 	add,
@@ -146,6 +147,33 @@ function addFragmentEntryLinkCommentReducer(state, action) {
 			nextState,
 			['fragmentEntryLinks', action.fragmentEntryLinkId, 'comments'],
 			comments => [action.comment, ...comments],
+			[]
+		);
+	}
+
+	return nextState;
+}
+
+/**
+ * @param {object} state
+ * @param {object} action
+ * @param {string} action.type
+ * @param {string} action.fragmentEntryLinkId
+ * @param {object} action.comment
+ * @return {object}
+ * @review
+ */
+function deleteFragmentEntryLinkCommentReducer(state, action) {
+	let nextState = state;
+
+	if (action.type === DELETE_FRAGMENT_ENTRY_LINK_COMMENT) {
+		nextState = updateIn(
+			nextState,
+			['fragmentEntryLinks', action.fragmentEntryLinkId, 'comments'],
+			comments =>
+				comments.filter(
+					comment => comment.commentId !== action.comment.commentId
+				),
 			[]
 		);
 	}
@@ -835,6 +863,7 @@ function _removeFragment(
 export {
 	addFragment,
 	addFragmentEntryLinkCommentReducer,
+	deleteFragmentEntryLinkCommentReducer,
 	addFragmentEntryLinkReducer,
 	clearFragmentEditorReducer,
 	disableFragmentEditorReducer,
