@@ -28,6 +28,7 @@ const FragmentComment = props => {
 
 		deleteFragmentEntryLinkComment(props.commentId).then(() => {
 			setDeletingComment(false);
+			props.onDelete();
 		});
 	};
 	return (
@@ -69,7 +70,9 @@ FragmentComment.propTypes = {
 	}),
 
 	body: PropTypes.string,
-	dateDescription: PropTypes.string
+	dateDescription: PropTypes.string,
+
+	onDelete: PropTypes.func
 };
 
 export {FragmentComment};
