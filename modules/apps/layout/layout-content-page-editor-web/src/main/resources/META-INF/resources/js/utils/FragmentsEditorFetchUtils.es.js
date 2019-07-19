@@ -60,6 +60,17 @@ function addFragmentEntryLinkComment(fragmentEntryLinkId, body) {
 	});
 }
 
+/**
+ * @param {string} commentId
+ */
+function deleteFragmentEntryLinkComment(commentId) {
+	const state = _store.getState();
+
+	return _fetch(state.deleteFragmentEntryLinkCommentURL, {
+		commentId
+	});
+}
+
 function getExperienceUsedPortletIds(segmentsExperienceId) {
 	return _fetch(_store.getState().getExperienceUsedPortletsURL, {
 		segmentsExperienceId
@@ -156,6 +167,7 @@ function updatePageEditorLayoutData(layoutData, segmentsExperienceId) {
 
 export {
 	addFragmentEntryLinkComment,
+	deleteFragmentEntryLinkComment,
 	getExperienceUsedPortletIds,
 	removeExperience,
 	removeFragmentEntryLinks,
