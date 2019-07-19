@@ -15,39 +15,52 @@
 /* eslint no-unused-vars: "warn" */
 
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useState} from 'react';
 
 import Button from '../../common/Button.es';
 import UserIcon from '../../common/UserIcon.es';
 import {deleteFragmentEntryLinkComment} from '../../../utils/FragmentsEditorFetchUtils.es';
 
-const FragmentComment = props => (
-	<article className="fragments-editor__fragment-comment small">
-		<div className="d-flex mb-2">
-			<UserIcon {...props.author} />
+const FragmentComment = props => {
+	const [deletingComment, setDeletingComment] = useState(false);
+	const _handleDeleteButtonClick = () => {
+		setDeletingComment(true);
 
-			<div className="pl-2">
-				<p className="m-0 text-truncate">
-					<strong>{props.author.fullName}</strong>
-				</p>
+		deleteFragmentEntryLinkComment(props.commentId).then(() => {
+			setDeletingComment(false);
+		});
+	};
+	return (
+		<article className="fragments-editor__fragment-comment small">
+			<div className="d-flex mb-2">
+				<UserIcon {...props.author} />
 
-				<p className="m-0 text-secondary">{props.dateDescription}</p>
+				<div className="pl-2">
+					<p className="m-0 text-truncate">
+						<strong>{props.author.fullName}</strong>
+					</p>
+
+					<p className="m-0 text-secondary">
+						{props.dateDescription}
+					</p>
+				</div>
 			</div>
-		</div>
-		<p
-			className="text-secondary"
-			dangerouslySetInnerHTML={{__html: props.body}}
-		/>
-		<Button
-			displayType="link"
-			onClick={() => deleteFragmentEntryLinkComment(props.commentId)}
-			small
-			type="button"
-		>
-			{Liferay.Language.get('delete')}
-		</Button>
-	</article>
-);
+			<p
+				className="text-secondary"
+				dangerouslySetInnerHTML={{__html: props.body}}
+			/>
+			<Button
+				displayType="link"
+				loading={deletingComment}
+				onClick={_handleDeleteButtonClick}
+				small
+				type="button"
+			>
+				{Liferay.Language.get('delete')}
+			</Button>
+		</article>
+	);
+};
 
 FragmentComment.propTypes = {
 	author: PropTypes.shape({
