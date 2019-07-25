@@ -18,6 +18,7 @@ import PortletBase from './liferay/PortletBase.es';
 import fetch from './liferay/util/fetch.es';
 import navigate from './liferay/util/navigate.es';
 import ItemSelectorDialog from './liferay/ItemSelectorDialog.es';
+import objectToFormData from './liferay/util/form/object_to_form_data.es.js';
 
 export {AOP} from './liferay/aop/AOP.es';
 export {cancelDebounce, debounce} from './liferay/debounce/debounce.es';
@@ -34,4 +35,5 @@ export {navigate};
 export {
 	openSimpleInputModal
 } from './liferay/modal/commands/OpenSimpleInputModal.es';
+export {objectToFormData};
 export {openToast} from './liferay/toast/commands/OpenToast.es';
