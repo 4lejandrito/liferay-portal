@@ -12,11 +12,9 @@
  * details.
  */
 
-import React, {useContext, useEffect, useState} from 'react';
 import {Config} from 'metal-state';
 import {connect, disconnect, Store} from './store.es';
 import INITIAL_STATE from './state.es';
-import StoreContext from './StoreContext.es';
 
 /**
  * HOC that returns a component that connects automatically
@@ -89,46 +87,5 @@ const getConnectedComponent = (Component, properties) => {
 	return ConnectedComponent;
 };
 
-/**
- * Second order function to produce a Connected Component Wrapper
- * @param {Function} mapStateToProps - Recieves the state and returns mapped version of it ready for consumption by the Wrapped Component
- * @param {Function} mapDispatchToProps - Recieves the dispatch and returns a set of component props that use it to call the modify the state tree
- * @returns {object}
- */
-function getConnectedReactComponent(mapStateToProps, mapDispatchToProps) {
-	/**
-	 *
-	 * @param {React.Component} WrappedComponent - The Component to connect to the store
-	 * @returns {React.Component} - Wrapper Connected Component that propagates every store change mapped to the component
-	 */
-	return function _getConnectedWrapperComponent(WrappedComponent) {
-		return function ConnectedWrapperComponent(props) {
-			const store = useContext(StoreContext);
-
-			const [storeState, setStoreState] = useState(
-				store ? store.getState() : {}
-			);
-
-			useEffect(() => {
-				if (store) {
-					const handleStoreChange = () =>
-						setStoreState(store.getState());
-					const subscriber = store.on('change', handleStoreChange);
-
-					return () => subscriber.removeListener();
-				}
-			}, [store]);
-
-			return store ? (
-				<WrappedComponent
-					{...props}
-					{...mapStateToProps(storeState, props)}
-					{...mapDispatchToProps(store.dispatch, props)}
-				/>
-			) : null;
-		};
-	};
-}
-
-export {getConnectedComponent, getConnectedReactComponent};
+export {getConnectedComponent};
 export default getConnectedComponent;
