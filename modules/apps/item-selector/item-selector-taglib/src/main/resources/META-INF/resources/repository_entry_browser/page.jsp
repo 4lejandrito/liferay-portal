@@ -1,4 +1,5 @@
-<%--
+<%@ page
+	import="com.liferay.item.selector.taglib.servlet.taglib.clay.ItemSelectorItemHorizontalCard" %><%--
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
@@ -114,6 +115,8 @@ ItemSelectorRepositoryEntryManagementToolbarDisplayContext itemSelectorRepositor
 		</div>
 	</c:if>
 
+	holi
+
 	<c:if test="<%= (existingFileEntryReturnType != null) || (itemSelectorReturnTypeResolver != null) %>">
 		<liferay-ui:search-container
 			searchContainer="<%= searchContainer %>"
@@ -128,6 +131,7 @@ ItemSelectorRepositoryEntryManagementToolbarDisplayContext itemSelectorRepositor
 				className="com.liferay.portal.kernel.repository.model.RepositoryEntry"
 				modelVar="repositoryEntry"
 			>
+				test
 				<c:choose>
 					<c:when test='<%= displayStyle.equals("list") %>'>
 
@@ -256,7 +260,7 @@ ItemSelectorRepositoryEntryManagementToolbarDisplayContext itemSelectorRepositor
 
 						<c:choose>
 							<c:when test='<%= displayStyle.equals("icon") %>'>
-
+								hola
 								<%
 								row.setCssClass("entry-card lfr-asset-folder");
 
@@ -269,8 +273,8 @@ ItemSelectorRepositoryEntryManagementToolbarDisplayContext itemSelectorRepositor
 									<liferay-ui:search-container-column-text
 										colspan="<%= 3 %>"
 									>
+										holaaaa
 										<liferay-frontend:horizontal-card
-											cardCssClass="card-interactive card-interactive-secondary"
 											resultRow="<%= row %>"
 											text="<%= folder.getName() %>"
 											url="<%= viewFolderURL.toString() %>"
@@ -281,6 +285,11 @@ ItemSelectorRepositoryEntryManagementToolbarDisplayContext itemSelectorRepositor
 												/>
 											</liferay-frontend:horizontal-card-col>
 										</liferay-frontend:horizontal-card>
+
+										holaaaa
+										<clay:horizontal-card
+											horizontalCard="<%= new ItemSelectorItemHorizontalCard() %>"
+										/>
 									</liferay-ui:search-container-column-text>
 
 								<%
