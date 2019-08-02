@@ -330,20 +330,9 @@ ItemSelectorRepositoryEntryManagementToolbarDisplayContext itemSelectorRepositor
 												</liferay-frontend:icon-vertical-card>
 											</c:when>
 											<c:otherwise>
-												<liferay-frontend:vertical-card
-													cardCssClass="card-interactive card-interactive-primary"
-													cssClass="file-card item-preview"
-													data="<%= data %>"
-													imageUrl="<%= thumbnailSrc %>"
-													title="<%= title %>"
-												>
-													<liferay-frontend:vertical-card-sticker-bottom>
-														<liferay-document-library:mime-type-sticker
-															cssClass="sticker-bottom sticker-secondary"
-															fileVersion="<%= latestFileVersion %>"
-														/>
-													</liferay-frontend:vertical-card-sticker-bottom>
-												</liferay-frontend:vertical-card>
+												<clay:image-card
+													imageCard="<%= new ItemSelectorItemImageCard(fileEntry, themeDisplay) %>"
+												/>
 											</c:otherwise>
 										</c:choose>
 									</liferay-ui:search-container-column-text>

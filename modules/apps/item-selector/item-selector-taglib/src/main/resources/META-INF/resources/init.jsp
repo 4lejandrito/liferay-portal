@@ -19,6 +19,7 @@
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
 
 <%@ taglib uri="http://liferay.com/tld/aui" prefix="aui" %><%@
+taglib uri="http://liferay.com/tld/clay" prefix="clay" %><%@
 taglib uri="http://liferay.com/tld/document-library" prefix="liferay-document-library" %><%@
 taglib uri="http://liferay.com/tld/frontend" prefix="liferay-frontend" %><%@
 taglib uri="http://liferay.com/tld/portlet" prefix="liferay-portlet" %><%@
@@ -38,6 +39,7 @@ page import="com.liferay.item.selector.taglib.internal.dao.search.RepositoryEntr
 page import="com.liferay.item.selector.taglib.internal.security.permission.resource.DLFolderPermission" %><%@
 page import="com.liferay.item.selector.taglib.internal.servlet.ServletContextUtil" %><%@
 page import="com.liferay.item.selector.taglib.internal.util.ItemSelectorRepositoryEntryBrowserUtil" %><%@
+page import="com.liferay.item.selector.taglib.servlet.taglib.clay.ItemSelectorItemImageCard" %><%@
 page import="com.liferay.petra.string.StringPool" %><%@
 page import="com.liferay.portal.kernel.dao.search.SearchContainer" %><%@
 page import="com.liferay.portal.kernel.json.JSONObject" %><%@
