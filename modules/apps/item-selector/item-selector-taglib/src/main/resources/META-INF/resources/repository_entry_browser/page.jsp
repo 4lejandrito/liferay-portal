@@ -102,7 +102,7 @@ ItemSelectorRepositoryEntryManagementToolbarDisplayContext itemSelectorRepositor
 			<label class="btn btn-default" for="<%= randomNamespace %>InputFile"><liferay-ui:message key="select-file" /></label>
 		</liferay-util:buffer>
 
-		<div class="drop-enabled drop-zone">
+		<div class="drop-enabled drop-zone no-border">
 			<c:choose>
 				<c:when test="<%= BrowserSnifferUtil.isMobile(request) %>">
 					<%= selectFileHTML %>
@@ -318,8 +318,8 @@ ItemSelectorRepositoryEntryManagementToolbarDisplayContext itemSelectorRepositor
 										<c:choose>
 											<c:when test="<%= Validator.isNull(thumbnailSrc) %>">
 												<liferay-frontend:icon-vertical-card
-													cardCssClass="card-interactive"
-													cssClass="file-card form-check form-check-card item-preview"
+													cardCssClass="card-interactive card-interactive-primary"
+													cssClass="file-card item-preview"
 													data="<%= data %>"
 													icon="documents-and-media"
 													title="<%= title %>"
@@ -334,8 +334,8 @@ ItemSelectorRepositoryEntryManagementToolbarDisplayContext itemSelectorRepositor
 											</c:when>
 											<c:otherwise>
 												<liferay-frontend:vertical-card
-													cardCssClass="card-interactive"
-													cssClass="form-check form-check-card image-card item-preview"
+													cardCssClass="card-interactive card-interactive-primary"
+													cssClass="file-card item-preview"
 													data="<%= data %>"
 													imageUrl="<%= thumbnailSrc %>"
 													title="<%= title %>"
