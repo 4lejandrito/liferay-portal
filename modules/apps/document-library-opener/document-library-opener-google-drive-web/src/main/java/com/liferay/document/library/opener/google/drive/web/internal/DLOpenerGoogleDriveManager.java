@@ -228,6 +228,14 @@ public class DLOpenerGoogleDriveManager
 			() -> _getContentFile(userId, fileEntry), 0);
 	}
 
+	@Override
+	public void setAuthorizationToken(
+			long companyId, long userId, String authorizationToken)
+		throws IOException, PortalException {
+
+		_oAuth2Manager.setAccessToken(companyId, userId, authorizationToken);
+	}
+
 	@Activate
 	protected void activate() throws GeneralSecurityException, IOException {
 		_jsonFactory = JacksonFactory.getDefaultInstance();
