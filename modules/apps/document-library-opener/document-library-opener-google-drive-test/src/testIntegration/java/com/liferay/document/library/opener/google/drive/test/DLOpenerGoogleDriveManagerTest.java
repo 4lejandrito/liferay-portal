@@ -17,6 +17,7 @@ package com.liferay.document.library.opener.google.drive.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
 import com.liferay.document.library.kernel.service.DLAppLocalService;
+import com.liferay.document.library.opener.google.drive.DLOpenerGoogleDriveFileReference;
 import com.liferay.document.library.opener.google.drive.DLOpenerGoogleDriveManager;
 import com.liferay.petra.function.UnsafeRunnable;
 import com.liferay.petra.string.StringPool;
@@ -29,12 +30,15 @@ import com.liferay.portal.kernel.repository.model.Folder;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
+import com.liferay.portal.kernel.test.rule.Sync;
+import com.liferay.portal.kernel.test.rule.SynchronousDestinationTestRule;
 import com.liferay.portal.kernel.test.util.CompanyTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
+import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -54,17 +58,64 @@ import org.junit.runner.RunWith;
  * @author Alejandro Tardín
  */
 @RunWith(Arquillian.class)
+@Sync
 public class DLOpenerGoogleDriveManagerTest {
 
 	@ClassRule
 	@Rule
 	public static final AggregateTestRule aggregateTestRule =
-		new LiferayIntegrationTestRule();
+		new AggregateTestRule(
+			new LiferayIntegrationTestRule(),
+			SynchronousDestinationTestRule.INSTANCE);
 
 	@Before
 	public void setUp() throws Exception {
 		_company = CompanyTestUtil.addCompany();
 		_user = UserTestUtil.addUser(_company);
+	}
+
+	@Test
+	public void testCheckOutUploadsTheFileToGoogle() throws Exception {
+		_withGoogleDriveAuthorized(
+			_company.getCompanyId(), _user.getUserId(),
+			() -> {
+				FileEntry fileEntry = _addFileEntry();
+
+				DLOpenerGoogleDriveFileReference
+					dlOpenerGoogleDriveFileReference =
+						_dlOpenerGoogleDriveManager.checkOut(
+							_user.getUserId(), fileEntry);
+
+				Assert.assertEquals(
+					"\ufeff" + StringUtil.read(fileEntry.getContentStream()),
+					FileUtil.read(
+						dlOpenerGoogleDriveFileReference.getContentFile()));
+
+				Assert.assertTrue(
+					_dlOpenerGoogleDriveManager.isGoogleDriveFile(fileEntry));
+			});
+	}
+
+	@Test
+	public void testCreateUploadsAnEmptyFileToGoogle() throws Exception {
+		_withGoogleDriveAuthorized(
+			_company.getCompanyId(), _user.getUserId(),
+			() -> {
+				FileEntry fileEntry = _addFileEntry();
+
+				DLOpenerGoogleDriveFileReference
+					dlOpenerGoogleDriveFileReference =
+						_dlOpenerGoogleDriveManager.create(
+							_user.getUserId(), fileEntry);
+
+				Assert.assertEquals(
+					"\ufeff",
+					FileUtil.read(
+						dlOpenerGoogleDriveFileReference.getContentFile()));
+
+				Assert.assertTrue(
+					_dlOpenerGoogleDriveManager.isGoogleDriveFile(fileEntry));
+			});
 	}
 
 	@Test(expected = PortalException.class)
@@ -122,6 +173,11 @@ public class DLOpenerGoogleDriveManagerTest {
 
 	@Test
 	public void testIsGoogleDriveFileIsFalseByDefault() throws Exception {
+		Assert.assertFalse(
+			_dlOpenerGoogleDriveManager.isGoogleDriveFile(_addFileEntry()));
+	}
+
+	private FileEntry _addFileEntry() throws Exception {
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(_company.getGroupId());
 
@@ -131,15 +187,12 @@ public class DLOpenerGoogleDriveManagerTest {
 			RandomTestUtil.randomString(), RandomTestUtil.randomString(),
 			serviceContext);
 
-		FileEntry fileEntry = _dlAppLocalService.addFileEntry(
+		return _dlAppLocalService.addFileEntry(
 			serviceContext.getUserId(), folder.getGroupId(),
 			DLFolderConstants.DEFAULT_PARENT_FOLDER_ID,
 			StringUtil.randomString(), ContentTypes.TEXT_PLAIN, "liferay.txt",
 			StringPool.BLANK, StringPool.BLANK, "liferay".getBytes(),
 			serviceContext);
-
-		Assert.assertFalse(
-			_dlOpenerGoogleDriveManager.isGoogleDriveFile(fileEntry));
 	}
 
 	private String _getGoogleDriveClientId() {
@@ -148,6 +201,25 @@ public class DLOpenerGoogleDriveManagerTest {
 
 	private String _getGoogleDriveClientSecret() {
 		return "clientSecret";
+	}
+
+	private <E extends Exception> void _withGoogleDriveAuthorized(
+			long companyId, long userId, UnsafeRunnable<E> unsafeRunnable)
+		throws Exception {
+
+		_withGoogleDriveEnabled(
+			() -> {
+				_dlOpenerGoogleDriveManager.setAuthorizationToken(
+					companyId, userId, "authorizationToken");
+
+				try {
+					unsafeRunnable.run();
+				}
+				finally {
+					_dlOpenerGoogleDriveManager.setAuthorizationToken(
+						companyId, userId, null);
+				}
+			});
 	}
 
 	private <E extends Exception> void _withGoogleDriveEnabled(
