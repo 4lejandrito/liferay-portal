@@ -171,4 +171,19 @@ public interface DLOpenerGoogleDriveManager {
 			long userId, FileEntry fileEntry)
 		throws PortalException;
 
+	/**
+	 * Sets an authorization token. This method should be used to skip the
+	 * OAuth 2 authorization flow with Google Drive if a valid token is already
+	 * available.
+	 *
+	 * @param  companyId
+	 * @param  userId the primary key of the user in the OAuth 2 authorization
+	 *         flow
+	 * @param  authorizationToken the authorization token
+	 */
+	public default void setAuthorizationToken(
+			long companyId, long userId, String authorizationToken)
+		throws IOException, PortalException {
+	}
+
 }
