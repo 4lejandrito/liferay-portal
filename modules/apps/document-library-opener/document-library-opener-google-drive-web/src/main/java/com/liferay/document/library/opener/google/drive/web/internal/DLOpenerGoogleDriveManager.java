@@ -83,14 +83,14 @@ public class DLOpenerGoogleDriveManager
 			long userId, FileEntry fileEntry)
 		throws PortalException {
 
-		BackgroundTask backgroundTask = _addBackgroundTask(
-			GoogleDriveBackgroundTaskConstants.CHECKOUT, fileEntry, userId);
-
 		_dlOpenerFileEntryReferenceLocalService.
 			addPlaceholderDLOpenerFileEntryReference(
 				userId,
 				DLOpenerGoogleDriveConstants.GOOGLE_DRIVE_REFERENCE_TYPE,
 				fileEntry, DLOpenerFileEntryReferenceConstants.TYPE_EDIT);
+
+		BackgroundTask backgroundTask = _addBackgroundTask(
+			GoogleDriveBackgroundTaskConstants.CHECKOUT, fileEntry, userId);
 
 		return new DLOpenerGoogleDriveFileReference(
 			fileEntry.getFileEntryId(),
@@ -105,14 +105,14 @@ public class DLOpenerGoogleDriveManager
 			long userId, FileEntry fileEntry)
 		throws PortalException {
 
-		BackgroundTask backgroundTask = _addBackgroundTask(
-			GoogleDriveBackgroundTaskConstants.CREATE, fileEntry, userId);
-
 		_dlOpenerFileEntryReferenceLocalService.
 			addPlaceholderDLOpenerFileEntryReference(
 				userId,
 				DLOpenerGoogleDriveConstants.GOOGLE_DRIVE_REFERENCE_TYPE,
 				fileEntry, DLOpenerFileEntryReferenceConstants.TYPE_NEW);
+
+		BackgroundTask backgroundTask = _addBackgroundTask(
+			GoogleDriveBackgroundTaskConstants.CREATE, fileEntry, userId);
 
 		return new DLOpenerGoogleDriveFileReference(
 			fileEntry.getFileEntryId(),
