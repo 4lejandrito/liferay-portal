@@ -43,7 +43,7 @@ const FragmentComment = props => {
 	const [editing, setEditing] = useState(false);
 	const [hidden, setHidden] = useState(false);
 	const [highlighted, setHighlighted] = useState(false);
-	const [showDeleteMask, setShowDeleteMash] = useState(false);
+	const [showDeleteMask, setShowDeleteMask] = useState(false);
 	const [showResolveMask, setShowResolveMask] = useState(false);
 
 	const showResolvedComments = useSelector(
@@ -55,6 +55,7 @@ const FragmentComment = props => {
 	};
 
 	if (props.comment.edited && props.comment.modifiedDateDescription) {
+		// Usar classNames??
 		dateDescriptionProps.className += ' lfr-portal-tooltip';
 
 		dateDescriptionProps['data-title'] = Liferay.Util.sub(
@@ -113,7 +114,8 @@ const FragmentComment = props => {
 		setHidden(true);
 
 		setTimeout(() => {
-			setShowDeleteMash(false);
+			// Usar hook isMounted para que no pete
+			setShowDeleteMask(false);
 			setShowResolveMask(false);
 			onHide();
 		}, 1000);
@@ -192,7 +194,7 @@ const FragmentComment = props => {
 							<ClayDropDown.Item
 								onClick={() => {
 									setDropDownActive(false);
-									setShowDeleteMash(true);
+									setShowDeleteMask(true);
 								}}
 							>
 								{Liferay.Language.get('delete')}
@@ -254,7 +256,7 @@ const FragmentComment = props => {
 					message={Liferay.Language.get(
 						'are-you-sure-you-want-to-delete-this-comment'
 					)}
-					onCancelButtonClick={() => setShowDeleteMash(false)}
+					onCancelButtonClick={() => setShowDeleteMask(false)}
 					onConfirmButtonClick={() =>
 						deleteFragmentEntryLinkComment(props.comment.commentId)
 							.then(() =>
@@ -300,5 +302,6 @@ FragmentComment.propTypes = {
 	parentCommentId: PropTypes.string
 };
 
+// Quitar uno de los dos
 export {FragmentComment};
 export default FragmentComment;

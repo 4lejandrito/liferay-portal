@@ -18,6 +18,7 @@ import useDispatch from '../../../store/hooks/useDispatch.es';
 import useSelector from '../../../store/hooks/useSelector.es';
 import {toggleShowResolvedComments} from '../../../actions/toggleShowResolvedComments.es';
 
+// Quitar el show
 const ShowResolvedCommentsToggle = () => {
 	const dispatch = useDispatch();
 

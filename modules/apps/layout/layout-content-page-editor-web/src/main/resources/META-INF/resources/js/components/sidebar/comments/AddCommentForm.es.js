@@ -51,7 +51,7 @@ const AddCommentForm = props => {
 				setAddingComment(false);
 				setShowButtons(false);
 				setTextareaContent('');
-			})
+			})			
 			.catch(() => {
 				openToast({
 					message: Liferay.Language.get(
@@ -65,11 +65,11 @@ const AddCommentForm = props => {
 			});
 	};
 
-	const _handleTextareaChange = content => {
+	const _handleTextareaChange = useCallback(content => {
 		if (content) {
 			setTextareaContent(content);
 		}
-	};
+	}, []);
 
 	return (
 		<div className="px-3">

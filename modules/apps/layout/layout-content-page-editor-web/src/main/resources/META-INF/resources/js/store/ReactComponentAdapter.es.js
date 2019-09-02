@@ -38,6 +38,7 @@ function getConnectedReactComponentAdapter(ReactComponent, templates) {
 			ReactDOM.unmountComponentAtNode(this.refs.app);
 
 			// eslint-disable-next-line liferay-portal/no-react-dom-render
+			// Intentar reutilizar el render de frontend-js-react-web
 			ReactDOM.render(
 				<ClayIconSpriteContext.Provider
 					value={this.store.getState().spritemap}

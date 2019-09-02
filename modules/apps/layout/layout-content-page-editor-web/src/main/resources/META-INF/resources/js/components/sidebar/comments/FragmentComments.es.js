@@ -71,6 +71,7 @@ const FragmentComments = props => {
 					fragmentEntryLinkId={fragmentEntryLink.fragmentEntryLinkId}
 				/>
 
+				{/* Intentar optimizar esto (useMemo??) */}
 				{[...fragmentEntryLinkComments].reverse().map(comment => (
 					<FragmentComment
 						comment={comment}

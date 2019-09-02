@@ -21,6 +21,7 @@ const Editor = props => {
 	const editorConfig = useSelector(
 		state => state.defaultEditorConfigurations.text.editorConfig
 	);
+	// Usar contexto quizas
 	const portletNamespace = useSelector(state => state.portletNamespace);
 
 	const [editor, setEditor] = useState(null);
@@ -92,8 +93,8 @@ const Editor = props => {
 						newEditor.destroy();
 					});
 				}
-			} catch (err) {
-				console.log(err);
+			} catch (_err) {
+				// LPS-DELALLOYEDITOR o ticket de github
 			}
 		};
 	}, [autoFocus, editorConfig]);
