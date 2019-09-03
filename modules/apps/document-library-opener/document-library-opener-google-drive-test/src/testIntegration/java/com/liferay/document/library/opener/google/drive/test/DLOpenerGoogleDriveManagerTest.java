@@ -210,7 +210,8 @@ public class DLOpenerGoogleDriveManagerTest {
 		_withGoogleDriveEnabled(
 			() -> {
 				_dlOpenerGoogleDriveManager.setAuthorizationToken(
-					companyId, userId, "authorizationToken");
+					companyId, userId,
+					"ya29.Glt4B2g_crGMkLEkQjr9sy5WJv2FfCo3LArm4DkI7zyQehd3aXhBpLXDH35vWKvOCfq0zAvsbjVf4LCM_dlHjPIAE9ihxs2VzS1vDXqtixb7jmp0r4Au84fh9Lg4");
 
 				try {
 					unsafeRunnable.run();
