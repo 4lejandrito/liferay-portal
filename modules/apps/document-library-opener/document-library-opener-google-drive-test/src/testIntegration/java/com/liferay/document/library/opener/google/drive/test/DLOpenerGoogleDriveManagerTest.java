@@ -23,6 +23,8 @@ import com.liferay.petra.function.UnsafeRunnable;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.test.util.ConfigurationTemporarySwapper;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.repository.model.FileEntry;
@@ -40,6 +42,7 @@ import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.HashMapDictionary;
+import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.test.rule.Inject;
@@ -195,12 +198,35 @@ public class DLOpenerGoogleDriveManagerTest {
 			serviceContext);
 	}
 
+	private String _getAuthorizationToken() throws Exception {
+		Http.Options options = new Http.Options();
+
+		options.addPart("client_id", _getGoogleDriveClientId());
+		options.addPart("client_secret", _getGoogleDriveClientSecret());
+		options.addPart("grant_type", "refresh_token");
+		options.addPart("refresh_token", _getGoogleDriveRefreshToken());
+
+		options.addHeader(
+			"Content-Type", ContentTypes.APPLICATION_X_WWW_FORM_URLENCODED);
+		options.setLocation("https://www.googleapis.com/oauth2/v4/token");
+		options.setPost(true);
+
+		JSONObject jsonObject = JSONFactoryUtil.createJSONObject(
+			_http.URLtoString(options));
+
+		return jsonObject.getString("access_token");
+	}
+
 	private String _getGoogleDriveClientId() {
-		return "clientId";
+		return System.getenv("GOOGLE_DRIVE_CLIENT_ID");
 	}
 
 	private String _getGoogleDriveClientSecret() {
-		return "clientSecret";
+		return System.getenv("GOOGLE_DRIVE_CLIENT_SECRET");
+	}
+
+	private String _getGoogleDriveRefreshToken() {
+		return System.getenv("GOOGLE_DRIVE_REFRESH_TOKEN");
 	}
 
 	private <E extends Exception> void _withGoogleDriveAuthorized(
@@ -210,7 +236,7 @@ public class DLOpenerGoogleDriveManagerTest {
 		_withGoogleDriveEnabled(
 			() -> {
 				_dlOpenerGoogleDriveManager.setAuthorizationToken(
-					companyId, userId, "authorizationToken");
+					companyId, userId, _getAuthorizationToken());
 
 				try {
 					unsafeRunnable.run();
@@ -249,6 +275,9 @@ public class DLOpenerGoogleDriveManagerTest {
 
 	@Inject
 	private DLOpenerGoogleDriveManager _dlOpenerGoogleDriveManager;
+
+	@Inject
+	private Http _http;
 
 	private User _user;
 
