@@ -43,6 +43,7 @@ import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portal.kernel.util.Http;
+import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.test.rule.Inject;
@@ -218,15 +219,15 @@ public class DLOpenerGoogleDriveManagerTest {
 	}
 
 	private String _getGoogleDriveClientId() {
-		return System.getenv("GOOGLE_DRIVE_CLIENT_ID");
+		return PropsUtil.get("google.drive.integration.client.id.1");
 	}
 
 	private String _getGoogleDriveClientSecret() {
-		return System.getenv("GOOGLE_DRIVE_CLIENT_SECRET");
+		return PropsUtil.get("google.drive.integration.client.secret.1");
 	}
 
 	private String _getGoogleDriveRefreshToken() {
-		return System.getenv("GOOGLE_DRIVE_REFRESH_TOKEN");
+		return PropsUtil.get("google.drive.integration.client.refresh.token.1");
 	}
 
 	private <E extends Exception> void _withGoogleDriveAuthorized(
