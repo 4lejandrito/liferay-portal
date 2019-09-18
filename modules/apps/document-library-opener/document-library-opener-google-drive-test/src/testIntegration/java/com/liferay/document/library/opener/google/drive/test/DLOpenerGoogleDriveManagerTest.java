@@ -76,6 +76,8 @@ public class DLOpenerGoogleDriveManagerTest {
 	public void setUp() throws Exception {
 		_company = CompanyTestUtil.addCompany();
 		_user = UserTestUtil.addUser(_company);
+
+		_setNonproxyHosts();
 	}
 
 	@Test
@@ -230,6 +232,11 @@ public class DLOpenerGoogleDriveManagerTest {
 		return PropsUtil.get("google.drive.integration.client.refresh.token.1");
 	}
 
+	private void _setNonproxyHosts() {
+		System.setProperty(
+			"http.nonProxyHosts", StringUtil.merge(_NON_PROXY_HOSTS, "|"));
+	}
+
 	private <E extends Exception> void _withGoogleDriveAuthorized(
 			long companyId, long userId, UnsafeRunnable<E> unsafeRunnable)
 		throws Exception {
@@ -267,6 +274,10 @@ public class DLOpenerGoogleDriveManagerTest {
 			unsafeRunnable.run();
 		}
 	}
+
+	private static final String[] _NON_PROXY_HOSTS = {
+		"accounts.google.com", "www.googleapis.com"
+	};
 
 	@DeleteAfterTestRun
 	private Company _company;
