@@ -239,7 +239,8 @@ public class DLOpenerGoogleDriveManagerTest {
 	}
 
 	private void _setUseSystemProxies() {
-		System.setProperty("java.net.useSystemProxies", true);
+		System.setProperty(
+			"java.net.useSystemProxies", Boolean.TRUE.toString());
 	}
 
 	private <E extends Exception> void _withGoogleDriveAuthorized(
