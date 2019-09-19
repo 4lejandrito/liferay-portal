@@ -78,6 +78,7 @@ public class DLOpenerGoogleDriveManagerTest {
 		_user = UserTestUtil.addUser(_company);
 
 		_setNonproxyHosts();
+		_setUseSystemProxies();
 	}
 
 	@Test
@@ -235,6 +236,10 @@ public class DLOpenerGoogleDriveManagerTest {
 	private void _setNonproxyHosts() {
 		System.setProperty(
 			"http.nonProxyHosts", StringUtil.merge(_NON_PROXY_HOSTS, "|"));
+	}
+
+	private void _setUseSystemProxies() {
+		System.setProperty("java.net.useSystemProxies", true);
 	}
 
 	private <E extends Exception> void _withGoogleDriveAuthorized(
