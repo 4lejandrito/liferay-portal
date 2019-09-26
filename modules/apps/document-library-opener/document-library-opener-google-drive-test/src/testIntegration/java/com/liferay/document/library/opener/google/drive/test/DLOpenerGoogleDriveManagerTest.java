@@ -222,14 +222,17 @@ public class DLOpenerGoogleDriveManagerTest {
 	}
 
 	private String _getGoogleDriveClientId() {
+		System.out.println(PropsUtil.get("google.drive.integration.client.id.1"));
 		return PropsUtil.get("google.drive.integration.client.id.1");
 	}
 
 	private String _getGoogleDriveClientSecret() {
+		System.out.println(PropsUtil.get("google.drive.integration.client.secret.1"));
 		return PropsUtil.get("google.drive.integration.client.secret.1");
 	}
 
 	private String _getGoogleDriveRefreshToken() {
+		System.out.println(PropsUtil.get("google.drive.integration.client.refresh.token.1"));
 		return PropsUtil.get("google.drive.integration.client.refresh.token.1");
 	}
 
