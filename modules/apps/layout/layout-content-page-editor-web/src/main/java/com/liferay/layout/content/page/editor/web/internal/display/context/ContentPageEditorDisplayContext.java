@@ -629,7 +629,7 @@ public class ContentPageEditorDisplayContext {
 		EditorConfiguration commentEditorConfiguration =
 			EditorConfigurationFactoryUtil.getEditorConfiguration(
 				ContentPageEditorPortletKeys.CONTENT_PAGE_EDITOR_PORTLET,
-				"commentEditor", StringPool.BLANK,
+				"pageEditorCommentEditor", StringPool.BLANK,
 				Collections.emptyMap(), themeDisplay,
 				RequestBackedPortletURLFactoryUtil.create(request));
 

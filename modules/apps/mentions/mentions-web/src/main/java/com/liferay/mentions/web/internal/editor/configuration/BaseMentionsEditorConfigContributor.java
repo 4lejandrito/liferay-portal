@@ -89,11 +89,11 @@ public class BaseMentionsEditorConfigContributor
 		String extraPlugins = jsonObject.getString("extraPlugins");
 
 		if (Validator.isNotNull(extraPlugins)) {
-			extraPlugins += ",autocomplete,contextmenu";
+			extraPlugins += ",autocomplete";
 		}
 		else {
 			extraPlugins =
-				"autocomplete,ae_placeholder,ae_selectionregion,ae_uicore,contextmenu";
+				"autocomplete,ae_placeholder,ae_selectionregion,ae_uicore";
 		}
 
 		jsonObject.put("extraPlugins", extraPlugins);
