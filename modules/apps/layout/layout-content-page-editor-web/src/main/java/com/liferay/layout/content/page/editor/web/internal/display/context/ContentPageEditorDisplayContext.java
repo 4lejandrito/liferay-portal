@@ -620,21 +620,11 @@ public class ContentPageEditorDisplayContext {
 		EditorConfiguration editorConfiguration =
 			EditorConfigurationFactoryUtil.getEditorConfiguration(
 				ContentPageEditorPortletKeys.CONTENT_PAGE_EDITOR_PORTLET,
-				"fragmenEntryLinkEditor", StringPool.BLANK,
-				Collections.emptyMap(), themeDisplay,
-				RequestBackedPortletURLFactoryUtil.create(request));
-
-		configurations.put("text", editorConfiguration.getData());
-
-		EditorConfiguration commentEditorConfiguration =
-			EditorConfigurationFactoryUtil.getEditorConfiguration(
-				ContentPageEditorPortletKeys.CONTENT_PAGE_EDITOR_PORTLET,
 				"pageEditorCommentEditor", StringPool.BLANK,
 				Collections.emptyMap(), themeDisplay,
 				RequestBackedPortletURLFactoryUtil.create(request));
 
-		configurations.put(
-			"commentEditor", commentEditorConfiguration.getData());
+		configurations.put("text", editorConfiguration.getData());
 
 		_defaultConfigurations = configurations;
 
