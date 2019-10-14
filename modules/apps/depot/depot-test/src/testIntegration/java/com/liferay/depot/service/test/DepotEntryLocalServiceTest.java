@@ -15,7 +15,6 @@
 package com.liferay.depot.service.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
-import com.liferay.depot.constants.DepotEntryConstants;
 import com.liferay.depot.exception.DepotEntryNameException;
 import com.liferay.depot.model.DepotEntry;
 import com.liferay.depot.service.DepotEntryLocalService;
@@ -61,7 +60,7 @@ public class DepotEntryLocalServiceTest {
 
 		Assert.assertFalse(group.isSite());
 
-		Assert.assertEquals(DepotEntryConstants.TYPE_DEPOT, group.getType());
+		Assert.assertEquals(GroupConstants.TYPE_DEPOT, group.getType());
 
 		Assert.assertEquals(
 			GroupConstants.DEFAULT_PARENT_GROUP_ID, group.getParentGroupId());
