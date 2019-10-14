@@ -19,7 +19,9 @@ import com.liferay.osgi.service.tracker.collections.internal.map.MultiValueServi
 import com.liferay.osgi.service.tracker.collections.internal.map.ServiceTrackerMapImpl;
 import com.liferay.osgi.service.tracker.collections.internal.map.SingleValueServiceTrackerBucketFactory;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.osgi.framework.BundleContext;
@@ -133,6 +135,21 @@ public class ServiceTrackerMapFactory {
 			new PropertyServiceReferenceMapper<String, SR>(propertyKey),
 			serviceTrackerCustomizer,
 			new MultiValueServiceTrackerBucketFactory<SR, S>(), null);
+	}
+
+	public static <K, S> ServiceTrackerMap<K, List<S>> openMultiValueUniqueMap(
+		BundleContext bundleContext, Class<S> clazz, String filterString,
+		ServiceReferenceMapper<K, ? super S> serviceReferenceMapper,
+		Comparator<ServiceReference<S>> comparator,
+		ServiceTrackerMapListener<K, S, List<S>> serviceTrackerMapListener) {
+
+		return new ServiceTrackerMapImpl<>(
+			bundleContext, clazz, filterString, serviceReferenceMapper,
+			new DefaultServiceTrackerCustomizer<S>(bundleContext),
+			new MultiValueServiceTrackerBucketFactory<>(
+				comparator,
+				services -> new ArrayList<>(new LinkedHashSet<>(services))),
+			serviceTrackerMapListener);
 	}
 
 	public static <S> ServiceTrackerMap<String, S> openSingleValueMap(

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
 
 import org.osgi.framework.ServiceReference;
 
@@ -42,12 +43,21 @@ public class MultiValueServiceTrackerBucketFactory<SR, TS>
 		_comparator = comparator;
 	}
 
+	public MultiValueServiceTrackerBucketFactory(
+		Comparator<ServiceReference<SR>> comparator,
+		Function<List<TS>, List<TS>> servicesMapper) {
+
+		_comparator = comparator;
+		_servicesMapper = servicesMapper;
+	}
+
 	@Override
 	public ServiceTrackerBucket<SR, TS, List<TS>> create() {
 		return new ListServiceTrackerBucket();
 	}
 
 	private final Comparator<ServiceReference<SR>> _comparator;
+	private Function<List<TS>, List<TS>> _servicesMapper;
 
 	private class ListServiceTrackerBucket
 		implements ServiceTrackerBucket<SR, TS, List<TS>> {
@@ -97,6 +107,10 @@ public class MultiValueServiceTrackerBucketFactory<SR, TS>
 						_serviceReferenceServiceTuples) {
 
 				_services.add(serviceReferenceServiceTuple.getService());
+			}
+
+			if (_servicesMapper != null) {
+				_services = _servicesMapper.apply(_services);
 			}
 
 			_services = Collections.unmodifiableList(_services);

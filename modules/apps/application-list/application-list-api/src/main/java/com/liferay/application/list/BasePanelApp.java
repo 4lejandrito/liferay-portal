@@ -35,6 +35,7 @@ import com.liferay.portal.kernel.util.WebKeys;
 import java.io.IOException;
 
 import java.util.Locale;
+import java.util.Objects;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
@@ -57,6 +58,21 @@ import javax.servlet.http.HttpServletResponse;
  * @see    PanelApp
  */
 public abstract class BasePanelApp implements PanelApp {
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+
+		if (!(o instanceof PanelApp)) {
+			return false;
+		}
+
+		PanelApp that = (PanelApp)o;
+
+		return Objects.equals(getKey(), that.getKey());
+	}
 
 	@Override
 	public String getKey() {
@@ -108,6 +124,11 @@ public abstract class BasePanelApp implements PanelApp {
 			"p_v_l_s_g_id", String.valueOf(group.getGroupId()));
 
 		return portletURL;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(getKey());
 	}
 
 	@Override
