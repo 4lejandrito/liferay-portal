@@ -27,6 +27,7 @@ import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portlet.usersadmin.search.GroupSearch;
 import com.liferay.portlet.usersadmin.search.GroupSearchTerms;
+import com.liferay.site.util.GroupSearchProvider;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -40,8 +41,12 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Alejandro Tardín
  */
-@Component(immediate = true, service = DepotAdminGroupSearchProvider.class)
-public class DepotAdminGroupSearchProvider {
+@Component(
+	immediate = true,
+	property = "group.search.provider.type=" + GroupConstants.TYPE_DEPOT,
+	service = {DepotAdminGroupSearchProvider.class, GroupSearchProvider.class}
+)
+public class DepotAdminGroupSearchProvider extends GroupSearchProvider {
 
 	public GroupSearch getGroupSearch(
 		PortletRequest portletRequest, PortletURL portletURL) {
@@ -102,7 +107,7 @@ public class DepotAdminGroupSearchProvider {
 		return groupSearch;
 	}
 
-	@Reference(target = ModuleServiceLifecycle.PORTAL_INITIALIZED, unbind = "-")
+	@Override
 	protected void setModuleServiceLifecycle(
 		ModuleServiceLifecycle moduleServiceLifecycle) {
 
