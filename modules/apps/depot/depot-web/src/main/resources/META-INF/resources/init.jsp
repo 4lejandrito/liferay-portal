@@ -36,7 +36,6 @@ page import="com.liferay.portal.kernel.exception.LocaleException" %><%@
 page import="com.liferay.portal.kernel.language.LanguageUtil" %><%@
 page import="com.liferay.portal.kernel.model.Group" %><%@
 page import="com.liferay.portal.kernel.model.GroupConstants" %><%@
-page import="com.liferay.portal.kernel.model.LayoutSet" %><%@
 page import="com.liferay.portal.kernel.model.User" %><%@
 page import="com.liferay.portal.kernel.service.GroupServiceUtil" %><%@
 page import="com.liferay.portal.kernel.util.GetterUtil" %><%@
@@ -49,8 +48,7 @@ page import="com.liferay.portal.kernel.util.ParamUtil" %><%@
 page import="com.liferay.portal.kernel.util.PortalUtil" %><%@
 page import="com.liferay.portal.kernel.util.PropsKeys" %><%@
 page import="com.liferay.portal.kernel.util.StringUtil" %><%@
-page import="com.liferay.portal.kernel.util.UnicodeProperties" %><%@
-page import="com.liferay.portal.kernel.util.WebKeys" %>
+page import="com.liferay.portal.kernel.util.UnicodeProperties" %>
 
 <%@ page import="java.util.ArrayList" %><%@
 page import="java.util.List" %><%@
