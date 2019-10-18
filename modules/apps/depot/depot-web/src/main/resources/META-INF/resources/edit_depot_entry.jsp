@@ -35,9 +35,15 @@ renderResponse.setTitle(HtmlUtil.escape(group.getDescriptiveName(locale)));
 	action="<%= DepotEntryURLUtil.getEditDepotEntryActionURL(liferayPortletResponse) %>"
 	method="post"
 	name="fm"
+	onSubmit='<%= "event.preventDefault(); " + renderResponse.getNamespace() + "saveGroup();" %>'
 >
 	<aui:input name="redirect" type="hidden" value="<%= backURL %>" />
 	<aui:input name="depotEntryId" type="hidden" value="<%= depotEntry.getDepotEntryId() %>" />
+
+	<liferay-ui:error-marker
+		key="<%= WebKeys.ERROR_SECTION %>"
+		value="display-settings"
+	/>
 
 	<liferay-frontend:edit-form-body>
 		<liferay-frontend:fieldset-group>
@@ -56,9 +62,21 @@ renderResponse.setTitle(HtmlUtil.escape(group.getDescriptiveName(locale)));
 		</liferay-frontend:fieldset-group>
 	</liferay-frontend:edit-form-body>
 
+	<%@ include file="/languages.jspf" %>
+
 	<liferay-frontend:edit-form-footer>
 		<aui:button type="submit" />
 
 		<aui:button href="<%= backURL %>" type="cancel" />
 	</liferay-frontend:edit-form-footer>
 </liferay-frontend:edit-form>
+
+<script>
+	function <portlet:namespace />saveGroup(forceDisable) {
+		<c:if test="<%= (group != null) && !group.isCompany() %>">
+		<portlet:namespace />saveLocales();
+		</c:if>
+
+		submitForm(document.<portlet:namespace />fm);
+	}
+</script>
