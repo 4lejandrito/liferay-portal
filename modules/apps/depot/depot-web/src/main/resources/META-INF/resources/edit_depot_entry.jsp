@@ -40,11 +40,6 @@ renderResponse.setTitle(HtmlUtil.escape(group.getDescriptiveName(locale)));
 	<aui:input name="redirect" type="hidden" value="<%= backURL %>" />
 	<aui:input name="depotEntryId" type="hidden" value="<%= depotEntry.getDepotEntryId() %>" />
 
-	<liferay-ui:error-marker
-		key="<%= WebKeys.ERROR_SECTION %>"
-		value="display-settings"
-	/>
-
 	<liferay-frontend:edit-form-body>
 		<liferay-frontend:fieldset-group>
 			<liferay-frontend:fieldset
