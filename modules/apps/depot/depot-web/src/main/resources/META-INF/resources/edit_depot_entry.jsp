@@ -69,7 +69,7 @@ renderResponse.setTitle(HtmlUtil.escape(group.getDescriptiveName(locale)));
 <script>
 	function <portlet:namespace />saveGroup(forceDisable) {
 		<c:if test="<%= (group != null) && !group.isCompany() %>">
-		<portlet:namespace />saveLocales();
+			<portlet:namespace />saveLocales();
 		</c:if>
 
 		submitForm(document.<portlet:namespace />fm);

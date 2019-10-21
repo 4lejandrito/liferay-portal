@@ -148,21 +148,31 @@
 	</aui:fieldset>
 
 	<script>
-		Liferay.Util.toggleRadio('<portlet:namespace />customLocales', '<portlet:namespace />customLocalesFieldset', '<portlet:namespace />inheritLocalesFieldset');
-		Liferay.Util.toggleRadio('<portlet:namespace />inheritLocales', '<portlet:namespace />inheritLocalesFieldset', '<portlet:namespace />customLocalesFieldset');
+		Liferay.Util.toggleRadio(
+			'<portlet:namespace />customLocales',
+			'<portlet:namespace />customLocalesFieldset',
+			'<portlet:namespace />inheritLocalesFieldset'
+		);
+		Liferay.Util.toggleRadio(
+			'<portlet:namespace />inheritLocales',
+			'<portlet:namespace />inheritLocalesFieldset',
+			'<portlet:namespace />customLocalesFieldset'
+		);
 
 		function <portlet:namespace />saveLocales() {
 			var form = document.<portlet:namespace />fm;
 
-			var currentLanguageIds = Liferay.Util.getFormElement(form, 'currentLanguageIds');
+			var currentLanguageIds = Liferay.Util.getFormElement(
+				form,
+				'currentLanguageIds'
+			);
 
 			if (currentLanguageIds) {
-				Liferay.Util.setFormValues(
-					form,
-					{
-						'<%= PropsKeys.LOCALES %>': Liferay.Util.listSelect(currentLanguageIds)
-					}
-				);
+				Liferay.Util.setFormValues(form, {
+					<%= PropsKeys.LOCALES %>: Liferay.Util.listSelect(
+						currentLanguageIds
+					)
+				});
 			}
 		}
 	</script>
@@ -173,56 +183,49 @@
 		if (languageSelectInput) {
 			const nameInput = Liferay.component('<portlet:namespace />name');
 
-			languageSelectInput.on(
-				'change',
-				function(event) {
-					const select = event.currentTarget.getDOMNode();
+			languageSelectInput.on('change', function(event) {
+				const select = event.currentTarget.getDOMNode();
 
-					const selectedOption = select.options[select.selectedIndex];
+				const selectedOption = select.options[select.selectedIndex];
 
-					Liferay.fire(
-						'inputLocalized:defaultLocaleChanged',
-						{
-							item: selectedOption
-						}
-					);
+				Liferay.fire('inputLocalized:defaultLocaleChanged', {
+					item: selectedOption
+				});
 
-					const defaultLanguage = languageSelectInput.val();
+				const defaultLanguage = languageSelectInput.val();
 
-					var defaultLanguageName = null;
+				var defaultLanguageName = null;
 
-					if (nameInput) {
-						defaultLanguageName = nameInput.getValue(defaultLanguage);
-					}
-
-					new A.Alert(
-						{
-							bodyContent: '<liferay-ui:message key="this-change-will-only-affect-the-newly-created-localized-content" />',
-							boundingBox: '#<portlet:namespace />languageWarning',
-							closeable: true,
-							cssClass: 'alert-warning',
-							destroyOnHide: false,
-							render: true
-						}
-					);
-
-					if (!defaultLanguageName) {
-						new A.Alert(
-							{
-								bodyContent: '<liferay-ui:message key="repository-name-will-display-a-generic-text-until-a-translation-is-added" />',
-								boundingBox: '#<portlet:namespace />defaultLanguageNameWarning',
-								closeable: true,
-								cssClass: 'alert-warning',
-								destroyOnHide: false,
-								render: true
-							}
-						);
-
-						nameInput.updateInput('<liferay-ui:message key="unnamed-repository" />');
-					}
-
+				if (nameInput) {
+					defaultLanguageName = nameInput.getValue(defaultLanguage);
 				}
-			);
+
+				new A.Alert({
+					bodyContent:
+						'<liferay-ui:message key="this-change-will-only-affect-the-newly-created-localized-content" />',
+					boundingBox: '#<portlet:namespace />languageWarning',
+					closeable: true,
+					cssClass: 'alert-warning',
+					destroyOnHide: false,
+					render: true
+				});
+
+				if (!defaultLanguageName) {
+					new A.Alert({
+						bodyContent:
+							'<liferay-ui:message key="repository-name-will-display-a-generic-text-until-a-translation-is-added" />',
+						boundingBox: '#<portlet:namespace />defaultLanguageNameWarning',
+						closeable: true,
+						cssClass: 'alert-warning',
+						destroyOnHide: false,
+						render: true
+					});
+
+					nameInput.updateInput(
+						'<liferay-ui:message key="unnamed-repository" />'
+					);
+				}
+			});
 		}
 	</aui:script>
 </liferay-frontend:fieldset>
