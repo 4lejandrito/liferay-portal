@@ -13,8 +13,9 @@
  */
 
 import {useIsMounted} from 'frontend-js-react-web';
+import {isObject} from 'metal';
 import {PropTypes} from 'prop-types';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 
 import {PreviewSeoOnChange} from './PreviewSeoEvents.es';
 
@@ -78,44 +79,53 @@ const PreviewSeoContainer = ({
 	targets,
 	titleSuffix
 }) => {
-	const [description, setDescription] = useState(
-		targets['description'] && targets['description'].defaultValue
+	const defaultLanguage = Liferay.ThemeDisplay.getLanguageId();
+	const [language, setLanguage] = useState(defaultLanguage);
+
+	const getDefaultValue = useCallback(
+		type => {
+			let defaultValue = targets[type] && targets[type].defaultValue;
+
+			if (isObject(defaultValue)) {
+				defaultValue =
+					defaultValue[language] || defaultValue[defaultLanguage];
+			}
+
+			return defaultValue;
+		},
+		[defaultLanguage, targets, language]
 	);
-	const [imgUrl, setImgUrl] = useState(
-		targets['imgUrl'] && targets['imgUrl'].defaultValue
-	);
-	const [language, setLanguage] = useState(
-		Liferay.ThemeDisplay.getLanguageId()
-	);
-	const [title, setTitle] = useState(
-		targets['title'] && targets['title'].defaultValue
-	);
-	const [url, setUrl] = useState(
-		targets['url'] && targets['url'].defaultValue
-	);
+
+	const [fields, setFields] = useState({});
 
 	const isMounted = useIsMounted();
 
 	useEffect(() => {
-		const setPreviewState = ({disabled, type, value = ''}) => {
+		const inputLocalizedLocaleChangedHandle = Liferay.on(
+			'inputLocalized:localeChanged',
+			event => {
+				const newLanguage =
+					event.item && event.item.getAttribute('data-value');
+
+				if (newLanguage && isMounted()) {
+					setLanguage(newLanguage);
+				}
+			}
+		);
+
+		return () => {
+			Liferay.detach(inputLocalizedLocaleChangedHandle);
+		};
+	}, [isMounted]);
+
+	useEffect(() => {
+		const setFieldsState = ({type, ...props}) => {
 			if (!isMounted()) return;
 
-			const defaultValue = targets[type] && targets[type].defaultValue;
-			const customizable = targets[type] && targets[type].customizable;
-
-			if (disabled || (!customizable && !value)) {
-				value = defaultValue || '';
-			}
-
-			if (type === 'description') {
-				setDescription(value);
-			} else if (type === 'title') {
-				setTitle(value);
-			} else if (type === 'url') {
-				setUrl(value);
-			} else if (type === 'imgUrl') {
-				setImgUrl(value);
-			}
+			setFields(state => ({
+				...state,
+				[type]: {...props}
+			}));
 		};
 
 		const handleInputChange = ({event, type}) => {
@@ -125,10 +135,8 @@ const PreviewSeoContainer = ({
 				return;
 			}
 
-			setPreviewState({
-				type,
-				value: target.value
-			});
+			const {disabled, value} = target;
+			setFieldsState({disabled, type, value});
 		};
 
 		const inputs = Object.entries(targets).reduce((acc, [type, {id}]) => {
@@ -146,11 +154,8 @@ const PreviewSeoContainer = ({
 
 				node.addEventListener('input', listener);
 
-				setPreviewState({
-					disabled: node.disabled,
-					type,
-					value: node.value
-				});
+				const {disabled, value} = node;
+				setFieldsState({disabled, type, value});
 
 				acc.push({listener, node, type});
 			}
@@ -160,27 +165,7 @@ const PreviewSeoContainer = ({
 
 		const PreviewSeoOnChangeHandle = PreviewSeoOnChange(
 			portletNamespace,
-			setPreviewState
-		);
-
-		const inputLocalizedLocaleChangedHandle = Liferay.on(
-			'inputLocalized:localeChanged',
-			event => {
-				const newLanguage =
-					event.item && event.item.getAttribute('data-value');
-
-				if (newLanguage) {
-					setLanguage(newLanguage);
-				}
-
-				inputs.forEach(({node, type}) =>
-					setPreviewState({
-						disabled: node.disabled,
-						type,
-						value: node.value
-					})
-				);
-			}
+			setFieldsState
 		);
 
 		return () => {
@@ -188,42 +173,50 @@ const PreviewSeoContainer = ({
 				node.removeEventListener('input', listener)
 			);
 
-			Liferay.detach(inputLocalizedLocaleChangedHandle);
 			Liferay.detach(PreviewSeoOnChangeHandle);
 		};
-	}, [isMounted, portletNamespace, targets]);
+	}, [portletNamespace, targets, isMounted]);
+
+	const getValue = type => {
+		const disabled = fields[type] && fields[type].disabled;
+		const customizable = targets[type] && targets[type].customizable;
+		const defaultValue = getDefaultValue(type);
+		let value = fields[type] && fields[type].value;
+
+		if (disabled || (!customizable && !value)) {
+			value = defaultValue || '';
+		}
+
+		return value || '';
+	};
 
 	return (
 		<PreviewSeo
-			description={description}
+			description={getValue('description')}
 			direction={Liferay.Language.direction[language]}
 			displayType={displayType}
-			imgUrl={imgUrl}
-			title={title}
+			imgUrl={getValue('imgUrl')}
+			title={getValue('title')}
 			titleSuffix={titleSuffix}
-			url={url}
+			url={getValue('url')}
 		/>
 	);
 };
 
+const targetShape = PropTypes.shape({
+	defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+	id: PropTypes.string
+});
+
 PreviewSeoContainer.propTypes = {
 	targets: PropTypes.shape({
-		description: PropTypes.shape({
-			defaultValue: PropTypes.string,
-			id: PropTypes.string
-		}),
+		description: targetShape,
 		imgUrl: PropTypes.shape({
 			defaultValue: PropTypes.string,
 			id: PropTypes.string
 		}),
-		title: PropTypes.shape({
-			defaultValue: PropTypes.string,
-			id: PropTypes.string
-		}),
-		url: PropTypes.shape({
-			defaultValue: PropTypes.string,
-			id: PropTypes.string
-		})
+		title: targetShape,
+		url: targetShape
 	}).isRequired
 };
 
