@@ -15,7 +15,7 @@
 import {useIsMounted} from 'frontend-js-react-web';
 import {isObject} from 'metal';
 import {PropTypes} from 'prop-types';
-import React, {useEffect, useState, useCallback, useMemo} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 
 import {previewSeoOnChange} from './PreviewSeoEvents.es';
 
@@ -83,6 +83,7 @@ const PreviewSeoContainer = ({
 	const [language, setLanguage] = useState(defaultLanguage);
 	const [fields, setFields] = useState({});
 	const isMounted = useIsMounted();
+	const [inputTargets, setInputTargets] = useState([]);
 
 	const getDefaultValue = useCallback(
 		type => {
@@ -96,21 +97,6 @@ const PreviewSeoContainer = ({
 			return defaultValue;
 		},
 		[defaultLanguage, targets, language]
-	);
-
-	const inputTargets = useMemo(
-		() =>
-			Object.entries(targets).reduce((acc, [type, {id}]) => {
-				if (id) {
-					const node = document.getElementById(
-						`${portletNamespace}${id}`
-					);
-					acc.push({node, type});
-				}
-
-				return acc;
-			}, []),
-		[portletNamespace, targets]
 	);
 
 	useEffect(() => {
@@ -140,6 +126,25 @@ const PreviewSeoContainer = ({
 				[type]: {...props}
 			}));
 		};
+
+		const inputTargets = Object.entries(targets).reduce(
+			(acc, [type, {id}]) => {
+				if (id) {
+					const node = document.getElementById(
+						`${portletNamespace}${id}`
+					);
+					acc.push({node, type});
+
+					const {disabled, value} = node;
+					setFieldState({disabled, type, value});
+				}
+
+				return acc;
+			},
+			[]
+		);
+
+		setInputTargets(inputTargets);
 
 		const handleInputChange = ({event, type}) => {
 			const target = event.target;
@@ -179,7 +184,7 @@ const PreviewSeoContainer = ({
 
 			Liferay.detach(previewSeoOnChangeHandle);
 		};
-	}, [inputTargets, isMounted, portletNamespace, targets]);
+	}, [isMounted, portletNamespace, targets]);
 
 	useEffect(() => {
 		if (!isMounted()) return;
