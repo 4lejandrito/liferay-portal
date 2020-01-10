@@ -93,15 +93,17 @@ Layout selLayout = layoutsSEODisplayContext.getSelLayout();
 						<aui:input id="openGraphImageFileEntryId" name="openGraphImageFileEntryId" type="hidden" />
 					</c:when>
 					<c:otherwise>
+						<aui:model-context bean="<%= null %>" model="<%= LayoutSEOEntry.class %>" />
+
 						<aui:input disabled="<%= true %>" helpMessage="open-graph-image-alt-description-help" label="open-graph-image-alt-description" localized="<%= true %>" name="openGraphImageAlt" placeholder="open-graph-alt-description" />
 
 						<aui:input checked="<%= false %>" helpMessage="use-custom-open-graph-title-help" label="use-custom-open-graph-title" name="openGraphTitleEnabled" type="checkbox" wrapperCssClass="mb-1" />
 
-						<aui:input disabled="<%= true %>" label="<%= StringPool.BLANK %>" localized="<%= true %>" name="openGraphTitle" placeholder="title" type="text" />
+						<aui:input disabled="<%= true %>" label="<%= StringPool.BLANK %>" name="openGraphTitle" placeholder="title" />
 
 						<aui:input checked="<%= false %>" helpMessage="use-custom-open-graph-description-help" label="use-custom-open-graph-description" name="openGraphDescriptionEnabled" type="checkbox" wrapperCssClass="mb-1" />
 
-						<aui:input disabled="<%= true %>" id="openGraphDescription" label="<%= StringPool.BLANK %>" localized="<%= true %>" name="openGraphDescription" placeholder="description" type="textarea" />
+						<aui:input disabled="<%= true %>" label="<%= StringPool.BLANK %>" name="openGraphDescription" placeholder="description" />
 
 						<aui:input id="openGraphImageFileEntryId" name="openGraphImageFileEntryId" type="hidden" />
 					</c:otherwise>
