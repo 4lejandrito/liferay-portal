@@ -26,10 +26,13 @@ import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.service.permission.GroupPermission;
+import com.liferay.portal.kernel.service.permission.GroupPermissionContributor;
 import com.liferay.portal.kernel.service.permission.PortalPermissionUtil;
 import com.liferay.portal.kernel.service.permission.UserPermissionUtil;
 import com.liferay.portal.kernel.spring.osgi.OSGiBeanProperties;
 import com.liferay.portal.util.PropsValues;
+import com.liferay.registry.collections.ServiceTrackerCollections;
+import com.liferay.registry.collections.ServiceTrackerList;
 
 import java.util.Map;
 import java.util.Objects;
@@ -244,8 +247,24 @@ public class GroupPermissionImpl
 			group = group.getParentGroup();
 		}
 
+		for (GroupPermissionContributor groupPermissionContributor :
+				_groupPermissionContributorServiceTrackerList) {
+
+			Boolean contains = groupPermissionContributor.contains(
+				permissionChecker, group, actionId);
+
+			if (contains != null) {
+				return contains;
+			}
+		}
+
 		return false;
 	}
+
+	private final ServiceTrackerList<GroupPermissionContributor>
+		_groupPermissionContributorServiceTrackerList =
+			ServiceTrackerCollections.openList(
+				GroupPermissionContributor.class);
 
 	private static class CacheKey {
 
