@@ -106,7 +106,7 @@ public class DepotSearchBarPortletSharedSearchContributorTest {
 		Assert.assertEquals(Arrays.toString(groupIds), 2, groupIds.length);
 
 		Assert.assertEquals(_group.getGroupId(), groupIds[0]);
-		Assert.assertEquals(depotEntry.getGroupId(), groupIds[1]);
+		Assert.assertEquals(depotEntry.getDepotGroupId(), groupIds[1]);
 	}
 
 	@Test
@@ -169,8 +169,8 @@ public class DepotSearchBarPortletSharedSearchContributorTest {
 		Assert.assertEquals(Arrays.toString(groupIds), 3, groupIds.length);
 
 		Assert.assertEquals(_group.getGroupId(), groupIds[0]);
-		Assert.assertEquals(depotEntry1.getGroupId(), groupIds[1]);
-		Assert.assertEquals(depotEntry2.getGroupId(), groupIds[2]);
+		Assert.assertEquals(depotEntry1.getDepotGroupId(), groupIds[1]);
+		Assert.assertEquals(depotEntry2.getDepotGroupId(), groupIds[2]);
 	}
 
 	@Test
@@ -216,8 +216,8 @@ public class DepotSearchBarPortletSharedSearchContributorTest {
 
 		Assert.assertEquals(_group.getGroupId(), groupIds[0]);
 		Assert.assertEquals(_group2.getGroupId(), groupIds[1]);
-		Assert.assertEquals(depotEntry1.getGroupId(), groupIds[2]);
-		Assert.assertEquals(depotEntry2.getGroupId(), groupIds[3]);
+		Assert.assertEquals(depotEntry1.getDepotGroupId(), groupIds[2]);
+		Assert.assertEquals(depotEntry2.getDepotGroupId(), groupIds[3]);
 	}
 
 	@Test

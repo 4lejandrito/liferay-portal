@@ -82,7 +82,7 @@ public class DepotSearchBarPortletSharedSearchContributor
 			).map(
 				_depotEntryLocalService::fetchDepotEntry
 			).map(
-				DepotEntryModel::getGroupId
+				DepotEntryModel::getDepotGroupId
 			).collect(
 				Collectors.toList()
 			);

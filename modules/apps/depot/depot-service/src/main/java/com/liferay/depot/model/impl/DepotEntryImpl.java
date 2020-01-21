@@ -25,7 +25,7 @@ public class DepotEntryImpl extends DepotEntryBaseImpl {
 
 	@Override
 	public Group getGroup() throws PortalException {
-		return GroupLocalServiceUtil.getGroup(getGroupId());
+		return GroupLocalServiceUtil.getGroup(getDepotGroupId());
 	}
 
 }

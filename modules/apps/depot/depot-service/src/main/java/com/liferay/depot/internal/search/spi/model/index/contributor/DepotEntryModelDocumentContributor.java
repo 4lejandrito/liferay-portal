@@ -42,14 +42,16 @@ public class DepotEntryModelDocumentContributor
 
 	@Override
 	public void contribute(Document document, DepotEntry depotEntry) {
-		Group group = _groupLocalService.fetchGroup(depotEntry.getGroupId());
+		Group group = _groupLocalService.fetchGroup(
+			depotEntry.getDepotGroupId());
 
 		document.addText(Field.DESCRIPTION, group.getDescription());
 		document.addDate(Field.MODIFIED_DATE, depotEntry.getModifiedDate());
 		document.addText(Field.NAME, group.getName());
 
 		for (Locale locale :
-				LanguageUtil.getAvailableLocales(depotEntry.getGroupId())) {
+				LanguageUtil.getAvailableLocales(
+					depotEntry.getDepotGroupId())) {
 
 			String languageId = LocaleUtil.toLanguageId(locale);
 

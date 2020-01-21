@@ -107,7 +107,7 @@ public class DepotPanelAppControllerTest {
 		List<PanelApp> panelApps = _panelAppRegistry.getPanelApps(
 			PanelCategoryKeys.SITE_ADMINISTRATION_CONTENT,
 			PermissionThreadLocal.getPermissionChecker(),
-			_groupLocalService.getGroup(_depotEntry.getGroupId()));
+			_groupLocalService.getGroup(_depotEntry.getDepotGroupId()));
 
 		Assert.assertEquals(panelApps.toString(), 3, panelApps.size());
 
@@ -130,7 +130,7 @@ public class DepotPanelAppControllerTest {
 		List<PanelApp> panelApps = _panelAppRegistry.getPanelApps(
 			PanelCategoryKeys.SITE_ADMINISTRATION_MEMBERS,
 			PermissionThreadLocal.getPermissionChecker(),
-			_groupLocalService.getGroup(_depotEntry.getGroupId()));
+			_groupLocalService.getGroup(_depotEntry.getDepotGroupId()));
 
 		Assert.assertEquals(panelApps.toString(), 1, panelApps.size());
 
@@ -150,7 +150,7 @@ public class DepotPanelAppControllerTest {
 		throws Exception {
 
 		_assertIsDisplayed(
-			_depotEntry.getGroupId(),
+			_depotEntry.getDepotGroupId(),
 			PanelCategoryKeys.SITE_ADMINISTRATION_CATEGORIZATION);
 	}
 
@@ -159,18 +159,22 @@ public class DepotPanelAppControllerTest {
 		throws Exception {
 
 		_assertIsDisplayed(
-			_depotEntry.getGroupId(), PanelCategoryKeys.CONTROL_PANEL_APPS);
+			_depotEntry.getDepotGroupId(),
+			PanelCategoryKeys.CONTROL_PANEL_APPS);
 		_assertIsDisplayed(
-			_depotEntry.getGroupId(),
+			_depotEntry.getDepotGroupId(),
 			PanelCategoryKeys.CONTROL_PANEL_CONFIGURATION);
 		_assertIsDisplayed(
-			_depotEntry.getGroupId(), PanelCategoryKeys.CONTROL_PANEL_SITES);
+			_depotEntry.getDepotGroupId(),
+			PanelCategoryKeys.CONTROL_PANEL_SITES);
 		_assertIsDisplayed(
-			_depotEntry.getGroupId(), PanelCategoryKeys.CONTROL_PANEL_USERS);
+			_depotEntry.getDepotGroupId(),
+			PanelCategoryKeys.CONTROL_PANEL_USERS);
 		_assertIsDisplayed(
-			_depotEntry.getGroupId(), PanelCategoryKeys.CONTROL_PANEL_WORKFLOW);
+			_depotEntry.getDepotGroupId(),
+			PanelCategoryKeys.CONTROL_PANEL_WORKFLOW);
 		_assertIsDisplayed(
-			_depotEntry.getGroupId(),
+			_depotEntry.getDepotGroupId(),
 			PanelCategoryKeys.SITE_ADMINISTRATION_CONFIGURATION);
 	}
 
@@ -179,7 +183,7 @@ public class DepotPanelAppControllerTest {
 		throws Exception {
 
 		_assertIsDisplayed(
-			_depotEntry.getGroupId(),
+			_depotEntry.getDepotGroupId(),
 			PanelCategoryKeys.SITE_ADMINISTRATION_RECYCLE_BIN);
 	}
 
@@ -200,7 +204,7 @@ public class DepotPanelAppControllerTest {
 		List<PanelApp> panelApps = _panelAppRegistry.getPanelApps(
 			parentPanelCategoryKey,
 			PermissionThreadLocal.getPermissionChecker(),
-			_groupLocalService.getGroup(_depotEntry.getGroupId()));
+			_groupLocalService.getGroup(_depotEntry.getDepotGroupId()));
 
 		Assert.assertTrue(panelApps.isEmpty());
 

@@ -105,7 +105,7 @@ public class DepotEntryModelResourcePermission
 		}
 
 		return permissionChecker.hasPermission(
-			depotEntry.getGroupId(), DepotEntry.class.getName(),
+			depotEntry.getDepotGroupId(), DepotEntry.class.getName(),
 			depotEntry.getDepotEntryId(), actionId);
 	}
 

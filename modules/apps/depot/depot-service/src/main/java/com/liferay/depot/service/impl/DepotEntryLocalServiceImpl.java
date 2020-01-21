@@ -78,7 +78,7 @@ public class DepotEntryLocalServiceImpl extends DepotEntryLocalServiceBaseImpl {
 		_userLocalService.addGroupUsers(
 			group.getGroupId(), new long[] {serviceContext.getUserId()});
 
-		depotEntry.setGroupId(group.getGroupId());
+		depotEntry.setDepotGroupId(group.getGroupId());
 
 		depotEntry.setCompanyId(serviceContext.getCompanyId());
 		depotEntry.setUserId(serviceContext.getUserId());
@@ -95,12 +95,12 @@ public class DepotEntryLocalServiceImpl extends DepotEntryLocalServiceBaseImpl {
 
 	@Override
 	public DepotEntry fetchGroupDepotEntry(long groupId) {
-		return depotEntryPersistence.fetchByGroupId(groupId);
+		return depotEntryPersistence.fetchByDepotGroupId(groupId);
 	}
 
 	@Override
 	public DepotEntry getGroupDepotEntry(long groupId) throws PortalException {
-		return depotEntryPersistence.findByGroupId(groupId);
+		return depotEntryPersistence.findByDepotGroupId(groupId);
 	}
 
 	@Override
@@ -127,7 +127,7 @@ public class DepotEntryLocalServiceImpl extends DepotEntryLocalServiceBaseImpl {
 
 		_validateTypeSettingsProperties(depotEntry, typeSettingsProperties);
 
-		Group group = _groupLocalService.getGroup(depotEntry.getGroupId());
+		Group group = _groupLocalService.getGroup(depotEntry.getDepotGroupId());
 
 		UnicodeProperties currentTypeSettingsProperties =
 			group.getTypeSettingsProperties();
@@ -159,7 +159,7 @@ public class DepotEntryLocalServiceImpl extends DepotEntryLocalServiceBaseImpl {
 			defaultName -> nameMap.put(locale, defaultName));
 
 		group = _groupLocalService.updateGroup(
-			depotEntry.getGroupId(), group.getParentGroupId(), nameMap,
+			depotEntry.getDepotGroupId(), group.getParentGroupId(), nameMap,
 			descriptionMap, group.getType(), group.isManualMembership(),
 			group.getMembershipRestriction(), group.getFriendlyURL(),
 			group.isInheritContent(), group.isActive(), serviceContext);
@@ -209,7 +209,7 @@ public class DepotEntryLocalServiceImpl extends DepotEntryLocalServiceBaseImpl {
 			throw new LocaleException(
 				LocaleException.TYPE_DEFAULT,
 				"Must have at least one valid locale for repository " +
-					depotEntry.getGroupId());
+					depotEntry.getDepotGroupId());
 		}
 
 		boolean inheritLocales = GetterUtil.getBoolean(
@@ -221,7 +221,7 @@ public class DepotEntryLocalServiceImpl extends DepotEntryLocalServiceBaseImpl {
 			throw new LocaleException(
 				LocaleException.TYPE_DEFAULT,
 				"Must have at least one valid locale for repository " +
-					depotEntry.getGroupId());
+					depotEntry.getDepotGroupId());
 		}
 	}
 

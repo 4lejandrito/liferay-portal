@@ -141,7 +141,7 @@ public class DepotEntryServiceTest {
 
 		DepotTestUtil.withRegularUser(
 			(user, role) -> _depotEntryService.getGroupDepotEntry(
-				depotEntry.getGroupId()));
+				depotEntry.getDepotGroupId()));
 	}
 
 	@Test
@@ -158,7 +158,7 @@ public class DepotEntryServiceTest {
 
 				Assert.assertNotNull(
 					_depotEntryService.getGroupDepotEntry(
-						depotEntry.getGroupId()));
+						depotEntry.getDepotGroupId()));
 			});
 	}
 

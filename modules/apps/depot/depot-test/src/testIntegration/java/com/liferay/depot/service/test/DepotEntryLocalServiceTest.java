@@ -69,7 +69,7 @@ public class DepotEntryLocalServiceTest {
 	public void testAddDepotEntry() throws Exception {
 		DepotEntry depotEntry = _addDepotEntry("name", "description");
 
-		Group group = _groupLocalService.getGroup(depotEntry.getGroupId());
+		Group group = _groupLocalService.getGroup(depotEntry.getDepotGroupId());
 
 		Assert.assertEquals(DepotEntry.class.getName(), group.getClassName());
 		Assert.assertEquals(depotEntry.getDepotEntryId(), group.getClassPK());
@@ -113,7 +113,7 @@ public class DepotEntryLocalServiceTest {
 
 		_depotEntries.remove(depotEntry);
 
-		_groupLocalService.getGroup(depotEntry.getGroupId());
+		_groupLocalService.getGroup(depotEntry.getDepotGroupId());
 	}
 
 	@Test
@@ -137,7 +137,7 @@ public class DepotEntryLocalServiceTest {
 			Collections.emptyMap(), formTypeSettingsProperties,
 			ServiceContextTestUtil.getServiceContext());
 
-		Group group = _groupLocalService.getGroup(depotEntry.getGroupId());
+		Group group = _groupLocalService.getGroup(depotEntry.getDepotGroupId());
 
 		Assert.assertEquals(
 			"newDescription", group.getDescription(LocaleUtil.getDefault()));
@@ -175,7 +175,7 @@ public class DepotEntryLocalServiceTest {
 			Collections.emptyMap(), formTypeSettingsProperties,
 			ServiceContextTestUtil.getServiceContext());
 
-		Group group = _groupLocalService.getGroup(depotEntry.getGroupId());
+		Group group = _groupLocalService.getGroup(depotEntry.getDepotGroupId());
 
 		Assert.assertEquals(
 			"nuevaDescripcion",
@@ -203,7 +203,7 @@ public class DepotEntryLocalServiceTest {
 			Collections.emptyMap(), formTypeSettingsProperties,
 			ServiceContextTestUtil.getServiceContext());
 
-		Group group = _groupLocalService.getGroup(depotEntry.getGroupId());
+		Group group = _groupLocalService.getGroup(depotEntry.getDepotGroupId());
 
 		UnicodeProperties typeSettingsProperties =
 			group.getTypeSettingsProperties();
@@ -236,7 +236,7 @@ public class DepotEntryLocalServiceTest {
 			formTypeSettingsProperties,
 			ServiceContextTestUtil.getServiceContext());
 
-		Group group = _groupLocalService.getGroup(depotEntry.getGroupId());
+		Group group = _groupLocalService.getGroup(depotEntry.getDepotGroupId());
 
 		Assert.assertEquals("newName", group.getName(LocaleUtil.getDefault()));
 		Assert.assertEquals(
@@ -253,7 +253,7 @@ public class DepotEntryLocalServiceTest {
 			new UnicodeProperties(),
 			ServiceContextTestUtil.getServiceContext());
 
-		Group group = _groupLocalService.getGroup(depotEntry.getGroupId());
+		Group group = _groupLocalService.getGroup(depotEntry.getDepotGroupId());
 
 		Assert.assertEquals(
 			"Unnamed Repository", group.getName(LocaleUtil.getDefault()));
@@ -263,7 +263,7 @@ public class DepotEntryLocalServiceTest {
 	public void testUpdateDepotEntryPreservesGroupKey() throws Exception {
 		DepotEntry depotEntry = _addDepotEntry("name", "description");
 
-		Group group = _groupLocalService.getGroup(depotEntry.getGroupId());
+		Group group = _groupLocalService.getGroup(depotEntry.getDepotGroupId());
 
 		String oldGroupKey = group.getGroupKey();
 
@@ -284,7 +284,7 @@ public class DepotEntryLocalServiceTest {
 			Collections.emptyMap(), formTypeSettingsProperties,
 			ServiceContextTestUtil.getServiceContext());
 
-		group = _groupLocalService.getGroup(depotEntry.getGroupId());
+		group = _groupLocalService.getGroup(depotEntry.getDepotGroupId());
 
 		Assert.assertEquals(oldGroupKey, group.getGroupKey());
 	}

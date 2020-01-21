@@ -127,7 +127,8 @@ public class DepotGroupItemSelectorProvider
 			DepotEntry depotEntry = _depotEntryLocalService.getDepotEntry(
 				depotEntryGroupRel.getDepotEntryId());
 
-			return Optional.of(_groupService.getGroup(depotEntry.getGroupId()));
+			return Optional.of(
+				_groupService.getGroup(depotEntry.getDepotGroupId()));
 		}
 		catch (PortalException portalException) {
 			_log.error(portalException, portalException);
