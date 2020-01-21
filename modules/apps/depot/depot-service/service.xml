@@ -35,10 +35,6 @@
 
 		<column name="depotEntryId" primary="true" type="long" />
 
-		<!-- Group instance -->
-
-		<column name="groupId" type="long" />
-
 		<!-- Audit fields -->
 
 		<column name="companyId" type="long" />
@@ -47,10 +43,14 @@
 		<column name="createDate" type="Date" />
 		<column name="modifiedDate" type="Date" />
 
+		<!-- Other fields -->
+
+		<column name="depotGroupId" type="long" />
+
 		<!-- Finder methods -->
 
-		<finder name="GroupId" return-type="DepotEntry" unique="true">
-			<finder-column name="groupId" />
+		<finder name="DepotGroupId" return-type="DepotEntry" unique="true">
+			<finder-column name="depotGroupId" />
 		</finder>
 
 		<!-- References -->
