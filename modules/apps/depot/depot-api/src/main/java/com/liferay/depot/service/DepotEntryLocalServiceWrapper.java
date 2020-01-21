@@ -206,18 +206,18 @@ public class DepotEntryLocalServiceWrapper
 	}
 
 	/**
-	 * Returns the depot entry matching the UUID and group.
+	 * Returns the depot entry with the matching UUID and company.
 	 *
 	 * @param uuid the depot entry's UUID
-	 * @param groupId the primary key of the group
+	 * @param companyId the primary key of the company
 	 * @return the matching depot entry, or <code>null</code> if a matching depot entry could not be found
 	 */
 	@Override
-	public com.liferay.depot.model.DepotEntry fetchDepotEntryByUuidAndGroupId(
-		String uuid, long groupId) {
+	public com.liferay.depot.model.DepotEntry fetchDepotEntryByUuidAndCompanyId(
+		String uuid, long companyId) {
 
-		return _depotEntryLocalService.fetchDepotEntryByUuidAndGroupId(
-			uuid, groupId);
+		return _depotEntryLocalService.fetchDepotEntryByUuidAndCompanyId(
+			uuid, companyId);
 	}
 
 	@Override
@@ -253,42 +253,6 @@ public class DepotEntryLocalServiceWrapper
 	}
 
 	/**
-	 * Returns all the depot entries matching the UUID and company.
-	 *
-	 * @param uuid the UUID of the depot entries
-	 * @param companyId the primary key of the company
-	 * @return the matching depot entries, or an empty list if no matches were found
-	 */
-	@Override
-	public java.util.List<com.liferay.depot.model.DepotEntry>
-		getDepotEntriesByUuidAndCompanyId(String uuid, long companyId) {
-
-		return _depotEntryLocalService.getDepotEntriesByUuidAndCompanyId(
-			uuid, companyId);
-	}
-
-	/**
-	 * Returns a range of depot entries matching the UUID and company.
-	 *
-	 * @param uuid the UUID of the depot entries
-	 * @param companyId the primary key of the company
-	 * @param start the lower bound of the range of depot entries
-	 * @param end the upper bound of the range of depot entries (not inclusive)
-	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @return the range of matching depot entries, or an empty list if no matches were found
-	 */
-	@Override
-	public java.util.List<com.liferay.depot.model.DepotEntry>
-		getDepotEntriesByUuidAndCompanyId(
-			String uuid, long companyId, int start, int end,
-			com.liferay.portal.kernel.util.OrderByComparator
-				<com.liferay.depot.model.DepotEntry> orderByComparator) {
-
-		return _depotEntryLocalService.getDepotEntriesByUuidAndCompanyId(
-			uuid, companyId, start, end, orderByComparator);
-	}
-
-	/**
 	 * Returns the number of depot entries.
 	 *
 	 * @return the number of depot entries
@@ -313,20 +277,20 @@ public class DepotEntryLocalServiceWrapper
 	}
 
 	/**
-	 * Returns the depot entry matching the UUID and group.
+	 * Returns the depot entry with the matching UUID and company.
 	 *
 	 * @param uuid the depot entry's UUID
-	 * @param groupId the primary key of the group
+	 * @param companyId the primary key of the company
 	 * @return the matching depot entry
 	 * @throws PortalException if a matching depot entry could not be found
 	 */
 	@Override
-	public com.liferay.depot.model.DepotEntry getDepotEntryByUuidAndGroupId(
-			String uuid, long groupId)
+	public com.liferay.depot.model.DepotEntry getDepotEntryByUuidAndCompanyId(
+			String uuid, long companyId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
-		return _depotEntryLocalService.getDepotEntryByUuidAndGroupId(
-			uuid, groupId);
+		return _depotEntryLocalService.getDepotEntryByUuidAndCompanyId(
+			uuid, companyId);
 	}
 
 	@Override

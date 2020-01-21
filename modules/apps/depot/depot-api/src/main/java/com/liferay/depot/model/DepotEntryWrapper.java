@@ -46,12 +46,12 @@ public class DepotEntryWrapper
 		attributes.put("mvccVersion", getMvccVersion());
 		attributes.put("uuid", getUuid());
 		attributes.put("depotEntryId", getDepotEntryId());
-		attributes.put("groupId", getGroupId());
 		attributes.put("companyId", getCompanyId());
 		attributes.put("userId", getUserId());
 		attributes.put("userName", getUserName());
 		attributes.put("createDate", getCreateDate());
 		attributes.put("modifiedDate", getModifiedDate());
+		attributes.put("depotGroupId", getDepotGroupId());
 
 		return attributes;
 	}
@@ -74,12 +74,6 @@ public class DepotEntryWrapper
 
 		if (depotEntryId != null) {
 			setDepotEntryId(depotEntryId);
-		}
-
-		Long groupId = (Long)attributes.get("groupId");
-
-		if (groupId != null) {
-			setGroupId(groupId);
 		}
 
 		Long companyId = (Long)attributes.get("companyId");
@@ -110,6 +104,12 @@ public class DepotEntryWrapper
 
 		if (modifiedDate != null) {
 			setModifiedDate(modifiedDate);
+		}
+
+		Long depotGroupId = (Long)attributes.get("depotGroupId");
+
+		if (depotGroupId != null) {
+			setDepotGroupId(depotGroupId);
 		}
 	}
 
@@ -143,21 +143,21 @@ public class DepotEntryWrapper
 		return model.getDepotEntryId();
 	}
 
+	/**
+	 * Returns the depot group ID of this depot entry.
+	 *
+	 * @return the depot group ID of this depot entry
+	 */
+	@Override
+	public long getDepotGroupId() {
+		return model.getDepotGroupId();
+	}
+
 	@Override
 	public com.liferay.portal.kernel.model.Group getGroup()
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return model.getGroup();
-	}
-
-	/**
-	 * Returns the group ID of this depot entry.
-	 *
-	 * @return the group ID of this depot entry
-	 */
-	@Override
-	public long getGroupId() {
-		return model.getGroupId();
 	}
 
 	/**
@@ -266,13 +266,13 @@ public class DepotEntryWrapper
 	}
 
 	/**
-	 * Sets the group ID of this depot entry.
+	 * Sets the depot group ID of this depot entry.
 	 *
-	 * @param groupId the group ID of this depot entry
+	 * @param depotGroupId the depot group ID of this depot entry
 	 */
 	@Override
-	public void setGroupId(long groupId) {
-		model.setGroupId(groupId);
+	public void setDepotGroupId(long depotGroupId) {
+		model.setDepotGroupId(depotGroupId);
 	}
 
 	/**

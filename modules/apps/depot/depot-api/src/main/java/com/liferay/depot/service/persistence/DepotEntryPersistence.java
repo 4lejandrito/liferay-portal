@@ -169,6 +169,62 @@ public interface DepotEntryPersistence extends BasePersistence<DepotEntry> {
 		throws NoSuchEntryException;
 
 	/**
+	 * Returns all the depot entries that the user has permission to view where uuid = &#63;.
+	 *
+	 * @param uuid the uuid
+	 * @return the matching depot entries that the user has permission to view
+	 */
+	public java.util.List<DepotEntry> filterFindByUuid(String uuid);
+
+	/**
+	 * Returns a range of all the depot entries that the user has permission to view where uuid = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>DepotEntryModelImpl</code>.
+	 * </p>
+	 *
+	 * @param uuid the uuid
+	 * @param start the lower bound of the range of depot entries
+	 * @param end the upper bound of the range of depot entries (not inclusive)
+	 * @return the range of matching depot entries that the user has permission to view
+	 */
+	public java.util.List<DepotEntry> filterFindByUuid(
+		String uuid, int start, int end);
+
+	/**
+	 * Returns an ordered range of all the depot entries that the user has permissions to view where uuid = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>DepotEntryModelImpl</code>.
+	 * </p>
+	 *
+	 * @param uuid the uuid
+	 * @param start the lower bound of the range of depot entries
+	 * @param end the upper bound of the range of depot entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching depot entries that the user has permission to view
+	 */
+	public java.util.List<DepotEntry> filterFindByUuid(
+		String uuid, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<DepotEntry>
+			orderByComparator);
+
+	/**
+	 * Returns the depot entries before and after the current depot entry in the ordered set of depot entries that the user has permission to view where uuid = &#63;.
+	 *
+	 * @param depotEntryId the primary key of the current depot entry
+	 * @param uuid the uuid
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next depot entry
+	 * @throws NoSuchEntryException if a depot entry with the primary key could not be found
+	 */
+	public DepotEntry[] filterFindByUuid_PrevAndNext(
+			long depotEntryId, String uuid,
+			com.liferay.portal.kernel.util.OrderByComparator<DepotEntry>
+				orderByComparator)
+		throws NoSuchEntryException;
+
+	/**
 	 * Removes all the depot entries where uuid = &#63; from the database.
 	 *
 	 * @param uuid the uuid
@@ -184,54 +240,12 @@ public interface DepotEntryPersistence extends BasePersistence<DepotEntry> {
 	public int countByUuid(String uuid);
 
 	/**
-	 * Returns the depot entry where uuid = &#63; and groupId = &#63; or throws a <code>NoSuchEntryException</code> if it could not be found.
+	 * Returns the number of depot entries that the user has permission to view where uuid = &#63;.
 	 *
 	 * @param uuid the uuid
-	 * @param groupId the group ID
-	 * @return the matching depot entry
-	 * @throws NoSuchEntryException if a matching depot entry could not be found
+	 * @return the number of matching depot entries that the user has permission to view
 	 */
-	public DepotEntry findByUUID_G(String uuid, long groupId)
-		throws NoSuchEntryException;
-
-	/**
-	 * Returns the depot entry where uuid = &#63; and groupId = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
-	 *
-	 * @param uuid the uuid
-	 * @param groupId the group ID
-	 * @return the matching depot entry, or <code>null</code> if a matching depot entry could not be found
-	 */
-	public DepotEntry fetchByUUID_G(String uuid, long groupId);
-
-	/**
-	 * Returns the depot entry where uuid = &#63; and groupId = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
-	 *
-	 * @param uuid the uuid
-	 * @param groupId the group ID
-	 * @param useFinderCache whether to use the finder cache
-	 * @return the matching depot entry, or <code>null</code> if a matching depot entry could not be found
-	 */
-	public DepotEntry fetchByUUID_G(
-		String uuid, long groupId, boolean useFinderCache);
-
-	/**
-	 * Removes the depot entry where uuid = &#63; and groupId = &#63; from the database.
-	 *
-	 * @param uuid the uuid
-	 * @param groupId the group ID
-	 * @return the depot entry that was removed
-	 */
-	public DepotEntry removeByUUID_G(String uuid, long groupId)
-		throws NoSuchEntryException;
-
-	/**
-	 * Returns the number of depot entries where uuid = &#63; and groupId = &#63;.
-	 *
-	 * @param uuid the uuid
-	 * @param groupId the group ID
-	 * @return the number of matching depot entries
-	 */
-	public int countByUUID_G(String uuid, long groupId);
+	public int filterCountByUuid(String uuid);
 
 	/**
 	 * Returns all the depot entries where uuid = &#63; and companyId = &#63;.
@@ -371,6 +385,67 @@ public interface DepotEntryPersistence extends BasePersistence<DepotEntry> {
 		throws NoSuchEntryException;
 
 	/**
+	 * Returns all the depot entries that the user has permission to view where uuid = &#63; and companyId = &#63;.
+	 *
+	 * @param uuid the uuid
+	 * @param companyId the company ID
+	 * @return the matching depot entries that the user has permission to view
+	 */
+	public java.util.List<DepotEntry> filterFindByUuid_C(
+		String uuid, long companyId);
+
+	/**
+	 * Returns a range of all the depot entries that the user has permission to view where uuid = &#63; and companyId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>DepotEntryModelImpl</code>.
+	 * </p>
+	 *
+	 * @param uuid the uuid
+	 * @param companyId the company ID
+	 * @param start the lower bound of the range of depot entries
+	 * @param end the upper bound of the range of depot entries (not inclusive)
+	 * @return the range of matching depot entries that the user has permission to view
+	 */
+	public java.util.List<DepotEntry> filterFindByUuid_C(
+		String uuid, long companyId, int start, int end);
+
+	/**
+	 * Returns an ordered range of all the depot entries that the user has permissions to view where uuid = &#63; and companyId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>DepotEntryModelImpl</code>.
+	 * </p>
+	 *
+	 * @param uuid the uuid
+	 * @param companyId the company ID
+	 * @param start the lower bound of the range of depot entries
+	 * @param end the upper bound of the range of depot entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching depot entries that the user has permission to view
+	 */
+	public java.util.List<DepotEntry> filterFindByUuid_C(
+		String uuid, long companyId, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<DepotEntry>
+			orderByComparator);
+
+	/**
+	 * Returns the depot entries before and after the current depot entry in the ordered set of depot entries that the user has permission to view where uuid = &#63; and companyId = &#63;.
+	 *
+	 * @param depotEntryId the primary key of the current depot entry
+	 * @param uuid the uuid
+	 * @param companyId the company ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next depot entry
+	 * @throws NoSuchEntryException if a depot entry with the primary key could not be found
+	 */
+	public DepotEntry[] filterFindByUuid_C_PrevAndNext(
+			long depotEntryId, String uuid, long companyId,
+			com.liferay.portal.kernel.util.OrderByComparator<DepotEntry>
+				orderByComparator)
+		throws NoSuchEntryException;
+
+	/**
 	 * Removes all the depot entries where uuid = &#63; and companyId = &#63; from the database.
 	 *
 	 * @param uuid the uuid
@@ -388,46 +463,58 @@ public interface DepotEntryPersistence extends BasePersistence<DepotEntry> {
 	public int countByUuid_C(String uuid, long companyId);
 
 	/**
-	 * Returns the depot entry where groupId = &#63; or throws a <code>NoSuchEntryException</code> if it could not be found.
+	 * Returns the number of depot entries that the user has permission to view where uuid = &#63; and companyId = &#63;.
 	 *
-	 * @param groupId the group ID
+	 * @param uuid the uuid
+	 * @param companyId the company ID
+	 * @return the number of matching depot entries that the user has permission to view
+	 */
+	public int filterCountByUuid_C(String uuid, long companyId);
+
+	/**
+	 * Returns the depot entry where depotGroupId = &#63; or throws a <code>NoSuchEntryException</code> if it could not be found.
+	 *
+	 * @param depotGroupId the depot group ID
 	 * @return the matching depot entry
 	 * @throws NoSuchEntryException if a matching depot entry could not be found
 	 */
-	public DepotEntry findByGroupId(long groupId) throws NoSuchEntryException;
+	public DepotEntry findByDepotGroupId(long depotGroupId)
+		throws NoSuchEntryException;
 
 	/**
-	 * Returns the depot entry where groupId = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
+	 * Returns the depot entry where depotGroupId = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
 	 *
-	 * @param groupId the group ID
+	 * @param depotGroupId the depot group ID
 	 * @return the matching depot entry, or <code>null</code> if a matching depot entry could not be found
 	 */
-	public DepotEntry fetchByGroupId(long groupId);
+	public DepotEntry fetchByDepotGroupId(long depotGroupId);
 
 	/**
-	 * Returns the depot entry where groupId = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
+	 * Returns the depot entry where depotGroupId = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
 	 *
-	 * @param groupId the group ID
+	 * @param depotGroupId the depot group ID
 	 * @param useFinderCache whether to use the finder cache
 	 * @return the matching depot entry, or <code>null</code> if a matching depot entry could not be found
 	 */
-	public DepotEntry fetchByGroupId(long groupId, boolean useFinderCache);
+	public DepotEntry fetchByDepotGroupId(
+		long depotGroupId, boolean useFinderCache);
 
 	/**
-	 * Removes the depot entry where groupId = &#63; from the database.
+	 * Removes the depot entry where depotGroupId = &#63; from the database.
 	 *
-	 * @param groupId the group ID
+	 * @param depotGroupId the depot group ID
 	 * @return the depot entry that was removed
 	 */
-	public DepotEntry removeByGroupId(long groupId) throws NoSuchEntryException;
+	public DepotEntry removeByDepotGroupId(long depotGroupId)
+		throws NoSuchEntryException;
 
 	/**
-	 * Returns the number of depot entries where groupId = &#63;.
+	 * Returns the number of depot entries where depotGroupId = &#63;.
 	 *
-	 * @param groupId the group ID
+	 * @param depotGroupId the depot group ID
 	 * @return the number of matching depot entries
 	 */
-	public int countByGroupId(long groupId);
+	public int countByDepotGroupId(long depotGroupId);
 
 	/**
 	 * Caches the depot entry in the entity cache if it is enabled.

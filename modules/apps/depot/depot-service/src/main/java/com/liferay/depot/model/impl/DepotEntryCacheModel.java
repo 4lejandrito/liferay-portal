@@ -84,8 +84,6 @@ public class DepotEntryCacheModel
 		sb.append(uuid);
 		sb.append(", depotEntryId=");
 		sb.append(depotEntryId);
-		sb.append(", groupId=");
-		sb.append(groupId);
 		sb.append(", companyId=");
 		sb.append(companyId);
 		sb.append(", userId=");
@@ -96,6 +94,8 @@ public class DepotEntryCacheModel
 		sb.append(createDate);
 		sb.append(", modifiedDate=");
 		sb.append(modifiedDate);
+		sb.append(", depotGroupId=");
+		sb.append(depotGroupId);
 		sb.append("}");
 
 		return sb.toString();
@@ -115,7 +115,6 @@ public class DepotEntryCacheModel
 		}
 
 		depotEntryImpl.setDepotEntryId(depotEntryId);
-		depotEntryImpl.setGroupId(groupId);
 		depotEntryImpl.setCompanyId(companyId);
 		depotEntryImpl.setUserId(userId);
 
@@ -140,6 +139,8 @@ public class DepotEntryCacheModel
 			depotEntryImpl.setModifiedDate(new Date(modifiedDate));
 		}
 
+		depotEntryImpl.setDepotGroupId(depotGroupId);
+
 		depotEntryImpl.resetOriginalValues();
 
 		return depotEntryImpl;
@@ -152,14 +153,14 @@ public class DepotEntryCacheModel
 
 		depotEntryId = objectInput.readLong();
 
-		groupId = objectInput.readLong();
-
 		companyId = objectInput.readLong();
 
 		userId = objectInput.readLong();
 		userName = objectInput.readUTF();
 		createDate = objectInput.readLong();
 		modifiedDate = objectInput.readLong();
+
+		depotGroupId = objectInput.readLong();
 	}
 
 	@Override
@@ -175,8 +176,6 @@ public class DepotEntryCacheModel
 
 		objectOutput.writeLong(depotEntryId);
 
-		objectOutput.writeLong(groupId);
-
 		objectOutput.writeLong(companyId);
 
 		objectOutput.writeLong(userId);
@@ -190,16 +189,18 @@ public class DepotEntryCacheModel
 
 		objectOutput.writeLong(createDate);
 		objectOutput.writeLong(modifiedDate);
+
+		objectOutput.writeLong(depotGroupId);
 	}
 
 	public long mvccVersion;
 	public String uuid;
 	public long depotEntryId;
-	public long groupId;
 	public long companyId;
 	public long userId;
 	public String userName;
 	public long createDate;
 	public long modifiedDate;
+	public long depotGroupId;
 
 }

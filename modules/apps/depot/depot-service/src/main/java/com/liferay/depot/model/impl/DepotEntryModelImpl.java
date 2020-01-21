@@ -75,10 +75,10 @@ public class DepotEntryModelImpl
 
 	public static final Object[][] TABLE_COLUMNS = {
 		{"mvccVersion", Types.BIGINT}, {"uuid_", Types.VARCHAR},
-		{"depotEntryId", Types.BIGINT}, {"groupId", Types.BIGINT},
-		{"companyId", Types.BIGINT}, {"userId", Types.BIGINT},
-		{"userName", Types.VARCHAR}, {"createDate", Types.TIMESTAMP},
-		{"modifiedDate", Types.TIMESTAMP}
+		{"depotEntryId", Types.BIGINT}, {"companyId", Types.BIGINT},
+		{"userId", Types.BIGINT}, {"userName", Types.VARCHAR},
+		{"createDate", Types.TIMESTAMP}, {"modifiedDate", Types.TIMESTAMP},
+		{"depotGroupId", Types.BIGINT}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
@@ -88,16 +88,16 @@ public class DepotEntryModelImpl
 		TABLE_COLUMNS_MAP.put("mvccVersion", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("uuid_", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("depotEntryId", Types.BIGINT);
-		TABLE_COLUMNS_MAP.put("groupId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("companyId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("userId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("userName", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("createDate", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("modifiedDate", Types.TIMESTAMP);
+		TABLE_COLUMNS_MAP.put("depotGroupId", Types.BIGINT);
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table DepotEntry (mvccVersion LONG default 0 not null,uuid_ VARCHAR(75) null,depotEntryId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null)";
+		"create table DepotEntry (mvccVersion LONG default 0 not null,uuid_ VARCHAR(75) null,depotEntryId LONG not null primary key,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,depotGroupId LONG)";
 
 	public static final String TABLE_SQL_DROP = "drop table DepotEntry";
 
@@ -115,7 +115,7 @@ public class DepotEntryModelImpl
 
 	public static final long COMPANYID_COLUMN_BITMASK = 1L;
 
-	public static final long GROUPID_COLUMN_BITMASK = 2L;
+	public static final long DEPOTGROUPID_COLUMN_BITMASK = 2L;
 
 	public static final long UUID_COLUMN_BITMASK = 4L;
 
@@ -145,12 +145,12 @@ public class DepotEntryModelImpl
 		model.setMvccVersion(soapModel.getMvccVersion());
 		model.setUuid(soapModel.getUuid());
 		model.setDepotEntryId(soapModel.getDepotEntryId());
-		model.setGroupId(soapModel.getGroupId());
 		model.setCompanyId(soapModel.getCompanyId());
 		model.setUserId(soapModel.getUserId());
 		model.setUserName(soapModel.getUserName());
 		model.setCreateDate(soapModel.getCreateDate());
 		model.setModifiedDate(soapModel.getModifiedDate());
+		model.setDepotGroupId(soapModel.getDepotGroupId());
 
 		return model;
 	}
@@ -313,9 +313,6 @@ public class DepotEntryModelImpl
 		attributeSetterBiConsumers.put(
 			"depotEntryId",
 			(BiConsumer<DepotEntry, Long>)DepotEntry::setDepotEntryId);
-		attributeGetterFunctions.put("groupId", DepotEntry::getGroupId);
-		attributeSetterBiConsumers.put(
-			"groupId", (BiConsumer<DepotEntry, Long>)DepotEntry::setGroupId);
 		attributeGetterFunctions.put("companyId", DepotEntry::getCompanyId);
 		attributeSetterBiConsumers.put(
 			"companyId",
@@ -336,6 +333,11 @@ public class DepotEntryModelImpl
 		attributeSetterBiConsumers.put(
 			"modifiedDate",
 			(BiConsumer<DepotEntry, Date>)DepotEntry::setModifiedDate);
+		attributeGetterFunctions.put(
+			"depotGroupId", DepotEntry::getDepotGroupId);
+		attributeSetterBiConsumers.put(
+			"depotGroupId",
+			(BiConsumer<DepotEntry, Long>)DepotEntry::setDepotGroupId);
 
 		_attributeGetterFunctions = Collections.unmodifiableMap(
 			attributeGetterFunctions);
@@ -389,29 +391,6 @@ public class DepotEntryModelImpl
 	@Override
 	public void setDepotEntryId(long depotEntryId) {
 		_depotEntryId = depotEntryId;
-	}
-
-	@JSON
-	@Override
-	public long getGroupId() {
-		return _groupId;
-	}
-
-	@Override
-	public void setGroupId(long groupId) {
-		_columnBitmask |= GROUPID_COLUMN_BITMASK;
-
-		if (!_setOriginalGroupId) {
-			_setOriginalGroupId = true;
-
-			_originalGroupId = _groupId;
-		}
-
-		_groupId = groupId;
-	}
-
-	public long getOriginalGroupId() {
-		return _originalGroupId;
 	}
 
 	@JSON
@@ -508,6 +487,29 @@ public class DepotEntryModelImpl
 		_modifiedDate = modifiedDate;
 	}
 
+	@JSON
+	@Override
+	public long getDepotGroupId() {
+		return _depotGroupId;
+	}
+
+	@Override
+	public void setDepotGroupId(long depotGroupId) {
+		_columnBitmask |= DEPOTGROUPID_COLUMN_BITMASK;
+
+		if (!_setOriginalDepotGroupId) {
+			_setOriginalDepotGroupId = true;
+
+			_originalDepotGroupId = _depotGroupId;
+		}
+
+		_depotGroupId = depotGroupId;
+	}
+
+	public long getOriginalDepotGroupId() {
+		return _originalDepotGroupId;
+	}
+
 	@Override
 	public StagedModelType getStagedModelType() {
 		return new StagedModelType(
@@ -553,12 +555,12 @@ public class DepotEntryModelImpl
 		depotEntryImpl.setMvccVersion(getMvccVersion());
 		depotEntryImpl.setUuid(getUuid());
 		depotEntryImpl.setDepotEntryId(getDepotEntryId());
-		depotEntryImpl.setGroupId(getGroupId());
 		depotEntryImpl.setCompanyId(getCompanyId());
 		depotEntryImpl.setUserId(getUserId());
 		depotEntryImpl.setUserName(getUserName());
 		depotEntryImpl.setCreateDate(getCreateDate());
 		depotEntryImpl.setModifiedDate(getModifiedDate());
+		depotEntryImpl.setDepotGroupId(getDepotGroupId());
 
 		depotEntryImpl.resetOriginalValues();
 
@@ -623,15 +625,16 @@ public class DepotEntryModelImpl
 
 		depotEntryModelImpl._originalUuid = depotEntryModelImpl._uuid;
 
-		depotEntryModelImpl._originalGroupId = depotEntryModelImpl._groupId;
-
-		depotEntryModelImpl._setOriginalGroupId = false;
-
 		depotEntryModelImpl._originalCompanyId = depotEntryModelImpl._companyId;
 
 		depotEntryModelImpl._setOriginalCompanyId = false;
 
 		depotEntryModelImpl._setModifiedDate = false;
+
+		depotEntryModelImpl._originalDepotGroupId =
+			depotEntryModelImpl._depotGroupId;
+
+		depotEntryModelImpl._setOriginalDepotGroupId = false;
 
 		depotEntryModelImpl._columnBitmask = 0;
 	}
@@ -651,8 +654,6 @@ public class DepotEntryModelImpl
 		}
 
 		depotEntryCacheModel.depotEntryId = getDepotEntryId();
-
-		depotEntryCacheModel.groupId = getGroupId();
 
 		depotEntryCacheModel.companyId = getCompanyId();
 
@@ -683,6 +684,8 @@ public class DepotEntryModelImpl
 		else {
 			depotEntryCacheModel.modifiedDate = Long.MIN_VALUE;
 		}
+
+		depotEntryCacheModel.depotGroupId = getDepotGroupId();
 
 		return depotEntryCacheModel;
 	}
@@ -764,9 +767,6 @@ public class DepotEntryModelImpl
 	private String _uuid;
 	private String _originalUuid;
 	private long _depotEntryId;
-	private long _groupId;
-	private long _originalGroupId;
-	private boolean _setOriginalGroupId;
 	private long _companyId;
 	private long _originalCompanyId;
 	private boolean _setOriginalCompanyId;
@@ -775,6 +775,9 @@ public class DepotEntryModelImpl
 	private Date _createDate;
 	private Date _modifiedDate;
 	private boolean _setModifiedDate;
+	private long _depotGroupId;
+	private long _originalDepotGroupId;
+	private boolean _setOriginalDepotGroupId;
 	private long _columnBitmask;
 	private DepotEntry _escapedModel;
 

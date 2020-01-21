@@ -34,12 +34,12 @@ public class DepotEntrySoap implements Serializable {
 		soapModel.setMvccVersion(model.getMvccVersion());
 		soapModel.setUuid(model.getUuid());
 		soapModel.setDepotEntryId(model.getDepotEntryId());
-		soapModel.setGroupId(model.getGroupId());
 		soapModel.setCompanyId(model.getCompanyId());
 		soapModel.setUserId(model.getUserId());
 		soapModel.setUserName(model.getUserName());
 		soapModel.setCreateDate(model.getCreateDate());
 		soapModel.setModifiedDate(model.getModifiedDate());
+		soapModel.setDepotGroupId(model.getDepotGroupId());
 
 		return soapModel;
 	}
@@ -117,14 +117,6 @@ public class DepotEntrySoap implements Serializable {
 		_depotEntryId = depotEntryId;
 	}
 
-	public long getGroupId() {
-		return _groupId;
-	}
-
-	public void setGroupId(long groupId) {
-		_groupId = groupId;
-	}
-
 	public long getCompanyId() {
 		return _companyId;
 	}
@@ -165,14 +157,22 @@ public class DepotEntrySoap implements Serializable {
 		_modifiedDate = modifiedDate;
 	}
 
+	public long getDepotGroupId() {
+		return _depotGroupId;
+	}
+
+	public void setDepotGroupId(long depotGroupId) {
+		_depotGroupId = depotGroupId;
+	}
+
 	private long _mvccVersion;
 	private String _uuid;
 	private long _depotEntryId;
-	private long _groupId;
 	private long _companyId;
 	private long _userId;
 	private String _userName;
 	private Date _createDate;
 	private Date _modifiedDate;
+	private long _depotGroupId;
 
 }

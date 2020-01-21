@@ -28,11 +28,13 @@ import com.liferay.portal.kernel.dao.orm.FinderPath;
 import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.dao.orm.SQLQuery;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.dao.orm.SessionFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
+import com.liferay.portal.kernel.security.permission.InlineSQLHelperUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
@@ -544,6 +546,358 @@ public class DepotEntryPersistenceImpl
 	}
 
 	/**
+	 * Returns all the depot entries that the user has permission to view where uuid = &#63;.
+	 *
+	 * @param uuid the uuid
+	 * @return the matching depot entries that the user has permission to view
+	 */
+	@Override
+	public List<DepotEntry> filterFindByUuid(String uuid) {
+		return filterFindByUuid(
+			uuid, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+	}
+
+	/**
+	 * Returns a range of all the depot entries that the user has permission to view where uuid = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>DepotEntryModelImpl</code>.
+	 * </p>
+	 *
+	 * @param uuid the uuid
+	 * @param start the lower bound of the range of depot entries
+	 * @param end the upper bound of the range of depot entries (not inclusive)
+	 * @return the range of matching depot entries that the user has permission to view
+	 */
+	@Override
+	public List<DepotEntry> filterFindByUuid(String uuid, int start, int end) {
+		return filterFindByUuid(uuid, start, end, null);
+	}
+
+	/**
+	 * Returns an ordered range of all the depot entries that the user has permissions to view where uuid = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>DepotEntryModelImpl</code>.
+	 * </p>
+	 *
+	 * @param uuid the uuid
+	 * @param start the lower bound of the range of depot entries
+	 * @param end the upper bound of the range of depot entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching depot entries that the user has permission to view
+	 */
+	@Override
+	public List<DepotEntry> filterFindByUuid(
+		String uuid, int start, int end,
+		OrderByComparator<DepotEntry> orderByComparator) {
+
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return findByUuid(uuid, start, end, orderByComparator);
+		}
+
+		uuid = Objects.toString(uuid, "");
+
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(
+				3 + (orderByComparator.getOrderByFields().length * 2));
+		}
+		else {
+			query = new StringBundler(4);
+		}
+
+		if (getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_DEPOTENTRY_WHERE);
+		}
+		else {
+			query.append(
+				_FILTER_SQL_SELECT_DEPOTENTRY_NO_INLINE_DISTINCT_WHERE_1);
+		}
+
+		boolean bindUuid = false;
+
+		if (uuid.isEmpty()) {
+			query.append(_FINDER_COLUMN_UUID_UUID_3_SQL);
+		}
+		else {
+			bindUuid = true;
+
+			query.append(_FINDER_COLUMN_UUID_UUID_2_SQL);
+		}
+
+		if (!getDB().isSupportsInlineDistinct()) {
+			query.append(
+				_FILTER_SQL_SELECT_DEPOTENTRY_NO_INLINE_DISTINCT_WHERE_2);
+		}
+
+		if (orderByComparator != null) {
+			if (getDB().isSupportsInlineDistinct()) {
+				appendOrderByComparator(
+					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator, true);
+			}
+			else {
+				appendOrderByComparator(
+					query, _ORDER_BY_ENTITY_TABLE, orderByComparator, true);
+			}
+		}
+		else {
+			if (getDB().isSupportsInlineDistinct()) {
+				query.append(DepotEntryModelImpl.ORDER_BY_JPQL);
+			}
+			else {
+				query.append(DepotEntryModelImpl.ORDER_BY_SQL);
+			}
+		}
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(
+			query.toString(), DepotEntry.class.getName(),
+			_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SQLQuery q = session.createSynchronizedSQLQuery(sql);
+
+			if (getDB().isSupportsInlineDistinct()) {
+				q.addEntity(_FILTER_ENTITY_ALIAS, DepotEntryImpl.class);
+			}
+			else {
+				q.addEntity(_FILTER_ENTITY_TABLE, DepotEntryImpl.class);
+			}
+
+			QueryPos qPos = QueryPos.getInstance(q);
+
+			if (bindUuid) {
+				qPos.add(uuid);
+			}
+
+			return (List<DepotEntry>)QueryUtil.list(
+				q, getDialect(), start, end);
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	/**
+	 * Returns the depot entries before and after the current depot entry in the ordered set of depot entries that the user has permission to view where uuid = &#63;.
+	 *
+	 * @param depotEntryId the primary key of the current depot entry
+	 * @param uuid the uuid
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next depot entry
+	 * @throws NoSuchEntryException if a depot entry with the primary key could not be found
+	 */
+	@Override
+	public DepotEntry[] filterFindByUuid_PrevAndNext(
+			long depotEntryId, String uuid,
+			OrderByComparator<DepotEntry> orderByComparator)
+		throws NoSuchEntryException {
+
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return findByUuid_PrevAndNext(
+				depotEntryId, uuid, orderByComparator);
+		}
+
+		uuid = Objects.toString(uuid, "");
+
+		DepotEntry depotEntry = findByPrimaryKey(depotEntryId);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			DepotEntry[] array = new DepotEntryImpl[3];
+
+			array[0] = filterGetByUuid_PrevAndNext(
+				session, depotEntry, uuid, orderByComparator, true);
+
+			array[1] = depotEntry;
+
+			array[2] = filterGetByUuid_PrevAndNext(
+				session, depotEntry, uuid, orderByComparator, false);
+
+			return array;
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	protected DepotEntry filterGetByUuid_PrevAndNext(
+		Session session, DepotEntry depotEntry, String uuid,
+		OrderByComparator<DepotEntry> orderByComparator, boolean previous) {
+
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(
+				5 + (orderByComparator.getOrderByConditionFields().length * 3) +
+					(orderByComparator.getOrderByFields().length * 3));
+		}
+		else {
+			query = new StringBundler(4);
+		}
+
+		if (getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_DEPOTENTRY_WHERE);
+		}
+		else {
+			query.append(
+				_FILTER_SQL_SELECT_DEPOTENTRY_NO_INLINE_DISTINCT_WHERE_1);
+		}
+
+		boolean bindUuid = false;
+
+		if (uuid.isEmpty()) {
+			query.append(_FINDER_COLUMN_UUID_UUID_3_SQL);
+		}
+		else {
+			bindUuid = true;
+
+			query.append(_FINDER_COLUMN_UUID_UUID_2_SQL);
+		}
+
+		if (!getDB().isSupportsInlineDistinct()) {
+			query.append(
+				_FILTER_SQL_SELECT_DEPOTENTRY_NO_INLINE_DISTINCT_WHERE_2);
+		}
+
+		if (orderByComparator != null) {
+			String[] orderByConditionFields =
+				orderByComparator.getOrderByConditionFields();
+
+			if (orderByConditionFields.length > 0) {
+				query.append(WHERE_AND);
+			}
+
+			for (int i = 0; i < orderByConditionFields.length; i++) {
+				if (getDB().isSupportsInlineDistinct()) {
+					query.append(
+						getColumnName(
+							_ORDER_BY_ENTITY_ALIAS, orderByConditionFields[i],
+							true));
+				}
+				else {
+					query.append(
+						getColumnName(
+							_ORDER_BY_ENTITY_TABLE, orderByConditionFields[i],
+							true));
+				}
+
+				if ((i + 1) < orderByConditionFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN);
+					}
+				}
+			}
+
+			query.append(ORDER_BY_CLAUSE);
+
+			String[] orderByFields = orderByComparator.getOrderByFields();
+
+			for (int i = 0; i < orderByFields.length; i++) {
+				if (getDB().isSupportsInlineDistinct()) {
+					query.append(
+						getColumnName(
+							_ORDER_BY_ENTITY_ALIAS, orderByFields[i], true));
+				}
+				else {
+					query.append(
+						getColumnName(
+							_ORDER_BY_ENTITY_TABLE, orderByFields[i], true));
+				}
+
+				if ((i + 1) < orderByFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC_HAS_NEXT);
+					}
+					else {
+						query.append(ORDER_BY_DESC_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC);
+					}
+					else {
+						query.append(ORDER_BY_DESC);
+					}
+				}
+			}
+		}
+		else {
+			if (getDB().isSupportsInlineDistinct()) {
+				query.append(DepotEntryModelImpl.ORDER_BY_JPQL);
+			}
+			else {
+				query.append(DepotEntryModelImpl.ORDER_BY_SQL);
+			}
+		}
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(
+			query.toString(), DepotEntry.class.getName(),
+			_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		SQLQuery q = session.createSynchronizedSQLQuery(sql);
+
+		q.setFirstResult(0);
+		q.setMaxResults(2);
+
+		if (getDB().isSupportsInlineDistinct()) {
+			q.addEntity(_FILTER_ENTITY_ALIAS, DepotEntryImpl.class);
+		}
+		else {
+			q.addEntity(_FILTER_ENTITY_TABLE, DepotEntryImpl.class);
+		}
+
+		QueryPos qPos = QueryPos.getInstance(q);
+
+		if (bindUuid) {
+			qPos.add(uuid);
+		}
+
+		if (orderByComparator != null) {
+			for (Object orderByConditionValue :
+					orderByComparator.getOrderByConditionValues(depotEntry)) {
+
+				qPos.add(orderByConditionValue);
+			}
+		}
+
+		List<DepotEntry> list = q.list();
+
+		if (list.size() == 2) {
+			return list.get(1);
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
 	 * Removes all the depot entries where uuid = &#63; from the database.
 	 *
 	 * @param uuid the uuid
@@ -621,266 +975,78 @@ public class DepotEntryPersistenceImpl
 		return count.intValue();
 	}
 
+	/**
+	 * Returns the number of depot entries that the user has permission to view where uuid = &#63;.
+	 *
+	 * @param uuid the uuid
+	 * @return the number of matching depot entries that the user has permission to view
+	 */
+	@Override
+	public int filterCountByUuid(String uuid) {
+		if (!InlineSQLHelperUtil.isEnabled()) {
+			return countByUuid(uuid);
+		}
+
+		uuid = Objects.toString(uuid, "");
+
+		StringBundler query = new StringBundler(2);
+
+		query.append(_FILTER_SQL_COUNT_DEPOTENTRY_WHERE);
+
+		boolean bindUuid = false;
+
+		if (uuid.isEmpty()) {
+			query.append(_FINDER_COLUMN_UUID_UUID_3_SQL);
+		}
+		else {
+			bindUuid = true;
+
+			query.append(_FINDER_COLUMN_UUID_UUID_2_SQL);
+		}
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(
+			query.toString(), DepotEntry.class.getName(),
+			_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SQLQuery q = session.createSynchronizedSQLQuery(sql);
+
+			q.addScalar(
+				COUNT_COLUMN_NAME, com.liferay.portal.kernel.dao.orm.Type.LONG);
+
+			QueryPos qPos = QueryPos.getInstance(q);
+
+			if (bindUuid) {
+				qPos.add(uuid);
+			}
+
+			Long count = (Long)q.uniqueResult();
+
+			return count.intValue();
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
 	private static final String _FINDER_COLUMN_UUID_UUID_2 =
 		"depotEntry.uuid = ?";
 
 	private static final String _FINDER_COLUMN_UUID_UUID_3 =
 		"(depotEntry.uuid IS NULL OR depotEntry.uuid = '')";
 
-	private FinderPath _finderPathFetchByUUID_G;
-	private FinderPath _finderPathCountByUUID_G;
-
-	/**
-	 * Returns the depot entry where uuid = &#63; and groupId = &#63; or throws a <code>NoSuchEntryException</code> if it could not be found.
-	 *
-	 * @param uuid the uuid
-	 * @param groupId the group ID
-	 * @return the matching depot entry
-	 * @throws NoSuchEntryException if a matching depot entry could not be found
-	 */
-	@Override
-	public DepotEntry findByUUID_G(String uuid, long groupId)
-		throws NoSuchEntryException {
-
-		DepotEntry depotEntry = fetchByUUID_G(uuid, groupId);
-
-		if (depotEntry == null) {
-			StringBundler msg = new StringBundler(6);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("uuid=");
-			msg.append(uuid);
-
-			msg.append(", groupId=");
-			msg.append(groupId);
-
-			msg.append("}");
-
-			if (_log.isDebugEnabled()) {
-				_log.debug(msg.toString());
-			}
-
-			throw new NoSuchEntryException(msg.toString());
-		}
-
-		return depotEntry;
-	}
-
-	/**
-	 * Returns the depot entry where uuid = &#63; and groupId = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
-	 *
-	 * @param uuid the uuid
-	 * @param groupId the group ID
-	 * @return the matching depot entry, or <code>null</code> if a matching depot entry could not be found
-	 */
-	@Override
-	public DepotEntry fetchByUUID_G(String uuid, long groupId) {
-		return fetchByUUID_G(uuid, groupId, true);
-	}
-
-	/**
-	 * Returns the depot entry where uuid = &#63; and groupId = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
-	 *
-	 * @param uuid the uuid
-	 * @param groupId the group ID
-	 * @param useFinderCache whether to use the finder cache
-	 * @return the matching depot entry, or <code>null</code> if a matching depot entry could not be found
-	 */
-	@Override
-	public DepotEntry fetchByUUID_G(
-		String uuid, long groupId, boolean useFinderCache) {
-
-		uuid = Objects.toString(uuid, "");
-
-		Object[] finderArgs = null;
-
-		if (useFinderCache) {
-			finderArgs = new Object[] {uuid, groupId};
-		}
-
-		Object result = null;
-
-		if (useFinderCache) {
-			result = finderCache.getResult(
-				_finderPathFetchByUUID_G, finderArgs, this);
-		}
-
-		if (result instanceof DepotEntry) {
-			DepotEntry depotEntry = (DepotEntry)result;
-
-			if (!Objects.equals(uuid, depotEntry.getUuid()) ||
-				(groupId != depotEntry.getGroupId())) {
-
-				result = null;
-			}
-		}
-
-		if (result == null) {
-			StringBundler query = new StringBundler(4);
-
-			query.append(_SQL_SELECT_DEPOTENTRY_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				query.append(_FINDER_COLUMN_UUID_G_UUID_2);
-			}
-
-			query.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
-
-			String sql = query.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query q = session.createQuery(sql);
-
-				QueryPos qPos = QueryPos.getInstance(q);
-
-				if (bindUuid) {
-					qPos.add(uuid);
-				}
-
-				qPos.add(groupId);
-
-				List<DepotEntry> list = q.list();
-
-				if (list.isEmpty()) {
-					if (useFinderCache) {
-						finderCache.putResult(
-							_finderPathFetchByUUID_G, finderArgs, list);
-					}
-				}
-				else {
-					DepotEntry depotEntry = list.get(0);
-
-					result = depotEntry;
-
-					cacheResult(depotEntry);
-				}
-			}
-			catch (Exception exception) {
-				if (useFinderCache) {
-					finderCache.removeResult(
-						_finderPathFetchByUUID_G, finderArgs);
-				}
-
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		if (result instanceof List<?>) {
-			return null;
-		}
-		else {
-			return (DepotEntry)result;
-		}
-	}
-
-	/**
-	 * Removes the depot entry where uuid = &#63; and groupId = &#63; from the database.
-	 *
-	 * @param uuid the uuid
-	 * @param groupId the group ID
-	 * @return the depot entry that was removed
-	 */
-	@Override
-	public DepotEntry removeByUUID_G(String uuid, long groupId)
-		throws NoSuchEntryException {
-
-		DepotEntry depotEntry = findByUUID_G(uuid, groupId);
-
-		return remove(depotEntry);
-	}
-
-	/**
-	 * Returns the number of depot entries where uuid = &#63; and groupId = &#63;.
-	 *
-	 * @param uuid the uuid
-	 * @param groupId the group ID
-	 * @return the number of matching depot entries
-	 */
-	@Override
-	public int countByUUID_G(String uuid, long groupId) {
-		uuid = Objects.toString(uuid, "");
-
-		FinderPath finderPath = _finderPathCountByUUID_G;
-
-		Object[] finderArgs = new Object[] {uuid, groupId};
-
-		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
-
-		if (count == null) {
-			StringBundler query = new StringBundler(3);
-
-			query.append(_SQL_COUNT_DEPOTENTRY_WHERE);
-
-			boolean bindUuid = false;
-
-			if (uuid.isEmpty()) {
-				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
-			}
-			else {
-				bindUuid = true;
-
-				query.append(_FINDER_COLUMN_UUID_G_UUID_2);
-			}
-
-			query.append(_FINDER_COLUMN_UUID_G_GROUPID_2);
-
-			String sql = query.toString();
-
-			Session session = null;
-
-			try {
-				session = openSession();
-
-				Query q = session.createQuery(sql);
-
-				QueryPos qPos = QueryPos.getInstance(q);
-
-				if (bindUuid) {
-					qPos.add(uuid);
-				}
-
-				qPos.add(groupId);
-
-				count = (Long)q.uniqueResult();
-
-				finderCache.putResult(finderPath, finderArgs, count);
-			}
-			catch (Exception exception) {
-				finderCache.removeResult(finderPath, finderArgs);
-
-				throw processException(exception);
-			}
-			finally {
-				closeSession(session);
-			}
-		}
-
-		return count.intValue();
-	}
-
-	private static final String _FINDER_COLUMN_UUID_G_UUID_2 =
-		"depotEntry.uuid = ? AND ";
-
-	private static final String _FINDER_COLUMN_UUID_G_UUID_3 =
-		"(depotEntry.uuid IS NULL OR depotEntry.uuid = '') AND ";
-
-	private static final String _FINDER_COLUMN_UUID_G_GROUPID_2 =
-		"depotEntry.groupId = ?";
+	private static final String _FINDER_COLUMN_UUID_UUID_2_SQL =
+		"depotEntry.uuid_ = ?";
+
+	private static final String _FINDER_COLUMN_UUID_UUID_3_SQL =
+		"(depotEntry.uuid_ IS NULL OR depotEntry.uuid_ = '')";
 
 	private FinderPath _finderPathWithPaginationFindByUuid_C;
 	private FinderPath _finderPathWithoutPaginationFindByUuid_C;
@@ -1372,6 +1538,372 @@ public class DepotEntryPersistenceImpl
 	}
 
 	/**
+	 * Returns all the depot entries that the user has permission to view where uuid = &#63; and companyId = &#63;.
+	 *
+	 * @param uuid the uuid
+	 * @param companyId the company ID
+	 * @return the matching depot entries that the user has permission to view
+	 */
+	@Override
+	public List<DepotEntry> filterFindByUuid_C(String uuid, long companyId) {
+		return filterFindByUuid_C(
+			uuid, companyId, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+	}
+
+	/**
+	 * Returns a range of all the depot entries that the user has permission to view where uuid = &#63; and companyId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>DepotEntryModelImpl</code>.
+	 * </p>
+	 *
+	 * @param uuid the uuid
+	 * @param companyId the company ID
+	 * @param start the lower bound of the range of depot entries
+	 * @param end the upper bound of the range of depot entries (not inclusive)
+	 * @return the range of matching depot entries that the user has permission to view
+	 */
+	@Override
+	public List<DepotEntry> filterFindByUuid_C(
+		String uuid, long companyId, int start, int end) {
+
+		return filterFindByUuid_C(uuid, companyId, start, end, null);
+	}
+
+	/**
+	 * Returns an ordered range of all the depot entries that the user has permissions to view where uuid = &#63; and companyId = &#63;.
+	 *
+	 * <p>
+	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to <code>QueryUtil#ALL_POS</code> will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent, then the query will include the default ORDER BY logic from <code>DepotEntryModelImpl</code>.
+	 * </p>
+	 *
+	 * @param uuid the uuid
+	 * @param companyId the company ID
+	 * @param start the lower bound of the range of depot entries
+	 * @param end the upper bound of the range of depot entries (not inclusive)
+	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+	 * @return the ordered range of matching depot entries that the user has permission to view
+	 */
+	@Override
+	public List<DepotEntry> filterFindByUuid_C(
+		String uuid, long companyId, int start, int end,
+		OrderByComparator<DepotEntry> orderByComparator) {
+
+		if (!InlineSQLHelperUtil.isEnabled(companyId, 0)) {
+			return findByUuid_C(uuid, companyId, start, end, orderByComparator);
+		}
+
+		uuid = Objects.toString(uuid, "");
+
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(
+				4 + (orderByComparator.getOrderByFields().length * 2));
+		}
+		else {
+			query = new StringBundler(5);
+		}
+
+		if (getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_DEPOTENTRY_WHERE);
+		}
+		else {
+			query.append(
+				_FILTER_SQL_SELECT_DEPOTENTRY_NO_INLINE_DISTINCT_WHERE_1);
+		}
+
+		boolean bindUuid = false;
+
+		if (uuid.isEmpty()) {
+			query.append(_FINDER_COLUMN_UUID_C_UUID_3_SQL);
+		}
+		else {
+			bindUuid = true;
+
+			query.append(_FINDER_COLUMN_UUID_C_UUID_2_SQL);
+		}
+
+		query.append(_FINDER_COLUMN_UUID_C_COMPANYID_2);
+
+		if (!getDB().isSupportsInlineDistinct()) {
+			query.append(
+				_FILTER_SQL_SELECT_DEPOTENTRY_NO_INLINE_DISTINCT_WHERE_2);
+		}
+
+		if (orderByComparator != null) {
+			if (getDB().isSupportsInlineDistinct()) {
+				appendOrderByComparator(
+					query, _ORDER_BY_ENTITY_ALIAS, orderByComparator, true);
+			}
+			else {
+				appendOrderByComparator(
+					query, _ORDER_BY_ENTITY_TABLE, orderByComparator, true);
+			}
+		}
+		else {
+			if (getDB().isSupportsInlineDistinct()) {
+				query.append(DepotEntryModelImpl.ORDER_BY_JPQL);
+			}
+			else {
+				query.append(DepotEntryModelImpl.ORDER_BY_SQL);
+			}
+		}
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(
+			query.toString(), DepotEntry.class.getName(),
+			_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SQLQuery q = session.createSynchronizedSQLQuery(sql);
+
+			if (getDB().isSupportsInlineDistinct()) {
+				q.addEntity(_FILTER_ENTITY_ALIAS, DepotEntryImpl.class);
+			}
+			else {
+				q.addEntity(_FILTER_ENTITY_TABLE, DepotEntryImpl.class);
+			}
+
+			QueryPos qPos = QueryPos.getInstance(q);
+
+			if (bindUuid) {
+				qPos.add(uuid);
+			}
+
+			qPos.add(companyId);
+
+			return (List<DepotEntry>)QueryUtil.list(
+				q, getDialect(), start, end);
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	/**
+	 * Returns the depot entries before and after the current depot entry in the ordered set of depot entries that the user has permission to view where uuid = &#63; and companyId = &#63;.
+	 *
+	 * @param depotEntryId the primary key of the current depot entry
+	 * @param uuid the uuid
+	 * @param companyId the company ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the previous, current, and next depot entry
+	 * @throws NoSuchEntryException if a depot entry with the primary key could not be found
+	 */
+	@Override
+	public DepotEntry[] filterFindByUuid_C_PrevAndNext(
+			long depotEntryId, String uuid, long companyId,
+			OrderByComparator<DepotEntry> orderByComparator)
+		throws NoSuchEntryException {
+
+		if (!InlineSQLHelperUtil.isEnabled(companyId, 0)) {
+			return findByUuid_C_PrevAndNext(
+				depotEntryId, uuid, companyId, orderByComparator);
+		}
+
+		uuid = Objects.toString(uuid, "");
+
+		DepotEntry depotEntry = findByPrimaryKey(depotEntryId);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			DepotEntry[] array = new DepotEntryImpl[3];
+
+			array[0] = filterGetByUuid_C_PrevAndNext(
+				session, depotEntry, uuid, companyId, orderByComparator, true);
+
+			array[1] = depotEntry;
+
+			array[2] = filterGetByUuid_C_PrevAndNext(
+				session, depotEntry, uuid, companyId, orderByComparator, false);
+
+			return array;
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
+	protected DepotEntry filterGetByUuid_C_PrevAndNext(
+		Session session, DepotEntry depotEntry, String uuid, long companyId,
+		OrderByComparator<DepotEntry> orderByComparator, boolean previous) {
+
+		StringBundler query = null;
+
+		if (orderByComparator != null) {
+			query = new StringBundler(
+				6 + (orderByComparator.getOrderByConditionFields().length * 3) +
+					(orderByComparator.getOrderByFields().length * 3));
+		}
+		else {
+			query = new StringBundler(5);
+		}
+
+		if (getDB().isSupportsInlineDistinct()) {
+			query.append(_FILTER_SQL_SELECT_DEPOTENTRY_WHERE);
+		}
+		else {
+			query.append(
+				_FILTER_SQL_SELECT_DEPOTENTRY_NO_INLINE_DISTINCT_WHERE_1);
+		}
+
+		boolean bindUuid = false;
+
+		if (uuid.isEmpty()) {
+			query.append(_FINDER_COLUMN_UUID_C_UUID_3_SQL);
+		}
+		else {
+			bindUuid = true;
+
+			query.append(_FINDER_COLUMN_UUID_C_UUID_2_SQL);
+		}
+
+		query.append(_FINDER_COLUMN_UUID_C_COMPANYID_2);
+
+		if (!getDB().isSupportsInlineDistinct()) {
+			query.append(
+				_FILTER_SQL_SELECT_DEPOTENTRY_NO_INLINE_DISTINCT_WHERE_2);
+		}
+
+		if (orderByComparator != null) {
+			String[] orderByConditionFields =
+				orderByComparator.getOrderByConditionFields();
+
+			if (orderByConditionFields.length > 0) {
+				query.append(WHERE_AND);
+			}
+
+			for (int i = 0; i < orderByConditionFields.length; i++) {
+				if (getDB().isSupportsInlineDistinct()) {
+					query.append(
+						getColumnName(
+							_ORDER_BY_ENTITY_ALIAS, orderByConditionFields[i],
+							true));
+				}
+				else {
+					query.append(
+						getColumnName(
+							_ORDER_BY_ENTITY_TABLE, orderByConditionFields[i],
+							true));
+				}
+
+				if ((i + 1) < orderByConditionFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN_HAS_NEXT);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(WHERE_GREATER_THAN);
+					}
+					else {
+						query.append(WHERE_LESSER_THAN);
+					}
+				}
+			}
+
+			query.append(ORDER_BY_CLAUSE);
+
+			String[] orderByFields = orderByComparator.getOrderByFields();
+
+			for (int i = 0; i < orderByFields.length; i++) {
+				if (getDB().isSupportsInlineDistinct()) {
+					query.append(
+						getColumnName(
+							_ORDER_BY_ENTITY_ALIAS, orderByFields[i], true));
+				}
+				else {
+					query.append(
+						getColumnName(
+							_ORDER_BY_ENTITY_TABLE, orderByFields[i], true));
+				}
+
+				if ((i + 1) < orderByFields.length) {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC_HAS_NEXT);
+					}
+					else {
+						query.append(ORDER_BY_DESC_HAS_NEXT);
+					}
+				}
+				else {
+					if (orderByComparator.isAscending() ^ previous) {
+						query.append(ORDER_BY_ASC);
+					}
+					else {
+						query.append(ORDER_BY_DESC);
+					}
+				}
+			}
+		}
+		else {
+			if (getDB().isSupportsInlineDistinct()) {
+				query.append(DepotEntryModelImpl.ORDER_BY_JPQL);
+			}
+			else {
+				query.append(DepotEntryModelImpl.ORDER_BY_SQL);
+			}
+		}
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(
+			query.toString(), DepotEntry.class.getName(),
+			_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		SQLQuery q = session.createSynchronizedSQLQuery(sql);
+
+		q.setFirstResult(0);
+		q.setMaxResults(2);
+
+		if (getDB().isSupportsInlineDistinct()) {
+			q.addEntity(_FILTER_ENTITY_ALIAS, DepotEntryImpl.class);
+		}
+		else {
+			q.addEntity(_FILTER_ENTITY_TABLE, DepotEntryImpl.class);
+		}
+
+		QueryPos qPos = QueryPos.getInstance(q);
+
+		if (bindUuid) {
+			qPos.add(uuid);
+		}
+
+		qPos.add(companyId);
+
+		if (orderByComparator != null) {
+			for (Object orderByConditionValue :
+					orderByComparator.getOrderByConditionValues(depotEntry)) {
+
+				qPos.add(orderByConditionValue);
+			}
+		}
+
+		List<DepotEntry> list = q.list();
+
+		if (list.size() == 2) {
+			return list.get(1);
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
 	 * Removes all the depot entries where uuid = &#63; and companyId = &#63; from the database.
 	 *
 	 * @param uuid the uuid
@@ -1457,36 +1989,110 @@ public class DepotEntryPersistenceImpl
 		return count.intValue();
 	}
 
+	/**
+	 * Returns the number of depot entries that the user has permission to view where uuid = &#63; and companyId = &#63;.
+	 *
+	 * @param uuid the uuid
+	 * @param companyId the company ID
+	 * @return the number of matching depot entries that the user has permission to view
+	 */
+	@Override
+	public int filterCountByUuid_C(String uuid, long companyId) {
+		if (!InlineSQLHelperUtil.isEnabled(companyId, 0)) {
+			return countByUuid_C(uuid, companyId);
+		}
+
+		uuid = Objects.toString(uuid, "");
+
+		StringBundler query = new StringBundler(3);
+
+		query.append(_FILTER_SQL_COUNT_DEPOTENTRY_WHERE);
+
+		boolean bindUuid = false;
+
+		if (uuid.isEmpty()) {
+			query.append(_FINDER_COLUMN_UUID_C_UUID_3_SQL);
+		}
+		else {
+			bindUuid = true;
+
+			query.append(_FINDER_COLUMN_UUID_C_UUID_2_SQL);
+		}
+
+		query.append(_FINDER_COLUMN_UUID_C_COMPANYID_2);
+
+		String sql = InlineSQLHelperUtil.replacePermissionCheck(
+			query.toString(), DepotEntry.class.getName(),
+			_FILTER_ENTITY_TABLE_FILTER_PK_COLUMN);
+
+		Session session = null;
+
+		try {
+			session = openSession();
+
+			SQLQuery q = session.createSynchronizedSQLQuery(sql);
+
+			q.addScalar(
+				COUNT_COLUMN_NAME, com.liferay.portal.kernel.dao.orm.Type.LONG);
+
+			QueryPos qPos = QueryPos.getInstance(q);
+
+			if (bindUuid) {
+				qPos.add(uuid);
+			}
+
+			qPos.add(companyId);
+
+			Long count = (Long)q.uniqueResult();
+
+			return count.intValue();
+		}
+		catch (Exception exception) {
+			throw processException(exception);
+		}
+		finally {
+			closeSession(session);
+		}
+	}
+
 	private static final String _FINDER_COLUMN_UUID_C_UUID_2 =
 		"depotEntry.uuid = ? AND ";
 
 	private static final String _FINDER_COLUMN_UUID_C_UUID_3 =
 		"(depotEntry.uuid IS NULL OR depotEntry.uuid = '') AND ";
 
+	private static final String _FINDER_COLUMN_UUID_C_UUID_2_SQL =
+		"depotEntry.uuid_ = ? AND ";
+
+	private static final String _FINDER_COLUMN_UUID_C_UUID_3_SQL =
+		"(depotEntry.uuid_ IS NULL OR depotEntry.uuid_ = '') AND ";
+
 	private static final String _FINDER_COLUMN_UUID_C_COMPANYID_2 =
 		"depotEntry.companyId = ?";
 
-	private FinderPath _finderPathFetchByGroupId;
-	private FinderPath _finderPathCountByGroupId;
+	private FinderPath _finderPathFetchByDepotGroupId;
+	private FinderPath _finderPathCountByDepotGroupId;
 
 	/**
-	 * Returns the depot entry where groupId = &#63; or throws a <code>NoSuchEntryException</code> if it could not be found.
+	 * Returns the depot entry where depotGroupId = &#63; or throws a <code>NoSuchEntryException</code> if it could not be found.
 	 *
-	 * @param groupId the group ID
+	 * @param depotGroupId the depot group ID
 	 * @return the matching depot entry
 	 * @throws NoSuchEntryException if a matching depot entry could not be found
 	 */
 	@Override
-	public DepotEntry findByGroupId(long groupId) throws NoSuchEntryException {
-		DepotEntry depotEntry = fetchByGroupId(groupId);
+	public DepotEntry findByDepotGroupId(long depotGroupId)
+		throws NoSuchEntryException {
+
+		DepotEntry depotEntry = fetchByDepotGroupId(depotGroupId);
 
 		if (depotEntry == null) {
 			StringBundler msg = new StringBundler(4);
 
 			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
 
-			msg.append("groupId=");
-			msg.append(groupId);
+			msg.append("depotGroupId=");
+			msg.append(depotGroupId);
 
 			msg.append("}");
 
@@ -1501,42 +2107,44 @@ public class DepotEntryPersistenceImpl
 	}
 
 	/**
-	 * Returns the depot entry where groupId = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
+	 * Returns the depot entry where depotGroupId = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
 	 *
-	 * @param groupId the group ID
+	 * @param depotGroupId the depot group ID
 	 * @return the matching depot entry, or <code>null</code> if a matching depot entry could not be found
 	 */
 	@Override
-	public DepotEntry fetchByGroupId(long groupId) {
-		return fetchByGroupId(groupId, true);
+	public DepotEntry fetchByDepotGroupId(long depotGroupId) {
+		return fetchByDepotGroupId(depotGroupId, true);
 	}
 
 	/**
-	 * Returns the depot entry where groupId = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
+	 * Returns the depot entry where depotGroupId = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
 	 *
-	 * @param groupId the group ID
+	 * @param depotGroupId the depot group ID
 	 * @param useFinderCache whether to use the finder cache
 	 * @return the matching depot entry, or <code>null</code> if a matching depot entry could not be found
 	 */
 	@Override
-	public DepotEntry fetchByGroupId(long groupId, boolean useFinderCache) {
+	public DepotEntry fetchByDepotGroupId(
+		long depotGroupId, boolean useFinderCache) {
+
 		Object[] finderArgs = null;
 
 		if (useFinderCache) {
-			finderArgs = new Object[] {groupId};
+			finderArgs = new Object[] {depotGroupId};
 		}
 
 		Object result = null;
 
 		if (useFinderCache) {
 			result = finderCache.getResult(
-				_finderPathFetchByGroupId, finderArgs, this);
+				_finderPathFetchByDepotGroupId, finderArgs, this);
 		}
 
 		if (result instanceof DepotEntry) {
 			DepotEntry depotEntry = (DepotEntry)result;
 
-			if (groupId != depotEntry.getGroupId()) {
+			if (depotGroupId != depotEntry.getDepotGroupId()) {
 				result = null;
 			}
 		}
@@ -1546,7 +2154,7 @@ public class DepotEntryPersistenceImpl
 
 			query.append(_SQL_SELECT_DEPOTENTRY_WHERE);
 
-			query.append(_FINDER_COLUMN_GROUPID_GROUPID_2);
+			query.append(_FINDER_COLUMN_DEPOTGROUPID_DEPOTGROUPID_2);
 
 			String sql = query.toString();
 
@@ -1559,14 +2167,14 @@ public class DepotEntryPersistenceImpl
 
 				QueryPos qPos = QueryPos.getInstance(q);
 
-				qPos.add(groupId);
+				qPos.add(depotGroupId);
 
 				List<DepotEntry> list = q.list();
 
 				if (list.isEmpty()) {
 					if (useFinderCache) {
 						finderCache.putResult(
-							_finderPathFetchByGroupId, finderArgs, list);
+							_finderPathFetchByDepotGroupId, finderArgs, list);
 					}
 				}
 				else {
@@ -1580,7 +2188,7 @@ public class DepotEntryPersistenceImpl
 			catch (Exception exception) {
 				if (useFinderCache) {
 					finderCache.removeResult(
-						_finderPathFetchByGroupId, finderArgs);
+						_finderPathFetchByDepotGroupId, finderArgs);
 				}
 
 				throw processException(exception);
@@ -1599,31 +2207,31 @@ public class DepotEntryPersistenceImpl
 	}
 
 	/**
-	 * Removes the depot entry where groupId = &#63; from the database.
+	 * Removes the depot entry where depotGroupId = &#63; from the database.
 	 *
-	 * @param groupId the group ID
+	 * @param depotGroupId the depot group ID
 	 * @return the depot entry that was removed
 	 */
 	@Override
-	public DepotEntry removeByGroupId(long groupId)
+	public DepotEntry removeByDepotGroupId(long depotGroupId)
 		throws NoSuchEntryException {
 
-		DepotEntry depotEntry = findByGroupId(groupId);
+		DepotEntry depotEntry = findByDepotGroupId(depotGroupId);
 
 		return remove(depotEntry);
 	}
 
 	/**
-	 * Returns the number of depot entries where groupId = &#63;.
+	 * Returns the number of depot entries where depotGroupId = &#63;.
 	 *
-	 * @param groupId the group ID
+	 * @param depotGroupId the depot group ID
 	 * @return the number of matching depot entries
 	 */
 	@Override
-	public int countByGroupId(long groupId) {
-		FinderPath finderPath = _finderPathCountByGroupId;
+	public int countByDepotGroupId(long depotGroupId) {
+		FinderPath finderPath = _finderPathCountByDepotGroupId;
 
-		Object[] finderArgs = new Object[] {groupId};
+		Object[] finderArgs = new Object[] {depotGroupId};
 
 		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
 
@@ -1632,7 +2240,7 @@ public class DepotEntryPersistenceImpl
 
 			query.append(_SQL_COUNT_DEPOTENTRY_WHERE);
 
-			query.append(_FINDER_COLUMN_GROUPID_GROUPID_2);
+			query.append(_FINDER_COLUMN_DEPOTGROUPID_DEPOTGROUPID_2);
 
 			String sql = query.toString();
 
@@ -1645,7 +2253,7 @@ public class DepotEntryPersistenceImpl
 
 				QueryPos qPos = QueryPos.getInstance(q);
 
-				qPos.add(groupId);
+				qPos.add(depotGroupId);
 
 				count = (Long)q.uniqueResult();
 
@@ -1664,8 +2272,8 @@ public class DepotEntryPersistenceImpl
 		return count.intValue();
 	}
 
-	private static final String _FINDER_COLUMN_GROUPID_GROUPID_2 =
-		"depotEntry.groupId = ?";
+	private static final String _FINDER_COLUMN_DEPOTGROUPID_DEPOTGROUPID_2 =
+		"depotEntry.depotGroupId = ?";
 
 	public DepotEntryPersistenceImpl() {
 		setModelClass(DepotEntry.class);
@@ -1692,13 +2300,8 @@ public class DepotEntryPersistenceImpl
 			depotEntry.getPrimaryKey(), depotEntry);
 
 		finderCache.putResult(
-			_finderPathFetchByUUID_G,
-			new Object[] {depotEntry.getUuid(), depotEntry.getGroupId()},
-			depotEntry);
-
-		finderCache.putResult(
-			_finderPathFetchByGroupId, new Object[] {depotEntry.getGroupId()},
-			depotEntry);
+			_finderPathFetchByDepotGroupId,
+			new Object[] {depotEntry.getDepotGroupId()}, depotEntry);
 
 		depotEntry.resetOriginalValues();
 	}
@@ -1787,21 +2390,12 @@ public class DepotEntryPersistenceImpl
 	protected void cacheUniqueFindersCache(
 		DepotEntryModelImpl depotEntryModelImpl) {
 
-		Object[] args = new Object[] {
-			depotEntryModelImpl.getUuid(), depotEntryModelImpl.getGroupId()
-		};
+		Object[] args = new Object[] {depotEntryModelImpl.getDepotGroupId()};
 
 		finderCache.putResult(
-			_finderPathCountByUUID_G, args, Long.valueOf(1), false);
+			_finderPathCountByDepotGroupId, args, Long.valueOf(1), false);
 		finderCache.putResult(
-			_finderPathFetchByUUID_G, args, depotEntryModelImpl, false);
-
-		args = new Object[] {depotEntryModelImpl.getGroupId()};
-
-		finderCache.putResult(
-			_finderPathCountByGroupId, args, Long.valueOf(1), false);
-		finderCache.putResult(
-			_finderPathFetchByGroupId, args, depotEntryModelImpl, false);
+			_finderPathFetchByDepotGroupId, args, depotEntryModelImpl, false);
 	}
 
 	protected void clearUniqueFindersCache(
@@ -1809,41 +2403,22 @@ public class DepotEntryPersistenceImpl
 
 		if (clearCurrent) {
 			Object[] args = new Object[] {
-				depotEntryModelImpl.getUuid(), depotEntryModelImpl.getGroupId()
+				depotEntryModelImpl.getDepotGroupId()
 			};
 
-			finderCache.removeResult(_finderPathCountByUUID_G, args);
-			finderCache.removeResult(_finderPathFetchByUUID_G, args);
+			finderCache.removeResult(_finderPathCountByDepotGroupId, args);
+			finderCache.removeResult(_finderPathFetchByDepotGroupId, args);
 		}
 
 		if ((depotEntryModelImpl.getColumnBitmask() &
-			 _finderPathFetchByUUID_G.getColumnBitmask()) != 0) {
+			 _finderPathFetchByDepotGroupId.getColumnBitmask()) != 0) {
 
 			Object[] args = new Object[] {
-				depotEntryModelImpl.getOriginalUuid(),
-				depotEntryModelImpl.getOriginalGroupId()
+				depotEntryModelImpl.getOriginalDepotGroupId()
 			};
 
-			finderCache.removeResult(_finderPathCountByUUID_G, args);
-			finderCache.removeResult(_finderPathFetchByUUID_G, args);
-		}
-
-		if (clearCurrent) {
-			Object[] args = new Object[] {depotEntryModelImpl.getGroupId()};
-
-			finderCache.removeResult(_finderPathCountByGroupId, args);
-			finderCache.removeResult(_finderPathFetchByGroupId, args);
-		}
-
-		if ((depotEntryModelImpl.getColumnBitmask() &
-			 _finderPathFetchByGroupId.getColumnBitmask()) != 0) {
-
-			Object[] args = new Object[] {
-				depotEntryModelImpl.getOriginalGroupId()
-			};
-
-			finderCache.removeResult(_finderPathCountByGroupId, args);
-			finderCache.removeResult(_finderPathFetchByGroupId, args);
+			finderCache.removeResult(_finderPathCountByDepotGroupId, args);
+			finderCache.removeResult(_finderPathFetchByDepotGroupId, args);
 		}
 	}
 
@@ -2408,18 +2983,6 @@ public class DepotEntryPersistenceImpl
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByUuid",
 			new String[] {String.class.getName()});
 
-		_finderPathFetchByUUID_G = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled, DepotEntryImpl.class,
-			FINDER_CLASS_NAME_ENTITY, "fetchByUUID_G",
-			new String[] {String.class.getName(), Long.class.getName()},
-			DepotEntryModelImpl.UUID_COLUMN_BITMASK |
-			DepotEntryModelImpl.GROUPID_COLUMN_BITMASK);
-
-		_finderPathCountByUUID_G = new FinderPath(
-			entityCacheEnabled, finderCacheEnabled, Long.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByUUID_G",
-			new String[] {String.class.getName(), Long.class.getName()});
-
 		_finderPathWithPaginationFindByUuid_C = new FinderPath(
 			entityCacheEnabled, finderCacheEnabled, DepotEntryImpl.class,
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByUuid_C",
@@ -2441,15 +3004,15 @@ public class DepotEntryPersistenceImpl
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByUuid_C",
 			new String[] {String.class.getName(), Long.class.getName()});
 
-		_finderPathFetchByGroupId = new FinderPath(
+		_finderPathFetchByDepotGroupId = new FinderPath(
 			entityCacheEnabled, finderCacheEnabled, DepotEntryImpl.class,
-			FINDER_CLASS_NAME_ENTITY, "fetchByGroupId",
+			FINDER_CLASS_NAME_ENTITY, "fetchByDepotGroupId",
 			new String[] {Long.class.getName()},
-			DepotEntryModelImpl.GROUPID_COLUMN_BITMASK);
+			DepotEntryModelImpl.DEPOTGROUPID_COLUMN_BITMASK);
 
-		_finderPathCountByGroupId = new FinderPath(
+		_finderPathCountByDepotGroupId = new FinderPath(
 			entityCacheEnabled, finderCacheEnabled, Long.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByGroupId",
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByDepotGroupId",
 			new String[] {Long.class.getName()});
 	}
 
@@ -2513,7 +3076,30 @@ public class DepotEntryPersistenceImpl
 	private static final String _SQL_COUNT_DEPOTENTRY_WHERE =
 		"SELECT COUNT(depotEntry) FROM DepotEntry depotEntry WHERE ";
 
+	private static final String _FILTER_ENTITY_TABLE_FILTER_PK_COLUMN =
+		"depotEntry.depotEntryId";
+
+	private static final String _FILTER_SQL_SELECT_DEPOTENTRY_WHERE =
+		"SELECT DISTINCT {depotEntry.*} FROM DepotEntry depotEntry WHERE ";
+
+	private static final String
+		_FILTER_SQL_SELECT_DEPOTENTRY_NO_INLINE_DISTINCT_WHERE_1 =
+			"SELECT {DepotEntry.*} FROM (SELECT DISTINCT depotEntry.depotEntryId FROM DepotEntry depotEntry WHERE ";
+
+	private static final String
+		_FILTER_SQL_SELECT_DEPOTENTRY_NO_INLINE_DISTINCT_WHERE_2 =
+			") TEMP_TABLE INNER JOIN DepotEntry ON TEMP_TABLE.depotEntryId = DepotEntry.depotEntryId";
+
+	private static final String _FILTER_SQL_COUNT_DEPOTENTRY_WHERE =
+		"SELECT COUNT(DISTINCT depotEntry.depotEntryId) AS COUNT_VALUE FROM DepotEntry depotEntry WHERE ";
+
+	private static final String _FILTER_ENTITY_ALIAS = "depotEntry";
+
+	private static final String _FILTER_ENTITY_TABLE = "DepotEntry";
+
 	private static final String _ORDER_BY_ENTITY_ALIAS = "depotEntry.";
+
+	private static final String _ORDER_BY_ENTITY_TABLE = "DepotEntry.";
 
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY =
 		"No DepotEntry exists with the primary key ";

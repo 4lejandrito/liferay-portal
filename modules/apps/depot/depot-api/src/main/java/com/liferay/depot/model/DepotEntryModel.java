@@ -16,7 +16,6 @@ package com.liferay.depot.model;
 
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.kernel.model.BaseModel;
-import com.liferay.portal.kernel.model.GroupedModel;
 import com.liferay.portal.kernel.model.MVCCModel;
 import com.liferay.portal.kernel.model.ShardedModel;
 import com.liferay.portal.kernel.model.StagedAuditedModel;
@@ -38,8 +37,7 @@ import org.osgi.annotation.versioning.ProviderType;
  */
 @ProviderType
 public interface DepotEntryModel
-	extends BaseModel<DepotEntry>, GroupedModel, MVCCModel, ShardedModel,
-			StagedAuditedModel {
+	extends BaseModel<DepotEntry>, MVCCModel, ShardedModel, StagedAuditedModel {
 
 	/*
 	 * NOTE FOR DEVELOPERS:
@@ -107,22 +105,6 @@ public interface DepotEntryModel
 	 * @param depotEntryId the depot entry ID of this depot entry
 	 */
 	public void setDepotEntryId(long depotEntryId);
-
-	/**
-	 * Returns the group ID of this depot entry.
-	 *
-	 * @return the group ID of this depot entry
-	 */
-	@Override
-	public long getGroupId();
-
-	/**
-	 * Sets the group ID of this depot entry.
-	 *
-	 * @param groupId the group ID of this depot entry
-	 */
-	@Override
-	public void setGroupId(long groupId);
 
 	/**
 	 * Returns the company ID of this depot entry.
@@ -220,5 +202,19 @@ public interface DepotEntryModel
 	 */
 	@Override
 	public void setModifiedDate(Date modifiedDate);
+
+	/**
+	 * Returns the depot group ID of this depot entry.
+	 *
+	 * @return the depot group ID of this depot entry
+	 */
+	public long getDepotGroupId();
+
+	/**
+	 * Sets the depot group ID of this depot entry.
+	 *
+	 * @param depotGroupId the depot group ID of this depot entry
+	 */
+	public void setDepotGroupId(long depotGroupId);
 
 }

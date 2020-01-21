@@ -45,7 +45,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import org.junit.After;
@@ -128,8 +127,6 @@ public class DepotEntryPersistenceTest {
 
 		newDepotEntry.setUuid(RandomTestUtil.randomString());
 
-		newDepotEntry.setGroupId(RandomTestUtil.nextLong());
-
 		newDepotEntry.setCompanyId(RandomTestUtil.nextLong());
 
 		newDepotEntry.setUserId(RandomTestUtil.nextLong());
@@ -139,6 +136,8 @@ public class DepotEntryPersistenceTest {
 		newDepotEntry.setCreateDate(RandomTestUtil.nextDate());
 
 		newDepotEntry.setModifiedDate(RandomTestUtil.nextDate());
+
+		newDepotEntry.setDepotGroupId(RandomTestUtil.nextLong());
 
 		_depotEntries.add(_persistence.update(newDepotEntry));
 
@@ -154,8 +153,6 @@ public class DepotEntryPersistenceTest {
 			existingDepotEntry.getDepotEntryId(),
 			newDepotEntry.getDepotEntryId());
 		Assert.assertEquals(
-			existingDepotEntry.getGroupId(), newDepotEntry.getGroupId());
-		Assert.assertEquals(
 			existingDepotEntry.getCompanyId(), newDepotEntry.getCompanyId());
 		Assert.assertEquals(
 			existingDepotEntry.getUserId(), newDepotEntry.getUserId());
@@ -167,6 +164,9 @@ public class DepotEntryPersistenceTest {
 		Assert.assertEquals(
 			Time.getShortTimestamp(existingDepotEntry.getModifiedDate()),
 			Time.getShortTimestamp(newDepotEntry.getModifiedDate()));
+		Assert.assertEquals(
+			existingDepotEntry.getDepotGroupId(),
+			newDepotEntry.getDepotGroupId());
 	}
 
 	@Test
@@ -179,15 +179,6 @@ public class DepotEntryPersistenceTest {
 	}
 
 	@Test
-	public void testCountByUUID_G() throws Exception {
-		_persistence.countByUUID_G("", RandomTestUtil.nextLong());
-
-		_persistence.countByUUID_G("null", 0L);
-
-		_persistence.countByUUID_G((String)null, 0L);
-	}
-
-	@Test
 	public void testCountByUuid_C() throws Exception {
 		_persistence.countByUuid_C("", RandomTestUtil.nextLong());
 
@@ -197,10 +188,10 @@ public class DepotEntryPersistenceTest {
 	}
 
 	@Test
-	public void testCountByGroupId() throws Exception {
-		_persistence.countByGroupId(RandomTestUtil.nextLong());
+	public void testCountByDepotGroupId() throws Exception {
+		_persistence.countByDepotGroupId(RandomTestUtil.nextLong());
 
-		_persistence.countByGroupId(0L);
+		_persistence.countByDepotGroupId(0L);
 	}
 
 	@Test
@@ -229,8 +220,8 @@ public class DepotEntryPersistenceTest {
 	protected OrderByComparator<DepotEntry> getOrderByComparator() {
 		return OrderByComparatorFactoryUtil.create(
 			"DepotEntry", "mvccVersion", true, "uuid", true, "depotEntryId",
-			true, "groupId", true, "companyId", true, "userId", true,
-			"userName", true, "createDate", true, "modifiedDate", true);
+			true, "companyId", true, "userId", true, "userName", true,
+			"createDate", true, "modifiedDate", true, "depotGroupId", true);
 	}
 
 	@Test
@@ -451,20 +442,11 @@ public class DepotEntryPersistenceTest {
 		DepotEntry existingDepotEntry = _persistence.findByPrimaryKey(
 			newDepotEntry.getPrimaryKey());
 
-		Assert.assertTrue(
-			Objects.equals(
-				existingDepotEntry.getUuid(),
-				ReflectionTestUtil.invoke(
-					existingDepotEntry, "getOriginalUuid", new Class<?>[0])));
 		Assert.assertEquals(
-			Long.valueOf(existingDepotEntry.getGroupId()),
+			Long.valueOf(existingDepotEntry.getDepotGroupId()),
 			ReflectionTestUtil.<Long>invoke(
-				existingDepotEntry, "getOriginalGroupId", new Class<?>[0]));
-
-		Assert.assertEquals(
-			Long.valueOf(existingDepotEntry.getGroupId()),
-			ReflectionTestUtil.<Long>invoke(
-				existingDepotEntry, "getOriginalGroupId", new Class<?>[0]));
+				existingDepotEntry, "getOriginalDepotGroupId",
+				new Class<?>[0]));
 	}
 
 	protected DepotEntry addDepotEntry() throws Exception {
@@ -476,8 +458,6 @@ public class DepotEntryPersistenceTest {
 
 		depotEntry.setUuid(RandomTestUtil.randomString());
 
-		depotEntry.setGroupId(RandomTestUtil.nextLong());
-
 		depotEntry.setCompanyId(RandomTestUtil.nextLong());
 
 		depotEntry.setUserId(RandomTestUtil.nextLong());
@@ -487,6 +467,8 @@ public class DepotEntryPersistenceTest {
 		depotEntry.setCreateDate(RandomTestUtil.nextDate());
 
 		depotEntry.setModifiedDate(RandomTestUtil.nextDate());
+
+		depotEntry.setDepotGroupId(RandomTestUtil.nextLong());
 
 		_depotEntries.add(_persistence.update(depotEntry));
 

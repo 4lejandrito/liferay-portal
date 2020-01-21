@@ -221,17 +221,17 @@ public abstract class DepotEntryLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the depot entry matching the UUID and group.
+	 * Returns the depot entry with the matching UUID and company.
 	 *
 	 * @param uuid the depot entry's UUID
-	 * @param groupId the primary key of the group
+	 * @param companyId the primary key of the company
 	 * @return the matching depot entry, or <code>null</code> if a matching depot entry could not be found
 	 */
 	@Override
-	public DepotEntry fetchDepotEntryByUuidAndGroupId(
-		String uuid, long groupId) {
+	public DepotEntry fetchDepotEntryByUuidAndCompanyId(
+		String uuid, long companyId) {
 
-		return depotEntryPersistence.fetchByUUID_G(uuid, groupId);
+		return depotEntryPersistence.fetchByUuid_C_First(uuid, companyId, null);
 	}
 
 	/**
@@ -373,51 +373,19 @@ public abstract class DepotEntryLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns all the depot entries matching the UUID and company.
-	 *
-	 * @param uuid the UUID of the depot entries
-	 * @param companyId the primary key of the company
-	 * @return the matching depot entries, or an empty list if no matches were found
-	 */
-	@Override
-	public List<DepotEntry> getDepotEntriesByUuidAndCompanyId(
-		String uuid, long companyId) {
-
-		return depotEntryPersistence.findByUuid_C(uuid, companyId);
-	}
-
-	/**
-	 * Returns a range of depot entries matching the UUID and company.
-	 *
-	 * @param uuid the UUID of the depot entries
-	 * @param companyId the primary key of the company
-	 * @param start the lower bound of the range of depot entries
-	 * @param end the upper bound of the range of depot entries (not inclusive)
-	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
-	 * @return the range of matching depot entries, or an empty list if no matches were found
-	 */
-	@Override
-	public List<DepotEntry> getDepotEntriesByUuidAndCompanyId(
-		String uuid, long companyId, int start, int end,
-		OrderByComparator<DepotEntry> orderByComparator) {
-
-		return depotEntryPersistence.findByUuid_C(
-			uuid, companyId, start, end, orderByComparator);
-	}
-
-	/**
-	 * Returns the depot entry matching the UUID and group.
+	 * Returns the depot entry with the matching UUID and company.
 	 *
 	 * @param uuid the depot entry's UUID
-	 * @param groupId the primary key of the group
+	 * @param companyId the primary key of the company
 	 * @return the matching depot entry
 	 * @throws PortalException if a matching depot entry could not be found
 	 */
 	@Override
-	public DepotEntry getDepotEntryByUuidAndGroupId(String uuid, long groupId)
+	public DepotEntry getDepotEntryByUuidAndCompanyId(
+			String uuid, long companyId)
 		throws PortalException {
 
-		return depotEntryPersistence.findByUUID_G(uuid, groupId);
+		return depotEntryPersistence.findByUuid_C_First(uuid, companyId, null);
 	}
 
 	/**
