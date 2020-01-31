@@ -46,7 +46,7 @@ import org.osgi.service.component.annotations.Reference;
 	property = "service.ranking:Integer=100",
 	service = ItemSelectorViewRendererProvider.class
 )
-public class ItemSelectorViewRendererProviderImpl
+public class DepotItemSelectorViewRendererProvider
 	implements ItemSelectorViewRendererProvider {
 
 	@Override
