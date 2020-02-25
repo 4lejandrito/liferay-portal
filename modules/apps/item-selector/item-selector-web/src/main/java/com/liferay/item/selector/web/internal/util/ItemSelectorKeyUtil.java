@@ -42,23 +42,20 @@ public class ItemSelectorKeyUtil {
 	}
 
 	private static String _getKey(Class<?> clazz, String suffix) {
-		String key = _itemSelectorKeysMap.get(clazz.getName());
+		return _itemSelectorKeysMap.computeIfAbsent(
+			clazz.getName(),
+			className -> {
+				String key = StringUtil.lowerCase(
+					StringUtil.removeSubstring(clazz.getSimpleName(), suffix));
 
-		if (key == null) {
-			key = StringBundler.concat(
-				StringUtil.lowerCase(
-					StringUtil.removeSubstring(clazz.getSimpleName(), suffix)),
-				StringPool.UNDERLINE, _atomicInteger.incrementAndGet());
+				if (!_itemSelectorKeysMap.containsValue(key)) {
+					return key;
+				}
 
-			String oldKey = _itemSelectorKeysMap.putIfAbsent(
-				clazz.getName(), key);
-
-			if (oldKey != null) {
-				key = oldKey;
-			}
-		}
-
-		return key;
+				return StringBundler.concat(
+					key, StringPool.UNDERLINE,
+					_atomicInteger.incrementAndGet());
+			});
 	}
 
 	private static final AtomicInteger _atomicInteger = new AtomicInteger();
