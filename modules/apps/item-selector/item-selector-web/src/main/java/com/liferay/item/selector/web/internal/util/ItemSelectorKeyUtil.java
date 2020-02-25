@@ -45,16 +45,18 @@ public class ItemSelectorKeyUtil {
 		String key = _itemSelectorKeysMap.get(clazz.getName());
 
 		if (key == null) {
-			key = StringBundler.concat(
-				StringUtil.lowerCase(
-					StringUtil.removeSubstring(clazz.getSimpleName(), suffix)),
-				StringPool.UNDERLINE, _atomicInteger.incrementAndGet());
+			key = StringUtil.lowerCase(
+				StringUtil.removeSubstring(clazz.getSimpleName(), suffix));
 
 			String oldKey = _itemSelectorKeysMap.putIfAbsent(
 				clazz.getName(), key);
 
 			if (oldKey != null) {
-				key = oldKey;
+				key = StringBundler.concat(
+					key, StringPool.UNDERLINE,
+					_atomicInteger.incrementAndGet());
+
+				_itemSelectorKeysMap.put(clazz.getName(), key);
 			}
 		}
 
