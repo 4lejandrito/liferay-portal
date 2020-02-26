@@ -35,7 +35,8 @@ taglib uri="http://liferay.com/tld/social-bookmarks" prefix="liferay-social-book
 taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %><%@
 taglib uri="http://liferay.com/tld/trash" prefix="liferay-trash" %><%@
 taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %><%@
-taglib uri="http://liferay.com/tld/util" prefix="liferay-util" %>
+taglib uri="http://liferay.com/tld/util" prefix="liferay-util" %><%@
+taglib uri="http://liferay.com/tld/ratings" prefix="liferay-ratings" %>
 
 <%@ page import="com.liferay.asset.constants.AssetWebKeys" %><%@
 page import="com.liferay.asset.kernel.model.AssetEntry" %><%@
