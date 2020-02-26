@@ -48,7 +48,7 @@ import org.junit.runner.RunWith;
  * @author Cristina González
  */
 @RunWith(Arquillian.class)
-public class DepotPermissionCheckerTest {
+public class DepotPermissionCheckerWrapperTest {
 
 	@ClassRule
 	@Rule
