@@ -36,6 +36,7 @@ import com.liferay.portal.security.permission.PermissionCacheUtil;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * @author Cristina González
@@ -70,63 +71,52 @@ public class DepotPermissionCheckerWrapper extends PermissionCheckerWrapper {
 	public boolean hasPermission(
 		Group group, String name, long primKey, String actionId) {
 
-		if (StringUtil.equals(name, Group.class.getName())) {
-			try {
-				Group currentGroup = _groupLocalService.getGroup(primKey);
+		if (delegatePermissionChecker.hasPermission(
+				group, name, primKey, actionId)) {
 
-				if (currentGroup.getType() == GroupConstants.TYPE_DEPOT) {
-					if (_isGroupAdmin(currentGroup)) {
-						return true;
-					}
-
-					return _depotEntryModelResourcePermission.contains(
-						delegatePermissionChecker, currentGroup.getClassPK(),
-						actionId);
-				}
-			}
-			catch (PortalException portalException) {
-				_log.error(portalException, portalException);
-
-				return false;
-			}
+			return true;
 		}
 
-		return delegatePermissionChecker.hasPermission(
-			group, name, primKey, actionId);
+		return _hasPermission(name, () -> primKey, actionId);
 	}
 
 	@Override
 	public boolean hasPermission(
 		Group group, String name, String primKey, String actionId) {
 
-		if (StringUtil.equals(name, Group.class.getName())) {
-			return hasPermission(group, name, Long.valueOf(primKey), actionId);
+		if (delegatePermissionChecker.hasPermission(
+				group, name, primKey, actionId)) {
+
+			return true;
 		}
 
-		return delegatePermissionChecker.hasPermission(
-			group, name, primKey, actionId);
+		return _hasPermission(name, () -> Long.valueOf(primKey), actionId);
 	}
 
 	@Override
 	public boolean hasPermission(
 		long groupId, String name, long primKey, String actionId) {
 
-		return hasPermission(
-			_groupLocalService.fetchGroup(groupId), name, primKey, actionId);
+		if (delegatePermissionChecker.hasPermission(
+				groupId, name, primKey, actionId)) {
+
+			return true;
+		}
+
+		return _hasPermission(name, () -> primKey, actionId);
 	}
 
 	@Override
 	public boolean hasPermission(
 		long groupId, String name, String primKey, String actionId) {
 
-		if (StringUtil.equals(name, Group.class.getName())) {
-			return hasPermission(
-				_groupLocalService.fetchGroup(groupId), name,
-				Long.valueOf(primKey), actionId);
+		if (delegatePermissionChecker.hasPermission(
+				groupId, name, primKey, actionId)) {
+
+			return true;
 		}
 
-		return delegatePermissionChecker.hasPermission(
-			groupId, name, primKey, actionId);
+		return _hasPermission(name, () -> Long.valueOf(primKey), actionId);
 	}
 
 	@Override
@@ -230,6 +220,32 @@ public class DepotPermissionCheckerWrapper extends PermissionCheckerWrapper {
 		}
 
 		return value;
+	}
+
+	private boolean _hasPermission(
+		String name, Supplier<Long> groupIdSupplier, String actionId) {
+
+		if (StringUtil.equals(name, Group.class.getName())) {
+			try {
+				Group group = _groupLocalService.getGroup(
+					groupIdSupplier.get());
+
+				if (group.getType() == GroupConstants.TYPE_DEPOT) {
+					if (_isGroupAdmin(group)) {
+						return true;
+					}
+
+					return _depotEntryModelResourcePermission.contains(
+						delegatePermissionChecker, group.getClassPK(),
+						actionId);
+				}
+			}
+			catch (PortalException portalException) {
+				_log.error(portalException, portalException);
+			}
+		}
+
+		return false;
 	}
 
 	private boolean _isGroupAdmin(Group group) throws PortalException {
