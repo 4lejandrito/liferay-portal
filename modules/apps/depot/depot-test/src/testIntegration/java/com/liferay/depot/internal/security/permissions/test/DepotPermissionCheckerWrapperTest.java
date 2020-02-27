@@ -56,7 +56,9 @@ public class DepotPermissionCheckerWrapperTest {
 		new LiferayIntegrationTestRule();
 
 	@Test
-	public void testIsGroupAdminWithDepotGroupAndDepotAdmin() throws Exception {
+	public void testIsGroupAdminWithDepotGroupAndAssetLibraryAdmin()
+		throws Exception {
+
 		User user = UserTestUtil.addUser();
 
 		DepotEntry depotEntry = _depotEntryLocalService.addDepotEntry(
@@ -93,7 +95,7 @@ public class DepotPermissionCheckerWrapperTest {
 	}
 
 	@Test
-	public void testIsGroupAdminWithDepotGroupAndDepotMember()
+	public void testIsGroupAdminWithDepotGroupAndAssetLibraryMember()
 		throws Exception {
 
 		User user = UserTestUtil.addUser();
@@ -124,7 +126,9 @@ public class DepotPermissionCheckerWrapperTest {
 	}
 
 	@Test
-	public void testIsGroupAdminWithDepotGroupAndDepotOwner() throws Exception {
+	public void testIsGroupAdminWithDepotGroupAndAssetLibraryOwner()
+		throws Exception {
+
 		User user = UserTestUtil.addUser();
 
 		DepotEntry depotEntry = _depotEntryLocalService.addDepotEntry(
@@ -189,7 +193,7 @@ public class DepotPermissionCheckerWrapperTest {
 	}
 
 	@Test
-	public void testIsGroupMemberWithDepotGroupAndDepotAdmin()
+	public void testIsGroupMemberWithDepotGroupAndAssetLibraryAdmin()
 		throws Exception {
 
 		User user = UserTestUtil.addUser();
@@ -228,7 +232,7 @@ public class DepotPermissionCheckerWrapperTest {
 	}
 
 	@Test
-	public void testIsGroupMemberWithDepotGroupAndDepotMember()
+	public void testIsGroupMemberWithDepotGroupAndAssetLibraryMember()
 		throws Exception {
 
 		User user = UserTestUtil.addUser();
@@ -259,7 +263,7 @@ public class DepotPermissionCheckerWrapperTest {
 	}
 
 	@Test
-	public void testIsGroupMemberWithDepotGroupAndDepotOwner()
+	public void testIsGroupMemberWithDepotGroupAndAssetLibraryOwner()
 		throws Exception {
 
 		User user = UserTestUtil.addUser();
@@ -326,7 +330,9 @@ public class DepotPermissionCheckerWrapperTest {
 	}
 
 	@Test
-	public void testIsGroupOwnerWithDepotGroupAndDepotAdmin() throws Exception {
+	public void testIsGroupOwnerWithDepotGroupAndAssetLibraryAdmin()
+		throws Exception {
+
 		User user = UserTestUtil.addUser();
 
 		DepotEntry depotEntry = _depotEntryLocalService.addDepotEntry(
@@ -363,7 +369,7 @@ public class DepotPermissionCheckerWrapperTest {
 	}
 
 	@Test
-	public void testIsGroupOwnerWithDepotGroupAndDepotMember()
+	public void testIsGroupOwnerWithDepotGroupAndAssetLibraryMember()
 		throws Exception {
 
 		User user = UserTestUtil.addUser();
@@ -394,7 +400,9 @@ public class DepotPermissionCheckerWrapperTest {
 	}
 
 	@Test
-	public void testIsGroupOwnerWithDepotGroupAndDepotOwner() throws Exception {
+	public void testIsGroupOwnerWithDepotGroupAndAssetLibraryOwner()
+		throws Exception {
+
 		User user = UserTestUtil.addUser();
 
 		DepotEntry depotEntry = _depotEntryLocalService.addDepotEntry(
