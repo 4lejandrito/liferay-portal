@@ -1,3 +1,5 @@
+<%@ taglib uri="http://liferay.com/tld/ratings" prefix="liferay-ratings" %>
+<%@ page import="com.liferay.ratings.taglib" %>
 <%--
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
@@ -74,6 +76,17 @@ BlogsPortletInstanceConfiguration blogsPortletInstanceConfiguration = BlogsPortl
 		<div class="autofit-col">
 			<div class="ratings">
 				<liferay-ui:ratings
+					className="<%= BlogsEntry.class.getName() %>"
+					classPK="<%= entry.getEntryId() %>"
+					inTrash="<%= entry.isInTrash() %>"
+					ratingsEntry="<%= ratingsEntry %>"
+					ratingsStats="<%= ratingsStats %>"
+				/>
+			</div>
+		</div>
+		<div class="autofit-col">
+			<div class="ratings">
+				<liferay-ratings:ratings
 					className="<%= BlogsEntry.class.getName() %>"
 					classPK="<%= entry.getEntryId() %>"
 					inTrash="<%= entry.isInTrash() %>"
