@@ -52,6 +52,7 @@ public class EditRedirectEntryMVCActionCommand extends BaseMVCActionCommand {
 		long redirectEntryId = ParamUtil.getLong(
 			actionRequest, "redirectEntryId");
 		String sourceURL = ParamUtil.getString(actionRequest, "sourceURL");
+		boolean temporary = ParamUtil.getBoolean(actionRequest, "temporary");
 
 		if (redirectEntryId == 0) {
 			ThemeDisplay themeDisplay =
@@ -59,12 +60,13 @@ public class EditRedirectEntryMVCActionCommand extends BaseMVCActionCommand {
 
 			_redirectEntryLocalService.addRedirectEntry(
 				themeDisplay.getScopeGroupId(), destinationURL, sourceURL,
+				temporary,
 				ServiceContextFactory.getInstance(
 					RedirectEntry.class.getName(), actionRequest));
 		}
 		else {
 			_redirectEntryLocalService.updateRedirectEntry(
-				redirectEntryId, destinationURL, sourceURL);
+				redirectEntryId, destinationURL, sourceURL, temporary);
 		}
 	}
 
