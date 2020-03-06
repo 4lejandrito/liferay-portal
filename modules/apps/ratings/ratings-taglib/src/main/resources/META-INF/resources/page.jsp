@@ -45,13 +45,6 @@ String type = GetterUtil.getString((String)request.getAttribute("liferay-ratings
 		/>
 	</c:when>
 	<c:otherwise>
-		<liferay-ui:ratings
-			className="<%= className %>"
-			classPK="<%= classPK %>"
-			inTrash="<%= inTrash %>"
-			ratingsEntry="<%= ratingsEntry %>"
-			ratingsStats="<%= ratingsStats %>"
-			type="<%= type %>"
-		/>
+		old ratings go here
 	</c:otherwise>
 </c:choose>
