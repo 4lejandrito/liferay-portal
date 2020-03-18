@@ -15,22 +15,19 @@
 package com.liferay.redirect.service.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
-import com.liferay.petra.function.UnsafeRunnable;
-import com.liferay.portal.configuration.test.util.ConfigurationTemporarySwapper;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
-import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.redirect.model.RedirectEntry;
 import com.liferay.redirect.service.RedirectEntryLocalService;
+import com.liferay.redirect.test.util.RedirectTestUtil;
 
 import java.time.Instant;
 
 import java.util.Date;
-import java.util.Dictionary;
 
 import org.junit.Assert;
 import org.junit.ClassRule;
@@ -51,7 +48,7 @@ public class RedirectEntryLocalServiceTest {
 
 	@Test
 	public void testFetchExpiredRedirectEntry() throws Exception {
-		_withRedirectEnabled(
+		RedirectTestUtil.withRedirectEnabled(
 			() -> {
 				Instant instant = Instant.now();
 
@@ -68,7 +65,7 @@ public class RedirectEntryLocalServiceTest {
 
 	@Test
 	public void testFetchNotExpiredRedirectEntry() throws Exception {
-		_withRedirectEnabled(
+		RedirectTestUtil.withRedirectEnabled(
 			() -> {
 				Instant instant = Instant.now();
 
@@ -86,7 +83,7 @@ public class RedirectEntryLocalServiceTest {
 
 	@Test
 	public void testFetchRedirectEntry() throws Exception {
-		_withRedirectEnabled(
+		RedirectTestUtil.withRedirectEnabled(
 			() -> {
 				_redirectEntry = _redirectEntryLocalService.addRedirectEntry(
 					TestPropsValues.getGroupId(), "destinationURL", null, false,
@@ -97,23 +94,6 @@ public class RedirectEntryLocalServiceTest {
 					_redirectEntryLocalService.fetchRedirectEntry(
 						TestPropsValues.getGroupId(), "sourceURL"));
 			});
-	}
-
-	private void _withRedirectEnabled(UnsafeRunnable<Exception> unsafeRunnable)
-		throws Exception {
-
-		Dictionary<String, Object> dictionary = new HashMapDictionary<>();
-
-		dictionary.put("enabled", true);
-
-		try (ConfigurationTemporarySwapper configurationTemporarySwapper =
-				new ConfigurationTemporarySwapper(
-					"com.liferay.redirect.web.internal.configuration." +
-						"FFRedirectConfiguration",
-					dictionary)) {
-
-			unsafeRunnable.run();
-		}
 	}
 
 	@DeleteAfterTestRun
