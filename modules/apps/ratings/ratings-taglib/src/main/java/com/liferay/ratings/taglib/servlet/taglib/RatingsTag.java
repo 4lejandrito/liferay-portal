@@ -68,6 +68,10 @@ public class RatingsTag extends IncludeTag {
 		return _inTrash;
 	}
 
+	public boolean isRound() {
+		return _round;
+	}
+
 	public void setClassName(String className) {
 		_className = className;
 	}
@@ -99,6 +103,10 @@ public class RatingsTag extends IncludeTag {
 		_setRatingsStats = true;
 	}
 
+	public void setRound(boolean round) {
+		_round = round;
+	}
+
 	public void setType(String type) {
 		_type = type;
 	}
@@ -116,6 +124,7 @@ public class RatingsTag extends IncludeTag {
 		_inTrash = null;
 		_ratingsEntry = null;
 		_ratingsStats = null;
+		_round = true;
 		_setRatingsEntry = false;
 		_setRatingsStats = false;
 		_type = null;
@@ -149,6 +158,10 @@ public class RatingsTag extends IncludeTag {
 			httpServletRequest.setAttribute(
 				"liferay-ratings:ratings:data",
 				HashMapBuilder.<String, Object>put(
+					// TODO: get the score in this way
+					// https://github.com/liferay/liferay-portal/blob/61fd998a73fcdbbdee2d9ecf62d047ef28431434/portal-web/docroot/html/taglib/ui/ratings/page.jsp#L59
+					"initialAverageScore", 0.6
+				).put(
 					"className", _className
 				).put(
 					"classPK", _classPK
@@ -162,9 +175,15 @@ public class RatingsTag extends IncludeTag {
 				).put(
 					"initialPositiveVotes", positiveVotes
 				).put(
+					"initialTotalEntries", _getTotalEntries(ratingsStats)
+				).put(
 					"inTrash", _isInTrash()
 				).put(
+					"numberOfStars", _getNumberOfStars()
+				).put(
 					"positiveVotes", positiveVotes
+				).put(
+					"round", _round
 				).put(
 					"signedIn", themeDisplay.isSignedIn()
 				).put(
@@ -174,7 +193,7 @@ public class RatingsTag extends IncludeTag {
 				).put(
 					"url", _getURL(themeDisplay)
 				).put(
-					"userScore", ratingsEntry != null ? _getUserScore(ratingsEntry) : -1
+					"userScore", (ratingsEntry != null) ? _getUserScore(ratingsEntry) : -1
 				).build());
 
 			httpServletRequest.setAttribute(
@@ -191,6 +210,10 @@ public class RatingsTag extends IncludeTag {
 		catch (Exception exception) {
 			_log.error(exception, exception);
 		}
+	}
+
+	private int _getNumberOfStars() {
+		return _numberOfStars;
 	}
 
 	private RatingsEntry _getRatingsEntry(
@@ -328,15 +351,21 @@ public class RatingsTag extends IncludeTag {
 		return false;
 	}
 
+	//private static final int _DEFAULT_NUMBER_OF_STARS = GetterUtil.getInteger(PropsUtil.get(PropsKeys.RATINGS_DEFAULT_NUMBER_OF_STARS));
+	private static final int _DEFAULT_NUMBER_OF_STARS = 5;
+
 	private static final String _PAGE = "/page.jsp";
 
 	private static final Log _log = LogFactoryUtil.getLog(RatingsTag.class);
+
+	private static final int _numberOfStars = _DEFAULT_NUMBER_OF_STARS;
 
 	private String _className;
 	private long _classPK;
 	private Boolean _inTrash;
 	private RatingsEntry _ratingsEntry;
 	private RatingsStats _ratingsStats;
+	private boolean _round = true;
 	private boolean _setRatingsEntry;
 	private boolean _setRatingsStats;
 	private String _type;
