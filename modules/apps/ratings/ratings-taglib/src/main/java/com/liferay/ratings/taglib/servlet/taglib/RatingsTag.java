@@ -68,10 +68,6 @@ public class RatingsTag extends IncludeTag {
 		return _inTrash;
 	}
 
-	public boolean isRound() {
-		return _round;
-	}
-
 	public void setClassName(String className) {
 		_className = className;
 	}
@@ -103,10 +99,6 @@ public class RatingsTag extends IncludeTag {
 		_setRatingsStats = true;
 	}
 
-	public void setRound(boolean round) {
-		_round = round;
-	}
-
 	public void setType(String type) {
 		_type = type;
 	}
@@ -124,7 +116,6 @@ public class RatingsTag extends IncludeTag {
 		_inTrash = null;
 		_ratingsEntry = null;
 		_ratingsStats = null;
-		_round = true;
 		_setRatingsEntry = false;
 		_setRatingsStats = false;
 		_type = null;
@@ -182,8 +173,6 @@ public class RatingsTag extends IncludeTag {
 					"numberOfStars", _getNumberOfStars()
 				).put(
 					"positiveVotes", positiveVotes
-				).put(
-					"round", _round
 				).put(
 					"signedIn", themeDisplay.isSignedIn()
 				).put(
@@ -365,7 +354,6 @@ public class RatingsTag extends IncludeTag {
 	private Boolean _inTrash;
 	private RatingsEntry _ratingsEntry;
 	private RatingsStats _ratingsStats;
-	private boolean _round = true;
 	private boolean _setRatingsEntry;
 	private boolean _setRatingsStats;
 	private String _type;
