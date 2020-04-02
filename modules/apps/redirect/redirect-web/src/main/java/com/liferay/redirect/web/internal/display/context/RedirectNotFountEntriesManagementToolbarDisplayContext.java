@@ -18,13 +18,13 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.display.context.SearchCon
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemList;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemListBuilder;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.LabelItem;
+import com.liferay.frontend.taglib.clay.servlet.taglib.util.LabelItemListBuilder;
 import com.liferay.petra.function.UnsafeConsumer;
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
-import com.liferay.portal.kernel.portlet.PortletURLUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -60,11 +60,9 @@ public class RedirectNotFountEntriesManagementToolbarDisplayContext
 
 	@Override
 	public String getClearResultsURL() {
-		PortletURL clearResultsURL = getPortletURL();
+		PortletURL clearResultsURL = liferayPortletResponse.createRenderURL();
 
-		clearResultsURL.setParameter("keywords", StringPool.BLANK);
-		clearResultsURL.setParameter("orderByCol", getOrderByCol());
-		clearResultsURL.setParameter("orderByType", getOrderByType());
+		clearResultsURL.setParameter("navigation", "404-urls");
 
 		return clearResultsURL.toString();
 	}
@@ -103,6 +101,44 @@ public class RedirectNotFountEntriesManagementToolbarDisplayContext
 		}
 
 		return filterDropdownItems;
+	}
+
+	public List<LabelItem> getFilterLabelItems() {
+		return LabelItemListBuilder.add(
+			() -> !StringUtil.equals(getNavigation(), "active-urls"),
+			labelItem -> {
+				PortletURL removeLabelURL = getPortletURL();
+
+				removeLabelURL.setParameter(getNavigationParam(), (String)null);
+
+				labelItem.putData("removeLabelURL", removeLabelURL.toString());
+
+				labelItem.setCloseable(true);
+
+				String label = String.format(
+					"%s: %s", LanguageUtil.get(request, "type"),
+					LanguageUtil.get(request, getNavigation()));
+
+				labelItem.setLabel(label);
+			}
+		).add(
+			() -> _getFilterDate() != 0,
+			labelItem -> {
+				PortletURL removeLabelURL = getPortletURL();
+
+				removeLabelURL.setParameter("filterDate", (String)null);
+
+				labelItem.putData("removeLabelURL", removeLabelURL.toString());
+
+				labelItem.setCloseable(true);
+
+				String label = String.format(
+					"%s: %s", LanguageUtil.get(request, "date"),
+					_getFilterDateLabel(_getFilterDate()));
+
+				labelItem.setLabel(label);
+			}
+		).build();
 	}
 
 	@Override
@@ -157,6 +193,10 @@ public class RedirectNotFountEntriesManagementToolbarDisplayContext
 		return new String[] {"modified-date", "requests"};
 	}
 
+	private int _getFilterDate() {
+		return ParamUtil.getInteger(request, "filterDate");
+	}
+
 	private List<DropdownItem> _getFilterDateDropdownItems() {
 		return DropdownItemListBuilder.add(
 			_getFilterDateDropdownItemUnsafeConsumer(0)
@@ -173,30 +213,28 @@ public class RedirectNotFountEntriesManagementToolbarDisplayContext
 		_getFilterDateDropdownItemUnsafeConsumer(int days) {
 
 		return dropdownItem -> {
-			dropdownItem.setActive(
-				StringUtil.equals(
-					String.valueOf(days),
-					ParamUtil.getString(request, "filterDate", "0")));
+			dropdownItem.setActive(days == _getFilterDate());
 
-			PortletURL portletURL = PortletURLUtil.clone(
-				currentURLObj, liferayPortletResponse);
+			PortletURL portletURL = getPortletURL();
 
 			portletURL.setParameter("filterDate", String.valueOf(days));
 
 			dropdownItem.setHref(portletURL);
 
-			if (days == 0) {
-				dropdownItem.setLabel(LanguageUtil.get(request, "all"));
-			}
-			else if (days == 1) {
-				dropdownItem.setLabel(
-					LanguageUtil.format(request, "x-day", days));
-			}
-			else {
-				dropdownItem.setLabel(
-					LanguageUtil.format(request, "x-days", days));
-			}
+			dropdownItem.setLabel(_getFilterDateLabel(days));
 		};
+	}
+
+	private String _getFilterDateLabel(int days) {
+		if (days == 0) {
+			return LanguageUtil.get(request, "all");
+		}
+
+		if (days == 1) {
+			return LanguageUtil.format(request, "x-day", days);
+		}
+
+		return LanguageUtil.format(request, "x-days", days);
 	}
 
 	private final RedirectNotFoundEntryLocalService
