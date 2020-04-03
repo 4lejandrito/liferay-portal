@@ -23,7 +23,6 @@ import com.liferay.portal.kernel.backgroundtask.display.BackgroundTaskDisplay;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
-import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MapUtil;
@@ -39,6 +38,7 @@ import com.liferay.portal.search.aggregation.metrics.TopHitsAggregationResult;
 import com.liferay.portal.search.aggregation.pipeline.BucketSelectorPipelineAggregation;
 import com.liferay.portal.search.aggregation.pipeline.BucketSortPipelineAggregation;
 import com.liferay.portal.search.aggregation.pipeline.GapPolicy;
+import com.liferay.portal.search.document.Document;
 import com.liferay.portal.search.engine.adapter.search.SearchRequestExecutor;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchRequest;
 import com.liferay.portal.search.engine.adapter.search.SearchSearchResponse;
@@ -161,11 +161,6 @@ public class WorkflowMetricsSLAProcessBackgroundTaskExecutor
 		BackgroundTask backgroundTask) {
 
 		return null;
-	}
-
-	@Reference(target = ModuleServiceLifecycle.PORTAL_INITIALIZED, unbind = "-")
-	protected void setModuleServiceLifecycle(
-		ModuleServiceLifecycle moduleServiceLifecycle) {
 	}
 
 	private BooleanQuery _createBooleanQuery(
@@ -620,6 +615,9 @@ public class WorkflowMetricsSLAProcessBackgroundTaskExecutor
 	@Reference(target = "(workflow.metrics.index.entity.name=instance)")
 	private WorkflowMetricsIndexNameBuilder
 		_instanceWorkflowMetricsIndexNameBuilder;
+
+	@Reference(target = ModuleServiceLifecycle.PORTLETS_INITIALIZED)
+	private ModuleServiceLifecycle _moduleServiceLifecycle;
 
 	@Reference(target = "(workflow.metrics.index.entity.name=node)")
 	private WorkflowMetricsIndexNameBuilder
