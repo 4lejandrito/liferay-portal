@@ -190,6 +190,8 @@ public class RatingsTag extends IncludeTag {
 				).put(
 					"thumbUp", _isThumbUp(_getUserScore(ratingsEntry))
 				).put(
+					"type", _getType(httpServletRequest)
+				).put(
 					"url", _getURL(themeDisplay)
 				).put(
 					"userScore", _getUserScore(ratingsEntry)
