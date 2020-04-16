@@ -17,12 +17,7 @@
 <%@ include file="/init.jsp" %>
 
 <%
-String className = GetterUtil.getString((String)request.getAttribute("liferay-ratings:ratings:className"));
-long classPK = GetterUtil.getLong((String)request.getAttribute("liferay-ratings:ratings:classPK"));
 Map<String, Object> data = (Map<String, Object>)request.getAttribute("liferay-ratings:ratings:data");
-boolean inTrash = GetterUtil.getBoolean(request.getAttribute("liferay-ratings:ratings:inTrash"));
-RatingsEntry ratingsEntry = (RatingsEntry)request.getAttribute("liferay-ratings:ratings:ratingsEntry");
-RatingsStats ratingsStats = (RatingsStats)request.getAttribute("liferay-ratings:ratings:ratingsStats");
 String type = GetterUtil.getString((String)request.getAttribute("liferay-ratings:ratings:type"));
 %>
 
@@ -32,23 +27,16 @@ String type = GetterUtil.getString((String)request.getAttribute("liferay-ratings
 	<link href="<%= PortalUtil.getStaticResourceURL(request, application.getContextPath() + "/css/main.css") %>" rel="stylesheet" type="text/css" />
 </liferay-util:html-top>
 
-<c:choose>
-	<c:when test="<%= type.equals(RatingsType.LIKE.getValue()) %>">
-		<div>
+<div>
+	<c:choose>
+		<c:when test="<%= type.equals(RatingsType.LIKE.getValue()) %>">
 			<button class="btn btn-outline-borderless btn-outline-secondary btn-sm" disabled type="button">
 				<svg class="lexicon-icon lexicon-icon-heart">
 					<use xlink:href="<%= themeDisplay.getPathThemeImages() %>/lexicon/icons.svg#heart" />
 				</svg>
 			</button>
-
-			<react:component
-				data="<%= data %>"
-				module="js/components/RatingsLike"
-			/>
-		</div>
-	</c:when>
-	<c:when test="<%= type.equals(RatingsType.THUMBS.getValue()) %>">
-		<div>
+		</c:when>
+		<c:when test="<%= type.equals(RatingsType.THUMBS.getValue()) %>">
 			<button class="btn btn-outline-borderless btn-outline-secondary btn-sm" disabled type="button">
 				<svg class="lexicon-icon lexicon-icon-thumbs-up">
 					<use xlink:href="<%= themeDisplay.getPathThemeImages() %>/lexicon/icons.svg#thumbs-up" />
@@ -60,15 +48,8 @@ String type = GetterUtil.getString((String)request.getAttribute("liferay-ratings
 					<use xlink:href="<%= themeDisplay.getPathThemeImages() %>/lexicon/icons.svg#thumbs-down" />
 				</svg>
 			</button>
-
-			<react:component
-				data="<%= data %>"
-				module="js/components/RatingsThumbs"
-			/>
-		</div>
-	</c:when>
-	<c:when test="<%= type.equals(RatingsType.STACKED_STARS.getValue()) || type.equals(RatingsType.STARS.getValue()) %>">
-		<div>
+		</c:when>
+		<c:when test="<%= type.equals(RatingsType.STACKED_STARS.getValue()) || type.equals(RatingsType.STARS.getValue()) %>">
 			<div class="autofit-row autofit-row-center ratings ratings-stars">
 				<div class="autofit-col">
 					<div class="dropdown">
@@ -88,21 +69,11 @@ String type = GetterUtil.getString((String)request.getAttribute("liferay-ratings
 					</svg>
 				</div>
 			</div>
+		</c:when>
+	</c:choose>
 
-			<react:component
-				data="<%= data %>"
-				module="js/components/RatingsStars"
-			/>
-		</div>
-	</c:when>
-	<c:otherwise>
-		<liferay-ui:ratings
-			className="<%= className %>"
-			classPK="<%= classPK %>"
-			inTrash="<%= inTrash %>"
-			ratingsEntry="<%= ratingsEntry %>"
-			ratingsStats="<%= ratingsStats %>"
-			type="<%= type %>"
-		/>
-	</c:otherwise>
-</c:choose>
+	<react:component
+		data="<%= data %>"
+		module="js/components/Ratings"
+	/>
+</div>
