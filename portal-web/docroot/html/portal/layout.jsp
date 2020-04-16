@@ -14,8 +14,6 @@
  */
 --%>
 
-<%@ page import="com.liferay.portal.kernel.exception.NoSuchLayoutException" %>
-
 <%@ include file="/html/portal/init.jsp" %>
 
 <c:if test="<%= SessionErrors.contains(request, NoSuchLayoutException.class) %>">
