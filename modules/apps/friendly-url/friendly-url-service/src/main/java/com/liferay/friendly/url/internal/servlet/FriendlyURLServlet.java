@@ -286,8 +286,6 @@ public class FriendlyURLServlet extends HttpServlet {
 			}
 		}
 		catch (NoSuchLayoutException noSuchLayoutException) {
-			friendlyURL = null;
-
 			List<Layout> layouts = layoutLocalService.getLayouts(
 				group.getGroupId(), _private,
 				LayoutConstants.DEFAULT_PARENT_LAYOUT_ID);
