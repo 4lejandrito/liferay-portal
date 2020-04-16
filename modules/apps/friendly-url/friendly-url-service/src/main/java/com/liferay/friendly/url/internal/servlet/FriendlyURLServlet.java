@@ -302,17 +302,22 @@ public class FriendlyURLServlet extends HttpServlet {
 			redirectNotFoundEntryLocalService.addOrUpdateRedirectNotFoundEntry(
 				group, _normalizeFriendlyURL(friendlyURL));
 
-			if (Validator.isNotNull(
+			if (Validator.isNull(
 					PropsValues.LAYOUT_FRIENDLY_URL_PAGE_NOT_FOUND)) {
 
-				throw noSuchLayoutException;
+				httpServletResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+				SessionErrors.add(
+					httpServletRequest, noSuchLayoutException.getClass(),
+					noSuchLayoutException);
+
+				return new Redirect(
+					portal.getActualURL(
+						group.getGroupId(), _private, Portal.PATH_MAIN, null,
+						params, requestContext));
 			}
 
-			httpServletResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
-
-			SessionErrors.add(
-				httpServletRequest, noSuchLayoutException.getClass(),
-				noSuchLayoutException);
+			throw noSuchLayoutException;
 		}
 
 		String actualURL = portal.getActualURL(
