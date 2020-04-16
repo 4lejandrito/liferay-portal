@@ -19,7 +19,6 @@
 <%
 String className = GetterUtil.getString((String)request.getAttribute("liferay-ratings:ratings:className"));
 long classPK = GetterUtil.getLong((String)request.getAttribute("liferay-ratings:ratings:classPK"));
-Map<String, Object> data = (Map<String, Object>)request.getAttribute("liferay-ratings:ratings:data");
 boolean inTrash = GetterUtil.getBoolean(request.getAttribute("liferay-ratings:ratings:inTrash"));
 RatingsEntry ratingsEntry = (RatingsEntry)request.getAttribute("liferay-ratings:ratings:ratingsEntry");
 RatingsStats ratingsStats = (RatingsStats)request.getAttribute("liferay-ratings:ratings:ratingsStats");
@@ -40,11 +39,6 @@ String type = GetterUtil.getString((String)request.getAttribute("liferay-ratings
 				elementClasses="btn-outline-borderless btn-outline-secondary btn-sm"
 				icon="heart"
 			/>
-
-			<react:component
-				data="<%= data %>"
-				module="js/components/RatingsLike"
-			/>
 		</div>
 	</c:when>
 	<c:when test="<%= type.equals(RatingsType.THUMBS.getValue()) %>">
@@ -59,11 +53,6 @@ String type = GetterUtil.getString((String)request.getAttribute("liferay-ratings
 				disabled="<%= true %>"
 				elementClasses="btn-outline-borderless btn-outline-secondary btn-sm"
 				icon="thumbs-down"
-			/>
-
-			<react:component
-				data="<%= data %>"
-				module="js/components/RatingsThumbs"
 			/>
 		</div>
 	</c:when>
@@ -88,11 +77,6 @@ String type = GetterUtil.getString((String)request.getAttribute("liferay-ratings
 					/>
 				</div>
 			</div>
-
-			<react:component
-				data="<%= data %>"
-				module="js/components/RatingsStars"
-			/>
 		</div>
 	</c:when>
 	<c:otherwise>
