@@ -160,7 +160,6 @@ public class RatingsTag extends IncludeTag {
 			boolean thumbUp = _isThumbUp(userScore);
 
 			int totalEntries = _getTotalEntries(ratingsStats);
-			String url = _getURL(themeDisplay);
 
 			httpServletRequest.setAttribute(
 				"liferay-ratings:ratings:data",
@@ -169,7 +168,7 @@ public class RatingsTag extends IncludeTag {
 				).put(
 					"classPK", _classPK
 				).put(
-					"enabled", _isEnabled(themeDisplay, isInTrash())
+					"enabled", _isEnabled(themeDisplay, inTrash)
 				).put(
 					"initialAverageScore", _getInitialAverageScore(ratingsStats)
 				).put(
@@ -195,7 +194,7 @@ public class RatingsTag extends IncludeTag {
 				).put(
 					"type", _getType(httpServletRequest)
 				).put(
-					"url", url
+					"url", _getURL(themeDisplay)
 				).put(
 					"userScore", userScore
 				).build());
