@@ -18,7 +18,8 @@
 
 <%
 Map<String, Object> data = (Map<String, Object>)request.getAttribute("liferay-ratings:ratings:data");
-String type = GetterUtil.getString((String)request.getAttribute("liferay-ratings:ratings:type"));
+
+String type = GetterUtil.getString(data.get("type"));
 %>
 
 <liferay-util:html-top
