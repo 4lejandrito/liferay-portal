@@ -23,6 +23,7 @@ import RatingsThumbs from './RatingsThumbs';
 
 const TYPES = {
 	LIKE: 'like',
+	STACKED_STARS: 'stacked-stars',
 	STARS: 'stars',
 	THUMBS: 'thumbs',
 };
@@ -83,6 +84,7 @@ const Ratings = ({
 
 	const RatingsTypes = {
 		[TYPES.LIKE]: RatingsLike,
+		[TYPES.STACKED_STARS]: RatingsStars,
 		[TYPES.STARS]: RatingsStars,
 		[TYPES.THUMBS]: RatingsThumbs,
 	};
