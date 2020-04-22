@@ -25,6 +25,7 @@ import com.liferay.portal.template.react.renderer.ComponentDescriptor;
 import com.liferay.portal.template.react.renderer.ReactRenderer;
 import com.liferay.taglib.util.ParamAndPropertyAncestorTagImpl;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
@@ -166,7 +167,7 @@ public class ComponentTag extends ParamAndPropertyAncestorTagImpl {
 	}
 
 	private String _componentId;
-	private Map<String, Object> _data;
+	private Map<String, Object> _data = new HashMap<>();
 	private String _module;
 	private boolean _setServletContext;
 
