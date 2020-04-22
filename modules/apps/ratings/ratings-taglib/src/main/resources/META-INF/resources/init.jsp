@@ -27,6 +27,7 @@ page import="com.liferay.portal.kernel.util.PortalUtil" %><%@
 page import="com.liferay.ratings.kernel.RatingsType" %><%@
 page import="com.liferay.ratings.kernel.model.RatingsEntry" %><%@
 page import="com.liferay.ratings.kernel.model.RatingsStats" %>
+<%@ page import="java.util.Collections" %>
 
 <%@ page import="java.util.Map" %>
 
