@@ -56,6 +56,12 @@ public interface RedirectEntryService extends BaseService {
 	 */
 	public RedirectEntry addRedirectEntry(
 			long groupId, String destinationURL, Date expirationDate,
+			boolean permanent, String sourceURL, boolean updateReferences,
+			ServiceContext serviceContext)
+		throws PortalException;
+
+	public RedirectEntry addRedirectEntry(
+			long groupId, String destinationURL, Date expirationDate,
 			boolean permanent, String sourceURL, ServiceContext serviceContext)
 		throws PortalException;
 
@@ -85,6 +91,11 @@ public interface RedirectEntryService extends BaseService {
 	public RedirectEntry updateRedirectEntry(
 			long redirectEntryId, String destinationURL, Date expirationDate,
 			boolean permanent, String sourceURL)
+		throws PortalException;
+
+	public RedirectEntry updateRedirectEntry(
+			long redirectEntryId, String destinationURL, Date expirationDate,
+			boolean permanent, String sourceURL, boolean updateReferences)
 		throws PortalException;
 
 }
