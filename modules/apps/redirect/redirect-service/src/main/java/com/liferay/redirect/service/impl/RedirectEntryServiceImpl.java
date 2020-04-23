@@ -50,7 +50,8 @@ public class RedirectEntryServiceImpl extends RedirectEntryServiceBaseImpl {
 	@Override
 	public RedirectEntry addRedirectEntry(
 			long groupId, String destinationURL, Date expirationDate,
-			boolean permanent, String sourceURL, ServiceContext serviceContext)
+			boolean permanent, String sourceURL, boolean updateReferences,
+			ServiceContext serviceContext)
 		throws PortalException {
 
 		_portletResourcePermission.check(
@@ -58,7 +59,18 @@ public class RedirectEntryServiceImpl extends RedirectEntryServiceBaseImpl {
 
 		return redirectEntryLocalService.addRedirectEntry(
 			groupId, destinationURL, expirationDate, permanent, sourceURL,
-			serviceContext);
+			updateReferences, serviceContext);
+	}
+
+	@Override
+	public RedirectEntry addRedirectEntry(
+			long groupId, String destinationURL, Date expirationDate,
+			boolean permanent, String sourceURL, ServiceContext serviceContext)
+		throws PortalException {
+
+		return redirectEntryService.addRedirectEntry(
+			groupId, destinationURL, expirationDate, permanent, sourceURL,
+			false, serviceContext);
 	}
 
 	@Override
@@ -129,12 +141,23 @@ public class RedirectEntryServiceImpl extends RedirectEntryServiceBaseImpl {
 			boolean permanent, String sourceURL)
 		throws PortalException {
 
+		return redirectEntryService.updateRedirectEntry(
+			redirectEntryId, destinationURL, expirationDate, permanent,
+			sourceURL, false);
+	}
+
+	@Override
+	public RedirectEntry updateRedirectEntry(
+			long redirectEntryId, String destinationURL, Date expirationDate,
+			boolean permanent, String sourceURL, boolean updateReferences)
+		throws PortalException {
+
 		_redirectEntryModelResourcePermission.check(
 			getPermissionChecker(), redirectEntryId, ActionKeys.UPDATE);
 
 		return redirectEntryLocalService.updateRedirectEntry(
 			redirectEntryId, destinationURL, expirationDate, permanent,
-			sourceURL);
+			sourceURL, updateReferences);
 	}
 
 	@Reference(

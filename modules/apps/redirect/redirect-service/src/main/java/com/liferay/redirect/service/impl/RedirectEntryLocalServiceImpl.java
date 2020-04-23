@@ -79,7 +79,8 @@ public class RedirectEntryLocalServiceImpl
 	@Override
 	public RedirectEntry addRedirectEntry(
 			long groupId, String destinationURL, Date expirationDate,
-			boolean permanent, String sourceURL, ServiceContext serviceContext)
+			boolean permanent, String sourceURL, boolean updateReferences,
+			ServiceContext serviceContext)
 		throws PortalException {
 
 		_validate(destinationURL, sourceURL);
@@ -125,7 +126,23 @@ public class RedirectEntryLocalServiceImpl
 				redirectNotFoundEntry);
 		}
 
+		if (updateReferences) {
+			_updateReferences(groupId, destinationURL, sourceURL);
+		}
+
 		return redirectEntry;
+	}
+
+	@Indexable(type = IndexableType.REINDEX)
+	@Override
+	public RedirectEntry addRedirectEntry(
+			long groupId, String destinationURL, Date expirationDate,
+			boolean permanent, String sourceURL, ServiceContext serviceContext)
+		throws PortalException {
+
+		return redirectEntryLocalService.addRedirectEntry(
+			groupId, destinationURL, expirationDate, permanent, sourceURL,
+			false, serviceContext);
 	}
 
 	@Override
@@ -195,6 +212,18 @@ public class RedirectEntryLocalServiceImpl
 			boolean permanent, String sourceURL)
 		throws PortalException {
 
+		return redirectEntryLocalService.updateRedirectEntry(
+			redirectEntryId, destinationURL, expirationDate, permanent,
+			sourceURL, false);
+	}
+
+	@Indexable(type = IndexableType.REINDEX)
+	@Override
+	public RedirectEntry updateRedirectEntry(
+			long redirectEntryId, String destinationURL, Date expirationDate,
+			boolean permanent, String sourceURL, boolean updateReferences)
+		throws PortalException {
+
 		_validate(destinationURL, sourceURL);
 
 		RedirectEntry redirectEntry = getRedirectEntry(redirectEntryId);
@@ -213,6 +242,11 @@ public class RedirectEntryLocalServiceImpl
 		redirectEntry.setExpirationDate(expirationDate);
 		redirectEntry.setPermanent(permanent);
 		redirectEntry.setSourceURL(sourceURL);
+
+		if (updateReferences) {
+			_updateReferences(
+				redirectEntry.getGroupId(), destinationURL, sourceURL);
+		}
 
 		return redirectEntryPersistence.update(redirectEntry);
 	}
@@ -240,6 +274,21 @@ public class RedirectEntryLocalServiceImpl
 		Instant instant2 = _getDayInstant(date2);
 
 		return instant1.equals(instant2);
+	}
+
+	private void _updateReferences(
+			long groupId, String destinationURL, String sourceURL)
+		throws PortalException {
+
+		List<RedirectEntry> redirectEntriesDestinationURL =
+			getRedirectEntriesByGroupAndDestinationURL(groupId, sourceURL);
+
+		for (RedirectEntry redirectEntry : redirectEntriesDestinationURL) {
+			redirectEntryLocalService.updateRedirectEntry(
+				redirectEntry.getRedirectEntryId(), destinationURL,
+				redirectEntry.getExpirationDate(), redirectEntry.isPermanent(),
+				redirectEntry.getSourceURL());
+		}
 	}
 
 	private void _validate(String destinationURL, String sourceURL)

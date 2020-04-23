@@ -25,12 +25,10 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.redirect.model.RedirectEntry;
-import com.liferay.redirect.service.RedirectEntryLocalService;
 import com.liferay.redirect.service.RedirectEntryService;
 import com.liferay.redirect.web.internal.constants.RedirectPortletKeys;
 
 import java.util.Date;
-import java.util.List;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -65,39 +63,21 @@ public class EditRedirectEntryMVCActionCommand extends BaseMVCActionCommand {
 		Date expirationDate = _getExpirationDate(actionRequest, themeDisplay);
 		boolean permanent = ParamUtil.getBoolean(actionRequest, "permanent");
 		String sourceURL = ParamUtil.getString(actionRequest, "sourceURL");
+		boolean updateReferences = ParamUtil.getBoolean(
+			actionRequest, "updateReferences");
 
 		try {
 			if (redirectEntryId == 0) {
 				_redirectEntryService.addRedirectEntry(
 					themeDisplay.getScopeGroupId(), destinationURL,
-					expirationDate, permanent, sourceURL,
+					expirationDate, permanent, sourceURL, updateReferences,
 					ServiceContextFactory.getInstance(
 						RedirectEntry.class.getName(), actionRequest));
 			}
 			else {
 				_redirectEntryService.updateRedirectEntry(
 					redirectEntryId, destinationURL, expirationDate, permanent,
-					sourceURL);
-			}
-
-			boolean updateReferences = ParamUtil.getBoolean(
-				actionRequest, "updateReferences");
-
-			if (updateReferences) {
-				List<RedirectEntry> redirectEntriesDestinationURL =
-					_redirectEntryLocalService.
-						getRedirectEntriesByGroupAndDestinationURL(
-							themeDisplay.getScopeGroupId(), sourceURL);
-
-				for (RedirectEntry redirectEntry :
-						redirectEntriesDestinationURL) {
-
-					_redirectEntryService.updateRedirectEntry(
-						redirectEntry.getRedirectEntryId(), destinationURL,
-						redirectEntry.getExpirationDate(),
-						redirectEntry.isPermanent(),
-						redirectEntry.getSourceURL());
-				}
+					sourceURL, updateReferences);
 			}
 		}
 		catch (Exception exception) {
@@ -126,9 +106,6 @@ public class EditRedirectEntryMVCActionCommand extends BaseMVCActionCommand {
 				"yyyy-MM-dd", themeDisplay.getLocale()),
 			null);
 	}
-
-	@Reference
-	private RedirectEntryLocalService _redirectEntryLocalService;
 
 	@Reference
 	private RedirectEntryService _redirectEntryService;
