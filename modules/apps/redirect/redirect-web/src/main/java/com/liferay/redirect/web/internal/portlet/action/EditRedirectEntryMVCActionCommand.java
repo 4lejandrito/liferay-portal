@@ -14,7 +14,6 @@
 
 package com.liferay.redirect.web.internal.portlet.action;
 
-import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
@@ -32,7 +31,6 @@ import com.liferay.redirect.web.internal.constants.RedirectPortletKeys;
 import com.liferay.redirect.web.internal.util.RedirectUtil;
 
 import java.util.Date;
-import java.util.List;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -69,41 +67,23 @@ public class EditRedirectEntryMVCActionCommand extends BaseMVCActionCommand {
 		String sourceURL = ParamUtil.getString(actionRequest, "sourceURL");
 
 		try {
+			String groupBaseURL = RedirectUtil.getGroupBaseURL(themeDisplay);
+
+			boolean updateReferences = ParamUtil.getBoolean(
+				actionRequest, "updateReferences");
+
 			if (redirectEntryId == 0) {
 				_redirectEntryService.addRedirectEntry(
 					themeDisplay.getScopeGroupId(), destinationURL,
-					expirationDate, permanent, sourceURL,
+					expirationDate, groupBaseURL, permanent, sourceURL,
+					updateReferences,
 					ServiceContextFactory.getInstance(
 						RedirectEntry.class.getName(), actionRequest));
 			}
 			else {
 				_redirectEntryService.updateRedirectEntry(
-					redirectEntryId, destinationURL, expirationDate, permanent,
-					sourceURL);
-			}
-
-			boolean updateReferences = ParamUtil.getBoolean(
-				actionRequest, "updateReferences");
-
-			if (updateReferences) {
-				String completeSourceURL =
-					RedirectUtil.getGroupBaseURL(themeDisplay) +
-						StringPool.FORWARD_SLASH + sourceURL;
-
-				List<RedirectEntry> redirectEntriesDestinationURL =
-					_redirectEntryLocalService.
-						getRedirectEntriesByGroupAndDestinationURL(
-							themeDisplay.getScopeGroupId(), completeSourceURL);
-
-				for (RedirectEntry redirectEntry :
-						redirectEntriesDestinationURL) {
-
-					_redirectEntryService.updateRedirectEntry(
-						redirectEntry.getRedirectEntryId(), destinationURL,
-						redirectEntry.getExpirationDate(),
-						redirectEntry.isPermanent(),
-						redirectEntry.getSourceURL());
-				}
+					redirectEntryId, destinationURL, expirationDate,
+					groupBaseURL, permanent, sourceURL, updateReferences);
 			}
 		}
 		catch (Exception exception) {
@@ -132,9 +112,6 @@ public class EditRedirectEntryMVCActionCommand extends BaseMVCActionCommand {
 				"yyyy-MM-dd", themeDisplay.getLocale()),
 			null);
 	}
-
-	@Reference
-	private RedirectEntryLocalService _redirectEntryLocalService;
 
 	@Reference
 	private RedirectEntryService _redirectEntryService;
