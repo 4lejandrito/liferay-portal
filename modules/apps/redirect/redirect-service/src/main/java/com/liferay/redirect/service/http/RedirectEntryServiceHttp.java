@@ -53,7 +53,8 @@ public class RedirectEntryServiceHttp {
 
 	public static com.liferay.redirect.model.RedirectEntry addRedirectEntry(
 			HttpPrincipal httpPrincipal, long groupId, String destinationURL,
-			java.util.Date expirationDate, boolean permanent, String sourceURL,
+			java.util.Date expirationDate, String groupBaseURL,
+			boolean permanent, String sourceURL, boolean updateReferences,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
@@ -63,8 +64,9 @@ public class RedirectEntryServiceHttp {
 				_addRedirectEntryParameterTypes0);
 
 			MethodHandler methodHandler = new MethodHandler(
-				methodKey, groupId, destinationURL, expirationDate, permanent,
-				sourceURL, serviceContext);
+				methodKey, groupId, destinationURL, expirationDate,
+				groupBaseURL, permanent, sourceURL, updateReferences,
+				serviceContext);
 
 			Object returnObj = null;
 
@@ -260,7 +262,8 @@ public class RedirectEntryServiceHttp {
 	public static com.liferay.redirect.model.RedirectEntry updateRedirectEntry(
 			HttpPrincipal httpPrincipal, long redirectEntryId,
 			String destinationURL, java.util.Date expirationDate,
-			boolean permanent, String sourceURL)
+			String groupBaseURL, boolean permanent, String sourceURL,
+			boolean updateReferences)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		try {
@@ -270,7 +273,7 @@ public class RedirectEntryServiceHttp {
 
 			MethodHandler methodHandler = new MethodHandler(
 				methodKey, redirectEntryId, destinationURL, expirationDate,
-				permanent, sourceURL);
+				groupBaseURL, permanent, sourceURL, updateReferences);
 
 			Object returnObj = null;
 
@@ -305,8 +308,9 @@ public class RedirectEntryServiceHttp {
 
 	private static final Class<?>[] _addRedirectEntryParameterTypes0 =
 		new Class[] {
-			long.class, String.class, java.util.Date.class, boolean.class,
-			String.class, com.liferay.portal.kernel.service.ServiceContext.class
+			long.class, String.class, java.util.Date.class, String.class,
+			boolean.class, String.class, boolean.class,
+			com.liferay.portal.kernel.service.ServiceContext.class
 		};
 	private static final Class<?>[] _deleteRedirectEntryParameterTypes1 =
 		new Class[] {long.class};
@@ -321,8 +325,8 @@ public class RedirectEntryServiceHttp {
 		new Class[] {long.class};
 	private static final Class<?>[] _updateRedirectEntryParameterTypes5 =
 		new Class[] {
-			long.class, String.class, java.util.Date.class, boolean.class,
-			String.class
+			long.class, String.class, java.util.Date.class, String.class,
+			boolean.class, String.class, boolean.class
 		};
 
 }

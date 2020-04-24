@@ -80,6 +80,13 @@ public interface RedirectEntryLocalService
 			boolean permanent, String sourceURL, ServiceContext serviceContext)
 		throws PortalException;
 
+	@Indexable(type = IndexableType.REINDEX)
+	public RedirectEntry addRedirectEntry(
+			long groupId, String destinationURL, Date expirationDate,
+			String groupBaseURL, boolean permanent, String sourceURL,
+			boolean updateReferences, ServiceContext serviceContext)
+		throws PortalException;
+
 	/**
 	 * Adds the redirect entry to the database. Also notifies the appropriate model listeners.
 	 *
@@ -330,6 +337,13 @@ public interface RedirectEntryLocalService
 	public RedirectEntry updateRedirectEntry(
 			long redirectEntryId, String destinationURL, Date expirationDate,
 			boolean permanent, String sourceURL)
+		throws PortalException;
+
+	@Indexable(type = IndexableType.REINDEX)
+	public RedirectEntry updateRedirectEntry(
+			long redirectEntryId, String destinationURL, Date expirationDate,
+			String groupBaseURL, boolean permanent, String sourceURL,
+			boolean updateReferences)
 		throws PortalException;
 
 	/**
