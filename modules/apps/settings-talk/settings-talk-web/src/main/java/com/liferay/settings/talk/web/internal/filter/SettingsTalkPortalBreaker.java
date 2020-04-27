@@ -65,6 +65,6 @@ public class SettingsTalkPortalBreaker extends BasePortalFilter {
 			SettingsTalkConfiguration.class, properties);
 	}
 
-	private SettingsTalkConfiguration _settingsTalkConfiguration;
+	private volatile SettingsTalkConfiguration _settingsTalkConfiguration;
 
 }
