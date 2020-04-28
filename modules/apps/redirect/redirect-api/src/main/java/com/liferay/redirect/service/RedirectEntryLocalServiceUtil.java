@@ -66,6 +66,18 @@ public class RedirectEntryLocalServiceUtil {
 			serviceContext);
 	}
 
+	public static com.liferay.redirect.model.RedirectEntry addRedirectEntry(
+			long groupId, String destinationURL, java.util.Date expirationDate,
+			String groupBaseURL, boolean permanent, String sourceURL,
+			boolean updateReferences,
+			com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return getService().addRedirectEntry(
+			groupId, destinationURL, expirationDate, groupBaseURL, permanent,
+			sourceURL, updateReferences, serviceContext);
+	}
+
 	/**
 	 * Adds the redirect entry to the database. Also notifies the appropriate model listeners.
 	 *
@@ -320,6 +332,14 @@ public class RedirectEntryLocalServiceUtil {
 		return getService().getRedirectEntries(groupId, start, end, obc);
 	}
 
+	public static java.util.List<com.liferay.redirect.model.RedirectEntry>
+		getRedirectEntriesByGroupAndDestinationURL(
+			long groupId, String destinationURL) {
+
+		return getService().getRedirectEntriesByGroupAndDestinationURL(
+			groupId, destinationURL);
+	}
+
 	/**
 	 * Returns all the redirect entries matching the UUID and company.
 	 *
@@ -404,6 +424,17 @@ public class RedirectEntryLocalServiceUtil {
 		return getService().updateRedirectEntry(
 			redirectEntryId, destinationURL, expirationDate, permanent,
 			sourceURL);
+	}
+
+	public static com.liferay.redirect.model.RedirectEntry updateRedirectEntry(
+			long redirectEntryId, String destinationURL,
+			java.util.Date expirationDate, String groupBaseURL,
+			boolean permanent, String sourceURL, boolean updateReferences)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return getService().updateRedirectEntry(
+			redirectEntryId, destinationURL, expirationDate, groupBaseURL,
+			permanent, sourceURL, updateReferences);
 	}
 
 	/**

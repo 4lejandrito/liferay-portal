@@ -63,15 +63,16 @@ public class RedirectEntryServiceSoap {
 
 	public static com.liferay.redirect.model.RedirectEntrySoap addRedirectEntry(
 			long groupId, String destinationURL, java.util.Date expirationDate,
-			boolean permanent, String sourceURL,
+			String groupBaseURL, boolean permanent, String sourceURL,
+			boolean updateReferences,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws RemoteException {
 
 		try {
 			com.liferay.redirect.model.RedirectEntry returnValue =
 				RedirectEntryServiceUtil.addRedirectEntry(
-					groupId, destinationURL, expirationDate, permanent,
-					sourceURL, serviceContext);
+					groupId, destinationURL, expirationDate, groupBaseURL,
+					permanent, sourceURL, updateReferences, serviceContext);
 
 			return com.liferay.redirect.model.RedirectEntrySoap.toSoapModel(
 				returnValue);
@@ -160,15 +161,15 @@ public class RedirectEntryServiceSoap {
 	public static com.liferay.redirect.model.RedirectEntrySoap
 			updateRedirectEntry(
 				long redirectEntryId, String destinationURL,
-				java.util.Date expirationDate, boolean permanent,
-				String sourceURL)
+				java.util.Date expirationDate, String groupBaseURL,
+				boolean permanent, String sourceURL, boolean updateReferences)
 		throws RemoteException {
 
 		try {
 			com.liferay.redirect.model.RedirectEntry returnValue =
 				RedirectEntryServiceUtil.updateRedirectEntry(
-					redirectEntryId, destinationURL, expirationDate, permanent,
-					sourceURL);
+					redirectEntryId, destinationURL, expirationDate,
+					groupBaseURL, permanent, sourceURL, updateReferences);
 
 			return com.liferay.redirect.model.RedirectEntrySoap.toSoapModel(
 				returnValue);

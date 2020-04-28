@@ -27,8 +27,11 @@ RedirectDisplayContext redirectDisplayContext = new RedirectDisplayContext(reque
 portletDisplay.setShowBackIcon(true);
 portletDisplay.setURLBack(redirect);
 
+String saveButtonLabel = "save";
+
 if (redirectEntry == null) {
 	renderResponse.setTitle(LanguageUtil.get(request, "new-redirect"));
+	saveButtonLabel = "create";
 }
 else {
 	renderResponse.setTitle(LanguageUtil.get(request, "edit-redirect"));
@@ -36,15 +39,17 @@ else {
 %>
 
 <portlet:actionURL name="/redirect/edit_redirect_entry" var="editRedirectEntryURL" />
+<portlet:actionURL name="/redirect/check_destination_url" var="checkDestinationURL" />
 
 <liferay-frontend:edit-form
 	action="<%= editRedirectEntryURL %>"
 	method="post"
 	name="fm"
-	onSubmit='<%= "event.preventDefault(); " + renderResponse.getNamespace() + "saveRedirectEntry();" %>'
+	onSubmit="event.preventDefault();"
 >
 	<aui:input name="<%= Constants.CMD %>" type="hidden" />
 	<aui:input name="redirect" type="hidden" value="<%= redirect %>" />
+	<aui:input name="updateReferences" type="hidden" value="" />
 	<aui:input name="backURL" type="hidden" value="<%= backURL %>" />
 
 	<c:if test="<%= redirectEntry != null %>">
@@ -88,7 +93,7 @@ else {
 		%>
 
 		<div class="destination-url">
-			<aui:input autoFocus="<%= autoFocusDestination %>" name="destinationURL" value="<%= destinationURL %>" />
+			<aui:input name="destinationURL" value="<%= destinationURL %>" />
 
 			<react:component
 				data="<%= data %>"
@@ -110,24 +115,26 @@ else {
 	</liferay-frontend:edit-form-body>
 
 	<liferay-frontend:edit-form-footer>
-		<aui:button type="submit" />
-
+		<aui:button type="submit" value="<%= LanguageUtil.get(request, saveButtonLabel) %>" />
 		<aui:button href="<%= redirect %>" type="cancel" />
 	</liferay-frontend:edit-form-footer>
 </liferay-frontend:edit-form>
 
-<script>
-	function <portlet:namespace />saveRedirectEntry() {
-		var form = document.<portlet:namespace />fm;
+<div>
+	<react:component
+		data='<%=
+			HashMapBuilder.<String, Object>put(
+				"saveButtonLabel", LanguageUtil.get(request, saveButtonLabel)
+			).build() %>'
+		module="js/ChainedRedirections"
+	/>
+</div>
 
-		var destinationURL = form.elements['<portlet:namespace />destinationURL'];
-
-		if (destinationURL.value) {
-			submitForm(form);
-		}
-		else {
-			destinationURL.focus();
-			destinationURL.blur();
-		}
-	}
-</script>
+<liferay-frontend:component
+	context='<%=
+		HashMapBuilder.<String, Object>put(
+			"checkDestinationURL", checkDestinationURL
+		).build()
+	%>'
+	module="js/editRedirectEntry"
+/>

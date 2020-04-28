@@ -14,6 +14,7 @@
 
 package com.liferay.redirect.service.impl;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.search.Indexable;
@@ -21,6 +22,7 @@ import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.permission.ModelPermissions;
 import com.liferay.portal.kernel.util.DateUtil;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.redirect.configuration.RedirectConfiguration;
@@ -81,6 +83,19 @@ public class RedirectEntryLocalServiceImpl
 			boolean permanent, String sourceURL, ServiceContext serviceContext)
 		throws PortalException {
 
+		return redirectEntryLocalService.addRedirectEntry(
+			groupId, destinationURL, expirationDate, StringPool.BLANK,
+			permanent, sourceURL, false, serviceContext);
+	}
+
+	@Indexable(type = IndexableType.REINDEX)
+	@Override
+	public RedirectEntry addRedirectEntry(
+			long groupId, String destinationURL, Date expirationDate,
+			String groupBaseURL, boolean permanent, String sourceURL,
+			boolean updateReferences, ServiceContext serviceContext)
+		throws PortalException {
+
 		_validate(destinationURL, sourceURL);
 
 		if (redirectEntryPersistence.fetchByG_S(groupId, sourceURL) != null) {
@@ -124,6 +139,13 @@ public class RedirectEntryLocalServiceImpl
 				redirectNotFoundEntry);
 		}
 
+		if (updateReferences) {
+			String completeSourceURL =
+				groupBaseURL + StringPool.FORWARD_SLASH + sourceURL;
+
+			_updateReferences(groupId, destinationURL, completeSourceURL);
+		}
+
 		return redirectEntry;
 	}
 
@@ -145,11 +167,7 @@ public class RedirectEntryLocalServiceImpl
 			groupId, sourceURL);
 
 		if (redirectEntry != null) {
-			Date expirationDate = redirectEntry.getExpirationDate();
-
-			if ((expirationDate != null) &&
-				(DateUtil.compareTo(expirationDate, DateUtil.newDate()) <= 0)) {
-
+			if (_isExpired(redirectEntry)) {
 				return null;
 			}
 
@@ -178,6 +196,15 @@ public class RedirectEntryLocalServiceImpl
 	}
 
 	@Override
+	public List<RedirectEntry> getRedirectEntriesByGroupAndDestinationURL(
+		long groupId, String destinationURL) {
+
+		return ListUtil.filter(
+			redirectEntryPersistence.findByG_D(groupId, destinationURL),
+			redirectEntry -> !_isExpired(redirectEntry));
+	}
+
+	@Override
 	public int getRedirectEntriesCount(long groupId) {
 		return redirectEntryPersistence.countByGroupId(groupId);
 	}
@@ -187,6 +214,19 @@ public class RedirectEntryLocalServiceImpl
 	public RedirectEntry updateRedirectEntry(
 			long redirectEntryId, String destinationURL, Date expirationDate,
 			boolean permanent, String sourceURL)
+		throws PortalException {
+
+		return redirectEntryLocalService.updateRedirectEntry(
+			redirectEntryId, destinationURL, expirationDate, StringPool.BLANK,
+			permanent, sourceURL, false);
+	}
+
+	@Indexable(type = IndexableType.REINDEX)
+	@Override
+	public RedirectEntry updateRedirectEntry(
+			long redirectEntryId, String destinationURL, Date expirationDate,
+			String groupBaseURL, boolean permanent, String sourceURL,
+			boolean updateReferences)
 		throws PortalException {
 
 		_validate(destinationURL, sourceURL);
@@ -208,6 +248,14 @@ public class RedirectEntryLocalServiceImpl
 		redirectEntry.setPermanent(permanent);
 		redirectEntry.setSourceURL(sourceURL);
 
+		if (updateReferences) {
+			String completeSourceURL =
+				groupBaseURL + StringPool.FORWARD_SLASH + sourceURL;
+
+			_updateReferences(
+				redirectEntry.getGroupId(), destinationURL, completeSourceURL);
+		}
+
 		return redirectEntryPersistence.update(redirectEntry);
 	}
 
@@ -217,11 +265,39 @@ public class RedirectEntryLocalServiceImpl
 		return instant.truncatedTo(ChronoUnit.DAYS);
 	}
 
+	private boolean _isExpired(RedirectEntry redirectEntry) {
+		Date expirationDate = redirectEntry.getExpirationDate();
+
+		if ((expirationDate != null) &&
+			(DateUtil.compareTo(expirationDate, DateUtil.newDate()) <= 0)) {
+
+			return true;
+		}
+
+		return false;
+	}
+
 	private boolean _isInTheSameDay(Date date1, Date date2) {
 		Instant instant1 = _getDayInstant(date1);
 		Instant instant2 = _getDayInstant(date2);
 
 		return instant1.equals(instant2);
+	}
+
+	private void _updateReferences(
+			long groupId, String destinationURL, String completeSourceURL)
+		throws PortalException {
+
+		List<RedirectEntry> redirectEntriesDestinationURL =
+			getRedirectEntriesByGroupAndDestinationURL(
+				groupId, completeSourceURL);
+
+		for (RedirectEntry redirectEntry : redirectEntriesDestinationURL) {
+			redirectEntryLocalService.updateRedirectEntry(
+				redirectEntry.getRedirectEntryId(), destinationURL,
+				redirectEntry.getExpirationDate(), redirectEntry.isPermanent(),
+				redirectEntry.getSourceURL());
+		}
 	}
 
 	private void _validate(String destinationURL, String sourceURL)
