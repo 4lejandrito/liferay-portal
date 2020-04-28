@@ -94,6 +94,10 @@ public abstract class BaseStagedModelDataHandlerTestCase {
 		liveGroup = GroupTestUtil.addGroup();
 		stagingGroup = GroupTestUtil.addGroup();
 
+		stagingGroup.setLiveGroupId(liveGroup.getGroupId());
+
+		stagingGroup = GroupLocalServiceUtil.updateGroup(stagingGroup);
+
 		UserTestUtil.setUser(TestPropsValues.getUser());
 
 		ServiceContext serviceContext =
@@ -1121,9 +1125,7 @@ public abstract class BaseStagedModelDataHandlerTestCase {
 			importedRatingsEntries.isEmpty());
 	}
 
-	@DeleteAfterTestRun
 	protected Group liveGroup;
-
 	protected Element missingReferencesElement;
 	protected PortletDataContext portletDataContext;
 	protected Element rootElement;
