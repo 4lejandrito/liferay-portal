@@ -64,7 +64,7 @@ import org.osgi.service.component.annotations.Reference;
 	},
 	service = MVCResourceCommand.class
 )
-public class GetFriendlyURLEntryLocalizationsMVCResourceCommand
+public class FriendlyURLEntryLocalizationsMVCResourceCommand
 	extends BaseMVCResourceCommand {
 
 	@Override
