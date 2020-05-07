@@ -127,7 +127,7 @@ else {
 	/>
 </div>
 
-<portlet:actionURL name="/redirect/check_destination_url" var="checkDestinationURL" />
+<portlet:resourceURL id="/redirect/check_destination_url" var="checkDestinationURL" />
 
 <liferay-frontend:component
 	context='<%=

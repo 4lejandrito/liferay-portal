@@ -18,8 +18,8 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.portlet.JSONPortletResponseUtil;
-import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
-import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
+import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCResourceCommand;
+import com.liferay.portal.kernel.portlet.bridges.mvc.MVCResourceCommand;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -27,8 +27,8 @@ import com.liferay.redirect.service.RedirectEntryLocalService;
 import com.liferay.redirect.web.internal.constants.RedirectPortletKeys;
 import com.liferay.redirect.web.internal.util.RedirectUtil;
 
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -41,19 +41,20 @@ import org.osgi.service.component.annotations.Reference;
 		"javax.portlet.name=" + RedirectPortletKeys.REDIRECT,
 		"mvc.command.name=/redirect/check_destination_url"
 	},
-	service = MVCActionCommand.class
+	service = MVCResourceCommand.class
 )
-public class CheckDestinationURLMVCActionCommand extends BaseMVCActionCommand {
+public class CheckDestinationURLMVCResourceCommand
+	extends BaseMVCResourceCommand {
 
 	@Override
-	protected void doProcessAction(
-			ActionRequest actionRequest, ActionResponse actionResponse)
+	protected void doServeResource(
+			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
 		throws Exception {
 
-		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
+		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		String sourceURL = ParamUtil.getString(actionRequest, "sourceURL");
+		String sourceURL = ParamUtil.getString(resourceRequest, "sourceURL");
 
 		JSONObject jsonObject = JSONUtil.put("success", Boolean.TRUE);
 
@@ -65,10 +66,8 @@ public class CheckDestinationURLMVCActionCommand extends BaseMVCActionCommand {
 			jsonObject = JSONUtil.put("success", Boolean.FALSE);
 		}
 
-		hideDefaultSuccessMessage(actionRequest);
-
 		JSONPortletResponseUtil.writeJSON(
-			actionRequest, actionResponse, jsonObject);
+			resourceRequest, resourceResponse, jsonObject);
 	}
 
 	@Reference
