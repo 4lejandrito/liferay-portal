@@ -20,7 +20,7 @@ import com.liferay.expando.kernel.util.ExpandoConverterUtil;
 import com.liferay.info.field.InfoField;
 import com.liferay.info.field.type.InfoFieldType;
 import com.liferay.info.field.type.TextInfoFieldType;
-import com.liferay.info.item.fields.reader.LocalizedInfoItemFieldReader;
+import com.liferay.info.item.field.reader.LocalizedInfoItemFieldReader;
 import com.liferay.info.localized.InfoLocalizedValue;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
@@ -48,8 +48,8 @@ import java.util.Map;
  * @author Pavel Savinov
  * @author Jorge Ferrer
  */
-public class ExpandoInfoItemFieldReader implements
-	LocalizedInfoItemFieldReader {
+public class ExpandoInfoItemFieldReader
+	implements LocalizedInfoItemFieldReader {
 
 	public ExpandoInfoItemFieldReader(
 		String attributeName, ExpandoBridge expandoBridge) {
