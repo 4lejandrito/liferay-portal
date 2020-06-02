@@ -28,7 +28,7 @@ function normalizeFields(fields = []) {
 }
 
 function MappingPanel({
-	fields = devProps.fields,
+	fields,
 	initialSeletedField = devProps.selectedField.key,
 	selectedSource = devProps.selectedSource.label,
 }) {

@@ -17,7 +17,7 @@ import React from 'react';
 
 import MappingPanel from './MappingPanel';
 
-function SeoMapping() {
+function SeoMapping(props) {
 	return (
 		<>
 			<ClayForm.Group>
@@ -35,7 +35,7 @@ function SeoMapping() {
 							/>
 						</ClayInput.GroupItem>
 						<ClayInput.GroupItem shrink>
-							<MappingPanel />
+							<MappingPanel fields={props.fields} />
 						</ClayInput.GroupItem>
 					</ClayInput.Group>
 				</label>
