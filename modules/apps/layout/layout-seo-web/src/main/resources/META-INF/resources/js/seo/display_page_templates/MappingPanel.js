@@ -62,10 +62,9 @@ function MappingPanel({
 						</ClayForm.Group>
 						<ClayForm.Group small>
 							<label htmlFor="mappingSelectorSourceSelect">
-								{Liferay.Language.get('source')}
+								{Liferay.Language.get('field')}
 							</label>
 							<ClaySelectWithOption
-								aria-label={Liferay.Language.get('source')}
 								id="mappingSelectorSourceSelect"
 								onChange={(event) => {
 									const {value} = event.target;
