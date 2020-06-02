@@ -17,6 +17,8 @@ import ClayForm, {ClayInput, ClaySelectWithOption} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import React, {useState} from 'react';
 
+import devProps from './devData_DELETE';
+
 function normalizeFields(fields = []) {
 	return fields.map(({key, label}) => ({
 		label,
@@ -24,7 +26,11 @@ function normalizeFields(fields = []) {
 	}));
 }
 
-function MappingPanel({fields, initialSeletedField, selectedSource}) {
+function MappingPanel({
+	fields = devProps.fields,
+	initialSeletedField = devProps.selectedField.key,
+	selectedSource = devProps.selectedSource.label,
+}) {
 	const [isPanelOpen, setIsPanelOpen] = useState(false);
 	const [seletedField, setSeletedField] = useState(initialSeletedField);
 
