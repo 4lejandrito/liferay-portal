@@ -15,6 +15,7 @@
 import ClayButton from '@clayui/button';
 import ClayForm, {ClayInput, ClaySelectWithOption} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
+import {PropTypes} from 'prop-types';
 import React, {useState} from 'react';
 
 import devProps from './devData_DELETE';
@@ -80,5 +81,22 @@ function MappingPanel({
 		</div>
 	);
 }
+
+MappingPanel.propTypes = {
+	fields: PropTypes.arrayOf(
+		PropTypes.shape({
+			key: PropTypes.string,
+			label: PropTypes.string,
+		})
+	).isRequired,
+	initialSeletedField: PropTypes.shape({
+		key: PropTypes.string,
+		label: PropTypes.string,
+	}).isRequired,
+	selectedSource: PropTypes.shape({
+		key: PropTypes.string,
+		label: PropTypes.string,
+	}).isRequired,
+};
 
 export default MappingPanel;
