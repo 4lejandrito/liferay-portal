@@ -21,29 +21,31 @@ import devProps from './devData_DELETE';
 
 const noop = () => {};
 
-function normalizeFields(fields = []) {
-	return fields.map(({key, label}) => ({
-		label,
-		value: key,
-	}));
-}
+const normalizeField = ({key, label}) => ({
+	label,
+	value: key,
+});
 
 function MappingPanel({
 	fields = devProps.fields,
-	initialSeletedField = devProps.selectedField.key,
-	selectedSource = devProps.selectedSource.label,
+	initialSeletedField = devProps.selectedField,
+	initialSelectedSource = devProps.selectedSource,
 	onChange = noop,
 }) {
 	const [isPanelOpen, setIsPanelOpen] = useState(false);
-	const [seletedField, setSeletedField] = useState(initialSeletedField);
+	const [seletedFieldValue, setSeletedFieldValue] = useState(
+		normalizeField(initialSeletedField).value
+	);
 
 	const handleChangeField = (event) => {
 		const {value} = event.target;
-		setSeletedField(value);
+		setSeletedFieldValue(value);
+
+		const field = normalizeField(fields.find(({key}) => key === value));
 
 		onChange({
-			field: value,
-			source: selectedSource,
+			field,
+			source: initialSelectedSource,
 		});
 	};
 
@@ -70,7 +72,10 @@ function MappingPanel({
 							<label htmlFor="mappingSelectorSourceSelect">
 								{Liferay.Language.get('source')}
 							</label>
-							<ClayInput readOnly value={selectedSource} />
+							<ClayInput
+								readOnly
+								value={initialSelectedSource.label}
+							/>
 						</ClayForm.Group>
 						<ClayForm.Group small>
 							<label htmlFor="mappingSelectorFieldSelect">
@@ -79,8 +84,8 @@ function MappingPanel({
 							<ClaySelectWithOption
 								id="mappingSelectorFieldSelect"
 								onChange={handleChangeField}
-								options={normalizeFields(fields)}
-								value={seletedField}
+								options={fields.map(normalizeField)}
+								value={seletedFieldValue.value}
 							/>
 						</ClayForm.Group>
 					</div>
