@@ -124,6 +124,14 @@ public class JournalManagementToolbarDisplayContext
 				dropdownItem.setLabel(LanguageUtil.get(request, "move"));
 				dropdownItem.setQuickAction(true);
 			}
+		).add(
+			dropdownItem -> {
+				dropdownItem.putData("action", "exportTranslation");
+				dropdownItem.setIcon("import-export");
+				dropdownItem.setLabel(
+					LanguageUtil.get(request, "export-for-translation"));
+				dropdownItem.setQuickAction(true);
+			}
 		).build();
 	}
 
