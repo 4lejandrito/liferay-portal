@@ -354,6 +354,7 @@ public class JournalDisplayContext {
 				_themeDisplay.getPermissionChecker(), article,
 				ActionKeys.UPDATE)) {
 
+			availableActions.add("exportTranslation");
 			availableActions.add("moveEntries");
 		}
 
