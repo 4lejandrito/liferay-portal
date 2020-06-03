@@ -47,6 +47,33 @@ class ManagementToolbarDefaultEventHandler extends DefaultEventHandler {
 		});
 	}
 
+	exportTranslation() {
+		let fileEntriesSelected = [];
+
+		let entrySelectorNodes = document.querySelectorAll('.entry-selector');
+
+		if (entrySelectorNodes.length === 0) {
+			entrySelectorNodes = document.querySelectorAll(
+				'.entry-card input[type="checkbox"]'
+			);
+		}
+
+		entrySelectorNodes.forEach((node) => {
+			if (node.checked) {
+				fileEntriesSelected.push(node.value)
+			}
+		});
+
+		Liferay.componentReady(
+			this.ns('ExportForTranslationComponent')
+		).then((exportTranslationComponent) => {
+			exportTranslationComponent.open(
+				fileEntriesSelected,
+				this.folderId
+			)
+		});
+	}
+
 	handleCreationMenuMoreButtonClicked(event) {
 		event.preventDefault();
 
