@@ -68,8 +68,7 @@ class ManagementToolbarDefaultEventHandler extends DefaultEventHandler {
 			this.ns('ExportForTranslationComponent')
 		).then((exportTranslationComponent) => {
 			exportTranslationComponent.open(
-				fileEntriesSelected,
-				this.folderId
+				fileEntriesSelected
 			)
 		});
 	}
