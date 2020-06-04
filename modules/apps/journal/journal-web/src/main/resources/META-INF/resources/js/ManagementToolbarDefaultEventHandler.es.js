@@ -48,7 +48,7 @@ class ManagementToolbarDefaultEventHandler extends DefaultEventHandler {
 	}
 
 	exportTranslation() {
-		let fileEntriesSelected = [];
+		const fileEntriesSelected = [];
 
 		let entrySelectorNodes = document.querySelectorAll('.entry-selector');
 
@@ -60,17 +60,15 @@ class ManagementToolbarDefaultEventHandler extends DefaultEventHandler {
 
 		entrySelectorNodes.forEach((node) => {
 			if (node.checked) {
-				fileEntriesSelected.push(node.value)
+				fileEntriesSelected.push(node.value);
 			}
 		});
 
-		Liferay.componentReady(
-			this.ns('ExportForTranslationComponent')
-		).then((exportTranslationComponent) => {
-			exportTranslationComponent.open(
-				fileEntriesSelected
-			)
-		});
+		Liferay.componentReady(this.ns('ExportForTranslationComponent')).then(
+			(exportTranslationComponent) => {
+				exportTranslationComponent.open(fileEntriesSelected);
+			}
+		);
 	}
 
 	handleCreationMenuMoreButtonClicked(event) {
