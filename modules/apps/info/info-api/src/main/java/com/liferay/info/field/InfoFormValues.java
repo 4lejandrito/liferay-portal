@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -37,7 +38,7 @@ public class InfoFormValues {
 
 		InfoField infoField = infoFieldValue.getInfoField();
 
-		List<InfoFieldValue> infoFieldValues =
+		Collection<InfoFieldValue> infoFieldValues =
 			_infoFieldValuesByName.computeIfAbsent(
 				infoField.getName(), key -> new ArrayList<>());
 
@@ -55,11 +56,15 @@ public class InfoFormValues {
 	}
 
 	public InfoFieldValue getInfoFieldValue(String fieldName) {
-		List<InfoFieldValue> infoFieldValues = _infoFieldValuesByName.get(
+		Collection<InfoFieldValue> infoFieldValues = _infoFieldValuesByName.get(
 			fieldName);
 
-		if (!ListUtil.isEmpty(infoFieldValues)) {
-			return infoFieldValues.get(0);
+		if (infoFieldValues != null) {
+			Iterator<InfoFieldValue> iterator = infoFieldValues.iterator();
+
+			if (iterator.hasNext()) {
+				return iterator.next();
+			}
 		}
 
 		return null;
@@ -69,7 +74,7 @@ public class InfoFormValues {
 		return _infoFieldValues;
 	}
 
-	public List<InfoFieldValue> getInfoFieldValues(String fieldName) {
+	public Collection<InfoFieldValue> getInfoFieldValues(String fieldName) {
 		return _infoFieldValuesByName.getOrDefault(
 			fieldName, Collections.emptyList());
 	}
@@ -109,7 +114,7 @@ public class InfoFormValues {
 
 	private final Collection<InfoFieldValue> _infoFieldValues =
 		new LinkedHashSet<>();
-	private final Map<String, List<InfoFieldValue>> _infoFieldValuesByName =
+	private final Map<String, Collection<InfoFieldValue>> _infoFieldValuesByName =
 		new HashMap<>();
 	private InfoItemClassPKReference _infoItemClassPKReference;
 
