@@ -48,7 +48,7 @@ class ManagementToolbarDefaultEventHandler extends DefaultEventHandler {
 	}
 
 	exportTranslation() {
-		const fileEntriesSelected = [];
+		const selectedArticleIds = [];
 
 		let entrySelectorNodes = document.querySelectorAll('.entry-selector');
 
@@ -60,13 +60,13 @@ class ManagementToolbarDefaultEventHandler extends DefaultEventHandler {
 
 		entrySelectorNodes.forEach((node) => {
 			if (node.checked) {
-				fileEntriesSelected.push(node.value);
+				selectedArticleIds.push(node.value);
 			}
 		});
 
 		Liferay.componentReady(this.ns('ExportForTranslationComponent')).then(
 			(exportTranslationComponent) => {
-				exportTranslationComponent.open(fileEntriesSelected);
+				exportTranslationComponent.open(selectedArticleIds);
 			}
 		);
 	}
