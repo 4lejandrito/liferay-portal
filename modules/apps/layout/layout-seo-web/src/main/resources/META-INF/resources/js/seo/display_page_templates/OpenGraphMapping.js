@@ -15,6 +15,7 @@
 import {PropTypes} from 'prop-types';
 import React from 'react';
 
+import devData from './DELETE_DEV_DATA';
 import MappingField from './components/MappingField';
 
 function OpenGraphMapping({
@@ -64,6 +65,7 @@ OpenGraphMapping.propTypes = {
 export default function (props) {
 	return (
 		<OpenGraphMapping
+			{...devData}
 			{...props}
 			portletNamespace={`_${props.portletNamespace}_`}
 		/>
