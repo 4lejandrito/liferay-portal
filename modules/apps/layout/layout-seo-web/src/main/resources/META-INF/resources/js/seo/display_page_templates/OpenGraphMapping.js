@@ -22,6 +22,7 @@ function OpenGraphMapping({
 	fields,
 	openGraphDescription,
 	openGraphImage,
+	openGraphImageAlt,
 	openGraphTitle,
 	portletNamespace,
 	selectedSource,
@@ -45,6 +46,13 @@ function OpenGraphMapping({
 					name: `${portletNamespace}openGraphImageTitle`,
 					selectedFieldKey: openGraphImage,
 				},
+				{
+					label: Liferay.Language.get(
+						'open-graph-image-alt-description'
+					),
+					name: `${portletNamespace}openGraphImageAlt`,
+					selectedFieldKey: openGraphImageAlt,
+				},
 			]}
 			selectedSource={selectedSource}
 		/>
@@ -60,6 +68,7 @@ OpenGraphMapping.propTypes = {
 	).isRequired,
 	openGraphDescription: PropTypes.string.isRequired,
 	openGraphImage: PropTypes.string.isRequired,
+	openGraphImageAlt: PropTypes.string.isRequired,
 	openGraphTitle: PropTypes.string.isRequired,
 	selectedSource: PropTypes.shape({
 		classNameLabel: PropTypes.string,
