@@ -16,7 +16,7 @@ import {PropTypes} from 'prop-types';
 import React from 'react';
 
 import devData from './DELETE_DEV_DATA';
-import MappingField from './components/MappingField';
+import MappingInput from './components/MappingInput';
 
 function OpenGraphMapping({
 	fields,
@@ -27,7 +27,7 @@ function OpenGraphMapping({
 }) {
 	return (
 		<>
-			<MappingField
+			<MappingInput
 				fields={fields}
 				label={Liferay.Language.get('title')}
 				name={`${portletNamespace}openGraphTitle`}
@@ -37,7 +37,7 @@ function OpenGraphMapping({
 				selectedSource={selectedSource}
 			/>
 
-			<MappingField
+			<MappingInput
 				fields={fields}
 				label={Liferay.Language.get('description')}
 				name={`${portletNamespace}openGraphDescription`}
