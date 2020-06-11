@@ -196,6 +196,20 @@ public class JournalArticleInfoItemFormProviderTest {
 		Assert.assertTrue(infoField.isLocalizable());
 		Assert.assertEquals(
 			TextInfoFieldType.INSTANCE, infoField.getInfoFieldType());
+
+		infoField = iterator.next();
+
+		Assert.assertEquals("title", infoField.getName());
+		Assert.assertTrue(infoField.isLocalizable());
+		Assert.assertEquals(
+			TextInfoFieldType.INSTANCE, infoField.getInfoFieldType());
+
+		infoField = iterator.next();
+
+		Assert.assertEquals("title", infoField.getName());
+		Assert.assertTrue(infoField.isLocalizable());
+		Assert.assertEquals(
+			TextInfoFieldType.INSTANCE, infoField.getInfoFieldType());
 	}
 
 	@Test
@@ -280,6 +294,35 @@ public class JournalArticleInfoItemFormProviderTest {
 		Assert.assertEquals(
 			"Un poco más de texto",
 			secondDDMTextInfoFieldValue.getValue(LocaleUtil.SPAIN));
+
+		Assert.assertNotNull(infoFormValues.getInfoFieldValue("boolean"));
+		Assert.assertNotNull(infoFormValues.getInfoFieldValue("image"));
+		Assert.assertNotNull(infoFormValues.getInfoFieldValue("integer"));
+	}
+
+	@Test
+	public void testGetInfoFormValuesReturnsOneValuePerInfoFormField()
+		throws Exception {
+
+		InfoItemFormProvider infoItemFormProvider =
+			_infoItemServiceTracker.getInfoItemService(
+				InfoItemFormProvider.class, JournalArticle.class.getName());
+
+		JournalArticle journalArticle = _getJournalArticle();
+
+		InfoForm infoForm = infoItemFormProvider.getInfoForm(journalArticle);
+
+		List<InfoField> infoFields = infoForm.getAllInfoFields();
+
+		InfoFormValues infoFormValues = infoItemFormProvider.getInfoFormValues(
+			journalArticle);
+
+		Collection<InfoFieldValue<Object>> infoFieldValues =
+			infoFormValues.getInfoFieldValues();
+
+		Assert.assertEquals(
+			infoFieldValues.toString(), infoFields.size(),
+			infoFieldValues.size());
 	}
 
 	private JournalArticle _getJournalArticle() throws Exception {
