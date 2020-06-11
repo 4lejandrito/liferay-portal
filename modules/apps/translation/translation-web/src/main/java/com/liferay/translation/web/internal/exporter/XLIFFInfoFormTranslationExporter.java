@@ -17,6 +17,7 @@ package com.liferay.translation.web.internal.exporter;
 import com.liferay.info.field.InfoField;
 import com.liferay.info.field.InfoFieldValue;
 import com.liferay.info.field.InfoFormValues;
+import com.liferay.info.field.type.TextInfoFieldType;
 import com.liferay.info.item.InfoItemClassPKReference;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -78,7 +79,10 @@ public class XLIFFInfoFormTranslationExporter<T>
 		for (InfoFieldValue<Object> infoFieldValue : infoFieldValues) {
 			InfoField infoField = infoFieldValue.getInfoField();
 
-			if (!infoField.isLocalizable()) {
+			if (!infoField.isLocalizable() ||
+				!TextInfoFieldType.INSTANCE.equals(
+					infoField.getInfoFieldType())) {
+
 				continue;
 			}
 
