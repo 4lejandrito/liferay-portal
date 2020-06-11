@@ -24,7 +24,9 @@ import com.liferay.dynamic.data.mapping.test.util.DDMStructureTestUtil;
 import com.liferay.info.field.InfoField;
 import com.liferay.info.field.InfoFieldValue;
 import com.liferay.info.field.InfoFormValues;
+import com.liferay.info.field.type.BooleanInfoFieldType;
 import com.liferay.info.field.type.ImageInfoFieldType;
+import com.liferay.info.field.type.IntegerInfoFieldType;
 import com.liferay.info.field.type.TextInfoFieldType;
 import com.liferay.info.field.type.URLInfoFieldType;
 import com.liferay.info.form.InfoForm;
@@ -86,7 +88,7 @@ public class JournalArticleInfoItemFormProviderTest {
 
 		infoFields.sort(Comparator.comparing(InfoField::getName));
 
-		Assert.assertEquals(infoFields.toString(), 12, infoFields.size());
+		Assert.assertEquals(infoFields.toString(), 15, infoFields.size());
 
 		Iterator<InfoField> iterator = infoFields.iterator();
 
@@ -113,6 +115,13 @@ public class JournalArticleInfoItemFormProviderTest {
 
 		infoField = iterator.next();
 
+		Assert.assertEquals("boolean", infoField.getName());
+		Assert.assertFalse(infoField.isLocalizable());
+		Assert.assertEquals(
+			BooleanInfoFieldType.INSTANCE, infoField.getInfoFieldType());
+
+		infoField = iterator.next();
+
 		Assert.assertEquals("categories", infoField.getName());
 		Assert.assertFalse(infoField.isLocalizable());
 		Assert.assertEquals(
@@ -131,6 +140,20 @@ public class JournalArticleInfoItemFormProviderTest {
 		Assert.assertFalse(infoField.isLocalizable());
 		Assert.assertEquals(
 			URLInfoFieldType.INSTANCE, infoField.getInfoFieldType());
+
+		infoField = iterator.next();
+
+		Assert.assertEquals("image", infoField.getName());
+		Assert.assertTrue(infoField.isLocalizable());
+		Assert.assertEquals(
+			ImageInfoFieldType.INSTANCE, infoField.getInfoFieldType());
+
+		infoField = iterator.next();
+
+		Assert.assertEquals("integer", infoField.getName());
+		Assert.assertTrue(infoField.isLocalizable());
+		Assert.assertEquals(
+			IntegerInfoFieldType.INSTANCE, infoField.getInfoFieldType());
 
 		infoField = iterator.next();
 
@@ -200,7 +223,7 @@ public class JournalArticleInfoItemFormProviderTest {
 			infoFormValues.getInfoFieldValues();
 
 		Assert.assertEquals(
-			infoFieldValues.toString(), 9, infoFieldValues.size());
+			infoFieldValues.toString(), 12, infoFieldValues.size());
 
 		InfoFieldValue<Object> descriptionInfoFieldValue =
 			infoFormValues.getInfoFieldValue("description");
