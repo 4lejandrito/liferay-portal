@@ -20,8 +20,13 @@ import com.liferay.dynamic.data.mapping.kernel.DDMFormField;
 import com.liferay.dynamic.data.mapping.kernel.DDMFormFieldValue;
 import com.liferay.dynamic.data.mapping.kernel.DDMFormValues;
 import com.liferay.dynamic.data.mapping.kernel.Value;
+import com.liferay.dynamic.data.mapping.model.DDMFormFieldType;
 import com.liferay.info.field.InfoField;
 import com.liferay.info.field.InfoFieldValue;
+import com.liferay.info.field.type.BooleanInfoFieldType;
+import com.liferay.info.field.type.ImageInfoFieldType;
+import com.liferay.info.field.type.InfoFieldType;
+import com.liferay.info.field.type.IntegerInfoFieldType;
 import com.liferay.info.field.type.TextInfoFieldType;
 import com.liferay.info.localized.InfoLocalizedValue;
 import com.liferay.petra.string.StringPool;
@@ -36,6 +41,7 @@ import com.liferay.portal.kernel.sanitizer.SanitizerUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.text.DateFormat;
@@ -125,7 +131,8 @@ public class DDMFormValuesInfoFieldValuesProvider<T extends GroupedModel> {
 		return Optional.of(
 			new InfoFieldValue<>(
 				new InfoField(
-					TextInfoFieldType.INSTANCE,
+					_ddmFieldTypeToInfoFieldTypeMap.getOrDefault(
+						ddmFormField.getType(), TextInfoFieldType.INSTANCE),
 					InfoLocalizedValue.localize(
 						getClass(), ddmFormFieldValue.getName()),
 					ddmFormField.isLocalizable(), ddmFormFieldValue.getName()),
@@ -237,6 +244,15 @@ public class DDMFormValuesInfoFieldValuesProvider<T extends GroupedModel> {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		DDMFormValuesInfoFieldValuesProvider.class);
+
+	private final Map<String, InfoFieldType> _ddmFieldTypeToInfoFieldTypeMap =
+		HashMapBuilder.<String, InfoFieldType>put(
+			DDMFormFieldType.CHECKBOX, BooleanInfoFieldType.INSTANCE
+		).put(
+			DDMFormFieldType.IMAGE, ImageInfoFieldType.INSTANCE
+		).put(
+			DDMFormFieldType.INTEGER, IntegerInfoFieldType.INSTANCE
+		).build();
 
 	@Reference
 	private DLAppService _dlAppService;
