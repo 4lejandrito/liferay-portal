@@ -124,10 +124,10 @@ long assetClassPK = DLAssetHelperUtil.getAssetClassPK(fileEntry, fileVersion);
 					<div class="btn-group sidebar-panel">
 						<c:if test="<%= dlViewFileVersionDisplayContext.isDownloadLinkVisible() %>">
 							<c:choose>
-								<c:when test="<%= PropsValues.DL_FILE_ENTRY_CONVERSIONS_ENABLED && DocumentConversionUtil.isEnabled() %>">
+								<c:when test="<%= true %>">
 
 									<%
-									String[] conversions = DocumentConversionUtil.getConversions(fileVersion.getExtension());
+									String[] conversions = new String[] {"csv","ods","sxc","tsv", "xls", "xlsx"};
 									%>
 
 									<c:choose>
