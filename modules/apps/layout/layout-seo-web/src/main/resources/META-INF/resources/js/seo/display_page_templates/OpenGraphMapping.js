@@ -21,8 +21,8 @@ import lang from './utils/lang';
 function OpenGraphMapping({
 	fields,
 	openGraphDescription,
-	openGraphImage,
 	openGraphImageAlt,
+	openGraphImageFileEntryId,
 	openGraphTitle,
 	portletNamespace,
 	selectedSource,
@@ -41,7 +41,7 @@ function OpenGraphMapping({
 						Liferay.Language.get('title')
 					),
 					label: Liferay.Language.get('title'),
-					name: `${portletNamespace}openGraphTitle`,
+					name: `${portletNamespace}TypeSettingsProperties--mapped-openGraphTitle--`,
 					selectedFieldKey: openGraphTitle,
 				},
 				{
@@ -54,7 +54,7 @@ function OpenGraphMapping({
 						Liferay.Language.get('description')
 					),
 					label: Liferay.Language.get('description'),
-					name: `${portletNamespace}openGraphDescription`,
+					name: `${portletNamespace}TypeSettingsProperties--mapped-openGraphDescription--`,
 					selectedFieldKey: openGraphDescription,
 				},
 				{
@@ -67,8 +67,8 @@ function OpenGraphMapping({
 						Liferay.Language.get('image')
 					),
 					label: Liferay.Language.get('image'),
-					name: `${portletNamespace}openGraphImageTitle`,
-					selectedFieldKey: openGraphImage,
+					name: `${portletNamespace}TypeSettingsProperties--mapped-openGraphImageFileEntryId--`,
+					selectedFieldKey: openGraphImageFileEntryId,
 				},
 				{
 					fieldType: 'text',
@@ -82,7 +82,7 @@ function OpenGraphMapping({
 					label: Liferay.Language.get(
 						'open-graph-image-alt-description'
 					),
-					name: `${portletNamespace}openGraphImageAlt`,
+					name: `${portletNamespace}TypeSettingsProperties--mapped-openGraphImageAlt--`,
 					selectedFieldKey: openGraphImageAlt,
 				},
 			]}
@@ -99,8 +99,8 @@ OpenGraphMapping.propTypes = {
 		})
 	).isRequired,
 	openGraphDescription: PropTypes.string,
-	openGraphImage: PropTypes.string,
 	openGraphImageAlt: PropTypes.string,
+	openGraphImageFileEntryId: PropTypes.string,
 	openGraphTitle: PropTypes.string,
 	selectedSource: PropTypes.shape({
 		classNameLabel: PropTypes.string,
