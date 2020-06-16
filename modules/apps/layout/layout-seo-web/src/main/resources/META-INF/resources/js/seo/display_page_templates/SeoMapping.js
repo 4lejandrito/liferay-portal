@@ -40,7 +40,7 @@ function SeoMapping({
 						Liferay.Language.get('html-title')
 					),
 					label: Liferay.Language.get('html-title'),
-					name: `${portletNamespace}title`,
+					name: `${portletNamespace}TypeSettingsProperties--mapped-title--`,
 					selectedFieldKey: title,
 				},
 				{
@@ -53,7 +53,7 @@ function SeoMapping({
 						Liferay.Language.get('description')
 					),
 					label: Liferay.Language.get('description'),
-					name: `${portletNamespace}description`,
+					name: `${portletNamespace}TypeSettingsProperties--mapped-description--`,
 					selectedFieldKey: description,
 				},
 			]}
