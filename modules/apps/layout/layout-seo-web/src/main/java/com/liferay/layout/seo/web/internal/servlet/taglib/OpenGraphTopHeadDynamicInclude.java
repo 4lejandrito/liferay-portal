@@ -49,6 +49,7 @@ import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.servlet.taglib.BaseDynamicInclude;
 import com.liferay.portal.kernel.servlet.taglib.DynamicInclude;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.KeyValuePair;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
@@ -185,7 +186,9 @@ public class OpenGraphTopHeadDynamicInclude extends BaseDynamicInclude {
 					_getDescriptionTagValue(layoutSEOEntry, themeDisplay))
 			).ifPresent(
 				description -> printWriter.println(
-					_getOpenGraphTag("og:description", description))
+					_getOpenGraphTag(
+						"og:description",
+						HtmlUtil.unescape(HtmlUtil.stripHtml(description))))
 			);
 
 			printWriter.println(
