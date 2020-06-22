@@ -26,6 +26,7 @@ import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.dynamic.data.mapping.storage.StorageEngine;
 import com.liferay.info.display.contributor.InfoDisplayObjectProvider;
 import com.liferay.info.field.InfoFieldValue;
+import com.liferay.info.field.InfoFormValues;
 import com.liferay.info.item.InfoItemServiceTracker;
 import com.liferay.info.item.provider.InfoItemFormProvider;
 import com.liferay.layout.seo.kernel.LayoutSEOLink;
@@ -164,11 +165,8 @@ public class OpenGraphTopHeadDynamicInclude extends BaseDynamicInclude {
 				return;
 			}
 
-			InfoDisplayObjectProvider<Object> infoDisplayObjectProvider =
-				_getObjectInfoDisplayObjectProvider(httpServletRequest);
-
-			InfoItemFormProvider<Object> infoItemFormProvider =
-				_getInfoItemFormProvider(infoDisplayObjectProvider, layout);
+			InfoFormValues infoFormValues = _getInfoFormValues(
+				httpServletRequest, layout);
 
 			printWriter.println(
 				_getOpenGraphTag(
@@ -176,8 +174,8 @@ public class OpenGraphTopHeadDynamicInclude extends BaseDynamicInclude {
 					HtmlUtil.unescape(
 						HtmlUtil.stripHtml(
 							_getDescriptionTagValue(
-								infoDisplayObjectProvider, infoItemFormProvider,
-								layout, layoutSEOEntry, themeDisplay)))));
+								infoFormValues, layout, layoutSEOEntry,
+								themeDisplay)))));
 
 			printWriter.println(
 				_getOpenGraphTag("og:locale", themeDisplay.getLanguageId()));
@@ -197,8 +195,8 @@ public class OpenGraphTopHeadDynamicInclude extends BaseDynamicInclude {
 				_getOpenGraphTag(
 					"og:title",
 					_getTitleTagValue(
-						httpServletRequest, infoDisplayObjectProvider,
-						infoItemFormProvider, layout, layoutSEOEntry)));
+						httpServletRequest, infoFormValues, layout,
+						layoutSEOEntry)));
 
 			printWriter.println(_getOpenGraphTag("og:type", "website"));
 
@@ -213,8 +211,7 @@ public class OpenGraphTopHeadDynamicInclude extends BaseDynamicInclude {
 			Optional<OpenGraphImageProvider.OpenGraphImage>
 				openGraphImageOptional =
 					_openGraphImageProvider.getOpenGraphImageOptional(
-						infoDisplayObjectProvider, infoItemFormProvider, layout,
-						layoutSEOEntry, themeDisplay);
+						infoFormValues, layout, layoutSEOEntry, themeDisplay);
 
 			openGraphImageOptional.ifPresent(
 				openGraphImage -> {
@@ -299,13 +296,12 @@ public class OpenGraphTopHeadDynamicInclude extends BaseDynamicInclude {
 	}
 
 	private String _getDescriptionTagValue(
-		InfoDisplayObjectProvider<Object> infoDisplayObjectProvider,
-		InfoItemFormProvider<Object> infoItemFormProvider, Layout layout,
+		InfoFormValues infoFormValues, Layout layout,
 		LayoutSEOEntry layoutSEOEntry, ThemeDisplay themeDisplay) {
 
 		String mappedDescription = _getMappedStringValue(
-			"description", "openGraphDescription", infoDisplayObjectProvider,
-			infoItemFormProvider, layout, themeDisplay.getLocale());
+			"description", "openGraphDescription", infoFormValues, layout,
+			themeDisplay.getLocale());
 
 		if (Validator.isNotNull(mappedDescription)) {
 			return mappedDescription;
@@ -321,21 +317,26 @@ public class OpenGraphTopHeadDynamicInclude extends BaseDynamicInclude {
 		return layout.getDescription(themeDisplay.getLanguageId());
 	}
 
-	private InfoItemFormProvider<Object> _getInfoItemFormProvider(
-		InfoDisplayObjectProvider<Object> infoDisplayObjectProvider,
-		Layout layout) {
+	private InfoFormValues _getInfoFormValues(
+		HttpServletRequest httpServletRequest, Layout layout) {
 
-		if (layout.isTypeAssetDisplay() &&
-			(infoDisplayObjectProvider != null)) {
+		if (layout.isTypeAssetDisplay()) {
+			InfoDisplayObjectProvider infoDisplayObjectProvider =
+				(InfoDisplayObjectProvider<Object>)
+					httpServletRequest.getAttribute(
+						AssetDisplayPageWebKeys.INFO_DISPLAY_OBJECT_PROVIDER);
 
-			InfoItemFormProvider<Object> infoItemFormProvider =
-				_infoItemServiceTracker.getFirstInfoItemService(
-					InfoItemFormProvider.class,
-					_portal.getClassName(
-						infoDisplayObjectProvider.getClassNameId()));
+			if (infoDisplayObjectProvider != null) {
+				InfoItemFormProvider<Object> infoItemFormProvider =
+					_infoItemServiceTracker.getFirstInfoItemService(
+						InfoItemFormProvider.class,
+						_portal.getClassName(
+							infoDisplayObjectProvider.getClassNameId()));
 
-			if (infoItemFormProvider != null) {
-				return infoItemFormProvider;
+				if (infoItemFormProvider != null) {
+					return infoItemFormProvider.getInfoFormValues(
+						infoDisplayObjectProvider.getDisplayObject());
+				}
 			}
 		}
 
@@ -344,13 +345,10 @@ public class OpenGraphTopHeadDynamicInclude extends BaseDynamicInclude {
 
 	private String _getMappedStringValue(
 		String defaultFieldName, String fieldName,
-		InfoDisplayObjectProvider<Object> infoDisplayObjectProvider,
-		InfoItemFormProvider<Object> infoItemFormProvider, Layout layout,
-		Locale locale) {
+		InfoFormValues infoFormValues, Layout layout, Locale locale) {
 
 		Object mappedValueObject = _getMappedValue(
-			defaultFieldName, fieldName, infoDisplayObjectProvider,
-			infoItemFormProvider, layout, locale);
+			defaultFieldName, fieldName, infoFormValues, layout, locale);
 
 		if (mappedValueObject != null) {
 			return String.valueOf(mappedValueObject);
@@ -361,19 +359,14 @@ public class OpenGraphTopHeadDynamicInclude extends BaseDynamicInclude {
 
 	private Object _getMappedValue(
 		String defaultFieldName, String fieldName,
-		InfoDisplayObjectProvider<Object> infoDisplayObjectProvider,
-		InfoItemFormProvider<Object> infoItemFormProvider, Layout layout,
-		Locale locale) {
+		InfoFormValues infoFormValues, Layout layout, Locale locale) {
 
-		if ((infoDisplayObjectProvider == null) ||
-			(infoItemFormProvider == null)) {
-
+		if (infoFormValues == null) {
 			return null;
 		}
 
 		InfoFieldValue<Object> infoFieldValue =
-			infoItemFormProvider.getInfoFieldValue(
-				infoDisplayObjectProvider.getDisplayObject(),
+			infoFormValues.getInfoFieldValue(
 				layout.getTypeSettingsProperty(
 					"mapped-" + fieldName, defaultFieldName));
 
@@ -382,15 +375,6 @@ public class OpenGraphTopHeadDynamicInclude extends BaseDynamicInclude {
 		}
 
 		return null;
-	}
-
-	private InfoDisplayObjectProvider<Object>
-		_getObjectInfoDisplayObjectProvider(
-			HttpServletRequest httpServletRequest) {
-
-		return (InfoDisplayObjectProvider<Object>)
-			httpServletRequest.getAttribute(
-				AssetDisplayPageWebKeys.INFO_DISPLAY_OBJECT_PROVIDER);
 	}
 
 	private String _getOpenGraphTag(String property, String content) {
@@ -404,8 +388,7 @@ public class OpenGraphTopHeadDynamicInclude extends BaseDynamicInclude {
 
 	private String _getTitleTagValue(
 			HttpServletRequest httpServletRequest,
-			InfoDisplayObjectProvider<Object> infoDisplayObjectProvider,
-			InfoItemFormProvider<Object> infoItemFormProvider, Layout layout,
+			InfoFormValues infoFormValues, Layout layout,
 			LayoutSEOEntry layoutSEOEntry)
 		throws PortalException {
 
@@ -414,8 +397,8 @@ public class OpenGraphTopHeadDynamicInclude extends BaseDynamicInclude {
 				WebKeys.THEME_DISPLAY);
 
 		String mappedTitle = _getMappedStringValue(
-			"title", "openGraphTitle", infoDisplayObjectProvider,
-			infoItemFormProvider, layout, themeDisplay.getLocale());
+			"title", "openGraphTitle", infoFormValues, layout,
+			themeDisplay.getLocale());
 
 		if (Validator.isNotNull(mappedTitle)) {
 			return mappedTitle;
