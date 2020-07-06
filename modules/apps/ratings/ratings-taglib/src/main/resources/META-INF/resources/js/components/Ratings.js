@@ -19,7 +19,8 @@ import React, {useCallback} from 'react';
 import {TYPES} from '../constants';
 import {errorToast} from '../utils/toast';
 import RatingsLike from './RatingsLike';
-import RatingsStars from './RatingsStars';
+import RatingsSelectStars from './RatingsSelectStars';
+import RatingsStackedStars from './RatingsStackedStars';
 import RatingsThumbs from './RatingsThumbs';
 
 const Ratings = ({
@@ -78,8 +79,8 @@ const Ratings = ({
 
 	const RatingsTypes = {
 		[TYPES.LIKE]: RatingsLike,
-		[TYPES.STARS]: RatingsStars,
-		[TYPES.STACKED_STARS]: RatingsStars,
+		[TYPES.STARS]: RatingsSelectStars,
+		[TYPES.STACKED_STARS]: RatingsStackedStars,
 		[TYPES.THUMBS]: RatingsThumbs,
 	};
 
