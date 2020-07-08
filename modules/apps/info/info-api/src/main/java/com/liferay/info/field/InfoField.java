@@ -19,17 +19,21 @@ import com.liferay.info.localized.InfoLocalizedValue;
 import com.liferay.petra.lang.HashUtil;
 import com.liferay.petra.string.StringBundler;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 /**
  * @author Jürgen Kappler
  * @author Jorge Ferrer
  */
-public class InfoField implements InfoFieldSetEntry {
+public class InfoField<T extends InfoFieldType> implements InfoFieldSetEntry {
 
-	public static InfoField.Builder builder(InfoFieldType infoFieldType) {
-		return new InfoField.Builder(infoFieldType);
+	public static <T extends InfoFieldType> InfoField.Builder<T> builder(
+		T infoFieldType) {
+
+		return new InfoField.Builder<>(infoFieldType);
 	}
 
 	/**
@@ -37,9 +41,8 @@ public class InfoField implements InfoFieldSetEntry {
 	 */
 	@Deprecated
 	public InfoField(
-		InfoFieldType infoFieldType,
-		InfoLocalizedValue<String> labelInfoLocalizedValue, boolean localizable,
-		String name) {
+		T infoFieldType, InfoLocalizedValue<String> labelInfoLocalizedValue,
+		boolean localizable, String name) {
 
 		this(
 			builder(
@@ -58,8 +61,8 @@ public class InfoField implements InfoFieldSetEntry {
 	 */
 	@Deprecated
 	public InfoField(
-		InfoFieldType infoFieldType,
-		InfoLocalizedValue<String> labelInfoLocalizedValue, String name) {
+		T infoFieldType, InfoLocalizedValue<String> labelInfoLocalizedValue,
+		String name) {
 
 		this(
 			builder(
@@ -69,6 +72,10 @@ public class InfoField implements InfoFieldSetEntry {
 			).name(
 				name
 			));
+	}
+
+	public <V> V attr(InfoFieldType.Attribute<T, V> attr) {
+		return (V)_builder._attrs.get(attr);
 	}
 
 	@Override
@@ -142,13 +149,21 @@ public class InfoField implements InfoFieldSetEntry {
 		return sb.toString();
 	}
 
-	public static class Builder {
+	public static class Builder<T extends InfoFieldType> {
 
-		public InfoField build() {
-			return new InfoField(this);
+		public <V> InfoField.Builder<T> attr(
+			InfoFieldType.Attribute<T, V> attr, V value) {
+
+			_attrs.put(attr, value);
+
+			return this;
 		}
 
-		public InfoField.Builder labelInfoLocalizedValue(
+		public InfoField<T> build() {
+			return new InfoField<>(this);
+		}
+
+		public InfoField.Builder<T> labelInfoLocalizedValue(
 			InfoLocalizedValue<String> labelInfoLocalizedValue) {
 
 			_labelInfoLocalizedValue = labelInfoLocalizedValue;
@@ -156,33 +171,35 @@ public class InfoField implements InfoFieldSetEntry {
 			return this;
 		}
 
-		public InfoField.Builder localizable(boolean localizable) {
+		public InfoField.Builder<T> localizable(boolean localizable) {
 			_localizable = localizable;
 
 			return this;
 		}
 
-		public InfoField.Builder name(String name) {
+		public InfoField.Builder<T> name(String name) {
 			_name = name;
 
 			return this;
 		}
 
-		private Builder(InfoFieldType infoFieldType) {
+		private Builder(T infoFieldType) {
 			_infoFieldType = infoFieldType;
 		}
 
-		private final InfoFieldType _infoFieldType;
+		private final Map<InfoFieldType.Attribute<T, ?>, Object> _attrs =
+			new HashMap<>();
+		private final T _infoFieldType;
 		private InfoLocalizedValue<String> _labelInfoLocalizedValue;
 		private boolean _localizable;
 		private String _name;
 
 	}
 
-	private InfoField(InfoField.Builder builder) {
+	private InfoField(InfoField.Builder<T> builder) {
 		_builder = builder;
 	}
 
-	private Builder _builder;
+	private final Builder<T> _builder;
 
 }
