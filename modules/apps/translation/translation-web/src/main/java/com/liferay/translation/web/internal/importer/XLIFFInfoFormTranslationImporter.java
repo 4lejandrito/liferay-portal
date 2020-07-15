@@ -28,6 +28,7 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.translation.exception.XLIFFFileException;
 import com.liferay.translation.importer.TranslationInfoItemFieldValuesImporter;
 
+import java.io.CharConversionException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -46,6 +47,8 @@ import net.sf.okapi.lib.xliff2.document.XLIFFDocument;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+
+import org.xml.sax.SAXParseException;
 
 /**
  * @author Alejandro Tardín
@@ -116,6 +119,13 @@ public class XLIFFInfoFormTranslationImporter
 				invalidParameterException);
 		}
 		catch (XLIFFException xliffException) {
+			if (xliffException.getCause() instanceof CharConversionException ||
+				xliffException.getCause() instanceof SAXParseException) {
+
+				throw new XLIFFFileException.MustHaveCorrectEncoding(
+					xliffException);
+			}
+
 			throw new XLIFFFileException.MustBeValid(xliffException);
 		}
 	}
