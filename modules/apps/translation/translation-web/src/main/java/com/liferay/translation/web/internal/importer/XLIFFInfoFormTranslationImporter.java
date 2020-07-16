@@ -14,11 +14,16 @@
 
 package com.liferay.translation.web.internal.importer;
 
+import com.liferay.info.exception.NoSuchInfoItemException;
 import com.liferay.info.field.InfoField;
+import com.liferay.info.field.InfoFieldSetEntry;
 import com.liferay.info.field.InfoFieldValue;
-import com.liferay.info.field.type.TextInfoFieldType;
+import com.liferay.info.form.InfoForm;
 import com.liferay.info.item.InfoItemClassPKReference;
 import com.liferay.info.item.InfoItemFieldValues;
+import com.liferay.info.item.InfoItemServiceTracker;
+import com.liferay.info.item.provider.InfoItemFormProvider;
+import com.liferay.info.item.provider.InfoItemObjectProvider;
 import com.liferay.info.localized.InfoLocalizedValue;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.language.Language;
@@ -85,7 +90,7 @@ public class XLIFFInfoFormTranslationImporter
 	public InfoItemFieldValues importInfoItemFieldValues(
 			long groupId, InfoItemClassPKReference infoItemClassPKReference,
 			InputStream inputStream)
-		throws IOException, XLIFFFileException {
+		throws IOException, NoSuchInfoItemException, XLIFFFileException {
 
 		try (AutoXLIFFFilter filter = new AutoXLIFFFilter()) {
 			File tempFile = FileUtil.createTempFile(inputStream);
@@ -160,10 +165,45 @@ public class XLIFFInfoFormTranslationImporter
 		return Optional.of(function.apply(attribute.getValue()));
 	}
 
+	private Optional<InfoField> _getInfoFieldOptional(
+		InfoForm infoForm, String name) {
+
+		InfoFieldSetEntry infoFieldSetEntry = infoForm.getInfoFieldSetEntry(
+			name);
+
+		if ((infoFieldSetEntry != null) &&
+			(infoFieldSetEntry instanceof InfoField)) {
+
+			return Optional.of((InfoField)infoFieldSetEntry);
+		}
+
+		return Optional.empty();
+	}
+
+	private InfoForm _getInfoForm(
+			InfoItemClassPKReference infoItemClassPKReference)
+		throws NoSuchInfoItemException {
+
+		InfoItemFormProvider<Object> infoItemFormProvider =
+			_infoItemServiceTracker.getFirstInfoItemService(
+				InfoItemFormProvider.class,
+				infoItemClassPKReference.getClassName());
+
+		InfoItemObjectProvider<Object> infoItemObjectProvider =
+			_infoItemServiceTracker.getFirstInfoItemService(
+				InfoItemObjectProvider.class,
+				infoItemClassPKReference.getClassName());
+
+		Object infoItem = infoItemObjectProvider.getInfoItem(
+			infoItemClassPKReference.getClassPK());
+
+		return infoItemFormProvider.getInfoForm(infoItem);
+	}
+
 	private InfoItemFieldValues _getInfoItemFieldValuesXLIFFv12(
 			List<Event> events,
 			InfoItemClassPKReference infoItemClassPKReference)
-		throws XLIFFFileException {
+		throws NoSuchInfoItemException, XLIFFFileException {
 
 		_validateDocumentPartVersion(events);
 
@@ -173,6 +213,8 @@ public class XLIFFInfoFormTranslationImporter
 			infoItemClassPKReference, startSubDocument);
 
 		Locale targetLocale = _getTargetLocale(startSubDocument);
+
+		InfoForm infoForm = _getInfoForm(infoItemClassPKReference);
 
 		return InfoItemFieldValues.builder(
 		).<XLIFFFileException>infoFieldValue(
@@ -191,22 +233,19 @@ public class XLIFFInfoFormTranslationImporter
 
 							TextFragment firstContent = value.getFirstContent();
 
-							InfoField<TextInfoFieldType> infoField =
-								new InfoField<>(
-									TextInfoFieldType.INSTANCE,
-									InfoLocalizedValue.<String>builder(
-									).value(
-										targetLocale, textUnit.getId()
-									).build(),
-									true, textUnit.getId());
+							Optional<InfoField> infoField =
+								_getInfoFieldOptional(
+									infoForm, textUnit.getId());
 
-							consumer.accept(
-								new InfoFieldValue<>(
-									infoField,
-									InfoLocalizedValue.builder(
-									).value(
-										targetLocale, firstContent.getText()
-									).build()));
+							if (infoField.isPresent()) {
+								consumer.accept(
+									new InfoFieldValue<>(
+										infoField.get(),
+										InfoLocalizedValue.builder(
+										).value(
+											targetLocale, firstContent.getText()
+										).build()));
+							}
 						}
 					}
 				}
@@ -219,7 +258,7 @@ public class XLIFFInfoFormTranslationImporter
 	private InfoItemFieldValues _getInfoItemFieldValuesXLIFFv20(
 			long groupId, InfoItemClassPKReference infoItemClassPKReference,
 			File tempFile)
-		throws XLIFFFileException {
+		throws NoSuchInfoItemException, XLIFFFileException {
 
 		XLIFFDocument xliffDocument = new XLIFFDocument();
 
@@ -231,6 +270,8 @@ public class XLIFFInfoFormTranslationImporter
 
 		Locale targetLocale = LocaleUtil.fromLanguageId(
 			startXliffData.getTargetLanguage(), true, false);
+
+		InfoForm infoForm = _getInfoForm(infoItemClassPKReference);
 
 		return InfoItemFieldValues.builder(
 		).<XLIFFFileException>infoFieldValue(
@@ -250,21 +291,18 @@ public class XLIFFInfoFormTranslationImporter
 							"There is no translation target");
 					}
 
-					InfoField<TextInfoFieldType> infoField = new InfoField<>(
-						TextInfoFieldType.INSTANCE,
-						InfoLocalizedValue.<String>builder(
-						).value(
-							targetLocale, unit.getId()
-						).build(),
-						true, unit.getId());
+					Optional<InfoField> infoField = _getInfoFieldOptional(
+						infoForm, unit.getId());
 
-					consumer.accept(
-						new InfoFieldValue<>(
-							infoField,
-							InfoLocalizedValue.builder(
-							).value(
-								targetLocale, value.getPlainText()
-							).build()));
+					if (infoField.isPresent()) {
+						consumer.accept(
+							new InfoFieldValue<>(
+								infoField.get(),
+								InfoLocalizedValue.builder(
+								).value(
+									targetLocale, value.getPlainText()
+								).build()));
+					}
 				}
 			}
 		).infoItemClassPKReference(
@@ -482,6 +520,9 @@ public class XLIFFInfoFormTranslationImporter
 
 	private static final LocaleId _defaultLocaleId = LocaleId.fromString(
 		LocaleUtil.toLanguageId(LocaleUtil.getDefault()));
+
+	@Reference
+	private InfoItemServiceTracker _infoItemServiceTracker;
 
 	@Reference
 	private Language _language;
