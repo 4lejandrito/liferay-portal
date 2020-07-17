@@ -15,6 +15,7 @@
 package com.liferay.translation.test.util;
 
 import com.liferay.portal.kernel.util.FileUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -23,6 +24,16 @@ import java.io.InputStream;
  * @author Alejandro Tardín
  */
 public class TranslationTestUtil {
+
+	public static ByteArrayInputStream getChangeIdByteArrayInputStream(
+			String fileName, String id, long resourcePrimKey)
+		throws Exception {
+
+		String fileContent = StringUtil.replace(
+			readFileToString(fileName), id, String.valueOf(resourcePrimKey));
+
+		return new ByteArrayInputStream(fileContent.getBytes());
+	}
 
 	public static InputStream readFileToInputStream(String fileName)
 		throws Exception {

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2"  version="1.2">
-	<file original="com.liferay.journal.model.JournalArticle:122"
+	<file original="com.liferay.journal.model.JournalArticle:$ARTICLE_ID"
 		  source-language="en-US" target-language="ja-JP"
 		  tool="Rainbow" datatype="photoshop">
 		<header>
