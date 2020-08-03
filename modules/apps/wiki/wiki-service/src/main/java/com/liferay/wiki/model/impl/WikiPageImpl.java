@@ -324,8 +324,18 @@ public class WikiPageImpl extends WikiPageBaseImpl {
 	@Override
 	public List<WikiPage> getViewableChildPages() {
 		try {
-			return WikiPageServiceUtil.getChildren(
-				getGroupId(), getNodeId(), true, getTitle());
+			List<WikiPage> viewableChildPages = new ArrayList<>();
+
+			for (WikiPage curChildPage :
+					WikiPageServiceUtil.getChildren(
+						getGroupId(), getNodeId(), true, getTitle())) {
+
+				if (curChildPage.getRedirectPage() == null) {
+					viewableChildPages.add(curChildPage);
+				}
+			}
+
+			return viewableChildPages;
 		}
 		catch (Exception exception) {
 			_log.error(exception, exception);
