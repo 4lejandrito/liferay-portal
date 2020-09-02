@@ -37,7 +37,8 @@ public class LayoutFriendlyURLSeparatorComposite
 
 		super(
 			layoutFriendlyURLComposite.getLayout(),
-			layoutFriendlyURLComposite.getFriendlyURL());
+			layoutFriendlyURLComposite.getFriendlyURL(),
+			layoutFriendlyURLComposite.getAlternateURLs());
 
 		_urlSeparator = urlSeparator;
 	}

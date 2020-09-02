@@ -14,6 +14,9 @@
 
 package com.liferay.portal.kernel.model;
 
+import java.util.Locale;
+import java.util.Map;
+
 /**
  * @author Sergio González
  */
@@ -24,12 +27,28 @@ public class LayoutFriendlyURLComposite {
 		_friendlyURL = friendlyURL;
 	}
 
+	public LayoutFriendlyURLComposite(
+		Layout layout, String friendlyURL, Map<Locale, String> alternateURLs) {
+
+		_layout = layout;
+		_friendlyURL = friendlyURL;
+		_alternateURLs = alternateURLs;
+	}
+
+	public Map<Locale, String> getAlternateURLs() {
+		return _alternateURLs;
+	}
+
 	public String getFriendlyURL() {
 		return _friendlyURL;
 	}
 
 	public Layout getLayout() {
 		return _layout;
+	}
+
+	public void setAlternateURLs(Map<Locale, String> alternateURLs) {
+		_alternateURLs = alternateURLs;
 	}
 
 	public void setFriendlyURL(String friendlyURL) {
@@ -40,6 +59,7 @@ public class LayoutFriendlyURLComposite {
 		_layout = layout;
 	}
 
+	private Map<Locale, String> _alternateURLs;
 	private String _friendlyURL;
 	private Layout _layout;
 
