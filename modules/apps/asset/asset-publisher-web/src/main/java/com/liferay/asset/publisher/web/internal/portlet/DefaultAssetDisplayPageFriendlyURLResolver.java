@@ -67,6 +67,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.portlet.WindowState;
 
@@ -164,12 +167,29 @@ public class DefaultAssetDisplayPageFriendlyURLResolver
 		Layout layout = _layoutLocalService.getLayoutByUuidAndGroupId(
 			journalArticle.getLayoutUuid(), groupId, privateLayout);
 
-		return new LayoutFriendlyURLComposite(layout, friendlyURL);
+		return new LayoutFriendlyURLComposite(
+			layout, friendlyURL, _getAlternateFriendlyURLs(journalArticle));
 	}
 
 	@Override
 	public String getURLSeparator() {
 		return JournalArticleConstants.CANONICAL_URL_SEPARATOR;
+	}
+
+	private Map<Locale, String> _getAlternateFriendlyURLs(
+			JournalArticle journalArticle)
+		throws PortalException {
+
+		Map<Locale, String> friendlyURLMap = journalArticle.getFriendlyURLMap();
+
+		Set<Map.Entry<Locale, String>> entries = friendlyURLMap.entrySet();
+
+		Stream<Map.Entry<Locale, String>> stream = entries.stream();
+
+		return stream.collect(
+			Collectors.toMap(
+				Map.Entry::getKey,
+				entry -> getURLSeparator() + entry.getValue()));
 	}
 
 	private String _getBasicLayoutURL(
