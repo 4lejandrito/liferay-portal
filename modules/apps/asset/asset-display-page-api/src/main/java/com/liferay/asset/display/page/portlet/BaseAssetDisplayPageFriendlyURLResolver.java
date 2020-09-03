@@ -43,6 +43,7 @@ import com.liferay.layout.page.template.service.LayoutPageTemplateEntryService;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Layout;
@@ -60,7 +61,10 @@ import com.liferay.portal.kernel.util.WebKeys;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -183,7 +187,9 @@ public abstract class BaseAssetDisplayPageFriendlyURLResolver
 			}
 		}
 
-		return new LayoutFriendlyURLComposite(layout, friendlyURL);
+		return new LayoutFriendlyURLComposite(
+			layout, friendlyURL,
+			_getAlternateFriendlyURLs(layout, layoutDisplayPageObjectProvider));
 	}
 
 	@Reference
@@ -216,6 +222,23 @@ public abstract class BaseAssetDisplayPageFriendlyURLResolver
 
 	@Reference
 	protected Portal portal;
+
+	private Map<Locale, String> _getAlternateFriendlyURLs(
+		Layout layout,
+		LayoutDisplayPageObjectProvider<?> layoutDisplayPageObjectProvider) {
+
+		Set<Locale> locales = LanguageUtil.getAvailableLocales(
+			layout.getGroupId());
+
+		Stream<Locale> stream = locales.stream();
+
+		return stream.collect(
+			Collectors.toMap(
+				locale -> locale,
+				locale ->
+					getURLSeparator() +
+						layoutDisplayPageObjectProvider.getURLTitle(locale)));
+	}
 
 	private AssetEntry _getAssetEntry(
 		LayoutDisplayPageObjectProvider<?> layoutDisplayPageObjectProvider) {
