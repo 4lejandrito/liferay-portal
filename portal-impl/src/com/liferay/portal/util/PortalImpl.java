@@ -2872,39 +2872,10 @@ public class PortalImpl implements Portal {
 		throws PortalException {
 
 		LayoutFriendlyURLSeparatorComposite
-			layoutFriendlyURLSeparatorComposite = null;
-
-		if (friendlyURL != null) {
-			HttpServletRequest httpServletRequest =
-				(HttpServletRequest)requestContext.get("request");
-
-			long companyId = PortalInstances.getCompanyId(httpServletRequest);
-
-			for (String urlSeparator :
-					FriendlyURLResolverRegistryUtil.getURLSeparators()) {
-
-				if (!friendlyURL.startsWith(urlSeparator)) {
-					continue;
-				}
-
-				try {
-					FriendlyURLResolver friendlyURLResolver =
-						FriendlyURLResolverRegistryUtil.getFriendlyURLResolver(
-							urlSeparator);
-
-					layoutFriendlyURLSeparatorComposite =
-						friendlyURLResolver.
-							getLayoutFriendlyURLSeparatorComposite(
-								companyId, groupId, privateLayout, friendlyURL,
-								params, requestContext);
-
-					break;
-				}
-				catch (Exception exception) {
-					throw new NoSuchLayoutException(exception);
-				}
-			}
-		}
+			layoutFriendlyURLSeparatorComposite =
+				_getLayoutFriendlyURLSeparatorComposite(
+					groupId, privateLayout, friendlyURL, params,
+					requestContext);
 
 		if (layoutFriendlyURLSeparatorComposite != null) {
 			return layoutFriendlyURLSeparatorComposite;
@@ -8296,7 +8267,7 @@ public class PortalImpl implements Portal {
 
 		LayoutFriendlyURLSeparatorComposite
 			layoutFriendlyURLSeparatorComposite =
-				getLayoutFriendlyURLSeparatorComposite(
+				_getLayoutFriendlyURLSeparatorComposite(
 					layout.getGroupId(), layout.isPrivateLayout(),
 					canonicalURLSuffix, httpServletRequest.getParameterMap(),
 					HashMapBuilder.<String, Object>put(
@@ -8530,6 +8501,51 @@ public class PortalImpl implements Portal {
 		sb.append(group.getFriendlyURL());
 
 		return sb.toString();
+	}
+
+	private LayoutFriendlyURLSeparatorComposite
+			_getLayoutFriendlyURLSeparatorComposite(
+				long groupId, boolean privateLayout, String friendlyURL,
+				Map<String, String[]> params,
+				Map<String, Object> requestContext)
+		throws PortalException {
+
+		LayoutFriendlyURLSeparatorComposite
+			layoutFriendlyURLSeparatorComposite = null;
+
+		if (friendlyURL != null) {
+			HttpServletRequest httpServletRequest =
+				(HttpServletRequest)requestContext.get("request");
+
+			long companyId = PortalInstances.getCompanyId(httpServletRequest);
+
+			for (String urlSeparator :
+					FriendlyURLResolverRegistryUtil.getURLSeparators()) {
+
+				if (!friendlyURL.startsWith(urlSeparator)) {
+					continue;
+				}
+
+				try {
+					FriendlyURLResolver friendlyURLResolver =
+						FriendlyURLResolverRegistryUtil.getFriendlyURLResolver(
+							urlSeparator);
+
+					layoutFriendlyURLSeparatorComposite =
+						friendlyURLResolver.
+							getLayoutFriendlyURLSeparatorComposite(
+								companyId, groupId, privateLayout, friendlyURL,
+								params, requestContext);
+
+					break;
+				}
+				catch (Exception exception) {
+					throw new NoSuchLayoutException(exception);
+				}
+			}
+		}
+
+		return layoutFriendlyURLSeparatorComposite;
 	}
 
 	private String _getPortalURL(
