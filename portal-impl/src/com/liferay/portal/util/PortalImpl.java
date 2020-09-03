@@ -8292,9 +8292,28 @@ public class PortalImpl implements Portal {
 			}
 		}
 
+		HttpServletRequest httpServletRequest = themeDisplay.getRequest();
+
+		LayoutFriendlyURLSeparatorComposite
+			layoutFriendlyURLSeparatorComposite =
+				getLayoutFriendlyURLSeparatorComposite(
+					layout.getGroupId(), layout.isPrivateLayout(),
+					canonicalURLSuffix, httpServletRequest.getParameterMap(),
+					HashMapBuilder.<String, Object>put(
+						"request", httpServletRequest
+					).build());
+
+		if (layoutFriendlyURLSeparatorComposite != null) {
+			canonicalURLSuffix =
+				layoutFriendlyURLSeparatorComposite.getFriendlyURL();
+			alternateURLs =
+				layoutFriendlyURLSeparatorComposite.getAlternateURLs();
+		}
+
 		for (Locale locale : availableLocales) {
 			String alternateURL = canonicalURL;
-			String alternateURLSuffix = canonicalURLSuffix;
+			String alternateURLSuffix = alternateURLs.getOrDefault(
+				locale, canonicalURLSuffix);
 			String languageId = LocaleUtil.toLanguageId(locale);
 
 			if (replaceFriendlyURL) {
