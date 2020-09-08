@@ -347,7 +347,13 @@ function MappingSelector({fieldType, mappedItem, onMappingSelect}) {
 	);
 }
 
-function MappingFieldSelect({fieldSets, fieldType, onValueSelect, value}) {
+export function MappingFieldSelect({
+	fieldSets,
+	fieldType,
+	onValueSelect,
+	value,
+	hasUnmaped = true,
+}) {
 	const mappingSelectorFieldSelectId = useId();
 
 	const hasWarnings = fieldSets && fieldSets.length === 0;
@@ -370,10 +376,12 @@ function MappingFieldSelect({fieldSets, fieldType, onValueSelect, value}) {
 			>
 				{fieldSets && fieldSets.length && (
 					<>
-						<ClaySelect.Option
-							label={UNMAPPED_OPTION.label}
-							value={UNMAPPED_OPTION.value}
-						/>
+						{hasUnmaped && (
+							<ClaySelect.Option
+								label={UNMAPPED_OPTION.label}
+								value={UNMAPPED_OPTION.value}
+							/>
+						)}
 
 						{fieldSets.map((fieldSet, index) => {
 							const Wrapper = fieldSet.label

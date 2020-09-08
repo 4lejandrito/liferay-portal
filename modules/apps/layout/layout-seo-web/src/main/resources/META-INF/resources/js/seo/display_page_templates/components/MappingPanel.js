@@ -18,6 +18,7 @@ import ClayIcon from '@clayui/icon';
 import classNames from 'classnames';
 import {PropTypes} from 'prop-types';
 import React, {useRef, useState} from 'react';
+import {MappingFieldSelect} from 'layout-content-page-editor-web';
 
 import useOnClickOutside from '../hooks/useOnClickOutside';
 
@@ -51,6 +52,8 @@ function MappingPanel({
 			source,
 		});
 	};
+
+	console.log({MappingFieldSelect});
 
 	return (
 		<div className="dpt-mapping-panel-wrapper" ref={wrapperRef}>

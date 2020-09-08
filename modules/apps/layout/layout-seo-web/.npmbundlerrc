@@ -1,0 +1,9 @@
+{
+	"config": {
+		"imports": {
+			"layout-content-page-editor-web": {
+				"/": ">=@2.0.55"
+			}
+		}
+	}
+}
