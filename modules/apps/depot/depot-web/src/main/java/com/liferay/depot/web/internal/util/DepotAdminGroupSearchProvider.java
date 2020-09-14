@@ -25,7 +25,9 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
 import com.liferay.portal.kernel.service.GroupService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.LinkedHashMapBuilder;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -58,14 +60,16 @@ public class DepotAdminGroupSearchProvider {
 				portletRequest, portletURL);
 		}
 
-		return _getGroupSearch(portletRequest, portletURL);
+		return _getGroupSearch(
+			portletRequest, portletURL,
+			groupItemSelectorCriterion.isIncludeAllVisibleGroups());
 	}
 
 	public GroupSearch getGroupSearch(
 			PortletRequest portletRequest, PortletURL portletURL)
 		throws PortalException {
 
-		return _getGroupSearch(portletRequest, portletURL);
+		return _getGroupSearch(portletRequest, portletURL, false);
 	}
 
 	@Reference(target = ModuleServiceLifecycle.PORTAL_INITIALIZED, unbind = "-")
@@ -113,7 +117,8 @@ public class DepotAdminGroupSearchProvider {
 	}
 
 	private GroupSearch _getGroupSearch(
-			PortletRequest portletRequest, PortletURL portletURL)
+			PortletRequest portletRequest, PortletURL portletURL,
+			boolean includeAllVisibleGroups)
 		throws PortalException {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
@@ -123,7 +128,7 @@ public class DepotAdminGroupSearchProvider {
 
 		LinkedHashMap<String, Object> groupParams =
 			LinkedHashMapBuilder.<String, Object>put(
-				"site", Boolean.FALSE
+				"site", includeAllVisibleGroups
 			).build();
 
 		GroupSearch groupSearch = new GroupSearch(portletRequest, portletURL);
@@ -139,29 +144,36 @@ public class DepotAdminGroupSearchProvider {
 
 		List<Group> results = null;
 
+		long[] classNameIds = _classNameIds;
+
+		if (includeAllVisibleGroups) {
+			classNameIds = ArrayUtil.append(
+				classNameIds, _portal.getClassNameId(Group.class));
+		}
+
 		if (searchTerms.hasSearchTerms()) {
 			int total = _groupService.searchCount(
-				company.getCompanyId(), _classNameIds,
-				searchTerms.getKeywords(), groupParams);
+				company.getCompanyId(), classNameIds, searchTerms.getKeywords(),
+				groupParams);
 
 			groupSearch.setTotal(total);
 
 			results = _groupService.search(
-				company.getCompanyId(), _classNameIds,
-				searchTerms.getKeywords(), groupParams, groupSearch.getStart(),
-				groupSearch.getEnd(), groupSearch.getOrderByComparator());
+				company.getCompanyId(), classNameIds, searchTerms.getKeywords(),
+				groupParams, groupSearch.getStart(), groupSearch.getEnd(),
+				groupSearch.getOrderByComparator());
 		}
 		else {
 			int total = _groupService.searchCount(
-				company.getCompanyId(), _classNameIds,
-				searchTerms.getKeywords(), groupParams);
+				company.getCompanyId(), classNameIds, searchTerms.getKeywords(),
+				groupParams);
 
 			groupSearch.setTotal(total);
 
 			results = _groupService.search(
-				company.getCompanyId(), _classNameIds,
-				searchTerms.getKeywords(), groupParams, groupSearch.getStart(),
-				groupSearch.getEnd(), groupSearch.getOrderByComparator());
+				company.getCompanyId(), classNameIds, searchTerms.getKeywords(),
+				groupParams, groupSearch.getStart(), groupSearch.getEnd(),
+				groupSearch.getOrderByComparator());
 		}
 
 		groupSearch.setResults(results);
@@ -179,5 +191,8 @@ public class DepotAdminGroupSearchProvider {
 
 	@Reference
 	private GroupService _groupService;
+
+	@Reference
+	private Portal _portal;
 
 }
