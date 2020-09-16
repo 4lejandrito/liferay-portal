@@ -43,7 +43,7 @@ public interface ItemSelectorViewDescriptor<T> {
 	public SearchContainer<T> getSearchContainer() throws PortalException;
 
 	public default boolean isMultipleSelection() {
-		return false;
+		return true;
 	}
 
 	public default boolean isShowBreadcrumb() {
