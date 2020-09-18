@@ -41,7 +41,6 @@ SearchContainer<Object> searchContainer = itemSelectorViewDescriptorRendererDisp
 	</c:if>
 
 	<liferay-ui:search-container
-		id="entries"
 		searchContainer="<%= searchContainer %>"
 		var="entriesSearch"
 	>
