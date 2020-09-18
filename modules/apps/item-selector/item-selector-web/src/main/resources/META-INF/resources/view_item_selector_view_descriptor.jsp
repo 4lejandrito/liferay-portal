@@ -26,7 +26,7 @@ SearchContainer<Object> searchContainer = itemSelectorViewDescriptorRendererDisp
 
 <c:if test="<%= itemSelectorViewDescriptor.isShowManagementToolbar() %>">
 	<clay:management-toolbar
-		displayContext="<%= new ItemSelectorViewDescriptorRendererManagementToolbarDisplayContext(itemSelectorViewDescriptor, request, liferayPortletRequest, liferayPortletResponse, searchContainer) %>"
+		displayContext="<%= new ItemSelectorViewDescriptorRendererManagementToolbarDisplayContext(itemSelectorViewDescriptor, itemSelectorViewDescriptorRendererDisplayContext, request, liferayPortletRequest, liferayPortletResponse, searchContainer) %>"
 	/>
 </c:if>
 

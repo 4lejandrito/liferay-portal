@@ -30,6 +30,8 @@ public class ItemSelectorViewDescriptorRendererManagementToolbarDisplayContext
 
 	public ItemSelectorViewDescriptorRendererManagementToolbarDisplayContext(
 		ItemSelectorViewDescriptor<Object> itemSelectorViewDescriptor,
+		ItemSelectorViewDescriptorRendererDisplayContext
+			itemSelectorViewDescriptorRendererDisplayContext,
 		HttpServletRequest httpServletRequest,
 		LiferayPortletRequest liferayPortletRequest,
 		LiferayPortletResponse liferayPortletResponse,
@@ -40,6 +42,8 @@ public class ItemSelectorViewDescriptorRendererManagementToolbarDisplayContext
 			searchContainer);
 
 		_itemSelectorViewDescriptor = itemSelectorViewDescriptor;
+		_itemSelectorViewDescriptorRendererDisplayContext =
+			itemSelectorViewDescriptorRendererDisplayContext;
 	}
 
 	@Override
@@ -59,7 +63,8 @@ public class ItemSelectorViewDescriptorRendererManagementToolbarDisplayContext
 
 	@Override
 	public Boolean isSelectable() {
-		return false;
+		return _itemSelectorViewDescriptorRendererDisplayContext.
+			isMultipleSelection();
 	}
 
 	@Override
@@ -79,5 +84,7 @@ public class ItemSelectorViewDescriptorRendererManagementToolbarDisplayContext
 
 	private final ItemSelectorViewDescriptor<Object>
 		_itemSelectorViewDescriptor;
+	private final ItemSelectorViewDescriptorRendererDisplayContext
+		_itemSelectorViewDescriptorRendererDisplayContext;
 
 }
