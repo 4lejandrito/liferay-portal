@@ -670,6 +670,9 @@ public abstract class BasePortletDataHandlerTestCase {
 		PortletDataHandlerControl[] expectedControls,
 		PortletDataHandlerControl[] actualControls) {
 
+		System.out.println("LIMA DEBUG: Expected: " + expectedControls);
+		System.out.println("LIMA DEBUG: Actual:   " + actualControls);
+
 		for (PortletDataHandlerControl expectedControl : expectedControls) {
 			boolean contains = false;
 
