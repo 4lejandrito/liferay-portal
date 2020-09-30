@@ -937,6 +937,7 @@ public class LayoutPageTemplateEntryLocalServiceImpl
 			typeSettingsUnicodeProperties.put("published", "true");
 		}
 
+
 		if ((type == LayoutPageTemplateEntryTypeConstants.TYPE_MASTER_LAYOUT) ||
 			(masterLayoutPlid > 0)) {
 

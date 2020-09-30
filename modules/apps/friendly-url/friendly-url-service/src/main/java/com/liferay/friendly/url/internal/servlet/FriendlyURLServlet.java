@@ -56,6 +56,7 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.util.PortalInstances;
@@ -69,6 +70,8 @@ import com.liferay.site.service.SiteFriendlyURLLocalService;
 
 import java.io.IOException;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -319,6 +322,35 @@ public class FriendlyURLServlet extends HttpServlet {
 
 				throw noSuchLayoutException;
 			}
+//
+//			boolean privateLayout = true;
+//			String layoutType = "error";
+//
+//			Map<Locale, String> titleMap = Collections.singletonMap(
+//				LocaleUtil.getSiteDefault(), "error");
+//
+//			long masterLayoutPlid = 0;
+//			UnicodeProperties typeSettingsUnicodeProperties =
+//				new UnicodeProperties();
+//
+//			typeSettingsUnicodeProperties.setProperty(
+//				"lfr-theme:regular:show-footer", Boolean.FALSE.toString());
+//			typeSettingsUnicodeProperties.setProperty(
+//				"lfr-theme:regular:show-header", Boolean.FALSE.toString());
+//			typeSettingsUnicodeProperties.setProperty(
+//				"lfr-theme:regular:show-header-search",
+//				Boolean.FALSE.toString());
+//			typeSettingsUnicodeProperties.setProperty(
+//				"lfr-theme:regular:wrap-widget-page-content",
+//				Boolean.FALSE.toString());
+//
+//			Layout layout = layoutLocalService.addLayout(
+//				portal.getUserId(httpServletRequest), group.getGroupId(),
+//				privateLayout, 0, 0, 0, titleMap, titleMap, null, null, null,
+//				layoutType, typeSettingsUnicodeProperties.toString(), true,
+//				true, masterLayoutPlid, new HashMap<>(), serviceContext);
+
+			// create layout if not exists
 
 			httpServletResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
