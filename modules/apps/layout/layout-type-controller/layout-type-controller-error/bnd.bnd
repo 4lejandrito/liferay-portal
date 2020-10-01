@@ -1,0 +1,4 @@
+Bundle-Name: Liferay Layout Type Controller Error
+Bundle-SymbolicName: com.liferay.layout.type.controller.error
+Bundle-Version: 1.0.0
+Web-ContextPath: /layout-type-controller-error

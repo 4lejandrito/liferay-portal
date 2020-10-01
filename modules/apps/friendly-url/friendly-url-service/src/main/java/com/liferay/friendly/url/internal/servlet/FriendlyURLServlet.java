@@ -322,43 +322,45 @@ public class FriendlyURLServlet extends HttpServlet {
 
 				throw noSuchLayoutException;
 			}
-//
-//			boolean privateLayout = true;
-//			String layoutType = "error";
-//
-//			Map<Locale, String> titleMap = Collections.singletonMap(
-//				LocaleUtil.getSiteDefault(), "error");
-//
-//			long masterLayoutPlid = 0;
-//			UnicodeProperties typeSettingsUnicodeProperties =
-//				new UnicodeProperties();
-//
-//			typeSettingsUnicodeProperties.setProperty(
-//				"lfr-theme:regular:show-footer", Boolean.FALSE.toString());
-//			typeSettingsUnicodeProperties.setProperty(
-//				"lfr-theme:regular:show-header", Boolean.FALSE.toString());
-//			typeSettingsUnicodeProperties.setProperty(
-//				"lfr-theme:regular:show-header-search",
-//				Boolean.FALSE.toString());
-//			typeSettingsUnicodeProperties.setProperty(
-//				"lfr-theme:regular:wrap-widget-page-content",
-//				Boolean.FALSE.toString());
-//
-//			Layout layout = layoutLocalService.addLayout(
-//				portal.getUserId(httpServletRequest), group.getGroupId(),
-//				privateLayout, 0, 0, 0, titleMap, titleMap, null, null, null,
-//				layoutType, typeSettingsUnicodeProperties.toString(), true,
-//				true, masterLayoutPlid, new HashMap<>(), serviceContext);
 
-			// create layout if not exists
+			String layoutType = "error";
 
+			Map<Locale, String> titleMap = Collections.singletonMap(
+				LocaleUtil.getSiteDefault(), "error");
+
+
+			List<Layout> error =
+				layoutLocalService.getLayouts(group.getGroupId(), false,
+					"error");
+
+			Layout layout = null;
+			if(error.isEmpty()) {
+				 layout = layoutLocalService.addLayout(
+					serviceContext.getUserId(), group.getGroupId(),
+					false, 0, 0, 0, titleMap, titleMap, null, null, null,
+					layoutType, null, true,
+					true, 0, new HashMap<>(), serviceContext);
+			}
+			else {
+				 layout = error.get(0);
+			}
 			httpServletResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			String redirect = portal.getLayoutActualURL(
+				layout, Portal.PATH_MAIN);
 
-			SessionErrors.add(
-				httpServletRequest, noSuchLayoutException.getClass(),
-				noSuchLayoutException);
 
-			friendlyURL = null;
+			return new Redirect(redirect);
+
+
+//			// create layout if not exists
+//
+//			httpServletResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
+//
+//			SessionErrors.add(
+//				httpServletRequest, noSuchLayoutException.getClass(),
+//				noSuchLayoutException);
+//
+//			friendlyURL = null;
 		}
 
 		String actualURL = portal.getActualURL(
