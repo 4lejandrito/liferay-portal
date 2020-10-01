@@ -18,10 +18,14 @@ import com.liferay.layout.type.controller.BaseLayoutTypeControllerImpl;
 import com.liferay.layout.type.controller.error.internal.constants.ErrorLayoutTypeControllerConstants;
 import com.liferay.petra.io.unsync.UnsyncStringWriter;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutTypeController;
+import com.liferay.portal.kernel.servlet.TransferHeadersHelperUtil;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.taglib.servlet.PipingServletResponse;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +45,14 @@ import org.osgi.service.component.annotations.Reference;
 public class ErrorLayoutTypeController extends BaseLayoutTypeControllerImpl {
 
 	@Override
+	public String getFriendlyURL(
+			HttpServletRequest httpServletRequest, Layout layout)
+		throws PortalException {
+
+		return _URL;
+	}
+
+	@Override
 	public String getURL() {
 		return _URL;
 	}
@@ -51,7 +63,47 @@ public class ErrorLayoutTypeController extends BaseLayoutTypeControllerImpl {
 			HttpServletResponse httpServletResponse, Layout layout)
 		throws Exception {
 
-		return false;
+		String page = getViewPage();
+
+		RequestDispatcher requestDispatcher =
+			TransferHeadersHelperUtil.getTransferHeadersRequestDispatcher(
+				servletContext.getRequestDispatcher(page));
+
+		UnsyncStringWriter unsyncStringWriter = new UnsyncStringWriter();
+
+		ServletResponse servletResponse = createServletResponse(
+			httpServletResponse, unsyncStringWriter);
+
+		String contentType = servletResponse.getContentType();
+
+		String includeServletPath = (String)httpServletRequest.getAttribute(
+			RequestDispatcher.INCLUDE_SERVLET_PATH);
+
+		try {
+			//			httpServletRequest.setAttribute(
+			//				ContentPageEditorWebKeys.CLASS_NAME, Layout.class.getName());
+			//			httpServletRequest.setAttribute(
+			//				ContentPageEditorWebKeys.CLASS_PK, layout.getPlid());
+
+			addAttributes(httpServletRequest);
+
+			requestDispatcher.include(httpServletRequest, servletResponse);
+		}
+		finally {
+			removeAttributes(httpServletRequest);
+
+			httpServletRequest.setAttribute(
+				RequestDispatcher.INCLUDE_SERVLET_PATH, includeServletPath);
+		}
+
+		if (contentType != null) {
+			httpServletResponse.setContentType(contentType);
+		}
+
+		httpServletRequest.setAttribute(
+			WebKeys.LAYOUT_CONTENT, unsyncStringWriter.getStringBundler());
+
+		return true;
 	}
 
 	@Override
@@ -71,7 +123,7 @@ public class ErrorLayoutTypeController extends BaseLayoutTypeControllerImpl {
 
 	@Override
 	public boolean isInstanceable() {
-		return false;
+		return true;
 	}
 
 	@Override

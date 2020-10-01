@@ -1,3 +1,9 @@
+<%@ page import="com.liferay.portal.kernel.util.HtmlUtil" %><%@
+page import="com.liferay.portal.kernel.util.HttpUtil" %><%@
+page import="com.liferay.portal.kernel.util.ParamUtil" %><%@
+page import="com.liferay.portal.kernel.util.PortalUtil" %><%@
+page import="com.liferay.portal.kernel.util.Validator" %>
+
 <%--
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
@@ -17,3 +23,28 @@
 <%@ include file="/layout/view/init.jsp" %>
 
 <liferay-ui:layout-common />
+ERROR PAGE
+
+<%
+String url = ParamUtil.getString(request, "previousURL");
+
+if (Validator.isNull(url)) {
+	url = PortalUtil.getCurrentURL(request);
+}
+
+url = HttpUtil.decodeURL(themeDisplay.getPortalURL() + url);
+%>
+
+<h3 class="alert alert-danger">
+	<liferay-ui:message key="not-found" />
+</h3>
+
+<liferay-ui:message key="the-requested-resource-could-not-be-found" />
+
+<br /><br />
+
+<code class="lfr-url-error"><%= HtmlUtil.escape(url) %></code>
+
+<div class="separator"><!-- --></div>
+
+<a href="javascript:history.go(-1);">&laquo; <liferay-ui:message key="back" /></a>
