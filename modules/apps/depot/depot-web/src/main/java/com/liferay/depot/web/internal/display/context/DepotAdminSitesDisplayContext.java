@@ -35,6 +35,8 @@ import com.liferay.portal.kernel.service.GroupServiceUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.StringBundler;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.site.item.selector.criterion.SiteItemSelectorCriterion;
 
 import java.util.List;
@@ -161,7 +163,18 @@ public class DepotAdminSitesDisplayContext {
 		Group group = GroupServiceUtil.getGroup(
 			depotEntryGroupRel.getToGroupId());
 
-		return group.getDescriptiveName(locale);
+		String descriptiveName = group.getDescriptiveName(locale);
+
+		if (Validator.isNotNull(group.getLiveGroup())) {
+			descriptiveName = StringBundler.concat(
+				descriptiveName, " (",
+				LanguageUtil.get(
+					PortalUtil.getHttpServletRequest(_liferayPortletRequest),
+					"staging"),
+				")");
+		}
+
+		return descriptiveName;
 	}
 
 	private String _getUpdateDDMStructuresAvailableKey(
