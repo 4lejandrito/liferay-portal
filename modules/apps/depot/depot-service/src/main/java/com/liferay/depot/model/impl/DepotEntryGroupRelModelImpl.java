@@ -77,8 +77,8 @@ public class DepotEntryGroupRelModelImpl
 		{"companyId", Types.BIGINT}, {"createDate", Types.TIMESTAMP},
 		{"modifiedDate", Types.TIMESTAMP},
 		{"ddmStructuresAvailable", Types.BOOLEAN},
-		{"depotEntryId", Types.BIGINT}, {"searchable", Types.BOOLEAN},
-		{"toGroupId", Types.BIGINT}
+		{"depotEntryId", Types.BIGINT}, {"lastPublishDate", Types.TIMESTAMP},
+		{"searchable", Types.BOOLEAN}, {"toGroupId", Types.BIGINT}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
@@ -94,12 +94,13 @@ public class DepotEntryGroupRelModelImpl
 		TABLE_COLUMNS_MAP.put("modifiedDate", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("ddmStructuresAvailable", Types.BOOLEAN);
 		TABLE_COLUMNS_MAP.put("depotEntryId", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("lastPublishDate", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("searchable", Types.BOOLEAN);
 		TABLE_COLUMNS_MAP.put("toGroupId", Types.BIGINT);
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table DepotEntryGroupRel (mvccVersion LONG default 0 not null,uuid_ VARCHAR(75) null,depotEntryGroupRelId LONG not null primary key,groupId LONG,companyId LONG,createDate DATE null,modifiedDate DATE null,ddmStructuresAvailable BOOLEAN,depotEntryId LONG,searchable BOOLEAN,toGroupId LONG)";
+		"create table DepotEntryGroupRel (mvccVersion LONG default 0 not null,uuid_ VARCHAR(75) null,depotEntryGroupRelId LONG not null primary key,groupId LONG,companyId LONG,createDate DATE null,modifiedDate DATE null,ddmStructuresAvailable BOOLEAN,depotEntryId LONG,lastPublishDate DATE null,searchable BOOLEAN,toGroupId LONG)";
 
 	public static final String TABLE_SQL_DROP = "drop table DepotEntryGroupRel";
 
@@ -202,6 +203,7 @@ public class DepotEntryGroupRelModelImpl
 		model.setModifiedDate(soapModel.getModifiedDate());
 		model.setDdmStructuresAvailable(soapModel.isDdmStructuresAvailable());
 		model.setDepotEntryId(soapModel.getDepotEntryId());
+		model.setLastPublishDate(soapModel.getLastPublishDate());
 		model.setSearchable(soapModel.isSearchable());
 		model.setToGroupId(soapModel.getToGroupId());
 
@@ -414,6 +416,12 @@ public class DepotEntryGroupRelModelImpl
 			"depotEntryId",
 			(BiConsumer<DepotEntryGroupRel, Long>)
 				DepotEntryGroupRel::setDepotEntryId);
+		attributeGetterFunctions.put(
+			"lastPublishDate", DepotEntryGroupRel::getLastPublishDate);
+		attributeSetterBiConsumers.put(
+			"lastPublishDate",
+			(BiConsumer<DepotEntryGroupRel, Date>)
+				DepotEntryGroupRel::setLastPublishDate);
 		attributeGetterFunctions.put(
 			"searchable", DepotEntryGroupRel::getSearchable);
 		attributeSetterBiConsumers.put(
@@ -635,6 +643,21 @@ public class DepotEntryGroupRelModelImpl
 
 	@JSON
 	@Override
+	public Date getLastPublishDate() {
+		return _lastPublishDate;
+	}
+
+	@Override
+	public void setLastPublishDate(Date lastPublishDate) {
+		if (_columnOriginalValues == Collections.EMPTY_MAP) {
+			_setColumnOriginalValues();
+		}
+
+		_lastPublishDate = lastPublishDate;
+	}
+
+	@JSON
+	@Override
 	public boolean getSearchable() {
 		return _searchable;
 	}
@@ -762,6 +785,7 @@ public class DepotEntryGroupRelModelImpl
 		depotEntryGroupRelImpl.setDdmStructuresAvailable(
 			isDdmStructuresAvailable());
 		depotEntryGroupRelImpl.setDepotEntryId(getDepotEntryId());
+		depotEntryGroupRelImpl.setLastPublishDate(getLastPublishDate());
 		depotEntryGroupRelImpl.setSearchable(isSearchable());
 		depotEntryGroupRelImpl.setToGroupId(getToGroupId());
 
@@ -884,6 +908,16 @@ public class DepotEntryGroupRelModelImpl
 
 		depotEntryGroupRelCacheModel.depotEntryId = getDepotEntryId();
 
+		Date lastPublishDate = getLastPublishDate();
+
+		if (lastPublishDate != null) {
+			depotEntryGroupRelCacheModel.lastPublishDate =
+				lastPublishDate.getTime();
+		}
+		else {
+			depotEntryGroupRelCacheModel.lastPublishDate = Long.MIN_VALUE;
+		}
+
 		depotEntryGroupRelCacheModel.searchable = isSearchable();
 
 		depotEntryGroupRelCacheModel.toGroupId = getToGroupId();
@@ -971,6 +1005,7 @@ public class DepotEntryGroupRelModelImpl
 	private boolean _setModifiedDate;
 	private boolean _ddmStructuresAvailable;
 	private long _depotEntryId;
+	private Date _lastPublishDate;
 	private boolean _searchable;
 	private long _toGroupId;
 
@@ -1014,6 +1049,7 @@ public class DepotEntryGroupRelModelImpl
 		_columnOriginalValues.put(
 			"ddmStructuresAvailable", _ddmStructuresAvailable);
 		_columnOriginalValues.put("depotEntryId", _depotEntryId);
+		_columnOriginalValues.put("lastPublishDate", _lastPublishDate);
 		_columnOriginalValues.put("searchable", _searchable);
 		_columnOriginalValues.put("toGroupId", _toGroupId);
 	}
@@ -1057,9 +1093,11 @@ public class DepotEntryGroupRelModelImpl
 
 		columnBitmasks.put("depotEntryId", 256L);
 
-		columnBitmasks.put("searchable", 512L);
+		columnBitmasks.put("lastPublishDate", 512L);
 
-		columnBitmasks.put("toGroupId", 1024L);
+		columnBitmasks.put("searchable", 1024L);
+
+		columnBitmasks.put("toGroupId", 2048L);
 
 		_columnBitmasks = Collections.unmodifiableMap(columnBitmasks);
 	}

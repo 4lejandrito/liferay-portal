@@ -52,6 +52,7 @@ public class DepotEntryGroupRelWrapper
 		attributes.put("modifiedDate", getModifiedDate());
 		attributes.put("ddmStructuresAvailable", isDdmStructuresAvailable());
 		attributes.put("depotEntryId", getDepotEntryId());
+		attributes.put("lastPublishDate", getLastPublishDate());
 		attributes.put("searchable", isSearchable());
 		attributes.put("toGroupId", getToGroupId());
 
@@ -114,6 +115,12 @@ public class DepotEntryGroupRelWrapper
 
 		if (depotEntryId != null) {
 			setDepotEntryId(depotEntryId);
+		}
+
+		Date lastPublishDate = (Date)attributes.get("lastPublishDate");
+
+		if (lastPublishDate != null) {
+			setLastPublishDate(lastPublishDate);
 		}
 
 		Boolean searchable = (Boolean)attributes.get("searchable");
@@ -187,6 +194,16 @@ public class DepotEntryGroupRelWrapper
 	@Override
 	public long getGroupId() {
 		return model.getGroupId();
+	}
+
+	/**
+	 * Returns the last publish date of this depot entry group rel.
+	 *
+	 * @return the last publish date of this depot entry group rel
+	 */
+	@Override
+	public Date getLastPublishDate() {
+		return model.getLastPublishDate();
 	}
 
 	/**
@@ -332,6 +349,16 @@ public class DepotEntryGroupRelWrapper
 	@Override
 	public void setGroupId(long groupId) {
 		model.setGroupId(groupId);
+	}
+
+	/**
+	 * Sets the last publish date of this depot entry group rel.
+	 *
+	 * @param lastPublishDate the last publish date of this depot entry group rel
+	 */
+	@Override
+	public void setLastPublishDate(Date lastPublishDate) {
+		model.setLastPublishDate(lastPublishDate);
 	}
 
 	/**

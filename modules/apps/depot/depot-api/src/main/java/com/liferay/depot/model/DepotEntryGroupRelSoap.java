@@ -42,6 +42,7 @@ public class DepotEntryGroupRelSoap implements Serializable {
 		soapModel.setModifiedDate(model.getModifiedDate());
 		soapModel.setDdmStructuresAvailable(model.isDdmStructuresAvailable());
 		soapModel.setDepotEntryId(model.getDepotEntryId());
+		soapModel.setLastPublishDate(model.getLastPublishDate());
 		soapModel.setSearchable(model.isSearchable());
 		soapModel.setToGroupId(model.getToGroupId());
 
@@ -182,6 +183,14 @@ public class DepotEntryGroupRelSoap implements Serializable {
 		_depotEntryId = depotEntryId;
 	}
 
+	public Date getLastPublishDate() {
+		return _lastPublishDate;
+	}
+
+	public void setLastPublishDate(Date lastPublishDate) {
+		_lastPublishDate = lastPublishDate;
+	}
+
 	public boolean getSearchable() {
 		return _searchable;
 	}
@@ -211,6 +220,7 @@ public class DepotEntryGroupRelSoap implements Serializable {
 	private Date _modifiedDate;
 	private boolean _ddmStructuresAvailable;
 	private long _depotEntryId;
+	private Date _lastPublishDate;
 	private boolean _searchable;
 	private long _toGroupId;
 

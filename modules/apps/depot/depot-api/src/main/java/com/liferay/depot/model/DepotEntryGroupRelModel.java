@@ -205,6 +205,20 @@ public interface DepotEntryGroupRelModel
 	public void setDepotEntryId(long depotEntryId);
 
 	/**
+	 * Returns the last publish date of this depot entry group rel.
+	 *
+	 * @return the last publish date of this depot entry group rel
+	 */
+	public Date getLastPublishDate();
+
+	/**
+	 * Sets the last publish date of this depot entry group rel.
+	 *
+	 * @param lastPublishDate the last publish date of this depot entry group rel
+	 */
+	public void setLastPublishDate(Date lastPublishDate);
+
+	/**
 	 * Returns the searchable of this depot entry group rel.
 	 *
 	 * @return the searchable of this depot entry group rel

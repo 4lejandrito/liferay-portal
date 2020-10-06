@@ -29,6 +29,7 @@ create table DepotEntryGroupRel (
 	modifiedDate DATE null,
 	ddmStructuresAvailable BOOLEAN,
 	depotEntryId LONG,
+	lastPublishDate DATE null,
 	searchable BOOLEAN,
 	toGroupId LONG
 );

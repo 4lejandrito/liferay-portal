@@ -30,6 +30,7 @@
 		<field name="modifiedDate" type="Date" />
 		<field name="ddmStructuresAvailable" type="boolean" />
 		<field name="depotEntryId" type="long" />
+		<field name="lastPublishDate" type="Date" />
 		<field name="searchable" type="boolean" />
 		<field name="toGroupId" type="long" />
 	</model>

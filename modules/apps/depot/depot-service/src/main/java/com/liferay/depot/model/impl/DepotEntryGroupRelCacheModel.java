@@ -78,7 +78,7 @@ public class DepotEntryGroupRelCacheModel
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(23);
+		StringBundler sb = new StringBundler(25);
 
 		sb.append("{mvccVersion=");
 		sb.append(mvccVersion);
@@ -98,6 +98,8 @@ public class DepotEntryGroupRelCacheModel
 		sb.append(ddmStructuresAvailable);
 		sb.append(", depotEntryId=");
 		sb.append(depotEntryId);
+		sb.append(", lastPublishDate=");
+		sb.append(lastPublishDate);
 		sb.append(", searchable=");
 		sb.append(searchable);
 		sb.append(", toGroupId=");
@@ -142,6 +144,15 @@ public class DepotEntryGroupRelCacheModel
 		depotEntryGroupRelImpl.setDdmStructuresAvailable(
 			ddmStructuresAvailable);
 		depotEntryGroupRelImpl.setDepotEntryId(depotEntryId);
+
+		if (lastPublishDate == Long.MIN_VALUE) {
+			depotEntryGroupRelImpl.setLastPublishDate(null);
+		}
+		else {
+			depotEntryGroupRelImpl.setLastPublishDate(
+				new Date(lastPublishDate));
+		}
+
 		depotEntryGroupRelImpl.setSearchable(searchable);
 		depotEntryGroupRelImpl.setToGroupId(toGroupId);
 
@@ -166,6 +177,7 @@ public class DepotEntryGroupRelCacheModel
 		ddmStructuresAvailable = objectInput.readBoolean();
 
 		depotEntryId = objectInput.readLong();
+		lastPublishDate = objectInput.readLong();
 
 		searchable = objectInput.readBoolean();
 
@@ -194,6 +206,7 @@ public class DepotEntryGroupRelCacheModel
 		objectOutput.writeBoolean(ddmStructuresAvailable);
 
 		objectOutput.writeLong(depotEntryId);
+		objectOutput.writeLong(lastPublishDate);
 
 		objectOutput.writeBoolean(searchable);
 
@@ -209,6 +222,7 @@ public class DepotEntryGroupRelCacheModel
 	public long modifiedDate;
 	public boolean ddmStructuresAvailable;
 	public long depotEntryId;
+	public long lastPublishDate;
 	public boolean searchable;
 	public long toGroupId;
 

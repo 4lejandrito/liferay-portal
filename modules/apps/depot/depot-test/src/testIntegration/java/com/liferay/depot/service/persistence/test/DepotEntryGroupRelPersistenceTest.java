@@ -142,6 +142,8 @@ public class DepotEntryGroupRelPersistenceTest {
 
 		newDepotEntryGroupRel.setDepotEntryId(RandomTestUtil.nextLong());
 
+		newDepotEntryGroupRel.setLastPublishDate(RandomTestUtil.nextDate());
+
 		newDepotEntryGroupRel.setSearchable(RandomTestUtil.randomBoolean());
 
 		newDepotEntryGroupRel.setToGroupId(RandomTestUtil.nextLong());
@@ -180,6 +182,10 @@ public class DepotEntryGroupRelPersistenceTest {
 		Assert.assertEquals(
 			existingDepotEntryGroupRel.getDepotEntryId(),
 			newDepotEntryGroupRel.getDepotEntryId());
+		Assert.assertEquals(
+			Time.getShortTimestamp(
+				existingDepotEntryGroupRel.getLastPublishDate()),
+			Time.getShortTimestamp(newDepotEntryGroupRel.getLastPublishDate()));
 		Assert.assertEquals(
 			existingDepotEntryGroupRel.isSearchable(),
 			newDepotEntryGroupRel.isSearchable());
@@ -282,7 +288,8 @@ public class DepotEntryGroupRelPersistenceTest {
 			"DepotEntryGroupRel", "mvccVersion", true, "uuid", true,
 			"depotEntryGroupRelId", true, "groupId", true, "companyId", true,
 			"createDate", true, "modifiedDate", true, "ddmStructuresAvailable",
-			true, "depotEntryId", true, "searchable", true, "toGroupId", true);
+			true, "depotEntryId", true, "lastPublishDate", true, "searchable",
+			true, "toGroupId", true);
 	}
 
 	@Test
@@ -605,6 +612,8 @@ public class DepotEntryGroupRelPersistenceTest {
 			RandomTestUtil.randomBoolean());
 
 		depotEntryGroupRel.setDepotEntryId(RandomTestUtil.nextLong());
+
+		depotEntryGroupRel.setLastPublishDate(RandomTestUtil.nextDate());
 
 		depotEntryGroupRel.setSearchable(RandomTestUtil.randomBoolean());
 
