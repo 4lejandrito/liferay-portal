@@ -15,11 +15,15 @@
 package com.liferay.depot.web.internal.portlet.action;
 
 import com.liferay.depot.exception.DepotEntryGroupRelStagedGroupException;
+import com.liferay.depot.model.DepotEntry;
 import com.liferay.depot.service.DepotEntryGroupRelService;
+import com.liferay.depot.service.DepotEntryService;
 import com.liferay.depot.web.internal.constants.DepotPortletKeys;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
+import com.liferay.portal.kernel.service.GroupService;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.ParamUtil;
 
@@ -53,6 +57,39 @@ public class ConnectSiteMVCActionCommand extends BaseMVCActionCommand {
 		long toGroupId = ParamUtil.getLong(actionRequest, "toGroupId");
 
 		try {
+			DepotEntry depotEntry = _depotEntryService.getDepotEntry(
+				depotEntryId);
+
+			Group depotEntryGroup = depotEntry.getGroup();
+
+			Group group = _groupService.getGroup(toGroupId);
+
+			if (depotEntryGroup.isStaged()) {
+				Group depotEntryStagingGroup =
+					depotEntryGroup.getStagingGroup();
+
+				if (depotEntryStagingGroup != null) {
+					DepotEntry groupDepotEntry =
+						_depotEntryService.getGroupDepotEntry(
+							depotEntryStagingGroup.getGroupId());
+
+					depotEntryId = groupDepotEntry.getDepotEntryId();
+				}
+
+				Group stagingGroup = group.getStagingGroup();
+
+				if (stagingGroup != null) {
+					toGroupId = stagingGroup.getGroupId();
+				}
+			}
+			else {
+				Group liveGroup = group.getLiveGroup();
+
+				if (liveGroup != null) {
+					toGroupId = liveGroup.getGroupId();
+				}
+			}
+
 			_depotEntryGroupRelService.addDepotEntryGroupRel(
 				depotEntryId, toGroupId);
 		}
@@ -77,5 +114,11 @@ public class ConnectSiteMVCActionCommand extends BaseMVCActionCommand {
 
 	@Reference
 	private DepotEntryGroupRelService _depotEntryGroupRelService;
+
+	@Reference
+	private DepotEntryService _depotEntryService;
+
+	@Reference
+	private GroupService _groupService;
 
 }
