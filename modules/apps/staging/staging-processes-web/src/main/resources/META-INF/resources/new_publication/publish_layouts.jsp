@@ -81,7 +81,7 @@
 					exportImportConfigurationId="<%= exportImportConfigurationId %>"
 				/>
 
-				<c:if test="<%= !group.isCompany() %>">
+				<c:if test="<%= !group.isCompany() && GroupCapabilityUtil.supportsPages(group) %>">
 					<liferay-staging:select-pages
 						action="<%= Constants.PUBLISH %>"
 						disableInputs="<%= configuredPublish %>"
