@@ -48,6 +48,8 @@ public class DepotEntryGroupRelWrapper
 		attributes.put("depotEntryGroupRelId", getDepotEntryGroupRelId());
 		attributes.put("groupId", getGroupId());
 		attributes.put("companyId", getCompanyId());
+		attributes.put("userId", getUserId());
+		attributes.put("userName", getUserName());
 		attributes.put("createDate", getCreateDate());
 		attributes.put("modifiedDate", getModifiedDate());
 		attributes.put("ddmStructuresAvailable", isDdmStructuresAvailable());
@@ -90,6 +92,18 @@ public class DepotEntryGroupRelWrapper
 
 		if (companyId != null) {
 			setCompanyId(companyId);
+		}
+
+		Long userId = (Long)attributes.get("userId");
+
+		if (userId != null) {
+			setUserId(userId);
+		}
+
+		String userName = (String)attributes.get("userName");
+
+		if (userName != null) {
+			setUserName(userName);
 		}
 
 		Date createDate = (Date)attributes.get("createDate");
@@ -257,6 +271,36 @@ public class DepotEntryGroupRelWrapper
 	}
 
 	/**
+	 * Returns the user ID of this depot entry group rel.
+	 *
+	 * @return the user ID of this depot entry group rel
+	 */
+	@Override
+	public long getUserId() {
+		return model.getUserId();
+	}
+
+	/**
+	 * Returns the user name of this depot entry group rel.
+	 *
+	 * @return the user name of this depot entry group rel
+	 */
+	@Override
+	public String getUserName() {
+		return model.getUserName();
+	}
+
+	/**
+	 * Returns the user uuid of this depot entry group rel.
+	 *
+	 * @return the user uuid of this depot entry group rel
+	 */
+	@Override
+	public String getUserUuid() {
+		return model.getUserUuid();
+	}
+
+	/**
 	 * Returns the uuid of this depot entry group rel.
 	 *
 	 * @return the uuid of this depot entry group rel
@@ -409,6 +453,36 @@ public class DepotEntryGroupRelWrapper
 	@Override
 	public void setToGroupId(long toGroupId) {
 		model.setToGroupId(toGroupId);
+	}
+
+	/**
+	 * Sets the user ID of this depot entry group rel.
+	 *
+	 * @param userId the user ID of this depot entry group rel
+	 */
+	@Override
+	public void setUserId(long userId) {
+		model.setUserId(userId);
+	}
+
+	/**
+	 * Sets the user name of this depot entry group rel.
+	 *
+	 * @param userName the user name of this depot entry group rel
+	 */
+	@Override
+	public void setUserName(String userName) {
+		model.setUserName(userName);
+	}
+
+	/**
+	 * Sets the user uuid of this depot entry group rel.
+	 *
+	 * @param userUuid the user uuid of this depot entry group rel
+	 */
+	@Override
+	public void setUserUuid(String userUuid) {
+		model.setUserUuid(userUuid);
 	}
 
 	/**

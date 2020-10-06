@@ -47,6 +47,11 @@ public class DepotEntryGroupRelTable
 		"groupId", Long.class, Types.BIGINT, Column.FLAG_DEFAULT);
 	public final Column<DepotEntryGroupRelTable, Long> companyId = createColumn(
 		"companyId", Long.class, Types.BIGINT, Column.FLAG_DEFAULT);
+	public final Column<DepotEntryGroupRelTable, Long> userId = createColumn(
+		"userId", Long.class, Types.BIGINT, Column.FLAG_DEFAULT);
+	public final Column<DepotEntryGroupRelTable, String> userName =
+		createColumn(
+			"userName", String.class, Types.VARCHAR, Column.FLAG_DEFAULT);
 	public final Column<DepotEntryGroupRelTable, Date> createDate =
 		createColumn(
 			"createDate", Date.class, Types.TIMESTAMP, Column.FLAG_DEFAULT);
