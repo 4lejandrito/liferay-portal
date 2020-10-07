@@ -20,6 +20,7 @@ import com.liferay.depot.exception.DepotEntryNameException;
 import com.liferay.depot.model.DepotEntry;
 import com.liferay.depot.model.DepotEntryGroupRel;
 import com.liferay.depot.service.DepotAppCustomizationLocalService;
+import com.liferay.depot.service.DepotEntryGroupRelLocalService;
 import com.liferay.depot.service.base.DepotEntryLocalServiceBaseImpl;
 import com.liferay.depot.service.persistence.DepotEntryGroupRelPersistence;
 import com.liferay.petra.string.StringPool;
@@ -96,6 +97,10 @@ public class DepotEntryLocalServiceImpl extends DepotEntryLocalServiceBaseImpl {
 			serviceContext.getCompanyId(), 0, serviceContext.getUserId(),
 			DepotEntry.class.getName(), depotEntry.getDepotEntryId(), false,
 			false, false);
+
+		if (group.getLiveGroup() != null) {
+			_addDepotEntryGroupRelsToGroup(depotEntry, group.getLiveGroup());
+		}
 
 		return depotEntry;
 	}
@@ -292,6 +297,34 @@ public class DepotEntryLocalServiceImpl extends DepotEntryLocalServiceBaseImpl {
 		return depotEntry;
 	}
 
+	private void _addDepotEntryGroupRelsToGroup(
+			DepotEntry depotEntry, Group group)
+		throws PortalException {
+
+		DepotEntry groupDepotEntry = getGroupDepotEntry(group.getGroupId());
+
+		for (DepotEntryGroupRel depotEntryGroupRel :
+				_depotEntryGroupRelLocalService.getDepotEntryGroupRels(
+					groupDepotEntry)) {
+
+			long toGroupId = depotEntryGroupRel.getToGroupId();
+
+			Group groupDepotEntryGroupRel = _groupLocalService.fetchGroup(
+				toGroupId);
+
+			if (groupDepotEntryGroupRel != null) {
+				Group stagingGroup = groupDepotEntryGroupRel.getStagingGroup();
+
+				if (stagingGroup != null) {
+					toGroupId = stagingGroup.getGroupId();
+				}
+
+				_depotEntryGroupRelLocalService.addDepotEntryGroupRel(
+					depotEntry.getDepotEntryId(), toGroupId);
+			}
+		}
+	}
+
 	private Optional<String> _getDefaultNameOptional(
 		Map<Locale, String> nameMap, Locale defaultLocale) {
 
@@ -367,6 +400,9 @@ public class DepotEntryLocalServiceImpl extends DepotEntryLocalServiceBaseImpl {
 	@Reference
 	private DepotAppCustomizationLocalService
 		_depotAppCustomizationLocalService;
+
+	@Reference
+	private DepotEntryGroupRelLocalService _depotEntryGroupRelLocalService;
 
 	@Reference
 	private DepotEntryGroupRelPersistence _depotEntryGroupRelPersistence;
