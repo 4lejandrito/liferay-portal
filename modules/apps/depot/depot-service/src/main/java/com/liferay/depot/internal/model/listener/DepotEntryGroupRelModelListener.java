@@ -21,6 +21,9 @@ import com.liferay.portal.kernel.model.BaseModelListener;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.ModelListener;
 import com.liferay.portal.kernel.service.GroupLocalService;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
+import com.liferay.portal.kernel.util.ParamUtil;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -38,15 +41,30 @@ public class DepotEntryGroupRelModelListener
 
 		super.onBeforeRemove(depotEntryGroupRel);
 
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
 		Group group = _groupLocalService.fetchGroup(
 			depotEntryGroupRel.getToGroupId());
 
-		if (group.getLiveGroup() != null) {
+		if ((group.getLiveGroup() != null) && _isGroup(serviceContext)) {
 			_depotEntryGroupRelLocalService.addDepotEntryGroupRel(
 				depotEntryGroupRel.isDdmStructuresAvailable(),
 				depotEntryGroupRel.getDepotEntryId(), group.getLiveGroupId(),
 				depotEntryGroupRel.isSearchable());
 		}
+	}
+
+	private boolean _isGroup(ServiceContext serviceContext) {
+		if (serviceContext == null) {
+			return false;
+		}
+
+		if (ParamUtil.getLong(serviceContext, "liveGroupId") != 0) {
+			return true;
+		}
+
+		return false;
 	}
 
 	@Reference
