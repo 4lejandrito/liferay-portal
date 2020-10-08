@@ -67,10 +67,10 @@ public class DepotEntryGroupRelStagedModelRepository
 
 		Group depotEntryGroup = depotEntry.getGroup();
 
-		Group group = _groupLocalService.fetchGroup(toGroupId);
-
 		long depotEntryId = _getDepotEntryId(
 			depotEntryGroupRel.getDepotEntryId(), depotEntryGroup);
+
+		Group group = _groupLocalService.fetchGroup(toGroupId);
 
 		Group liveGroup = group.getLiveGroup();
 
