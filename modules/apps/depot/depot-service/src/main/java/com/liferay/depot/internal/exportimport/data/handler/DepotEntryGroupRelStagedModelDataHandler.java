@@ -79,8 +79,6 @@ public class DepotEntryGroupRelStagedModelDataHandler
 		if ((existingDepotEntryGroupRel == null) ||
 			!portletDataContext.isDataStrategyMirror()) {
 
-			long toGroupId = importedDepotEntryGroupRel.getToGroupId();
-
 			DepotEntry depotEntry = _depotEntryLocalService.fetchDepotEntry(
 				importedDepotEntryGroupRel.getDepotEntryId());
 
@@ -89,7 +87,8 @@ public class DepotEntryGroupRelStagedModelDataHandler
 			long depotEntryId = _getDepotEntryId(
 				importedDepotEntryGroupRel.getDepotEntryId(), depotEntryGroup);
 
-			Group group = _groupLocalService.fetchGroup(toGroupId);
+			Group group = _groupLocalService.fetchGroup(
+				importedDepotEntryGroupRel.getToGroupId());
 
 			Group liveGroup = group.getLiveGroup();
 
