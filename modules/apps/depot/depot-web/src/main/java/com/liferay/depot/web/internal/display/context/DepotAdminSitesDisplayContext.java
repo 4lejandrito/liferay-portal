@@ -24,6 +24,7 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItemListBuil
 import com.liferay.item.selector.ItemSelector;
 import com.liferay.item.selector.ItemSelectorCriterion;
 import com.liferay.item.selector.criteria.URLItemSelectorReturnType;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.model.Group;
@@ -167,11 +168,11 @@ public class DepotAdminSitesDisplayContext {
 
 		if (Validator.isNotNull(group.getLiveGroup())) {
 			descriptiveName = StringBundler.concat(
-				descriptiveName, " (",
+				descriptiveName, StringPool.SPACE, StringPool.OPEN_PARENTHESIS,
 				LanguageUtil.get(
 					PortalUtil.getHttpServletRequest(_liferayPortletRequest),
 					"staging"),
-				")");
+				StringPool.CLOSE_PARENTHESIS);
 		}
 
 		return descriptiveName;
