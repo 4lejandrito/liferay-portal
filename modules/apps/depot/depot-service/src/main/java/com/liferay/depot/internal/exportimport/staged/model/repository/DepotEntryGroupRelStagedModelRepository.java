@@ -76,18 +76,18 @@ public class DepotEntryGroupRelStagedModelRepository
 
 		if (liveGroup != null) {
 			if (depotEntryGroup.isStaged()) {
-				DepotEntryGroupRel depotEntryGroupRelLiveGroup =
+				DepotEntryGroupRel liveDepotEntryGroupRel =
 					_depotEntryGroupRelLocalService.
 						fetchDepotEntryGroupRelByDepotEntryIdToGroupId(
 							depotEntryId, liveGroup.getGroupId());
 
-				if (depotEntryGroupRelLiveGroup != null) {
+				if (liveDepotEntryGroupRel != null) {
 					ddmStructuresAvailable =
-						depotEntryGroupRelLiveGroup.getDdmStructuresAvailable();
-					searchable = depotEntryGroupRelLiveGroup.getSearchable();
+						liveDepotEntryGroupRel.getDdmStructuresAvailable();
+					searchable = liveDepotEntryGroupRel.getSearchable();
 
 					_depotEntryGroupRelLocalService.deleteDepotEntryGroupRel(
-						depotEntryGroupRelLiveGroup);
+						liveDepotEntryGroupRel);
 				}
 			}
 			else {
