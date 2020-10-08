@@ -14,17 +14,13 @@
 
 package com.liferay.depot.internal.exportimport.staged.model.repository;
 
-import com.liferay.depot.model.DepotEntry;
 import com.liferay.depot.model.DepotEntryGroupRel;
 import com.liferay.depot.service.DepotEntryGroupRelLocalService;
-import com.liferay.depot.service.DepotEntryLocalService;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.exportimport.staged.model.repository.StagedModelRepository;
 import com.liferay.exportimport.staged.model.repository.StagedModelRepositoryHelper;
 import com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.model.Group;
-import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 
 import java.util.List;
@@ -45,9 +41,8 @@ public class DepotEntryGroupRelStagedModelRepository
 
 	@Override
 	public DepotEntryGroupRel addStagedModel(
-			PortletDataContext portletDataContext,
-			DepotEntryGroupRel depotEntryGroupRel)
-		throws PortalException {
+		PortletDataContext portletDataContext,
+		DepotEntryGroupRel depotEntryGroupRel) {
 
 		ServiceContext serviceContext = portletDataContext.createServiceContext(
 			depotEntryGroupRel);
@@ -56,40 +51,11 @@ public class DepotEntryGroupRelStagedModelRepository
 			serviceContext.setUuid(depotEntryGroupRel.getUuid());
 		}
 
-		long toGroupId = depotEntryGroupRel.getToGroupId();
-
-		DepotEntry depotEntry = _depotEntryLocalService.fetchDepotEntry(
-			depotEntryGroupRel.getDepotEntryId());
-
-		Group depotEntryGroup = depotEntry.getGroup();
-
-		long depotEntryId = _getDepotEntryId(
-			depotEntryGroupRel.getDepotEntryId(), depotEntryGroup);
-
-		Group group = _groupLocalService.fetchGroup(toGroupId);
-
-		Group liveGroup = group.getLiveGroup();
-
-		if (liveGroup != null) {
-			if (depotEntryGroup.isStaged()) {
-				DepotEntryGroupRel liveDepotEntryGroupRel =
-					_depotEntryGroupRelLocalService.
-						fetchDepotEntryGroupRelByDepotEntryIdToGroupId(
-							depotEntryId, liveGroup.getGroupId());
-
-				if (liveDepotEntryGroupRel != null) {
-					_depotEntryGroupRelLocalService.deleteDepotEntryGroupRel(
-						liveDepotEntryGroupRel);
-				}
-			}
-			else {
-				toGroupId = liveGroup.getGroupId();
-			}
-		}
-
 		return _depotEntryGroupRelLocalService.addDepotEntryGroupRel(
-			depotEntryGroupRel.isDdmStructuresAvailable(), depotEntryId,
-			toGroupId, depotEntryGroupRel.isSearchable());
+			depotEntryGroupRel.isDdmStructuresAvailable(),
+			depotEntryGroupRel.getDepotEntryId(),
+			depotEntryGroupRel.getToGroupId(),
+			depotEntryGroupRel.isSearchable());
 	}
 
 	@Override
@@ -170,30 +136,8 @@ public class DepotEntryGroupRelStagedModelRepository
 			depotEntryGroupRel);
 	}
 
-	private long _getDepotEntryId(long depotEntryId, Group depotEntryGroup) {
-		if (!depotEntryGroup.isStaged() ||
-			(depotEntryGroup.getStagingGroup() == null)) {
-
-			return depotEntryId;
-		}
-
-		Group depotEntryGroupStagingGroup = depotEntryGroup.getStagingGroup();
-
-		DepotEntry depotEntryStagingGroup =
-			_depotEntryLocalService.fetchGroupDepotEntry(
-				depotEntryGroupStagingGroup.getGroupId());
-
-		return depotEntryStagingGroup.getDepotEntryId();
-	}
-
 	@Reference
 	private DepotEntryGroupRelLocalService _depotEntryGroupRelLocalService;
-
-	@Reference
-	private DepotEntryLocalService _depotEntryLocalService;
-
-	@Reference
-	private GroupLocalService _groupLocalService;
 
 	@Reference
 	private StagedModelRepositoryHelper _stagedModelRepositoryHelper;
