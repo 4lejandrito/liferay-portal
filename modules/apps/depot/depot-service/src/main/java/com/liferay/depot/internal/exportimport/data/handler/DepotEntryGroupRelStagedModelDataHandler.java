@@ -90,7 +90,11 @@ public class DepotEntryGroupRelStagedModelDataHandler
 			Group group = _groupLocalService.fetchGroup(
 				importedDepotEntryGroupRel.getToGroupId());
 
-			Group liveGroup = group.getLiveGroup();
+			Group liveGroup = null;
+
+			if (group != null) {
+				liveGroup = group.getLiveGroup();
+			}
 
 			if (liveGroup != null) {
 				if (depotEntryGroup.isStaged()) {
