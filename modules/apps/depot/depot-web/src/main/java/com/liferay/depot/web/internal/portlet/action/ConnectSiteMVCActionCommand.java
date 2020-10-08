@@ -62,7 +62,7 @@ public class ConnectSiteMVCActionCommand extends BaseMVCActionCommand {
 
 			Group depotEntryGroup = depotEntry.getGroup();
 
-			Group group = _groupService.getGroup(toGroupId);
+			Group toGroup = _groupService.getGroup(toGroupId);
 
 			if (depotEntryGroup.isStaged()) {
 				Group depotEntryStagingGroup =
@@ -76,17 +76,17 @@ public class ConnectSiteMVCActionCommand extends BaseMVCActionCommand {
 					depotEntryId = groupDepotEntry.getDepotEntryId();
 				}
 
-				Group stagingGroup = group.getStagingGroup();
+				Group stagingToGroup = toGroup.getStagingGroup();
 
-				if (stagingGroup != null) {
-					toGroupId = stagingGroup.getGroupId();
+				if (stagingToGroup != null) {
+					toGroupId = stagingToGroup.getGroupId();
 				}
 			}
 			else {
-				Group liveGroup = group.getLiveGroup();
+				Group liveToGroup = toGroup.getLiveGroup();
 
-				if (liveGroup != null) {
-					toGroupId = liveGroup.getGroupId();
+				if (liveToGroup != null) {
+					toGroupId = liveToGroup.getGroupId();
 				}
 			}
 
