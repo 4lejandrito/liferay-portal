@@ -15,7 +15,6 @@
 package com.liferay.depot.web.internal.portlet.action;
 
 import com.liferay.depot.exception.DepotEntryGroupRelStagedGroupException;
-import com.liferay.depot.model.DepotEntry;
 import com.liferay.depot.service.DepotEntryGroupRelService;
 import com.liferay.depot.service.DepotEntryService;
 import com.liferay.depot.web.internal.constants.DepotPortletKeys;
@@ -57,36 +56,13 @@ public class ConnectSiteMVCActionCommand extends BaseMVCActionCommand {
 		long toGroupId = ParamUtil.getLong(actionRequest, "toGroupId");
 
 		try {
-			DepotEntry depotEntry = _depotEntryService.getDepotEntry(
-				depotEntryId);
-
-			Group depotEntryGroup = depotEntry.getGroup();
-
 			Group toGroup = _groupService.getGroup(toGroupId);
 
-			if (depotEntryGroup.isStaged()) {
-				Group depotEntryStagingGroup =
-					depotEntryGroup.getStagingGroup();
-
-				if (depotEntryStagingGroup != null) {
-					DepotEntry groupDepotEntry =
-						_depotEntryService.getGroupDepotEntry(
-							depotEntryStagingGroup.getGroupId());
-
-					depotEntryId = groupDepotEntry.getDepotEntryId();
-				}
-
+			if (toGroup.isStaged()) {
 				Group stagingToGroup = toGroup.getStagingGroup();
 
 				if (stagingToGroup != null) {
 					toGroupId = stagingToGroup.getGroupId();
-				}
-			}
-			else {
-				Group liveToGroup = toGroup.getLiveGroup();
-
-				if (liveToGroup != null) {
-					toGroupId = liveToGroup.getGroupId();
 				}
 			}
 
