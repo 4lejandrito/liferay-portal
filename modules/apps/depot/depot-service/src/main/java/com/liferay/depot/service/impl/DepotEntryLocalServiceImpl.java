@@ -98,10 +98,6 @@ public class DepotEntryLocalServiceImpl extends DepotEntryLocalServiceBaseImpl {
 			DepotEntry.class.getName(), depotEntry.getDepotEntryId(), false,
 			false, false);
 
-		if (group.getLiveGroup() != null) {
-			_addDepotEntryGroupRelsToGroup(depotEntry, group.getLiveGroup());
-		}
-
 		return depotEntry;
 	}
 
@@ -295,34 +291,6 @@ public class DepotEntryLocalServiceImpl extends DepotEntryLocalServiceBaseImpl {
 			currentTypeSettingsUnicodeProperties.toString());
 
 		return depotEntry;
-	}
-
-	private void _addDepotEntryGroupRelsToGroup(
-			DepotEntry depotEntry, Group group)
-		throws PortalException {
-
-		DepotEntry groupDepotEntry = getGroupDepotEntry(group.getGroupId());
-
-		for (DepotEntryGroupRel depotEntryGroupRel :
-				_depotEntryGroupRelLocalService.getDepotEntryGroupRels(
-					groupDepotEntry)) {
-
-			long toGroupId = depotEntryGroupRel.getToGroupId();
-
-			Group groupDepotEntryGroupRel = _groupLocalService.fetchGroup(
-				toGroupId);
-
-			if (groupDepotEntryGroupRel != null) {
-				Group stagingGroup = groupDepotEntryGroupRel.getStagingGroup();
-
-				if (stagingGroup != null) {
-					toGroupId = stagingGroup.getGroupId();
-				}
-
-				_depotEntryGroupRelLocalService.addDepotEntryGroupRel(
-					depotEntry.getDepotEntryId(), toGroupId);
-			}
-		}
 	}
 
 	private Optional<String> _getDefaultNameOptional(
