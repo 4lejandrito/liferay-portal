@@ -82,10 +82,6 @@ public class DepotEntryGroupRelStagedModelRepository
 							depotEntryId, liveGroup.getGroupId());
 
 				if (liveDepotEntryGroupRel != null) {
-					ddmStructuresAvailable =
-						liveDepotEntryGroupRel.getDdmStructuresAvailable();
-					searchable = liveDepotEntryGroupRel.getSearchable();
-
 					_depotEntryGroupRelLocalService.deleteDepotEntryGroupRel(
 						liveDepotEntryGroupRel);
 				}
