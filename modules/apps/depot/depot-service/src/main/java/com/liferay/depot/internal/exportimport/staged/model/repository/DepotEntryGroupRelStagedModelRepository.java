@@ -58,10 +58,6 @@ public class DepotEntryGroupRelStagedModelRepository
 
 		long toGroupId = depotEntryGroupRel.getToGroupId();
 
-		boolean ddmStructuresAvailable =
-			depotEntryGroupRel.getDdmStructuresAvailable();
-		boolean searchable = depotEntryGroupRel.isSearchable();
-
 		DepotEntry depotEntry = _depotEntryLocalService.fetchDepotEntry(
 			depotEntryGroupRel.getDepotEntryId());
 
@@ -92,7 +88,8 @@ public class DepotEntryGroupRelStagedModelRepository
 		}
 
 		return _depotEntryGroupRelLocalService.addDepotEntryGroupRel(
-			ddmStructuresAvailable, depotEntryId, toGroupId, searchable);
+			depotEntryGroupRel.isDdmStructuresAvailable(), depotEntryId,
+			toGroupId, depotEntryGroupRel.isSearchable());
 	}
 
 	@Override
