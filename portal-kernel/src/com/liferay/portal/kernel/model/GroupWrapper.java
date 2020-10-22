@@ -746,6 +746,13 @@ public class GroupWrapper
 		return model.getScopeLabel(themeDisplay);
 	}
 
+	@Override
+	public String getScopeSimpleLabel(
+		com.liferay.portal.kernel.theme.ThemeDisplay themeDisplay) {
+
+		return model.getScopeSimpleLabel(themeDisplay);
+	}
+
 	/**
 	 * Returns the site of this group.
 	 *
