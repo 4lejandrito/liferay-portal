@@ -40,7 +40,7 @@ if (cmd.equals(Constants.EXPORT)) {
 	individualDeletionsTitle = "export-individual-deletions";
 }
 else {
-	individualDeletionsDescription = "deletions-help";
+	individualDeletionsDescription = LanguageUtil.format(request, "x-deletions-help", StringUtil.toLowerCase(LanguageUtil.get(request, liveGroup.getScopeSimpleLabel(themeDisplay))));
 	individualDeletionsTitle = "replicate-individual-deletions";
 }
 %>
