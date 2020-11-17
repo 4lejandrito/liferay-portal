@@ -445,19 +445,7 @@ public class WebServerServlet extends HttpServlet {
 					0, fileName.indexOf(StringPool.QUESTION));
 			}
 
-			try {
-				return DLAppServiceUtil.getFileEntryByFileName(
-					groupId, folderId, fileName);
-			}
-			catch (NoSuchFileEntryException noSuchFileEntryException) {
-				if (_log.isDebugEnabled()) {
-					_log.debug(
-						noSuchFileEntryException, noSuchFileEntryException);
-				}
-
-				return DLAppServiceUtil.getFileEntry(
-					groupId, folderId, fileName);
-			}
+			return _getFileEntry(groupId, folderId, fileName);
 		}
 		else {
 			long groupId = GetterUtil.getLong(pathArray[0]);
@@ -1340,19 +1328,7 @@ public class WebServerServlet extends HttpServlet {
 			String fileName = HttpUtil.decodeURL(pathArray[2]);
 
 			try {
-				try {
-					DLAppLocalServiceUtil.getFileEntryByFileName(
-						groupId, folderId, fileName);
-				}
-				catch (NoSuchFileEntryException noSuchFileEntryException) {
-					if (_log.isDebugEnabled()) {
-						_log.debug(
-							noSuchFileEntryException, noSuchFileEntryException);
-					}
-
-					DLAppLocalServiceUtil.getFileEntry(
-						groupId, folderId, fileName);
-				}
+				_getFileEntry(groupId, folderId, fileName);
 			}
 			catch (RepositoryException repositoryException) {
 
@@ -1380,6 +1356,23 @@ public class WebServerServlet extends HttpServlet {
 					_log.debug(repositoryException, repositoryException);
 				}
 			}
+		}
+	}
+
+	private static FileEntry _getFileEntry(
+			long groupId, long folderId, String fileName)
+		throws PortalException {
+
+		try {
+			return DLAppServiceUtil.getFileEntryByFileName(
+				groupId, folderId, fileName);
+		}
+		catch (NoSuchFileEntryException noSuchFileEntryException) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(noSuchFileEntryException, noSuchFileEntryException);
+			}
+
+			return DLAppServiceUtil.getFileEntry(groupId, folderId, fileName);
 		}
 	}
 
