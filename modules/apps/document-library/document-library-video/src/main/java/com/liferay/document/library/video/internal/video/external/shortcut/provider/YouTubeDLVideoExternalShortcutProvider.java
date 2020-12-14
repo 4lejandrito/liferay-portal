@@ -26,6 +26,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.Http;
+import com.liferay.portal.kernel.util.PortalRunMode;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
@@ -117,6 +118,10 @@ public class YouTubeDLVideoExternalShortcutProvider
 
 	private JSONObject _getEmbedJSONObject(String url) {
 		try {
+			if (PortalRunMode.isTestMode()) {
+				return JSONFactoryUtil.createJSONObject();
+			}
+
 			Http.Options options = new Http.Options();
 
 			options.addHeader("Content-Type", ContentTypes.APPLICATION_JSON);
