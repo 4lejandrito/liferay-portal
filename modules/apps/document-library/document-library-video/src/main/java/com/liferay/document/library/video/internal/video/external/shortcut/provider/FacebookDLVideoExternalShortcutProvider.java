@@ -16,8 +16,6 @@ package com.liferay.document.library.video.internal.video.external.shortcut.prov
 
 import com.liferay.document.library.video.external.shortcut.DLVideoExternalShortcut;
 import com.liferay.document.library.video.external.shortcut.provider.DLVideoExternalShortcutProvider;
-import com.liferay.frontend.editor.embed.EditorEmbedProvider;
-import com.liferay.frontend.editor.embed.constants.EditorEmbedProviderTypeConstants;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 
@@ -25,7 +23,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -34,12 +31,9 @@ import org.osgi.service.component.annotations.Component;
 /**
  * @author Alejandro Tardín
  */
-@Component(
-	property = "type=" + EditorEmbedProviderTypeConstants.VIDEO,
-	service = {DLVideoExternalShortcutProvider.class, EditorEmbedProvider.class}
-)
+@Component(service = DLVideoExternalShortcutProvider.class)
 public class FacebookDLVideoExternalShortcutProvider
-	implements DLVideoExternalShortcutProvider, EditorEmbedProvider {
+	implements DLVideoExternalShortcutProvider {
 
 	@Override
 	public DLVideoExternalShortcut getDLVideoExternalShortcut(String url) {
@@ -71,19 +65,13 @@ public class FacebookDLVideoExternalShortcutProvider
 
 			@Override
 			public String renderHTML(HttpServletRequest httpServletRequest) {
-				return StringUtil.replace(getTpl(), "{embedId}", url);
+				return StringUtil.replace(_getTpl(), "{embedId}", url);
 			}
 
 		};
 	}
 
-	@Override
-	public String getId() {
-		return "facebook";
-	}
-
-	@Override
-	public String getTpl() {
+	private String _getTpl() {
 		return StringBundler.concat(
 			"<iframe allowFullScreen=\"true\" allowTransparency=\"true\" ",
 			"frameborder=\"0\" height=\"315\" ",
@@ -91,17 +79,6 @@ public class FacebookDLVideoExternalShortcutProvider
 			"height=315&href={embedId}&show_text=0&width=560\" ",
 			"scrolling=\"no\" style=\"border: none; overflow: hidden;\" ",
 			"width=\"560\"></iframe>");
-	}
-
-	@Override
-	public String[] getURLSchemes() {
-		Stream<Pattern> stream = _urlPatterns.stream();
-
-		return stream.map(
-			Pattern::pattern
-		).toArray(
-			String[]::new
-		);
 	}
 
 	private boolean _matches(String url) {

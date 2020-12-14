@@ -16,8 +16,6 @@ package com.liferay.document.library.video.internal.video.external.shortcut.prov
 
 import com.liferay.document.library.video.external.shortcut.DLVideoExternalShortcut;
 import com.liferay.document.library.video.external.shortcut.provider.DLVideoExternalShortcutProvider;
-import com.liferay.frontend.editor.embed.EditorEmbedProvider;
-import com.liferay.frontend.editor.embed.constants.EditorEmbedProviderTypeConstants;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -35,7 +33,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -45,12 +42,9 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Alejandro Tardín
  */
-@Component(
-	property = "type=" + EditorEmbedProviderTypeConstants.VIDEO,
-	service = {DLVideoExternalShortcutProvider.class, EditorEmbedProvider.class}
-)
+@Component(service = DLVideoExternalShortcutProvider.class)
 public class VimeoDLVideoExternalShortcutProvider
-	implements DLVideoExternalShortcutProvider, EditorEmbedProvider {
+	implements DLVideoExternalShortcutProvider {
 
 	@Override
 	public DLVideoExternalShortcut getDLVideoExternalShortcut(String url) {
@@ -86,35 +80,10 @@ public class VimeoDLVideoExternalShortcutProvider
 
 			@Override
 			public String renderHTML(HttpServletRequest httpServletRequest) {
-				return StringUtil.replace(getTpl(), "{embedId}", vimeoVideoId);
+				return StringUtil.replace(_getTpl(), "{embedId}", vimeoVideoId);
 			}
 
 		};
-	}
-
-	@Override
-	public String getId() {
-		return "vimeo";
-	}
-
-	@Override
-	public String getTpl() {
-		return StringBundler.concat(
-			"<iframe allowfullscreen frameborder=\"0\" height=\"315\" ",
-			"mozallowfullscreen ",
-			"src=\"https://player.vimeo.com/video/{embedId}\" ",
-			"webkitallowfullscreen width=\"560\"></iframe>");
-	}
-
-	@Override
-	public String[] getURLSchemes() {
-		Stream<Pattern> stream = _urlPatterns.stream();
-
-		return stream.map(
-			Pattern::pattern
-		).toArray(
-			String[]::new
-		);
 	}
 
 	private JSONObject _getEmbedJSONObject(String url) {
@@ -148,6 +117,14 @@ public class VimeoDLVideoExternalShortcutProvider
 
 			return null;
 		}
+	}
+
+	private String _getTpl() {
+		return StringBundler.concat(
+			"<iframe allowfullscreen frameborder=\"0\" height=\"315\" ",
+			"mozallowfullscreen ",
+			"src=\"https://player.vimeo.com/video/{embedId}\" ",
+			"webkitallowfullscreen width=\"560\"></iframe>");
 	}
 
 	private String _getVimeoVideoId(String url) {
