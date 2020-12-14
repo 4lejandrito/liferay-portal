@@ -17,7 +17,6 @@ package com.liferay.document.library.video.internal.video.external.shortcut.prov
 import com.liferay.document.library.video.external.shortcut.DLVideoExternalShortcut;
 import com.liferay.document.library.video.external.shortcut.provider.DLVideoExternalShortcutProvider;
 import com.liferay.petra.string.StringBundler;
-import com.liferay.portal.kernel.util.StringUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -65,20 +64,16 @@ public class FacebookDLVideoExternalShortcutProvider
 
 			@Override
 			public String renderHTML(HttpServletRequest httpServletRequest) {
-				return StringUtil.replace(_getTpl(), "{embedId}", url);
+				return StringBundler.concat(
+					"<iframe allowFullScreen=\"true\" allowTransparency=",
+					"\"true\" frameborder=\"0\" height=\"315\" ",
+					"src=\"https://www.facebook.com/plugins/video.php?",
+					"height=315&href=", url, "&show_text=0&width=560\" ",
+					"scrolling=\"no\" style=\"border: none; overflow: ",
+					"hidden;\" width=\"560\"></iframe>");
 			}
 
 		};
-	}
-
-	private String _getTpl() {
-		return StringBundler.concat(
-			"<iframe allowFullScreen=\"true\" allowTransparency=\"true\" ",
-			"frameborder=\"0\" height=\"315\" ",
-			"src=\"https://www.facebook.com/plugins/video.php?",
-			"height=315&href={embedId}&show_text=0&width=560\" ",
-			"scrolling=\"no\" style=\"border: none; overflow: hidden;\" ",
-			"width=\"560\"></iframe>");
 	}
 
 	private boolean _matches(String url) {
