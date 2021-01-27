@@ -98,10 +98,7 @@ public class DLServiceUpgrade implements UpgradeStepRegistrator {
 			new com.liferay.document.library.internal.upgrade.v3_2_0.
 				UpgradeStorageQuota());
 
-		registry.register(
-			"3.2.0", "3.2.1", new UpgradeDDMStructureLink(),
-			new com.liferay.document.library.internal.upgrade.v3_2_1.
-				UpgradeDLFileEntryType());
+		registry.register("3.2.0", "3.2.1", new UpgradeDDMStructureLink());
 	}
 
 	@Reference
