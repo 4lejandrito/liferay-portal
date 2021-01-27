@@ -15,14 +15,13 @@
 package com.liferay.portal.upgrade.v7_4_x;
 
 import com.liferay.document.library.kernel.model.DLFileEntryMetadata;
-import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONUtil;
-import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
-import com.liferay.portal.kernel.service.ResourceLocalServiceUtil;
+import com.liferay.portal.kernel.model.ResourcePermission;
+import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 
@@ -71,13 +70,9 @@ public class UpgradeDLFileEntryType
 					ddmStructureId, rs.getString("name"),
 					ddmStructureVersionId);
 
-				ResourceLocalServiceUtil.addResources(
-					rs.getLong("companyId"), rs.getLong("groupId"),
-					rs.getLong("userId"),
-					ResourceActionsUtil.getCompositeModelName(
-						DLFileEntryMetadata.class.getName(),
-						DDMStructure.class.getName()),
-					ddmStructureId, false, false, false);
+				_addDDMStructureResourcePermissions(
+					rs.getLong("userId"), rs.getLong("companyId"),
+					ddmStructureId);
 
 				ps2.setLong(1, ddmStructureId);
 
@@ -179,6 +174,39 @@ public class UpgradeDLFileEntryType
 		}
 	}
 
+	private void _addDDMStructureResourcePermissions(
+			long userId, long companyId, long ddmStructureId)
+		throws Exception {
+
+		try (PreparedStatement ps = connection.prepareStatement(
+				StringBundler.concat(
+					"insert into ResourcePermission (resourcePermissionId, ",
+					"companyId, name, scope, primKey, primKeyId, roleId, ",
+					"ownerId, actionIds, viewActionId) values (?, ?, ?, ?, ?, ",
+					"?, ?, ?, ?, ?)"))) {
+
+			ps.setLong(1, increment(ResourcePermission.class.getName()));
+			ps.setLong(2, companyId);
+
+			String className =
+				"com.liferay.document.library.kernel.model." +
+					"DLFileEntryMetadata-com.liferay.dynamic.data.mapping." +
+						"model.DDMStructure";
+
+			ps.setString(3, className);
+
+			ps.setInt(4, 4);
+			ps.setString(5, String.valueOf(ddmStructureId));
+			ps.setLong(6, ddmStructureId);
+			ps.setLong(7, _getOwnerRoleId(companyId));
+			ps.setLong(8, userId);
+			ps.setLong(9, _getActionIds(className));
+			ps.setBoolean(10, true);
+
+			ps.executeUpdate();
+		}
+	}
+
 	private long _addDDMStructureVersion(
 			long userId, String userName, long companyId, long groupId,
 			long ddmStructureId, String name)
@@ -219,6 +247,46 @@ public class UpgradeDLFileEntryType
 			ps.executeUpdate();
 
 			return structureVersionId;
+		}
+	}
+
+	private long _getActionIds(String className) throws Exception {
+		long actionIds = 0;
+
+		try (PreparedStatement ps = connection.prepareStatement(
+				"select bitwiseValue from ResourceAction where name = ?")) {
+
+			ps.setString(1, className);
+
+			try (ResultSet rs = ps.executeQuery()) {
+				while (rs.next()) {
+					long bitwiseValue = rs.getLong(1);
+
+					actionIds |= bitwiseValue;
+				}
+			}
+		}
+
+		return actionIds;
+	}
+
+	private long _getOwnerRoleId(long companyId) throws Exception {
+		String roleName = RoleConstants.OWNER;
+		int roleType = RoleConstants.TYPE_REGULAR;
+
+		try (PreparedStatement ps = connection.prepareStatement(
+				"select roleId from Role_ where companyId = ? and name = ? " +
+					"and type_ = ?")) {
+
+			ps.setLong(1, companyId);
+			ps.setString(2, roleName);
+			ps.setInt(3, roleType);
+
+			try (ResultSet rs = ps.executeQuery()) {
+				rs.next();
+
+				return rs.getLong(1);
+			}
 		}
 	}
 
