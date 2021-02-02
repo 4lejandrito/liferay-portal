@@ -448,12 +448,6 @@ renderResponse.setTitle(headerTitle);
 											namespace="<%= liferayPortletResponse.getNamespace() + ddmStructure.getStructureId() %>"
 										/>
 
-										<liferay-frontend:component
-											componentId='<%= liferayPortletResponse.getNamespace() + "dataEngineLayoutRendererLanguageProxy" %>'
-											module="document_library/js/dataEngineLayoutRendererLanguageProxy.es"
-											servletContext="<%= application %>"
-										/>
-
 										<c:if test="<%= !dlEditFileEntryDisplayContext.isDDMStructureVisible(ddmStructure) %>">
 											</div>
 										</c:if>
