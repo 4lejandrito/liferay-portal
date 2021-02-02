@@ -172,6 +172,10 @@ AUI.add(
 				_clearFormValidator(input) {
 					var form = input.get('form');
 
+					if (!form) {
+						return;
+					}
+
 					var liferayForm = Liferay.Form.get(form.attr('id'));
 
 					if (liferayForm) {
