@@ -172,7 +172,11 @@ public class S3Store implements Store {
 					companyId, repositoryId, fileName, versionLabel);
 			}
 
-			return _s3FileCache.getCacheFileInputStream(s3Object, fileName);
+			ObjectMetadata objectMetadata = s3Object.getObjectMetadata();
+
+			return _s3FileCache.getCacheFileInputStream(
+				objectMetadata.getLastModified(), fileName,
+				s3Object::getObjectContent);
 		}
 		catch (IOException ioException) {
 			throw new SystemException(ioException);
