@@ -97,9 +97,8 @@ public class IBMS3Store implements Store {
 
 	@Override
 	public void addFile(
-			long companyId, long repositoryId, String fileName,
-			String versionLabel, InputStream inputStream)
-		throws PortalException {
+		long companyId, long repositoryId, String fileName, String versionLabel,
+		InputStream inputStream) {
 
 		if (hasFile(companyId, repositoryId, fileName, versionLabel)) {
 			deleteFile(companyId, repositoryId, fileName, versionLabel);
@@ -110,7 +109,10 @@ public class IBMS3Store implements Store {
 		try {
 			file = FileUtil.createTempFile(inputStream);
 
-			putObject(companyId, repositoryId, fileName, versionLabel, file);
+			String key = _s3KeyTransformer.getFileVersionKey(
+				companyId, repositoryId, fileName, versionLabel);
+
+			putObject(key, file);
 		}
 		catch (IOException ioException) {
 			throw new SystemException(ioException);
@@ -135,18 +137,10 @@ public class IBMS3Store implements Store {
 		long companyId, long repositoryId, String fileName,
 		String versionLabel) {
 
-		try {
-			String key = _s3KeyTransformer.getFileVersionKey(
-				companyId, repositoryId, fileName, versionLabel);
+		String key = _s3KeyTransformer.getFileVersionKey(
+			companyId, repositoryId, fileName, versionLabel);
 
-			DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(
-				_bucketName, key);
-
-			_amazonS3.deleteObject(deleteObjectRequest);
-		}
-		catch (AmazonClientException amazonClientException) {
-			throw transform(amazonClientException);
-		}
+		deleteObject(key);
 	}
 
 	public String getBucketName() {
@@ -162,8 +156,20 @@ public class IBMS3Store implements Store {
 		try {
 			_s3FileCache.cleanUpCacheFiles();
 
-			S3Object s3Object = getS3Object(
+			if (Validator.isNull(versionLabel)) {
+				versionLabel = getHeadVersionLabel(
+					companyId, repositoryId, fileName);
+			}
+
+			String key = _s3KeyTransformer.getFileVersionKey(
 				companyId, repositoryId, fileName, versionLabel);
+
+			S3Object s3Object = getS3Object(key);
+
+			if (s3Object == null) {
+				throw new NoSuchFileException(
+					companyId, repositoryId, fileName, versionLabel);
+			}
 
 			return _s3FileCache.getCacheFileInputStream(s3Object, fileName);
 		}
@@ -216,11 +222,7 @@ public class IBMS3Store implements Store {
 		String key = _s3KeyTransformer.getFileVersionKey(
 			companyId, repositoryId, fileName, versionLabel);
 
-		GetObjectMetadataRequest getObjectMetadataRequest =
-			new GetObjectMetadataRequest(_bucketName, key);
-
-		ObjectMetadata objectMetadata = _amazonS3.getObjectMetadata(
-			getObjectMetadataRequest);
+		ObjectMetadata objectMetadata = getObjectMetadata(key);
 
 		if (objectMetadata == null) {
 			throw new NoSuchFileException(companyId, repositoryId, fileName);
@@ -276,14 +278,7 @@ public class IBMS3Store implements Store {
 			String key = _s3KeyTransformer.getFileVersionKey(
 				companyId, repositoryId, fileName, versionLabel);
 
-			return _amazonS3.doesObjectExist(_bucketName, key);
-		}
-		catch (AmazonClientException amazonClientException) {
-			if (isFileNotFound(amazonClientException)) {
-				return false;
-			}
-
-			throw transform(amazonClientException);
+			return doesObjectExist(key);
 		}
 		catch (NoSuchFileException noSuchFileException) {
 
@@ -419,6 +414,18 @@ public class IBMS3Store implements Store {
 		_s3StoreConfiguration = null;
 	}
 
+	protected void deleteObject(String key) {
+		try {
+			DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(
+				_bucketName, key);
+
+			_amazonS3.deleteObject(deleteObjectRequest);
+		}
+		catch (AmazonClientException amazonClientException) {
+			throw transform(amazonClientException);
+		}
+	}
+
 	protected void deleteObjects(String prefix) {
 		try {
 			String[] keys = new String[_DELETE_MAX];
@@ -429,9 +436,6 @@ public class IBMS3Store implements Store {
 			Iterator<S3ObjectSummary> iterator = s3ObjectSummaries.iterator();
 
 			while (iterator.hasNext()) {
-				DeleteObjectsRequest deleteObjectsRequest =
-					new DeleteObjectsRequest(_bucketName);
-
 				for (int i = 0; i < keys.length; i++) {
 					if (iterator.hasNext()) {
 						S3ObjectSummary s3ObjectSummary = iterator.next();
@@ -445,12 +449,28 @@ public class IBMS3Store implements Store {
 					}
 				}
 
+				DeleteObjectsRequest deleteObjectsRequest =
+					new DeleteObjectsRequest(_bucketName);
+
 				deleteObjectsRequest.withKeys(keys);
 
 				_amazonS3.deleteObjects(deleteObjectsRequest);
 			}
 		}
 		catch (AmazonClientException amazonClientException) {
+			throw transform(amazonClientException);
+		}
+	}
+
+	protected boolean doesObjectExist(String key) {
+		try {
+			return _amazonS3.doesObjectExist(_bucketName, key);
+		}
+		catch (AmazonClientException amazonClientException) {
+			if (isFileNotFound(amazonClientException)) {
+				return false;
+			}
+
 			throw transform(amazonClientException);
 		}
 	}
@@ -536,36 +556,23 @@ public class IBMS3Store implements Store {
 		throw new NoSuchFileException(companyId, repositoryId, fileName);
 	}
 
-	protected S3Object getS3Object(
-			long companyId, long repositoryId, String fileName,
-			String versionLabel)
-		throws NoSuchFileException {
+	protected ObjectMetadata getObjectMetadata(String key) {
+		GetObjectMetadataRequest getObjectMetadataRequest =
+			new GetObjectMetadataRequest(_bucketName, key);
 
+		return _amazonS3.getObjectMetadata(getObjectMetadataRequest);
+	}
+
+	protected S3Object getS3Object(String key) {
 		try {
-			if (Validator.isNull(versionLabel)) {
-				versionLabel = getHeadVersionLabel(
-					companyId, repositoryId, fileName);
-			}
-
-			String key = _s3KeyTransformer.getFileVersionKey(
-				companyId, repositoryId, fileName, versionLabel);
-
 			GetObjectRequest getObjectRequest = new GetObjectRequest(
 				_bucketName, key);
 
-			S3Object s3Object = _amazonS3.getObject(getObjectRequest);
-
-			if (s3Object == null) {
-				throw new NoSuchFileException(
-					companyId, repositoryId, fileName, versionLabel);
-			}
-
-			return s3Object;
+			return _amazonS3.getObject(getObjectRequest);
 		}
 		catch (AmazonClientException amazonClientException) {
 			if (isFileNotFound(amazonClientException)) {
-				throw new NoSuchFileException(
-					companyId, repositoryId, fileName, versionLabel);
+				return null;
 			}
 
 			throw transform(amazonClientException);
@@ -652,17 +659,10 @@ public class IBMS3Store implements Store {
 		activate(properties);
 	}
 
-	protected void putObject(
-			long companyId, long repositoryId, String fileName,
-			String versionLabel, File file)
-		throws PortalException {
-
+	protected void putObject(String key, File file) {
 		Upload upload = null;
 
 		try {
-			String key = _s3KeyTransformer.getFileVersionKey(
-				companyId, repositoryId, fileName, versionLabel);
-
 			PutObjectRequest putObjectRequest = new PutObjectRequest(
 				_bucketName, key, file);
 
