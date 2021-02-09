@@ -57,6 +57,7 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.FileUtil;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.store.s3.configuration.S3StoreConfiguration;
 
@@ -192,17 +193,16 @@ public class S3Store implements Store {
 				companyId, repositoryId, dirName);
 		}
 
-		List<S3ObjectSummary> s3ObjectSummaries = getS3ObjectSummaries(key);
+		List<String> s3ObjectKeys = getS3ObjectKeys(key);
 
-		Iterator<S3ObjectSummary> iterator = s3ObjectSummaries.iterator();
+		Iterator<String> iterator = s3ObjectKeys.iterator();
 
-		String[] fileNames = new String[s3ObjectSummaries.size()];
+		String[] fileNames = new String[s3ObjectKeys.size()];
 
 		for (int i = 0; i < fileNames.length; i++) {
-			S3ObjectSummary s3ObjectSummary = iterator.next();
+			String s3ObjectKey = iterator.next();
 
-			fileNames[i] = _s3KeyTransformer.getFileName(
-				s3ObjectSummary.getKey());
+			fileNames[i] = _s3KeyTransformer.getFileName(s3ObjectKey);
 		}
 
 		return fileNames;
@@ -238,18 +238,16 @@ public class S3Store implements Store {
 		String key = _s3KeyTransformer.getFileKey(
 			companyId, repositoryId, fileName);
 
-		List<S3ObjectSummary> s3ObjectSummaries = getS3ObjectSummaries(key);
+		List<String> s3ObjectKeys = getS3ObjectKeys(key);
 
-		if (s3ObjectSummaries.isEmpty()) {
+		if (s3ObjectKeys.isEmpty()) {
 			return StringPool.EMPTY_ARRAY;
 		}
 
-		String[] versions = new String[s3ObjectSummaries.size()];
+		String[] versions = new String[s3ObjectKeys.size()];
 
-		for (int i = 0; i < s3ObjectSummaries.size(); i++) {
-			S3ObjectSummary s3ObjectSummary = s3ObjectSummaries.get(i);
-
-			String versionKey = s3ObjectSummary.getKey();
+		for (int i = 0; i < s3ObjectKeys.size(); i++) {
+			String versionKey = s3ObjectKeys.get(i);
 
 			versions[i] = versionKey.substring(
 				versionKey.lastIndexOf(CharPool.SLASH) + 1);
@@ -430,17 +428,14 @@ public class S3Store implements Store {
 		try {
 			String[] keys = new String[_DELETE_MAX];
 
-			List<S3ObjectSummary> s3ObjectSummaries = getS3ObjectSummaries(
-				prefix);
+			List<String> s3ObjectKeys = getS3ObjectKeys(prefix);
 
-			Iterator<S3ObjectSummary> iterator = s3ObjectSummaries.iterator();
+			Iterator<String> iterator = s3ObjectKeys.iterator();
 
 			while (iterator.hasNext()) {
 				for (int i = 0; i < keys.length; i++) {
 					if (iterator.hasNext()) {
-						S3ObjectSummary s3ObjectSummary = iterator.next();
-
-						keys[i] = s3ObjectSummary.getKey();
+						keys[i] = iterator.next();
 					}
 					else {
 						keys = Arrays.copyOfRange(keys, 0, i);
@@ -449,17 +444,21 @@ public class S3Store implements Store {
 					}
 				}
 
-				DeleteObjectsRequest deleteObjectsRequest =
-					new DeleteObjectsRequest(_bucketName);
-
-				deleteObjectsRequest.withKeys(keys);
-
-				_amazonS3.deleteObjects(deleteObjectsRequest);
+				deleteObjects(keys);
 			}
 		}
 		catch (AmazonClientException amazonClientException) {
 			throw transform(amazonClientException);
 		}
+	}
+
+	protected void deleteObjects(String[] keys) {
+		DeleteObjectsRequest deleteObjectsRequest = new DeleteObjectsRequest(
+			_bucketName);
+
+		deleteObjectsRequest.withKeys(keys);
+
+		_amazonS3.deleteObjects(deleteObjectsRequest);
 	}
 
 	protected boolean doesObjectExist(String key) {
@@ -531,16 +530,14 @@ public class S3Store implements Store {
 		String key = _s3KeyTransformer.getFileKey(
 			companyId, repositoryId, fileName);
 
-		List<S3ObjectSummary> s3ObjectSummaries = getS3ObjectSummaries(key);
+		List<String> s3ObjectKeys = getS3ObjectKeys(key);
 
-		Iterator<S3ObjectSummary> iterator = s3ObjectSummaries.iterator();
+		Iterator<String> iterator = s3ObjectKeys.iterator();
 
-		String[] keys = new String[s3ObjectSummaries.size()];
+		String[] keys = new String[s3ObjectKeys.size()];
 
 		for (int i = 0; i < keys.length; i++) {
-			S3ObjectSummary s3ObjectSummary = iterator.next();
-
-			keys[i] = s3ObjectSummary.getKey();
+			keys[i] = iterator.next();
 		}
 
 		if (keys.length > 0) {
@@ -579,7 +576,7 @@ public class S3Store implements Store {
 		}
 	}
 
-	protected List<S3ObjectSummary> getS3ObjectSummaries(String prefix) {
+	protected List<String> getS3ObjectKeys(String prefix) {
 		try {
 			ListObjectsRequest listObjectsRequest = new ListObjectsRequest();
 
@@ -604,7 +601,7 @@ public class S3Store implements Store {
 				}
 			}
 
-			return s3ObjectSummaries;
+			return ListUtil.toList(s3ObjectSummaries, S3ObjectSummary::getKey);
 		}
 		catch (AmazonClientException amazonClientException) {
 			throw transform(amazonClientException);
