@@ -226,13 +226,13 @@ public class IBMS3Store implements Store {
 		String key = _s3KeyTransformer.getFileVersionKey(
 			companyId, repositoryId, fileName, versionLabel);
 
-		ObjectMetadata objectMetadata = getObjectMetadata(key);
+		Long contentLength = getObjectContentLength(key);
 
-		if (objectMetadata == null) {
+		if (contentLength == null) {
 			throw new NoSuchFileException(companyId, repositoryId, fileName);
 		}
 
-		return objectMetadata.getContentLength();
+		return contentLength;
 	}
 
 	@Override
@@ -557,11 +557,18 @@ public class IBMS3Store implements Store {
 		throw new NoSuchFileException(companyId, repositoryId, fileName);
 	}
 
-	protected ObjectMetadata getObjectMetadata(String key) {
+	protected Long getObjectContentLength(String key) {
 		GetObjectMetadataRequest getObjectMetadataRequest =
 			new GetObjectMetadataRequest(_bucketName, key);
 
-		return _amazonS3.getObjectMetadata(getObjectMetadataRequest);
+		ObjectMetadata objectMetadata = _amazonS3.getObjectMetadata(
+			getObjectMetadataRequest);
+
+		if (objectMetadata == null) {
+			return null;
+		}
+
+		return objectMetadata.getContentLength();
 	}
 
 	protected S3Object getS3Object(String key) {
