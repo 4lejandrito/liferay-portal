@@ -29,7 +29,7 @@ public class FragmentEntryLinkUpgradeProcess extends UpgradeProcess {
 			alter(
 				FragmentEntryLinkTable.class,
 				new AlterTableAddColumn(
-					"segmentsExperienceId", DBColumnType.longType()));
+					"segmentsExperienceId", DBColumnType.getLong()));
 
 			runSQL("update FragmentEntryLink set segmentsExperienceId = 0");
 		}

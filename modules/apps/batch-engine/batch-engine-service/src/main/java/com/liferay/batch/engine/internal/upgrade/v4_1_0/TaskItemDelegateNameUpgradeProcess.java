@@ -31,7 +31,7 @@ public class TaskItemDelegateNameUpgradeProcess extends UpgradeProcess {
 				BatchEngineExportTaskTable.class,
 				new AlterTableAddColumn(
 					"taskItemDelegateName",
-					DBColumnType.varcharType(75, "null")));
+					DBColumnType.getVarchar(75, "null")));
 		}
 
 		if (!hasColumn("BatchEngineImportTask", "taskItemDelegateName")) {
@@ -39,7 +39,7 @@ public class TaskItemDelegateNameUpgradeProcess extends UpgradeProcess {
 				BatchEngineImportTaskTable.class,
 				new AlterTableAddColumn(
 					"taskItemDelegateName",
-					DBColumnType.varcharType(75, "null")));
+					DBColumnType.getVarchar(75, "null")));
 		}
 	}
 

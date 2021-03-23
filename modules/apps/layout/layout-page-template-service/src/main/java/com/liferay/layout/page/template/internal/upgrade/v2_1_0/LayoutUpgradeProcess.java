@@ -138,7 +138,7 @@ public class LayoutUpgradeProcess extends UpgradeProcess {
 	protected void upgradeSchema() throws Exception {
 		alter(
 			LayoutPageTemplateEntryTable.class,
-			new AlterTableAddColumn("plid", DBColumnType.longType()));
+			new AlterTableAddColumn("plid", DBColumnType.getLong()));
 	}
 
 	private long _getPlid(

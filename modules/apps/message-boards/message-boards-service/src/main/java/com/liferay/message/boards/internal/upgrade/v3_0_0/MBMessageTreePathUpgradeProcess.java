@@ -39,7 +39,7 @@ public class MBMessageTreePathUpgradeProcess extends UpgradeProcess {
 		if (!hasColumn("MBMessage", "treePath")) {
 			alter(
 				MBMessageTable.class,
-				new AlterTableAddColumn("treePath", DBColumnType.stringType()));
+				new AlterTableAddColumn("treePath", DBColumnType.getString()));
 		}
 
 		_populateTreePath();

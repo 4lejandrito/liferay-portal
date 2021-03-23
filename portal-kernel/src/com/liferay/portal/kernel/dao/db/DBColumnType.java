@@ -22,35 +22,35 @@ import com.liferay.petra.string.StringPool;
  */
 public final class DBColumnType {
 
-	public static DBColumnType booleanType() {
+	public static DBColumnType getBoolean() {
 		return new DBColumnType(TypeName.BOOLEAN);
 	}
 
-	public static DBColumnType dateType() {
+	public static DBColumnType getDate() {
 		return new DBColumnType(TypeName.DATE, "null");
 	}
 
-	public static DBColumnType doubleType() {
+	public static DBColumnType getDouble() {
 		return new DBColumnType(TypeName.DOUBLE);
 	}
 
-	public static DBColumnType integerType() {
+	public static DBColumnType getInteger() {
 		return new DBColumnType(TypeName.INTEGER);
 	}
 
-	public static DBColumnType longType() {
+	public static DBColumnType getLong() {
 		return new DBColumnType(TypeName.LONG);
 	}
 
-	public static DBColumnType stringType() {
+	public static DBColumnType getString() {
 		return new DBColumnType(TypeName.STRING, "null");
 	}
 
-	public static DBColumnType varcharType(long length) {
-		return varcharType(length, StringPool.BLANK);
+	public static DBColumnType getVarchar(long length) {
+		return getVarchar(length, StringPool.BLANK);
 	}
 
-	public static DBColumnType varcharType(long length, String defaultValue) {
+	public static DBColumnType getVarchar(long length, String defaultValue) {
 		return new DBColumnType(
 			TypeName.STRING,
 			StringBundler.concat(

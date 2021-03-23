@@ -32,7 +32,7 @@ public class DispatchTriggerUpgradeProcess extends UpgradeProcess {
 		alter(
 			DispatchTriggerTable.class,
 			new AlterTableAddColumn(
-				"overlapAllowed", DBColumnType.booleanType()));
+				"overlapAllowed", DBColumnType.getBoolean()));
 	}
 
 }

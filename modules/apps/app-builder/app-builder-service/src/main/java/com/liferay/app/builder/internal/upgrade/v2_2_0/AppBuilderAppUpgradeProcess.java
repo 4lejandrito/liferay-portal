@@ -49,7 +49,7 @@ public class AppBuilderAppUpgradeProcess extends UpgradeProcess {
 			alter(
 				AppBuilderAppTable.class,
 				new AlterTableAddColumn(
-					"ddlRecordSetId", DBColumnType.longType()));
+					"ddlRecordSetId", DBColumnType.getLong()));
 
 			try (PreparedStatement ps1 = connection.prepareStatement(
 					"select appBuilderAppId, ddmStructureId, groupId from " +

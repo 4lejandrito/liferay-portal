@@ -69,7 +69,7 @@ public class LayoutPageTemplateEntryUpgradeProcess extends UpgradeProcess {
 		alter(
 			LayoutPageTemplateEntryTable.class,
 			new AlterTableAddColumn(
-				"layoutPageTemplateEntryKey", DBColumnType.varcharType(75)));
+				"layoutPageTemplateEntryKey", DBColumnType.getVarchar(75)));
 	}
 
 	private String _generateLayoutPageTemplateEntryKey(String name) {

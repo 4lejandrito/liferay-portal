@@ -28,7 +28,7 @@ public class DLOpenerFileEntryReferenceUpgradeProcess extends UpgradeProcess {
 		alter(
 			DLOpenerFileEntryReferenceTable.class,
 			new AlterTableAddColumn(
-				"referenceType", DBColumnType.varcharType(75, "null")));
+				"referenceType", DBColumnType.getVarchar(75, "null")));
 
 		runSQL(
 			"update " + DLOpenerFileEntryReferenceTable.TABLE_NAME +

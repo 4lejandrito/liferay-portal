@@ -51,7 +51,7 @@ public class MicroblogsEntryUpgradeProcess extends UpgradeProcess {
 			alter(
 				MicroblogsEntryTable.class,
 				new AlterTableAddColumn(
-					"parentMicroblogsEntryId", DBColumnType.longType()));
+					"parentMicroblogsEntryId", DBColumnType.getLong()));
 
 			runSQL(
 				"update MicroblogsEntry set parentMicroblogsEntryId = " +

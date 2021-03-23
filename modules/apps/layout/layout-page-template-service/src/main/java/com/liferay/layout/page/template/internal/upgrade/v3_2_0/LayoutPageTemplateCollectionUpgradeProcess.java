@@ -71,7 +71,7 @@ public class LayoutPageTemplateCollectionUpgradeProcess extends UpgradeProcess {
 		alter(
 			LayoutPageTemplateCollectionTable.class,
 			new AlterTableAddColumn(
-				"lptCollectionKey", DBColumnType.varcharType(75)));
+				"lptCollectionKey", DBColumnType.getVarchar(75)));
 	}
 
 	private String _generateLayoutPageTemplateCollectionKey(String name) {

@@ -28,7 +28,7 @@ public class DepotEntryGroupRelUpgradeProcess extends UpgradeProcess {
 		alter(
 			DepotEntryGroupRelTable.class,
 			new AlterTableAddColumn(
-				"ddmStructuresAvailable", DBColumnType.booleanType()));
+				"ddmStructuresAvailable", DBColumnType.getBoolean()));
 	}
 
 }

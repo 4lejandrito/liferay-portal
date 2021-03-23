@@ -29,7 +29,7 @@ public class UpgradeLayoutStyleBookEntry extends UpgradeProcess {
 			alter(
 				LayoutTable.class,
 				new AlterTableAddColumn(
-					"styleBookEntryId", DBColumnType.longType()));
+					"styleBookEntryId", DBColumnType.getLong()));
 		}
 
 		runSQL("update Layout set styleBookEntryId = 0");

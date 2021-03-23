@@ -28,9 +28,9 @@ public class SchemaUpgradeProcess extends UpgradeProcess {
 	protected void doUpgrade() throws Exception {
 		alter(
 			LayoutSEOEntryTable.class,
-			new AlterTableAddColumn("DDMStorageId", DBColumnType.longType()),
+			new AlterTableAddColumn("DDMStorageId", DBColumnType.getLong()),
 			new AlterTableAddColumn(
-				"openGraphImageAlt", DBColumnType.stringType()));
+				"openGraphImageAlt", DBColumnType.getString()));
 
 		String template = StringUtil.read(
 			SchemaUpgradeProcess.class.getResourceAsStream(

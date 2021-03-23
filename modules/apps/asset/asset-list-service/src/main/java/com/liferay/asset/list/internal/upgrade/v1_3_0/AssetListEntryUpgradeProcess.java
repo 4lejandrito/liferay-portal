@@ -29,9 +29,9 @@ public class AssetListEntryUpgradeProcess extends UpgradeProcess {
 		alter(
 			AssetListEntryTable.class,
 			new AlterTableAddColumn(
-				"assetEntrySubtype", DBColumnType.varcharType(255, "null")),
+				"assetEntrySubtype", DBColumnType.getVarchar(255, "null")),
 			new AlterTableAddColumn(
-				"assetEntryType", DBColumnType.varcharType(255, "null")));
+				"assetEntryType", DBColumnType.getVarchar(255, "null")));
 
 		runSQL(
 			"update AssetListEntry set assetEntryType = '" +

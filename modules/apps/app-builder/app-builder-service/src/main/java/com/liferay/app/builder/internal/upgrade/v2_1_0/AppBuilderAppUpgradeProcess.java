@@ -32,7 +32,7 @@ public class AppBuilderAppUpgradeProcess extends UpgradeProcess {
 			alter(
 				AppBuilderAppTable.class,
 				new AlterTableAddColumn(
-					"scope", DBColumnType.varcharType(75, "null")));
+					"scope", DBColumnType.getVarchar(75, "null")));
 
 			try (PreparedStatement ps = connection.prepareStatement(
 					"update AppBuilderApp set scope = ?")) {

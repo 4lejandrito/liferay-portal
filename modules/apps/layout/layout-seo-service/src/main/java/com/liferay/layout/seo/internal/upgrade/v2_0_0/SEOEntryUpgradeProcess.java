@@ -29,15 +29,14 @@ public class SEOEntryUpgradeProcess extends UpgradeProcess {
 			LayoutSEOEntryTable.class,
 			new AlterColumnName("enabled", "canonicalURLEnabled BOOLEAN"),
 			new AlterTableAddColumn(
-				"openGraphTitleEnabled", DBColumnType.booleanType()),
+				"openGraphTitleEnabled", DBColumnType.getBoolean()),
+			new AlterTableAddColumn("openGraphTitle", DBColumnType.getString()),
 			new AlterTableAddColumn(
-				"openGraphTitle", DBColumnType.stringType()),
+				"openGraphDescriptionEnabled", DBColumnType.getBoolean()),
 			new AlterTableAddColumn(
-				"openGraphDescriptionEnabled", DBColumnType.booleanType()),
+				"openGraphDescription", DBColumnType.getString()),
 			new AlterTableAddColumn(
-				"openGraphDescription", DBColumnType.stringType()),
-			new AlterTableAddColumn(
-				"openGraphImageFileEntryId", DBColumnType.longType()));
+				"openGraphImageFileEntryId", DBColumnType.getLong()));
 	}
 
 }
