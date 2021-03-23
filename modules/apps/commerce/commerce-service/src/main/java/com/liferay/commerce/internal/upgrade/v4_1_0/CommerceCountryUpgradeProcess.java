@@ -30,7 +30,7 @@ public class CommerceCountryUpgradeProcess
 			alter(
 				CommerceCountryTable.class,
 				new AlterTableAddColumn(
-					"channelFilterEnabled", DBColumnType.booleanType()));
+					"channelFilterEnabled", DBColumnType.getBoolean()));
 
 			runSQL(
 				"update CommerceCountry set channelFilterEnabled = [$FALSE$]");

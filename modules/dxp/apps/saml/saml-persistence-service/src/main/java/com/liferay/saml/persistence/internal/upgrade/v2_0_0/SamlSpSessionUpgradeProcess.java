@@ -34,7 +34,7 @@ public class SamlSpSessionUpgradeProcess extends UpgradeProcess {
 			alter(
 				SamlSpSessionTable.class,
 				new AlterTableAddColumn(
-					"samlIdpEntityId", DBColumnType.varcharType(1024, "null")));
+					"samlIdpEntityId", DBColumnType.getVarchar(1024, "null")));
 		}
 		catch (SQLException sqlException) {
 			if (_log.isDebugEnabled()) {

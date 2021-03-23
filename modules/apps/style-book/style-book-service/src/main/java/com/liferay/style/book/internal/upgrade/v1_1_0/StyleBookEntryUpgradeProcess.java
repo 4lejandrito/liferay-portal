@@ -38,8 +38,8 @@ public class StyleBookEntryUpgradeProcess extends UpgradeProcess {
 		alter(
 			StyleBookEntryTable.class,
 			new AlterTableAddColumn(
-				"uuid_", DBColumnType.varcharType(75, "null")),
-			new AlterTableAddColumn("modifiedDate", DBColumnType.dateType()));
+				"uuid_", DBColumnType.getVarchar(75, "null")),
+			new AlterTableAddColumn("modifiedDate", DBColumnType.getDate()));
 
 		try (LoggingTimer loggingTimer = new LoggingTimer()) {
 			try (PreparedStatement ps1 = connection.prepareStatement(

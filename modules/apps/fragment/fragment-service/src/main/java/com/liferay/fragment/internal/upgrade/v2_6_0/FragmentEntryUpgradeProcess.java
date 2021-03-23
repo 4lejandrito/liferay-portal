@@ -77,8 +77,8 @@ public class FragmentEntryUpgradeProcess extends UpgradeProcess {
 	protected void upgradeSchema() throws Exception {
 		alter(
 			FragmentEntryTable.class,
-			new AlterTableAddColumn("headId", DBColumnType.longType()),
-			new AlterTableAddColumn("head", DBColumnType.booleanType()));
+			new AlterTableAddColumn("headId", DBColumnType.getLong()),
+			new AlterTableAddColumn("head", DBColumnType.getBoolean()));
 	}
 
 }

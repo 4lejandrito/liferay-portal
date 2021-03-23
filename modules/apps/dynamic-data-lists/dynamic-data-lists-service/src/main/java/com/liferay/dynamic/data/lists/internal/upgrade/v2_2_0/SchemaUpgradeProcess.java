@@ -29,13 +29,13 @@ public class SchemaUpgradeProcess extends UpgradeProcess {
 			alter(
 				DDLRecordTable.class,
 				new AlterTableAddColumn(
-					"className", DBColumnType.varcharType(300, "null")));
+					"className", DBColumnType.getVarchar(300, "null")));
 		}
 
 		if (!hasColumn("DDLRecord", "classPK")) {
 			alter(
 				DDLRecordTable.class,
-				new AlterTableAddColumn("classPK", DBColumnType.longType()));
+				new AlterTableAddColumn("classPK", DBColumnType.getLong()));
 		}
 	}
 

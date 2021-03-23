@@ -68,77 +68,77 @@ public class SchemaUpgradeProcess extends UpgradeProcess {
 				alter(
 					KaleoActionTable.class,
 					new AlterTableAddColumn(
-						"kaleoDefinitionId", DBColumnType.longType()));
+						"kaleoDefinitionId", DBColumnType.getLong()));
 			}
 
 			if (!hasColumn("KaleoCondition", "kaleoDefinitionId")) {
 				alter(
 					KaleoConditionTable.class,
 					new AlterTableAddColumn(
-						"kaleoDefinitionId", DBColumnType.longType()));
+						"kaleoDefinitionId", DBColumnType.getLong()));
 			}
 
 			if (!hasColumn("KaleoDefinitionVersion", "kaleoDefinitionId")) {
 				alter(
 					KaleoDefinitionVersionTable.class,
 					new AlterTableAddColumn(
-						"kaleoDefinitionId", DBColumnType.longType()));
+						"kaleoDefinitionId", DBColumnType.getLong()));
 			}
 
 			if (!hasColumn("KaleoInstance", "kaleoDefinitionId")) {
 				alter(
 					KaleoInstanceTable.class,
 					new AlterTableAddColumn(
-						"kaleoDefinitionId", DBColumnType.longType()));
+						"kaleoDefinitionId", DBColumnType.getLong()));
 			}
 
 			if (!hasColumn("KaleoInstanceToken", "kaleoDefinitionId")) {
 				alter(
 					KaleoInstanceTokenTable.class,
 					new AlterTableAddColumn(
-						"kaleoDefinitionId", DBColumnType.longType()));
+						"kaleoDefinitionId", DBColumnType.getLong()));
 			}
 
 			if (!hasColumn("KaleoLog", "kaleoDefinitionId")) {
 				alter(
 					KaleoLogTable.class,
 					new AlterTableAddColumn(
-						"kaleoDefinitionId", DBColumnType.longType()));
+						"kaleoDefinitionId", DBColumnType.getLong()));
 			}
 
 			if (!hasColumn("KaleoNode", "kaleoDefinitionId")) {
 				alter(
 					KaleoNodeTable.class,
 					new AlterTableAddColumn(
-						"kaleoDefinitionId", DBColumnType.longType()));
+						"kaleoDefinitionId", DBColumnType.getLong()));
 			}
 
 			if (!hasColumn("KaleoNotification", "kaleoDefinitionId")) {
 				alter(
 					KaleoNotificationTable.class,
 					new AlterTableAddColumn(
-						"kaleoDefinitionId", DBColumnType.longType()));
+						"kaleoDefinitionId", DBColumnType.getLong()));
 			}
 
 			if (!hasColumn("KaleoNotificationRecipient", "kaleoDefinitionId")) {
 				alter(
 					KaleoNotificationRecipientTable.class,
 					new AlterTableAddColumn(
-						"kaleoDefinitionId", DBColumnType.longType()));
+						"kaleoDefinitionId", DBColumnType.getLong()));
 			}
 
 			if (!hasColumn("KaleoTask", "kaleoDefinitionId")) {
 				alter(
 					KaleoTaskTable.class,
 					new AlterTableAddColumn(
-						"kaleoDefinitionId", DBColumnType.longType()));
+						"kaleoDefinitionId", DBColumnType.getLong()));
 			}
 
 			if (!hasColumn("KaleoTaskAssignment", "kaleoDefinitionId")) {
 				alter(
 					KaleoTaskAssignmentTable.class,
 					new AlterTableAddColumn(
-						"kaleoDefinitionId", DBColumnType.longType()));
+						"kaleoDefinitionId", DBColumnType.getLong()));
 			}
 
 			if (!hasColumn(
@@ -147,49 +147,49 @@ public class SchemaUpgradeProcess extends UpgradeProcess {
 				alter(
 					KaleoTaskAssignmentInstanceTable.class,
 					new AlterTableAddColumn(
-						"kaleoDefinitionId", DBColumnType.longType()));
+						"kaleoDefinitionId", DBColumnType.getLong()));
 			}
 
 			if (!hasColumn("KaleoTaskForm", "kaleoDefinitionId")) {
 				alter(
 					KaleoTaskFormTable.class,
 					new AlterTableAddColumn(
-						"kaleoDefinitionId", DBColumnType.longType()));
+						"kaleoDefinitionId", DBColumnType.getLong()));
 			}
 
 			if (!hasColumn("KaleoTaskFormInstance", "kaleoDefinitionId")) {
 				alter(
 					KaleoTaskFormInstanceTable.class,
 					new AlterTableAddColumn(
-						"kaleoDefinitionId", DBColumnType.longType()));
+						"kaleoDefinitionId", DBColumnType.getLong()));
 			}
 
 			if (!hasColumn("KaleoTaskInstanceToken", "kaleoDefinitionId")) {
 				alter(
 					KaleoTaskInstanceTokenTable.class,
 					new AlterTableAddColumn(
-						"kaleoDefinitionId", DBColumnType.longType()));
+						"kaleoDefinitionId", DBColumnType.getLong()));
 			}
 
 			if (!hasColumn("KaleoTimer", "kaleoDefinitionId")) {
 				alter(
 					KaleoTimerTable.class,
 					new AlterTableAddColumn(
-						"kaleoDefinitionId", DBColumnType.longType()));
+						"kaleoDefinitionId", DBColumnType.getLong()));
 			}
 
 			if (!hasColumn("KaleoTimerInstanceToken", "kaleoDefinitionId")) {
 				alter(
 					KaleoTimerInstanceTokenTable.class,
 					new AlterTableAddColumn(
-						"kaleoDefinitionId", DBColumnType.longType()));
+						"kaleoDefinitionId", DBColumnType.getLong()));
 			}
 
 			if (!hasColumn("KaleoTransition", "kaleoDefinitionId")) {
 				alter(
 					KaleoTransitionTable.class,
 					new AlterTableAddColumn(
-						"kaleoDefinitionId", DBColumnType.longType()));
+						"kaleoDefinitionId", DBColumnType.getLong()));
 			}
 		}
 	}

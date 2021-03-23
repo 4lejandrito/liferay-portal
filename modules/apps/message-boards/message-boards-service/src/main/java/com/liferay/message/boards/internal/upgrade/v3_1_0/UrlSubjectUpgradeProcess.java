@@ -39,7 +39,7 @@ public class UrlSubjectUpgradeProcess extends UpgradeProcess {
 			alter(
 				MBMessageTable.class,
 				new AlterTableAddColumn(
-					"urlSubject", DBColumnType.varcharType(255, "null")));
+					"urlSubject", DBColumnType.getVarchar(255, "null")));
 		}
 
 		_populateUrlSubject();

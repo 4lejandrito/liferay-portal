@@ -34,7 +34,7 @@ public class SamlSpIdpConnectionUpgradeProcess extends UpgradeProcess {
 			alter(
 				SamlSpIdpConnectionTable.class,
 				new AlterTableAddColumn(
-					"unknownUsersAreStrangers", DBColumnType.booleanType()));
+					"unknownUsersAreStrangers", DBColumnType.getBoolean()));
 		}
 		catch (SQLException sqlException) {
 			if (_log.isDebugEnabled()) {

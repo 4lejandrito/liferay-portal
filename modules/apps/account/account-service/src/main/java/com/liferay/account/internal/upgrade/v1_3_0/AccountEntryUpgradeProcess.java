@@ -29,28 +29,28 @@ public class AccountEntryUpgradeProcess extends UpgradeProcess {
 			alter(
 				AccountEntryTable.class,
 				new AlterTableAddColumn(
-					"defaultBillingAddressId", DBColumnType.longType()));
+					"defaultBillingAddressId", DBColumnType.getLong()));
 		}
 
 		if (!hasColumn("AccountEntry", "defaultShippingAddressId")) {
 			alter(
 				AccountEntryTable.class,
 				new AlterTableAddColumn(
-					"defaultShippingAddressId", DBColumnType.longType()));
+					"defaultShippingAddressId", DBColumnType.getLong()));
 		}
 
 		if (!hasColumn("AccountEntry", "emailAddress")) {
 			alter(
 				AccountEntryTable.class,
 				new AlterTableAddColumn(
-					"emailAddress", DBColumnType.varcharType(254, "null")));
+					"emailAddress", DBColumnType.getVarchar(254, "null")));
 		}
 
 		if (!hasColumn("AccountEntry", "taxExemptionCode")) {
 			alter(
 				AccountEntryTable.class,
 				new AlterTableAddColumn(
-					"taxExemptionCode", DBColumnType.varcharType(75, "null")));
+					"taxExemptionCode", DBColumnType.getVarchar(75, "null")));
 		}
 	}
 

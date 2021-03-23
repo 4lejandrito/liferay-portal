@@ -45,7 +45,7 @@ public class UpgradeLayout extends UpgradeProcess {
 			alter(
 				LayoutTable.class,
 				new AlterTableAddColumn(
-					"masterLayoutPlid", DBColumnType.longType()));
+					"masterLayoutPlid", DBColumnType.getLong()));
 
 			runSQL("update Layout set masterLayoutPlid = 0");
 		}
@@ -53,7 +53,7 @@ public class UpgradeLayout extends UpgradeProcess {
 		if (!hasColumn(LayoutTable.TABLE_NAME, "status")) {
 			alter(
 				LayoutTable.class,
-				new AlterTableAddColumn("status", DBColumnType.integerType()));
+				new AlterTableAddColumn("status", DBColumnType.getInteger()));
 
 			runSQL("update Layout set status = 0");
 		}
@@ -62,20 +62,20 @@ public class UpgradeLayout extends UpgradeProcess {
 			alter(
 				LayoutTable.class,
 				new AlterTableAddColumn(
-					"statusByUserId", DBColumnType.longType()));
+					"statusByUserId", DBColumnType.getLong()));
 		}
 
 		if (!hasColumn(LayoutTable.TABLE_NAME, "statusByUserName")) {
 			alter(
 				LayoutTable.class,
 				new AlterTableAddColumn(
-					"statusByUserName", DBColumnType.varcharType(75, "null")));
+					"statusByUserName", DBColumnType.getVarchar(75, "null")));
 		}
 
 		if (!hasColumn(LayoutTable.TABLE_NAME, "statusDate")) {
 			alter(
 				LayoutTable.class,
-				new AlterTableAddColumn("statusDate", DBColumnType.dateType()));
+				new AlterTableAddColumn("statusDate", DBColumnType.getDate()));
 		}
 
 		runSQL("DROP_TABLE_IF_EXISTS(LayoutVersion)");

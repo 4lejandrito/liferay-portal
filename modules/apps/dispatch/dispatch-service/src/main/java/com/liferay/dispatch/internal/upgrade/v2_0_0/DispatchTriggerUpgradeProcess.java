@@ -26,9 +26,9 @@ public class DispatchTriggerUpgradeProcess extends UpgradeProcess {
 
 	@Override
 	protected void doUpgrade() throws Exception {
-		_alterTableAddColumn("endDate", DBColumnType.dateType());
+		_alterTableAddColumn("endDate", DBColumnType.getDate());
 
-		_alterTableAddColumn("startDate", DBColumnType.dateType());
+		_alterTableAddColumn("startDate", DBColumnType.getDate());
 
 		_alterColumnName("typeSettings", "taskSettings TEXT null");
 

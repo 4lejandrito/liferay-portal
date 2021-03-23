@@ -32,7 +32,7 @@ public class KaleoDefinitionUpgradeProcess extends UpgradeProcess {
 			alter(
 				KaleoDefinitionTable.class,
 				new AlterTableAddColumn(
-					"scope", DBColumnType.varcharType(75, "null")));
+					"scope", DBColumnType.getVarchar(75, "null")));
 
 			try (PreparedStatement ps = connection.prepareStatement(
 					"update KaleoDefinition set scope = ?")) {

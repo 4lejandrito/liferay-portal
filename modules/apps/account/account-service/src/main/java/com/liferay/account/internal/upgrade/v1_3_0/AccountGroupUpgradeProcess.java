@@ -29,7 +29,7 @@ public class AccountGroupUpgradeProcess extends UpgradeProcess {
 			alter(
 				AccountGroupTable.class,
 				new AlterTableAddColumn(
-					"defaultAccountGroup", DBColumnType.booleanType()));
+					"defaultAccountGroup", DBColumnType.getBoolean()));
 		}
 	}
 

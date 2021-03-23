@@ -72,7 +72,7 @@ public class FragmentEntryLinkUpgradeProcess extends UpgradeProcess {
 		if (!hasColumn("FragmentEntryLink", "plid")) {
 			alter(
 				FragmentEntryLinkTable.class,
-				new AlterTableAddColumn("plid", DBColumnType.longType()));
+				new AlterTableAddColumn("plid", DBColumnType.getLong()));
 		}
 
 		runSQL(

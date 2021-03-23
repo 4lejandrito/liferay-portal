@@ -32,7 +32,7 @@ public class DispatchTriggerUpgradeProcess extends UpgradeProcess {
 		alter(
 			DispatchTriggerTable.class,
 			new AlterTableAddColumn(
-				"taskClusterMode", DBColumnType.integerType()));
+				"taskClusterMode", DBColumnType.getInteger()));
 	}
 
 }

@@ -32,20 +32,20 @@ public class AccountEntryUpgradeProcess extends UpgradeProcess {
 			alter(
 				AccountEntryTable.class,
 				new AlterTableAddColumn(
-					"externalReferenceCode", DBColumnType.varcharType(75)));
+					"externalReferenceCode", DBColumnType.getVarchar(75)));
 		}
 
 		if (!hasColumn("AccountEntry", "taxIdNumber")) {
 			alter(
 				AccountEntryTable.class,
 				new AlterTableAddColumn(
-					"taxIdNumber", DBColumnType.varcharType(75)));
+					"taxIdNumber", DBColumnType.getVarchar(75)));
 		}
 
 		if (!hasColumn("AccountEntry", "type_")) {
 			alter(
 				AccountEntryTable.class,
-				new AlterTableAddColumn("type_", DBColumnType.varcharType(75)));
+				new AlterTableAddColumn("type_", DBColumnType.getVarchar(75)));
 
 			String defaultType = StringUtil.quote(
 				AccountConstants.ACCOUNT_ENTRY_TYPE_BUSINESS,

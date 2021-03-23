@@ -34,7 +34,7 @@ public class SamlIdpSpConnectionUpgradeProcess extends UpgradeProcess {
 			alter(
 				SamlIdpSpConnectionTable.class,
 				new AlterTableAddColumn(
-					"encryptionForced", DBColumnType.booleanType()));
+					"encryptionForced", DBColumnType.getBoolean()));
 		}
 		catch (SQLException sqlException) {
 			if (_log.isDebugEnabled()) {

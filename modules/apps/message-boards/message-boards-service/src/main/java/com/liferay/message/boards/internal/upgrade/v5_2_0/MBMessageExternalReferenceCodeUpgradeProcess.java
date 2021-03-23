@@ -34,7 +34,7 @@ public class MBMessageExternalReferenceCodeUpgradeProcess
 			alter(
 				MBMessageTable.class,
 				new AlterTableAddColumn(
-					"externalReferenceCode", DBColumnType.varcharType(75)));
+					"externalReferenceCode", DBColumnType.getVarchar(75)));
 		}
 
 		_populateExternalReferenceCode();

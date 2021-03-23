@@ -29,7 +29,7 @@ public class FragmentEntryUpgradeProcess extends UpgradeProcess {
 			alter(
 				FragmentEntryTable.class,
 				new AlterTableAddColumn(
-					"cacheable", DBColumnType.booleanType()));
+					"cacheable", DBColumnType.getBoolean()));
 		}
 	}
 

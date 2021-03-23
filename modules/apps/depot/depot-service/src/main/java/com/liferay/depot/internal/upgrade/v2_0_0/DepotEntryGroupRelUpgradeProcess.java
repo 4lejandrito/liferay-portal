@@ -27,11 +27,10 @@ public class DepotEntryGroupRelUpgradeProcess extends UpgradeProcess {
 	protected void doUpgrade() throws Exception {
 		alter(
 			DepotEntryGroupRelTable.class,
-			new AlterTableAddColumn("userId", DBColumnType.longType()),
+			new AlterTableAddColumn("userId", DBColumnType.getLong()),
 			new AlterTableAddColumn(
-				"userName", DBColumnType.varcharType(75, "null")),
-			new AlterTableAddColumn(
-				"lastPublishDate", DBColumnType.dateType()));
+				"userName", DBColumnType.getVarchar(75, "null")),
+			new AlterTableAddColumn("lastPublishDate", DBColumnType.getDate()));
 	}
 
 }

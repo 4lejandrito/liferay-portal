@@ -127,7 +127,7 @@ public class AssetDisplayLayoutUpgradeProcess extends UpgradeProcess {
 	private void _upgradeSchema() throws Exception {
 		alter(
 			AssetDisplayPageEntryTable.class,
-			new AlterTableAddColumn("plid", DBColumnType.longType()));
+			new AlterTableAddColumn("plid", DBColumnType.getLong()));
 
 		StringBundler sb = new StringBundler(3);
 

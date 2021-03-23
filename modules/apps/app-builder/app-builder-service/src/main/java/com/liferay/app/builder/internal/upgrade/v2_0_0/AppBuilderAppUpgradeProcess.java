@@ -32,7 +32,7 @@ public class AppBuilderAppUpgradeProcess extends UpgradeProcess {
 		if (!hasColumn("AppBuilderApp", "active_")) {
 			alter(
 				AppBuilderAppTable.class,
-				new AlterTableAddColumn("active_", DBColumnType.booleanType()));
+				new AlterTableAddColumn("active_", DBColumnType.getBoolean()));
 
 			try (PreparedStatement ps1 = connection.prepareStatement(
 					"select appBuilderAppId, status from AppBuilderApp");

@@ -30,34 +30,33 @@ public class UpgradeAddress extends UpgradeProcess {
 				AddressTable.class,
 				new AlterTableAddColumn(
 					"externalReferenceCode",
-					DBColumnType.varcharType(75, "null")));
+					DBColumnType.getVarchar(75, "null")));
 		}
 
 		if (!hasColumn("Address", "description")) {
 			alter(
 				AddressTable.class,
 				new AlterTableAddColumn(
-					"description", DBColumnType.stringType()));
+					"description", DBColumnType.getString()));
 		}
 
 		if (!hasColumn("Address", "latitude")) {
 			alter(
 				AddressTable.class,
-				new AlterTableAddColumn("latitude", DBColumnType.doubleType()));
+				new AlterTableAddColumn("latitude", DBColumnType.getDouble()));
 		}
 
 		if (!hasColumn("Address", "longitude")) {
 			alter(
 				AddressTable.class,
-				new AlterTableAddColumn(
-					"longitude", DBColumnType.doubleType()));
+				new AlterTableAddColumn("longitude", DBColumnType.getDouble()));
 		}
 
 		if (!hasColumn("Address", "name")) {
 			alter(
 				AddressTable.class,
 				new AlterTableAddColumn(
-					"name", DBColumnType.varcharType(255, "null")));
+					"name", DBColumnType.getVarchar(255, "null")));
 		}
 
 		if (hasColumn("Address", "street1")) {
@@ -82,14 +81,14 @@ public class UpgradeAddress extends UpgradeProcess {
 			alter(
 				AddressTable.class,
 				new AlterTableAddColumn(
-					"validationDate", DBColumnType.dateType()));
+					"validationDate", DBColumnType.getDate()));
 		}
 
 		if (!hasColumn("Address", "validationStatus")) {
 			alter(
 				AddressTable.class,
 				new AlterTableAddColumn(
-					"validationStatus", DBColumnType.integerType()));
+					"validationStatus", DBColumnType.getInteger()));
 		}
 	}
 

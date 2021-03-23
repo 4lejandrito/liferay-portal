@@ -34,7 +34,7 @@ public class UpgradeExternalReferenceCode extends UpgradeProcess {
 				tableClass,
 				new AlterTableAddColumn(
 					"externalReferenceCode",
-					DBColumnType.varcharType(75, "null")));
+					DBColumnType.getVarchar(75, "null")));
 		}
 	}
 

@@ -40,7 +40,7 @@ public class MFAFIDO2CredentialUpgradeProcess extends UpgradeProcess {
 			alter(
 				MFAFIDO2CredentialEntryTable.class,
 				new AlterTableAddColumn(
-					"credentialKeyHash", DBColumnType.longType()));
+					"credentialKeyHash", DBColumnType.getLong()));
 
 			_updateCredentialKeys();
 		}

@@ -33,11 +33,11 @@ public class DepotEntryGroupRelUpgradeProcess extends UpgradeProcess {
 	protected void doUpgrade() throws Exception {
 		alter(
 			DepotEntryGroupRelTable.class,
-			new AlterTableAddColumn("groupId", DBColumnType.longType()),
-			new AlterTableAddColumn("createDate", DBColumnType.dateType()),
-			new AlterTableAddColumn("modifiedDate", DBColumnType.dateType()),
+			new AlterTableAddColumn("groupId", DBColumnType.getLong()),
+			new AlterTableAddColumn("createDate", DBColumnType.getDate()),
+			new AlterTableAddColumn("modifiedDate", DBColumnType.getDate()),
 			new AlterTableAddColumn(
-				"uuid_", DBColumnType.varcharType(75, "null")));
+				"uuid_", DBColumnType.getVarchar(75, "null")));
 
 		try (LoggingTimer loggingTimer = new LoggingTimer()) {
 			try (PreparedStatement ps1 = connection.prepareStatement(

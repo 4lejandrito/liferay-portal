@@ -29,7 +29,7 @@ public class UpgradeAssetVocabulary extends UpgradeProcess {
 		alter(
 			AssetVocabularyTable.class,
 			new AlterTableAddColumn(
-				"visibilityType", DBColumnType.integerType()));
+				"visibilityType", DBColumnType.getInteger()));
 
 		runSQL(
 			"update AssetVocabulary set visibilityType = " +

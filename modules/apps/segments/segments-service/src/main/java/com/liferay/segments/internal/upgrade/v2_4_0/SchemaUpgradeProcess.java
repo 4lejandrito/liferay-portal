@@ -28,7 +28,7 @@ public class SchemaUpgradeProcess extends UpgradeProcess {
 		alter(
 			SegmentsExperienceTable.class,
 			new AlterTableAddColumn(
-				"typeSettings", DBColumnType.varcharType(75, "null")));
+				"typeSettings", DBColumnType.getVarchar(75, "null")));
 	}
 
 }
