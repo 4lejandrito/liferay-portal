@@ -37,7 +37,7 @@ public class UpgradeAddress extends UpgradeProcess {
 			alter(
 				AddressTable.class,
 				new AlterTableAddColumn(
-					"description", DBColumnType.stringType("null")));
+					"description", DBColumnType.stringType()));
 		}
 
 		if (!hasColumn("Address", "latitude")) {
@@ -82,7 +82,7 @@ public class UpgradeAddress extends UpgradeProcess {
 			alter(
 				AddressTable.class,
 				new AlterTableAddColumn(
-					"validationDate", DBColumnType.dateType("null")));
+					"validationDate", DBColumnType.dateType()));
 		}
 
 		if (!hasColumn("Address", "validationStatus")) {

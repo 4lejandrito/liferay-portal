@@ -34,10 +34,8 @@ public class DepotEntryGroupRelUpgradeProcess extends UpgradeProcess {
 		alter(
 			DepotEntryGroupRelTable.class,
 			new AlterTableAddColumn("groupId", DBColumnType.longType()),
-			new AlterTableAddColumn(
-				"createDate", DBColumnType.dateType("null")),
-			new AlterTableAddColumn(
-				"modifiedDate", DBColumnType.dateType("null")),
+			new AlterTableAddColumn("createDate", DBColumnType.dateType()),
+			new AlterTableAddColumn("modifiedDate", DBColumnType.dateType()),
 			new AlterTableAddColumn(
 				"uuid_", DBColumnType.varcharType(75, "null")));
 

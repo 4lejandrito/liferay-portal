@@ -31,15 +31,14 @@ public class UpgradeRatingsStats extends UpgradeProcess {
 		if (!hasColumn("RatingsStats", "createDate")) {
 			alter(
 				RatingsStatsTable.class,
-				new AlterTableAddColumn(
-					"createDate", DBColumnType.dateType("null")));
+				new AlterTableAddColumn("createDate", DBColumnType.dateType()));
 		}
 
 		if (!hasColumn("RatingsStats", "modifiedDate")) {
 			alter(
 				RatingsStatsTable.class,
 				new AlterTableAddColumn(
-					"modifiedDate", DBColumnType.dateType("null")));
+					"modifiedDate", DBColumnType.dateType()));
 		}
 
 		try (PreparedStatement ps = connection.prepareStatement(

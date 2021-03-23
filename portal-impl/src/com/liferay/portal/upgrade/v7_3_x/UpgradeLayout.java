@@ -75,8 +75,7 @@ public class UpgradeLayout extends UpgradeProcess {
 		if (!hasColumn(LayoutTable.TABLE_NAME, "statusDate")) {
 			alter(
 				LayoutTable.class,
-				new AlterTableAddColumn(
-					"statusDate", DBColumnType.dateType("null")));
+				new AlterTableAddColumn("statusDate", DBColumnType.dateType()));
 		}
 
 		runSQL("DROP_TABLE_IF_EXISTS(LayoutVersion)");
