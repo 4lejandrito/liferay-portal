@@ -16,6 +16,7 @@ package com.liferay.portal.upgrade.v7_3_x;
 
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.dao.orm.common.SQLTransformer;
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.upgrade.v7_3_x.util.AssetCategoryTable;
@@ -35,7 +36,8 @@ public class UpgradeAssetCategory extends UpgradeProcess {
 				AssetCategoryTable.class,
 				new AlterTableDropColumn("leftCategoryId"),
 				new AlterTableDropColumn("rightCategoryId"),
-				new AlterTableAddColumn("treePath", "STRING null"));
+				new AlterTableAddColumn(
+					"treePath", DBColumnType.stringType("null")));
 		}
 
 		try (PreparedStatement ps = connection.prepareStatement(

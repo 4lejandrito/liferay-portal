@@ -14,6 +14,7 @@
 
 package com.liferay.portal.upgrade.v7_3_x;
 
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.upgrade.v7_3_x.util.LayoutTable;
 
@@ -43,7 +44,8 @@ public class UpgradeLayout extends UpgradeProcess {
 		if (!hasColumn(LayoutTable.TABLE_NAME, "masterLayoutPlid")) {
 			alter(
 				LayoutTable.class,
-				new AlterTableAddColumn("masterLayoutPlid", "LONG"));
+				new AlterTableAddColumn(
+					"masterLayoutPlid", DBColumnType.longType()));
 
 			runSQL("update Layout set masterLayoutPlid = 0");
 		}
@@ -51,7 +53,7 @@ public class UpgradeLayout extends UpgradeProcess {
 		if (!hasColumn(LayoutTable.TABLE_NAME, "status")) {
 			alter(
 				LayoutTable.class,
-				new AlterTableAddColumn("status", "INTEGER"));
+				new AlterTableAddColumn("status", DBColumnType.integerType()));
 
 			runSQL("update Layout set status = 0");
 		}
@@ -59,20 +61,22 @@ public class UpgradeLayout extends UpgradeProcess {
 		if (!hasColumn(LayoutTable.TABLE_NAME, "statusByUserId")) {
 			alter(
 				LayoutTable.class,
-				new AlterTableAddColumn("statusByUserId", "LONG"));
+				new AlterTableAddColumn(
+					"statusByUserId", DBColumnType.longType()));
 		}
 
 		if (!hasColumn(LayoutTable.TABLE_NAME, "statusByUserName")) {
 			alter(
 				LayoutTable.class,
 				new AlterTableAddColumn(
-					"statusByUserName", "VARCHAR(75) null"));
+					"statusByUserName", DBColumnType.varcharType(75, "null")));
 		}
 
 		if (!hasColumn(LayoutTable.TABLE_NAME, "statusDate")) {
 			alter(
 				LayoutTable.class,
-				new AlterTableAddColumn("statusDate", "DATE null"));
+				new AlterTableAddColumn(
+					"statusDate", DBColumnType.dateType("null")));
 		}
 
 		runSQL("DROP_TABLE_IF_EXISTS(LayoutVersion)");

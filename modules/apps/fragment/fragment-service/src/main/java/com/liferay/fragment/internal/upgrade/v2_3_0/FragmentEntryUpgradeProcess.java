@@ -15,6 +15,7 @@
 package com.liferay.fragment.internal.upgrade.v2_3_0;
 
 import com.liferay.fragment.internal.upgrade.v2_3_0.util.FragmentEntryTable;
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 
 /**
@@ -27,7 +28,8 @@ public class FragmentEntryUpgradeProcess extends UpgradeProcess {
 		if (!hasColumn("FragmentEntry", "cacheable")) {
 			alter(
 				FragmentEntryTable.class,
-				new AlterTableAddColumn("cacheable", "BOOLEAN"));
+				new AlterTableAddColumn(
+					"cacheable", DBColumnType.booleanType()));
 		}
 	}
 

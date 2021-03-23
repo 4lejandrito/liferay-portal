@@ -15,6 +15,7 @@
 package com.liferay.fragment.internal.upgrade.v2_5_0;
 
 import com.liferay.fragment.internal.upgrade.v2_5_0.util.FragmentEntryLinkTable;
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
@@ -71,7 +72,7 @@ public class FragmentEntryLinkUpgradeProcess extends UpgradeProcess {
 		if (!hasColumn("FragmentEntryLink", "plid")) {
 			alter(
 				FragmentEntryLinkTable.class,
-				new AlterTableAddColumn("plid", "LONG"));
+				new AlterTableAddColumn("plid", DBColumnType.longType()));
 		}
 
 		runSQL(

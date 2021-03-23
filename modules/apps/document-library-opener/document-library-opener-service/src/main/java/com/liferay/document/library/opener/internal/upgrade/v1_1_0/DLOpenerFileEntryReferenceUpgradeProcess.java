@@ -15,6 +15,7 @@
 package com.liferay.document.library.opener.internal.upgrade.v1_1_0;
 
 import com.liferay.document.library.opener.internal.upgrade.v1_1_0.util.DLOpenerFileEntryReferenceTable;
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 
 /**
@@ -26,7 +27,8 @@ public class DLOpenerFileEntryReferenceUpgradeProcess extends UpgradeProcess {
 	protected void doUpgrade() throws Exception {
 		alter(
 			DLOpenerFileEntryReferenceTable.class,
-			new AlterTableAddColumn("referenceType", "VARCHAR(75) null"));
+			new AlterTableAddColumn(
+				"referenceType", DBColumnType.varcharType(75, "null")));
 
 		runSQL(
 			"update " + DLOpenerFileEntryReferenceTable.TABLE_NAME +

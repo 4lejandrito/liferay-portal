@@ -19,6 +19,7 @@ import com.liferay.dynamic.data.lists.model.DDLRecordSet;
 import com.liferay.dynamic.data.lists.service.DDLRecordSetLocalService;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
@@ -47,7 +48,8 @@ public class AppBuilderAppUpgradeProcess extends UpgradeProcess {
 		if (!hasColumn(AppBuilderAppTable.TABLE_NAME, "ddlRecordSetId")) {
 			alter(
 				AppBuilderAppTable.class,
-				new AlterTableAddColumn("ddlRecordSetId", "LONG"));
+				new AlterTableAddColumn(
+					"ddlRecordSetId", DBColumnType.longType()));
 
 			try (PreparedStatement ps1 = connection.prepareStatement(
 					"select appBuilderAppId, ddmStructureId, groupId from " +

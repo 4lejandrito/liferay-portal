@@ -16,6 +16,7 @@ package com.liferay.batch.engine.internal.upgrade.v4_1_0;
 
 import com.liferay.batch.engine.internal.upgrade.v4_1_0.util.BatchEngineExportTaskTable;
 import com.liferay.batch.engine.internal.upgrade.v4_1_0.util.BatchEngineImportTaskTable;
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 
 /**
@@ -29,14 +30,16 @@ public class TaskItemDelegateNameUpgradeProcess extends UpgradeProcess {
 			alter(
 				BatchEngineExportTaskTable.class,
 				new AlterTableAddColumn(
-					"taskItemDelegateName", "VARCHAR(75) null"));
+					"taskItemDelegateName",
+					DBColumnType.varcharType(75, "null")));
 		}
 
 		if (!hasColumn("BatchEngineImportTask", "taskItemDelegateName")) {
 			alter(
 				BatchEngineImportTaskTable.class,
 				new AlterTableAddColumn(
-					"taskItemDelegateName", "VARCHAR(75) null"));
+					"taskItemDelegateName",
+					DBColumnType.varcharType(75, "null")));
 		}
 	}
 

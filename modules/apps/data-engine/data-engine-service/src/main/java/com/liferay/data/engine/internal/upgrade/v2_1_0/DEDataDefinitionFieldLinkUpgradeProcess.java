@@ -15,6 +15,7 @@
 package com.liferay.data.engine.internal.upgrade.v2_1_0;
 
 import com.liferay.data.engine.internal.upgrade.v2_1_0.util.DEDataDefinitionFieldLinkTable;
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 
 /**
@@ -27,19 +28,22 @@ public class DEDataDefinitionFieldLinkUpgradeProcess extends UpgradeProcess {
 		if (!hasColumn("DEDataDefinitionFieldLink", "createDate")) {
 			alter(
 				DEDataDefinitionFieldLinkTable.class,
-				new AlterTableAddColumn("createDate", "DATE null"));
+				new AlterTableAddColumn(
+					"createDate", DBColumnType.dateType("null")));
 		}
 
 		if (!hasColumn("DEDataDefinitionFieldLink", "modifiedDate")) {
 			alter(
 				DEDataDefinitionFieldLinkTable.class,
-				new AlterTableAddColumn("modifiedDate", "DATE null"));
+				new AlterTableAddColumn(
+					"modifiedDate", DBColumnType.dateType("null")));
 		}
 
 		if (!hasColumn("DEDataDefinitionFieldLink", "lastPublishDate")) {
 			alter(
 				DEDataDefinitionFieldLinkTable.class,
-				new AlterTableAddColumn("lastPublishDate", "DATE null"));
+				new AlterTableAddColumn(
+					"lastPublishDate", DBColumnType.dateType("null")));
 		}
 	}
 

@@ -16,6 +16,7 @@ package com.liferay.app.builder.internal.upgrade.v2_1_0;
 
 import com.liferay.app.builder.constants.AppBuilderAppConstants;
 import com.liferay.app.builder.internal.upgrade.v2_1_0.util.AppBuilderAppTable;
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 
 import java.sql.PreparedStatement;
@@ -30,7 +31,8 @@ public class AppBuilderAppUpgradeProcess extends UpgradeProcess {
 		if (!hasColumn(AppBuilderAppTable.TABLE_NAME, "scope")) {
 			alter(
 				AppBuilderAppTable.class,
-				new AlterTableAddColumn("scope", "VARCHAR(75) null"));
+				new AlterTableAddColumn(
+					"scope", DBColumnType.varcharType(75, "null")));
 
 			try (PreparedStatement ps = connection.prepareStatement(
 					"update AppBuilderApp set scope = ?")) {

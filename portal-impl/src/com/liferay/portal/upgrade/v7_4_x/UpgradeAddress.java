@@ -14,6 +14,7 @@
 
 package com.liferay.portal.upgrade.v7_4_x;
 
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.upgrade.v7_4_x.util.AddressTable;
 
@@ -28,31 +29,35 @@ public class UpgradeAddress extends UpgradeProcess {
 			alter(
 				AddressTable.class,
 				new AlterTableAddColumn(
-					"externalReferenceCode", "VARCHAR(75) null"));
+					"externalReferenceCode",
+					DBColumnType.varcharType(75, "null")));
 		}
 
 		if (!hasColumn("Address", "description")) {
 			alter(
 				AddressTable.class,
-				new AlterTableAddColumn("description", "STRING null"));
+				new AlterTableAddColumn(
+					"description", DBColumnType.stringType("null")));
 		}
 
 		if (!hasColumn("Address", "latitude")) {
 			alter(
 				AddressTable.class,
-				new AlterTableAddColumn("latitude", "DOUBLE"));
+				new AlterTableAddColumn("latitude", DBColumnType.doubleType()));
 		}
 
 		if (!hasColumn("Address", "longitude")) {
 			alter(
 				AddressTable.class,
-				new AlterTableAddColumn("longitude", "DOUBLE"));
+				new AlterTableAddColumn(
+					"longitude", DBColumnType.doubleType()));
 		}
 
 		if (!hasColumn("Address", "name")) {
 			alter(
 				AddressTable.class,
-				new AlterTableAddColumn("name", "VARCHAR(255) null"));
+				new AlterTableAddColumn(
+					"name", DBColumnType.varcharType(255, "null")));
 		}
 
 		if (hasColumn("Address", "street1")) {
@@ -76,13 +81,15 @@ public class UpgradeAddress extends UpgradeProcess {
 		if (!hasColumn("Address", "validationDate")) {
 			alter(
 				AddressTable.class,
-				new AlterTableAddColumn("validationDate", "DATE null"));
+				new AlterTableAddColumn(
+					"validationDate", DBColumnType.dateType("null")));
 		}
 
 		if (!hasColumn("Address", "validationStatus")) {
 			alter(
 				AddressTable.class,
-				new AlterTableAddColumn("validationStatus", "INTEGER"));
+				new AlterTableAddColumn(
+					"validationStatus", DBColumnType.integerType()));
 		}
 	}
 

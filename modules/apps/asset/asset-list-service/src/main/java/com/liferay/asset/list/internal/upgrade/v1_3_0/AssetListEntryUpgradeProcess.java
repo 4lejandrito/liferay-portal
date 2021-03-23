@@ -16,6 +16,7 @@ package com.liferay.asset.list.internal.upgrade.v1_3_0;
 
 import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.list.internal.upgrade.v1_3_0.util.AssetListEntryTable;
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 
 /**
@@ -27,8 +28,10 @@ public class AssetListEntryUpgradeProcess extends UpgradeProcess {
 	protected void doUpgrade() throws Exception {
 		alter(
 			AssetListEntryTable.class,
-			new AlterTableAddColumn("assetEntrySubtype", "VARCHAR(255) null"),
-			new AlterTableAddColumn("assetEntryType", "VARCHAR(255) null"));
+			new AlterTableAddColumn(
+				"assetEntrySubtype", DBColumnType.varcharType(255, "null")),
+			new AlterTableAddColumn(
+				"assetEntryType", DBColumnType.varcharType(255, "null")));
 
 		runSQL(
 			"update AssetListEntry set assetEntryType = '" +

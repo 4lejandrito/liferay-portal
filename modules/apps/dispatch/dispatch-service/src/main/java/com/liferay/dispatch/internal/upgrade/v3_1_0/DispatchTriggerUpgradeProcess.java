@@ -15,6 +15,7 @@
 package com.liferay.dispatch.internal.upgrade.v3_1_0;
 
 import com.liferay.dispatch.internal.upgrade.v3_1_0.util.DispatchTriggerTable;
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 
 /**
@@ -30,7 +31,8 @@ public class DispatchTriggerUpgradeProcess extends UpgradeProcess {
 
 		alter(
 			DispatchTriggerTable.class,
-			new AlterTableAddColumn("taskClusterMode", "INTEGER"));
+			new AlterTableAddColumn(
+				"taskClusterMode", DBColumnType.integerType()));
 	}
 
 }
