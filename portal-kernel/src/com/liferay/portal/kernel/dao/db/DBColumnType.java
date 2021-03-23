@@ -26,8 +26,8 @@ public final class DBColumnType {
 		return new DBColumnType(TypeName.BOOLEAN);
 	}
 
-	public static DBColumnType dateType(String defaultValue) {
-		return new DBColumnType(TypeName.DATE, defaultValue);
+	public static DBColumnType dateType() {
+		return new DBColumnType(TypeName.DATE, "null");
 	}
 
 	public static DBColumnType doubleType() {
@@ -42,8 +42,8 @@ public final class DBColumnType {
 		return new DBColumnType(TypeName.LONG);
 	}
 
-	public static DBColumnType stringType(String defaultValue) {
-		return new DBColumnType(TypeName.STRING, defaultValue);
+	public static DBColumnType stringType() {
+		return new DBColumnType(TypeName.STRING, "null");
 	}
 
 	public static DBColumnType varcharType(long length) {

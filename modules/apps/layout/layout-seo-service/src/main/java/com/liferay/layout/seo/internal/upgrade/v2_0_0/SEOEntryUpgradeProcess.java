@@ -31,11 +31,11 @@ public class SEOEntryUpgradeProcess extends UpgradeProcess {
 			new AlterTableAddColumn(
 				"openGraphTitleEnabled", DBColumnType.booleanType()),
 			new AlterTableAddColumn(
-				"openGraphTitle", DBColumnType.stringType("null")),
+				"openGraphTitle", DBColumnType.stringType()),
 			new AlterTableAddColumn(
 				"openGraphDescriptionEnabled", DBColumnType.booleanType()),
 			new AlterTableAddColumn(
-				"openGraphDescription", DBColumnType.stringType("null")),
+				"openGraphDescription", DBColumnType.stringType()),
 			new AlterTableAddColumn(
 				"openGraphImageFileEntryId", DBColumnType.longType()));
 	}

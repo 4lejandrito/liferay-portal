@@ -31,7 +31,7 @@ public class DepotEntryGroupRelUpgradeProcess extends UpgradeProcess {
 			new AlterTableAddColumn(
 				"userName", DBColumnType.varcharType(75, "null")),
 			new AlterTableAddColumn(
-				"lastPublishDate", DBColumnType.dateType("null")));
+				"lastPublishDate", DBColumnType.dateType()));
 	}
 
 }

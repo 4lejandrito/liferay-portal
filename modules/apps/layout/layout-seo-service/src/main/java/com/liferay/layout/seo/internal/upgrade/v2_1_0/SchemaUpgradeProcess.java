@@ -30,7 +30,7 @@ public class SchemaUpgradeProcess extends UpgradeProcess {
 			LayoutSEOEntryTable.class,
 			new AlterTableAddColumn("DDMStorageId", DBColumnType.longType()),
 			new AlterTableAddColumn(
-				"openGraphImageAlt", DBColumnType.stringType("null")));
+				"openGraphImageAlt", DBColumnType.stringType()));
 
 		String template = StringUtil.read(
 			SchemaUpgradeProcess.class.getResourceAsStream(
