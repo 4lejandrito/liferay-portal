@@ -19,6 +19,7 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.db.BaseDBProcess;
 import com.liferay.portal.kernel.dao.db.DB;
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.dao.db.DBInspector;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
 import com.liferay.portal.kernel.dao.db.DBProcessContext;
@@ -249,6 +250,16 @@ public abstract class UpgradeProcess
 			_columnType = StringPool.BLANK;
 		}
 
+		public AlterTableAddColumn(String columnName, DBColumnType columnType) {
+			_columnName = columnName;
+			_columnType = columnType.getSQL();
+		}
+
+		/**
+		 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
+		 *             #AlterTableAddColumn(String, DBColumnType)}
+		 */
+		@Deprecated
 		public AlterTableAddColumn(String columnName, String columnType) {
 			_columnName = columnName;
 			_columnType = columnType;
