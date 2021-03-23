@@ -15,6 +15,7 @@
 package com.liferay.depot.internal.upgrade.v1_1_0;
 
 import com.liferay.depot.internal.upgrade.v1_1_0.util.DepotEntryGroupRelTable;
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 
 /**
@@ -26,7 +27,8 @@ public class DepotEntryGroupRelUpgradeProcess extends UpgradeProcess {
 	protected void doUpgrade() throws Exception {
 		alter(
 			DepotEntryGroupRelTable.class,
-			new AlterTableAddColumn("ddmStructuresAvailable", "BOOLEAN"));
+			new AlterTableAddColumn(
+				"ddmStructuresAvailable", DBColumnType.booleanType()));
 	}
 
 }

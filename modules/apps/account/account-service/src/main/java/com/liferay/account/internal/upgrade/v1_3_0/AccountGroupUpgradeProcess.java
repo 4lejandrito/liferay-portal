@@ -15,6 +15,7 @@
 package com.liferay.account.internal.upgrade.v1_3_0;
 
 import com.liferay.account.internal.upgrade.v1_3_0.util.AccountGroupTable;
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 
 /**
@@ -27,7 +28,8 @@ public class AccountGroupUpgradeProcess extends UpgradeProcess {
 		if (!hasColumn("AccountGroup", "defaultAccountGroup")) {
 			alter(
 				AccountGroupTable.class,
-				new AlterTableAddColumn("defaultAccountGroup", "BOOLEAN"));
+				new AlterTableAddColumn(
+					"defaultAccountGroup", DBColumnType.booleanType()));
 		}
 	}
 

@@ -15,6 +15,7 @@
 package com.liferay.microblogs.internal.upgrade.v1_0_2;
 
 import com.liferay.microblogs.internal.upgrade.v1_0_2.util.MicroblogsEntryTable;
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.util.LoggingTimer;
 
@@ -49,7 +50,8 @@ public class MicroblogsEntryUpgradeProcess extends UpgradeProcess {
 
 			alter(
 				MicroblogsEntryTable.class,
-				new AlterTableAddColumn("parentMicroblogsEntryId", "LONG"));
+				new AlterTableAddColumn(
+					"parentMicroblogsEntryId", DBColumnType.longType()));
 
 			runSQL(
 				"update MicroblogsEntry set parentMicroblogsEntryId = " +

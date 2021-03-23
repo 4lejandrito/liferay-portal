@@ -14,6 +14,7 @@
 
 package com.liferay.saml.persistence.internal.upgrade.v2_1_0;
 
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
@@ -32,7 +33,8 @@ public class SamlIdpSpConnectionUpgradeProcess extends UpgradeProcess {
 		try (LoggingTimer loggingTimer = new LoggingTimer()) {
 			alter(
 				SamlIdpSpConnectionTable.class,
-				new AlterTableAddColumn("encryptionForced", "BOOLEAN"));
+				new AlterTableAddColumn(
+					"encryptionForced", DBColumnType.booleanType()));
 		}
 		catch (SQLException sqlException) {
 			if (_log.isDebugEnabled()) {

@@ -15,6 +15,7 @@
 package com.liferay.dispatch.internal.upgrade.v2_0_0;
 
 import com.liferay.dispatch.internal.upgrade.v2_0_0.util.DispatchTriggerTable;
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.upgrade.UpgradeException;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 
@@ -25,9 +26,9 @@ public class DispatchTriggerUpgradeProcess extends UpgradeProcess {
 
 	@Override
 	protected void doUpgrade() throws Exception {
-		_alterTableAddColumn("endDate", "DATE null");
+		_alterTableAddColumn("endDate", DBColumnType.dateType("null"));
 
-		_alterTableAddColumn("startDate", "DATE null");
+		_alterTableAddColumn("startDate", DBColumnType.dateType("null"));
 
 		_alterColumnName("typeSettings", "taskSettings TEXT null");
 
@@ -53,7 +54,8 @@ public class DispatchTriggerUpgradeProcess extends UpgradeProcess {
 			new AlterColumnName(oldColumnName, newColumnName));
 	}
 
-	private void _alterTableAddColumn(String columnName, String columnType)
+	private void _alterTableAddColumn(
+			String columnName, DBColumnType columnType)
 		throws Exception {
 
 		if (hasColumn(DispatchTriggerTable.TABLE_NAME, columnName)) {

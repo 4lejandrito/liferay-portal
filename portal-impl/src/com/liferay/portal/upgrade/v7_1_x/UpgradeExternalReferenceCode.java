@@ -14,6 +14,7 @@
 
 package com.liferay.portal.upgrade.v7_1_x;
 
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.upgrade.v7_1_x.util.AssetCategoryTable;
 import com.liferay.portal.upgrade.v7_1_x.util.AssetVocabularyTable;
@@ -32,7 +33,8 @@ public class UpgradeExternalReferenceCode extends UpgradeProcess {
 			alter(
 				tableClass,
 				new AlterTableAddColumn(
-					"externalReferenceCode", "VARCHAR(75) null"));
+					"externalReferenceCode",
+					DBColumnType.varcharType(75, "null")));
 		}
 	}
 

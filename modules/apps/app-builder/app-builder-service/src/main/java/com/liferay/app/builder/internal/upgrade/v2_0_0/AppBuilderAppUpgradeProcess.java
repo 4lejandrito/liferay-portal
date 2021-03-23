@@ -15,6 +15,7 @@
 package com.liferay.app.builder.internal.upgrade.v2_0_0;
 
 import com.liferay.app.builder.internal.upgrade.v2_0_0.util.AppBuilderAppTable;
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 
@@ -31,7 +32,7 @@ public class AppBuilderAppUpgradeProcess extends UpgradeProcess {
 		if (!hasColumn("AppBuilderApp", "active_")) {
 			alter(
 				AppBuilderAppTable.class,
-				new AlterTableAddColumn("active_", "BOOLEAN"));
+				new AlterTableAddColumn("active_", DBColumnType.booleanType()));
 
 			try (PreparedStatement ps1 = connection.prepareStatement(
 					"select appBuilderAppId, status from AppBuilderApp");

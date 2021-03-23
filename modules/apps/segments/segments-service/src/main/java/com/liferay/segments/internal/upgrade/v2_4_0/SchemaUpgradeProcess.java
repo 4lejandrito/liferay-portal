@@ -14,6 +14,7 @@
 
 package com.liferay.segments.internal.upgrade.v2_4_0;
 
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.segments.internal.upgrade.v2_4_0.util.SegmentsExperienceTable;
 
@@ -26,7 +27,8 @@ public class SchemaUpgradeProcess extends UpgradeProcess {
 	protected void doUpgrade() throws Exception {
 		alter(
 			SegmentsExperienceTable.class,
-			new AlterTableAddColumn("typeSettings", "VARCHAR(75) null"));
+			new AlterTableAddColumn(
+				"typeSettings", DBColumnType.varcharType(75, "null")));
 	}
 
 }

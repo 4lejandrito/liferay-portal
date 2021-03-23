@@ -15,6 +15,7 @@
 package com.liferay.dynamic.data.lists.internal.upgrade.v2_2_0;
 
 import com.liferay.dynamic.data.lists.internal.upgrade.v2_2_0.util.DDLRecordTable;
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 
 /**
@@ -27,13 +28,14 @@ public class SchemaUpgradeProcess extends UpgradeProcess {
 		if (!hasColumn("DDLRecord", "className")) {
 			alter(
 				DDLRecordTable.class,
-				new AlterTableAddColumn("className", "VARCHAR(300) null"));
+				new AlterTableAddColumn(
+					"className", DBColumnType.varcharType(300, "null")));
 		}
 
 		if (!hasColumn("DDLRecord", "classPK")) {
 			alter(
 				DDLRecordTable.class,
-				new AlterTableAddColumn("classPK", "LONG"));
+				new AlterTableAddColumn("classPK", DBColumnType.longType()));
 		}
 	}
 

@@ -14,6 +14,7 @@
 
 package com.liferay.portal.workflow.kaleo.internal.upgrade.v3_1_0;
 
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.workflow.constants.WorkflowDefinitionConstants;
 import com.liferay.portal.workflow.kaleo.internal.upgrade.v3_1_0.util.KaleoDefinitionTable;
@@ -30,7 +31,8 @@ public class KaleoDefinitionUpgradeProcess extends UpgradeProcess {
 		if (!hasColumn("KaleoDefinition", "scope")) {
 			alter(
 				KaleoDefinitionTable.class,
-				new AlterTableAddColumn("scope", "VARCHAR(75) null"));
+				new AlterTableAddColumn(
+					"scope", DBColumnType.varcharType(75, "null")));
 
 			try (PreparedStatement ps = connection.prepareStatement(
 					"update KaleoDefinition set scope = ?")) {

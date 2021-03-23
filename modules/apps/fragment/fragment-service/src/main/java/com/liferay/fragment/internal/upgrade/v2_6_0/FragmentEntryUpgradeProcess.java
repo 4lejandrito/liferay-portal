@@ -18,6 +18,7 @@ import com.liferay.fragment.internal.upgrade.v2_6_0.util.FragmentEntryTable;
 import com.liferay.fragment.model.FragmentEntry;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.dao.orm.common.SQLTransformer;
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
@@ -75,8 +76,9 @@ public class FragmentEntryUpgradeProcess extends UpgradeProcess {
 
 	protected void upgradeSchema() throws Exception {
 		alter(
-			FragmentEntryTable.class, new AlterTableAddColumn("headId", "LONG"),
-			new AlterTableAddColumn("head", "BOOLEAN"));
+			FragmentEntryTable.class,
+			new AlterTableAddColumn("headId", DBColumnType.longType()),
+			new AlterTableAddColumn("head", DBColumnType.booleanType()));
 	}
 
 }

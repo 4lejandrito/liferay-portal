@@ -15,6 +15,7 @@
 package com.liferay.message.boards.internal.upgrade.v3_0_0;
 
 import com.liferay.message.boards.internal.upgrade.v3_0_0.util.MBMessageTable;
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -38,7 +39,8 @@ public class MBMessageTreePathUpgradeProcess extends UpgradeProcess {
 		if (!hasColumn("MBMessage", "treePath")) {
 			alter(
 				MBMessageTable.class,
-				new AlterTableAddColumn("treePath", "STRING null"));
+				new AlterTableAddColumn(
+					"treePath", DBColumnType.stringType("null")));
 		}
 
 		_populateTreePath();

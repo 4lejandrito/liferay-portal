@@ -15,6 +15,7 @@
 package com.liferay.portal.upgrade.v7_3_x;
 
 import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.upgrade.v7_3_x.util.RatingsStatsTable;
 
@@ -30,13 +31,15 @@ public class UpgradeRatingsStats extends UpgradeProcess {
 		if (!hasColumn("RatingsStats", "createDate")) {
 			alter(
 				RatingsStatsTable.class,
-				new AlterTableAddColumn("createDate", "DATE null"));
+				new AlterTableAddColumn(
+					"createDate", DBColumnType.dateType("null")));
 		}
 
 		if (!hasColumn("RatingsStats", "modifiedDate")) {
 			alter(
 				RatingsStatsTable.class,
-				new AlterTableAddColumn("modifiedDate", "DATE null"));
+				new AlterTableAddColumn(
+					"modifiedDate", DBColumnType.dateType("null")));
 		}
 
 		try (PreparedStatement ps = connection.prepareStatement(

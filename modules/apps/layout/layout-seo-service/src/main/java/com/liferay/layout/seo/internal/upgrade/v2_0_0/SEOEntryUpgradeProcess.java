@@ -15,6 +15,7 @@
 package com.liferay.layout.seo.internal.upgrade.v2_0_0;
 
 import com.liferay.layout.seo.internal.upgrade.v2_0_0.util.LayoutSEOEntryTable;
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 
 /**
@@ -27,11 +28,16 @@ public class SEOEntryUpgradeProcess extends UpgradeProcess {
 		alter(
 			LayoutSEOEntryTable.class,
 			new AlterColumnName("enabled", "canonicalURLEnabled BOOLEAN"),
-			new AlterTableAddColumn("openGraphTitleEnabled", "BOOLEAN"),
-			new AlterTableAddColumn("openGraphTitle", "STRING null"),
-			new AlterTableAddColumn("openGraphDescriptionEnabled", "BOOLEAN"),
-			new AlterTableAddColumn("openGraphDescription", "STRING null"),
-			new AlterTableAddColumn("openGraphImageFileEntryId", "LONG"));
+			new AlterTableAddColumn(
+				"openGraphTitleEnabled", DBColumnType.booleanType()),
+			new AlterTableAddColumn(
+				"openGraphTitle", DBColumnType.stringType("null")),
+			new AlterTableAddColumn(
+				"openGraphDescriptionEnabled", DBColumnType.booleanType()),
+			new AlterTableAddColumn(
+				"openGraphDescription", DBColumnType.stringType("null")),
+			new AlterTableAddColumn(
+				"openGraphImageFileEntryId", DBColumnType.longType()));
 	}
 
 }

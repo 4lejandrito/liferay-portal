@@ -15,6 +15,7 @@
 package com.liferay.account.internal.upgrade.v1_3_0;
 
 import com.liferay.account.internal.upgrade.v1_3_0.util.AccountEntryTable;
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 
 /**
@@ -27,26 +28,29 @@ public class AccountEntryUpgradeProcess extends UpgradeProcess {
 		if (!hasColumn("AccountEntry", "defaultBillingAddressId")) {
 			alter(
 				AccountEntryTable.class,
-				new AlterTableAddColumn("defaultBillingAddressId", "LONG"));
+				new AlterTableAddColumn(
+					"defaultBillingAddressId", DBColumnType.longType()));
 		}
 
 		if (!hasColumn("AccountEntry", "defaultShippingAddressId")) {
 			alter(
 				AccountEntryTable.class,
-				new AlterTableAddColumn("defaultShippingAddressId", "LONG"));
+				new AlterTableAddColumn(
+					"defaultShippingAddressId", DBColumnType.longType()));
 		}
 
 		if (!hasColumn("AccountEntry", "emailAddress")) {
 			alter(
 				AccountEntryTable.class,
-				new AlterTableAddColumn("emailAddress", "VARCHAR(254) null"));
+				new AlterTableAddColumn(
+					"emailAddress", DBColumnType.varcharType(254, "null")));
 		}
 
 		if (!hasColumn("AccountEntry", "taxExemptionCode")) {
 			alter(
 				AccountEntryTable.class,
 				new AlterTableAddColumn(
-					"taxExemptionCode", "VARCHAR(75) null"));
+					"taxExemptionCode", DBColumnType.varcharType(75, "null")));
 		}
 	}
 

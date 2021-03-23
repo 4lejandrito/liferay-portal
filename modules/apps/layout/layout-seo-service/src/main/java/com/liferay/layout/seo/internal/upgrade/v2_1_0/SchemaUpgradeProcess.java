@@ -15,6 +15,7 @@
 package com.liferay.layout.seo.internal.upgrade.v2_1_0;
 
 import com.liferay.layout.seo.internal.upgrade.v2_0_0.util.LayoutSEOEntryTable;
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.util.StringUtil;
 
@@ -27,8 +28,9 @@ public class SchemaUpgradeProcess extends UpgradeProcess {
 	protected void doUpgrade() throws Exception {
 		alter(
 			LayoutSEOEntryTable.class,
-			new AlterTableAddColumn("DDMStorageId", "LONG"),
-			new AlterTableAddColumn("openGraphImageAlt", "STRING null"));
+			new AlterTableAddColumn("DDMStorageId", DBColumnType.longType()),
+			new AlterTableAddColumn(
+				"openGraphImageAlt", DBColumnType.stringType("null")));
 
 		String template = StringUtil.read(
 			SchemaUpgradeProcess.class.getResourceAsStream(

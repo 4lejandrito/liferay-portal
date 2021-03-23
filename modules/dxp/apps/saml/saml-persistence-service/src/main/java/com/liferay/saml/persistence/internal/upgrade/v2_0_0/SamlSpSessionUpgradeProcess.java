@@ -14,6 +14,7 @@
 
 package com.liferay.saml.persistence.internal.upgrade.v2_0_0;
 
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
@@ -33,7 +34,7 @@ public class SamlSpSessionUpgradeProcess extends UpgradeProcess {
 			alter(
 				SamlSpSessionTable.class,
 				new AlterTableAddColumn(
-					"samlIdpEntityId", "VARCHAR(1024) null"));
+					"samlIdpEntityId", DBColumnType.varcharType(1024, "null")));
 		}
 		catch (SQLException sqlException) {
 			if (_log.isDebugEnabled()) {

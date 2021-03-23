@@ -14,6 +14,7 @@
 
 package com.liferay.saml.persistence.internal.upgrade.v2_2_0;
 
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
@@ -32,7 +33,8 @@ public class SamlSpIdpConnectionUpgradeProcess extends UpgradeProcess {
 		try (LoggingTimer loggingTimer = new LoggingTimer()) {
 			alter(
 				SamlSpIdpConnectionTable.class,
-				new AlterTableAddColumn("unknownUsersAreStrangers", "BOOLEAN"));
+				new AlterTableAddColumn(
+					"unknownUsersAreStrangers", DBColumnType.booleanType()));
 		}
 		catch (SQLException sqlException) {
 			if (_log.isDebugEnabled()) {

@@ -22,6 +22,7 @@ import com.liferay.layout.page.template.service.LayoutPageTemplateEntryLocalServ
 import com.liferay.layout.page.template.service.LayoutPageTemplateEntryService;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
@@ -126,7 +127,7 @@ public class AssetDisplayLayoutUpgradeProcess extends UpgradeProcess {
 	private void _upgradeSchema() throws Exception {
 		alter(
 			AssetDisplayPageEntryTable.class,
-			new AlterTableAddColumn("plid", "LONG"));
+			new AlterTableAddColumn("plid", DBColumnType.longType()));
 
 		StringBundler sb = new StringBundler(3);
 

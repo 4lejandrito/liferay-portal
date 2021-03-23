@@ -16,6 +16,7 @@ package com.liferay.message.boards.internal.upgrade.v3_1_0;
 
 import com.liferay.message.boards.internal.upgrade.v3_1_0.util.MBMessageTable;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.util.FriendlyURLNormalizerUtil;
@@ -37,7 +38,8 @@ public class UrlSubjectUpgradeProcess extends UpgradeProcess {
 		if (!hasColumn("MBMessage", "urlSubject")) {
 			alter(
 				MBMessageTable.class,
-				new AlterTableAddColumn("urlSubject", "VARCHAR(255) null"));
+				new AlterTableAddColumn(
+					"urlSubject", DBColumnType.varcharType(255, "null")));
 		}
 
 		_populateUrlSubject();

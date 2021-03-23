@@ -14,6 +14,7 @@
 
 package com.liferay.portal.upgrade.v7_3_x;
 
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.upgrade.v7_3_x.util.LayoutTable;
 
@@ -27,7 +28,8 @@ public class UpgradeLayoutStyleBookEntry extends UpgradeProcess {
 		if (!hasColumn("Layout", "styleBookEntryId")) {
 			alter(
 				LayoutTable.class,
-				new AlterTableAddColumn("styleBookEntryId", "LONG"));
+				new AlterTableAddColumn(
+					"styleBookEntryId", DBColumnType.longType()));
 		}
 
 		runSQL("update Layout set styleBookEntryId = 0");

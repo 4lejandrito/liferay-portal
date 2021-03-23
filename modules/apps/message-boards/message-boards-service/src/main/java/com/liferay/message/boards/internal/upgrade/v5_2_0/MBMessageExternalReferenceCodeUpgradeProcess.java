@@ -15,6 +15,7 @@
 package com.liferay.message.boards.internal.upgrade.v5_2_0;
 
 import com.liferay.message.boards.internal.upgrade.v5_2_0.util.MBMessageTable;
+import com.liferay.portal.kernel.dao.db.DBColumnType;
 import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 
@@ -33,7 +34,7 @@ public class MBMessageExternalReferenceCodeUpgradeProcess
 			alter(
 				MBMessageTable.class,
 				new AlterTableAddColumn(
-					"externalReferenceCode", "VARCHAR(75)"));
+					"externalReferenceCode", DBColumnType.varcharType(75)));
 		}
 
 		_populateExternalReferenceCode();
