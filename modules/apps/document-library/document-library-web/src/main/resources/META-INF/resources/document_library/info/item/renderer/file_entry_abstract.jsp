@@ -34,7 +34,7 @@ FileVersion fileVersion = (FileVersion)request.getAttribute(WebKeys.DOCUMENT_LIB
 		else if (PDFProcessorUtil.hasImages(fileVersion)) {
 			previewURL = DLURLHelperUtil.getPreviewURL(fileEntry, fileVersion, themeDisplay, "&previewFileIndex=1");
 		}
-		else if (VideoProcessorUtil.hasVideo(fileVersion)) {
+		else if (VideoProcessorUtil.hasVideoThumbnails(fileVersion)) {
 			previewURL = DLURLHelperUtil.getPreviewURL(fileEntry, fileVersion, themeDisplay, "&videoThumbnail=1");
 		}
 	}

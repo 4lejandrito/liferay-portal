@@ -176,6 +176,11 @@ public class VideoProcessorImpl
 	}
 
 	@Override
+	public boolean hasVideoThumbnails(FileVersion fileVersion) {
+		return hasThumbnails(fileVersion);
+	}
+
+	@Override
 	public boolean isSupported(String mimeType) {
 		if (_videoMimeTypes.contains(mimeType) && XugglerUtil.isEnabled()) {
 			return true;
@@ -614,7 +619,7 @@ public class VideoProcessorImpl
 			return false;
 		}
 
-		if (hasPreviews(fileVersion) && hasThumbnails(fileVersion)) {
+		if (hasPreviews(fileVersion)) {
 			return true;
 		}
 

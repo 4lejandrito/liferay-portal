@@ -182,7 +182,7 @@ public class DLURLHelperImpl implements DLURLHelper {
 				previewQueryString = previewQueryString.concat(
 					"&previewFileIndex=1");
 			}
-			else if (VideoProcessorUtil.hasVideo(fileVersion)) {
+			else if (VideoProcessorUtil.hasVideoThumbnails(fileVersion)) {
 				previewQueryString = previewQueryString.concat(
 					"&videoThumbnail=1");
 			}
@@ -293,7 +293,7 @@ public class DLURLHelperImpl implements DLURLHelper {
 			else if (PDFProcessorUtil.hasImages(fileVersion)) {
 				thumbnailQueryString = "&documentThumbnail=1";
 			}
-			else if (VideoProcessorUtil.hasVideo(fileVersion)) {
+			else if (VideoProcessorUtil.hasVideoThumbnails(fileVersion)) {
 				thumbnailQueryString = "&videoThumbnail=1";
 			}
 		}

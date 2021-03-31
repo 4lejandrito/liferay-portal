@@ -55,6 +55,10 @@ public interface VideoProcessor {
 
 	public boolean hasVideo(FileVersion fileVersion);
 
+	public default boolean hasVideoThumbnails(FileVersion fileVersion) {
+		return hasVideo(fileVersion);
+	}
+
 	public void importGeneratedFiles(
 			PortletDataContext portletDataContext, FileEntry fileEntry,
 			FileEntry importedFileEntry, Element fileEntryElement)

@@ -113,6 +113,16 @@ public class VideoProcessorUtil {
 		return videoProcessor.hasVideo(fileVersion);
 	}
 
+	public static boolean hasVideoThumbnails(FileVersion fileVersion) {
+		VideoProcessor videoProcessor = getVideoProcessor();
+
+		if (videoProcessor == null) {
+			return false;
+		}
+
+		return videoProcessor.hasVideoThumbnails(fileVersion);
+	}
+
 	public static boolean isSupported(String mimeType) {
 		VideoProcessor videoProcessor = getVideoProcessor();
 
