@@ -19,6 +19,8 @@ import com.liferay.content.dashboard.web.internal.item.type.ContentDashboardItem
 import com.liferay.content.dashboard.web.internal.item.type.ContentDashboardItemTypeFactoryTracker;
 import com.liferay.content.dashboard.web.internal.item.type.ContentDashboardItemTypeUtil;
 import com.liferay.content.dashboard.web.internal.search.request.ContentDashboardItemTypeChecker;
+import com.liferay.document.library.kernel.model.DLFileEntryType;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
@@ -96,6 +98,9 @@ public class ContentDashboardItemTypeItemSelectorProvider {
 	private BooleanClause[] _getBooleanClauses(String keywords, Locale locale) {
 		BooleanQueryImpl booleanQueryImpl = new BooleanQueryImpl();
 
+		booleanQueryImpl.addExactTerm(
+			Field.ENTRY_CLASS_NAME, DDMStructure.class.getName());
+
 		BooleanFilter booleanFilter = new BooleanFilter();
 
 		TermsFilter classNameIdTermsFilter = new TermsFilter(
@@ -110,6 +115,20 @@ public class ContentDashboardItemTypeItemSelectorProvider {
 
 		booleanFilter.add(classNameIdTermsFilter, BooleanClauseOccur.MUST);
 
+		booleanQueryImpl.setPreBooleanFilter(booleanFilter);
+
+		BooleanQueryImpl dlBooleanQueryImpl = new BooleanQueryImpl();
+
+		dlBooleanQueryImpl.addExactTerm(
+			Field.ENTRY_CLASS_NAME, DLFileEntryType.class.getName());
+
+		BooleanQueryImpl finalBooleanQueryImpl = new BooleanQueryImpl();
+
+		finalBooleanQueryImpl.add(
+			booleanQueryImpl, BooleanClauseOccur.SHOULD.getName());
+		finalBooleanQueryImpl.add(
+			dlBooleanQueryImpl, BooleanClauseOccur.SHOULD.getName());
+
 		if (Validator.isNotNull(keywords)) {
 			String sortableKeywords = StringUtil.replace(
 				StringUtil.toLowerCase(keywords), ' ', '*');
@@ -119,14 +138,12 @@ public class ContentDashboardItemTypeItemSelectorProvider {
 					"localized_name_".concat(LocaleUtil.toLanguageId(locale))),
 				StringPool.STAR + sortableKeywords + StringPool.STAR);
 
-			booleanQueryImpl.add(wildcardQuery, BooleanClauseOccur.MUST);
+			finalBooleanQueryImpl.add(wildcardQuery, BooleanClauseOccur.MUST);
 		}
-
-		booleanQueryImpl.setPreBooleanFilter(booleanFilter);
 
 		return new BooleanClause[] {
 			BooleanClauseFactoryUtil.create(
-				booleanQueryImpl, BooleanClauseOccur.MUST.getName())
+				finalBooleanQueryImpl, BooleanClauseOccur.MUST.getName())
 		};
 	}
 
