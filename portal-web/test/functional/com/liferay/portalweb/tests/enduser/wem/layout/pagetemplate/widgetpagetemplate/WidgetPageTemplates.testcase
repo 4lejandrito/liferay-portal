@@ -93,9 +93,13 @@ definition {
 	}
 
 	@description = "This is a use case for LPS-115361. Add a widget page template in normal site."
+	@ignore = "true"
 	@priority = "5"
 	test AddPageTemplate {
 		property portal.acceptance = "true";
+
+		task ("Ignore due to LPS-119068 to be fixed in LPS-130845") {
+		}
 
 		task ("Add a new site") {
 			JSONGroup.addGroup(groupName = "Site Name");
@@ -129,9 +133,13 @@ definition {
 	}
 
 	@description = "This is a use case for LPS-115361. Can not delete a widget page template is used by a page in normal site."
+	@ignore = "true"
 	@priority = "5"
 	test CannotDeletePageTemplateIsUsedByAPage {
 		property portal.acceptance = "true";
+
+		task ("Ignore due to LPS-119068 to be fixed in LPS-130845") {
+		}
 
 		task ("Add a new site") {
 			JSONGroup.addGroup(groupName = "Site Name");
@@ -338,9 +346,13 @@ definition {
 	}
 
 	@description = "This is a use case for LPS-115361. Edit a widget page template in normal site."
+	@ignore = "true"
 	@priority = "5"
 	test EditPageTemplate {
 		property portal.acceptance = "true";
+
+		task ("Ignore due to LPS-119068 to be fixed in LPS-130845") {
+		}
 
 		task ("Add a new site") {
 			JSONGroup.addGroup(groupName = "Site Name");

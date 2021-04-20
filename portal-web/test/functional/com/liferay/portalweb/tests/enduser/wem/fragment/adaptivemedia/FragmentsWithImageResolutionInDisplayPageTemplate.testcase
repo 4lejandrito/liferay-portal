@@ -45,9 +45,13 @@ definition {
 	}
 
 	@description = "This is a test for LPS-125191. The image resolution is applied to directly selected image in fragment with background image editable field in display page template."
+	@ignore = "true"
 	@priority = "5"
 	test ViewAutoImageResolutionForBackgroundImageDirectlySelectedInBannerCenter {
 		property portal.acceptance = "true";
+
+		task ("Ignore due to LPS-119068 to be fixed in LPS-130845") {
+		}
 
 		task ("Add a display page template with Web Content Article and Basic Web Content") {
 			JSONLayoutpagetemplate.addDisplayPageTemplateEntry(
@@ -207,9 +211,13 @@ definition {
 	}
 
 	@description = "This is a test for LPS-125191. The image resolution is applied to directly selected background image in Container with padding settings in display page template."
+	@ignore = "true"
 	@priority = "5"
 	test ViewAutoImageResolutionForBackgroundImageDirectlySelectedInContainer {
 		property portal.acceptance = "true";
+
+		task ("Ignore due to LPS-119068 to be fixed in LPS-130845") {
+		}
 
 		task ("Add a display page template with Web Content Article and Basic Web Content") {
 			JSONLayoutpagetemplate.addDisplayPageTemplateEntry(
@@ -373,9 +381,13 @@ definition {
 	}
 
 	@description = "This is a test for LPS-125191. The image resolution is applied to directly selected image in fragment with image editable field in display page template."
+	@ignore = "true"
 	@priority = "5"
 	test ViewAutoImageResolutionForImageDirectlySelectedInCard {
 		property portal.acceptance = "true";
+
+		task ("Ignore due to LPS-119068 to be fixed in LPS-130845") {
+		}
 
 		task ("Add a display page template with Web Content Article and Basic Web Content") {
 			JSONLayoutpagetemplate.addDisplayPageTemplateEntry(
@@ -538,9 +550,13 @@ definition {
 	}
 
 	@description = "This is a test for LPS-125191. The image resolution is applied to mapping background image of a fragment with editable field in display page template."
+	@ignore = "true"
 	@priority = "5"
 	test ViewAutoImageResolutionForMappingBackgroundImageInBannerCenter {
 		property portal.acceptance = "true";
+
+		task ("Ignore due to LPS-119068 to be fixed in LPS-130845") {
+		}
 
 		task ("Add a web content structure with an Image field") {
 			WebContentNavigator.openWebContentAdmin(siteURLKey = "test-site-name");
@@ -663,9 +679,13 @@ definition {
 	}
 
 	@description = "This is a test for LPS-125191. The image resolution is applied to mapping background image of the Container with padding settings."
+	@ignore = "true"
 	@priority = "5"
 	test ViewAutoImageResolutionForMappingBackgroundImageInContainer {
 		property portal.acceptance = "true";
+
+		task ("Ignore due to LPS-119068 to be fixed in LPS-130845") {
+		}
 
 		task ("Add a web content structure with an Image field") {
 			WebContentNavigator.openWebContentAdmin(siteURLKey = "test-site-name");
@@ -790,9 +810,13 @@ definition {
 	}
 
 	@description = "This is a test for LPS-125191. The image resolution is applied to mapping image of a fragment with editable field in display page template."
+	@ignore = "true"
 	@priority = "5"
 	test ViewAutoImageResolutionForMappingImageInCard {
 		property portal.acceptance = "true";
+
+		task ("Ignore due to LPS-119068 to be fixed in LPS-130845") {
+		}
 
 		task ("Add a web content structure with an Image field") {
 			WebContentNavigator.openWebContentAdmin(siteURLKey = "test-site-name");
