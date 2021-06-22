@@ -238,6 +238,7 @@ function encodeQueryString(queryString) {
  * @returns {string} The decoded string without quotes.
  */
 function formatCriterionValue(criterionValue) {
+	console.log(criterionValue);
 	return decodeURIComponent(criterionValue).replace(/['"]+/g, '');
 }
 
