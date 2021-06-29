@@ -512,7 +512,9 @@ definition {
 
 	@description = "This is a test for LPS-117818. Map manual URL to text fragment."
 	@priority = "5"
+	@ignore = "true"
 	test MapManualURLToTextFragment {
+		// Ignored until LRCI-2329 is resolved
 		property portal.acceptance = "true";
 
 		task ("Add a Heading fragment to page") {
