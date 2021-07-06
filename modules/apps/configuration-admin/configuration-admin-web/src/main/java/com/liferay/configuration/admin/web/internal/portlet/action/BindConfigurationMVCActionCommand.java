@@ -113,6 +113,11 @@ public class BindConfigurationMVCActionCommand implements MVCActionCommand {
 		}
 		else {
 			configurationModel = configurationModels.get(pid);
+
+			if (configurationModel == null) {
+				configurationModel = configurationModels.get(
+					getUnscopedPid(pid));
+			}
 		}
 
 		Configuration configuration =
@@ -213,7 +218,7 @@ public class BindConfigurationMVCActionCommand implements MVCActionCommand {
 					String pid = configurationModel.getID();
 
 					if (!configurationModel.isFactory() && scoped) {
-						pid = pid + ".scoped";
+						pid = getUnscopedPid(pid) + ".scoped";
 					}
 
 					configuration =
@@ -325,6 +330,10 @@ public class BindConfigurationMVCActionCommand implements MVCActionCommand {
 
 		return configurationFormRenderer.getRequestParameters(
 			_portal.getHttpServletRequest(actionRequest));
+	}
+
+	protected String getUnscopedPid(String pid) {
+		return pid.replaceFirst("\\.scoped.*", StringPool.BLANK);
 	}
 
 	protected Dictionary<String, Object> toDictionary(
