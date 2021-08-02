@@ -14,8 +14,8 @@
 
 import ClayIcon from '@clayui/icon';
 import ClayLayout from '@clayui/layout';
-import React, {useMemo, useRef, useState} from 'react';
 import {Treeview} from 'frontend-js-components-web';
+import React, {useMemo, useRef, useState} from 'react';
 
 function visit(nodes, callback) {
 	nodes.forEach((node) => {
@@ -40,36 +40,74 @@ function getFilter(filterQuery) {
 }
 
 function SelectTypeAndSubtype() {
-    /* Mocked values, should be props */
-    const namespace = "mynamespace";
-    const nodes = [
-        { "expanded":true,
-          "children":[
-             {"children":[],"icon":"simple-circle","name":"Basic Web Content","id":"39768"},
-             {"children":[],"icon":"simple-circle","name":"Clara Web Content","id":"39769"},
-             {"children":[],"icon":"simple-circle","name":"XXX Web Content","id":"39767"}
-         ],
-         "icon":"folder",
-         "name":"Web Content",
-         "id":"0"},
-         { "expanded":false,
-          "children":[
-             {"children":[],"icon":"simple-circle","name":"Subtype of document1","id":"49768"},
-             {"children":[],"icon":"simple-circle","name":"Subtype of document2","id":"49769"},
-             {"children":[],"icon":"simple-circle","name":"Subtype of document","id":"49767"}
-         ],
-         "icon":"folder",
-         "name":"Document",
-         "id":"1"}
-         ];
-    const itemSelectorSaveEvent = "_com_liferay_content_dashboard_web_portlet_ContentDashboardAdminPortlet_selectedAssetType";
-    /* End mocked values */
 
-    const [filterQuery, setFilterQuery] = useState('');
+	/* Mocked values, should be props */
+	const namespace = 'mynamespace';
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	const nodes = [
+		{
+			children: [
+				{
+					children: [],
+					icon: 'simple-circle',
+					id: '39768',
+					name: 'Basic Web Content',
+				},
+				{
+					children: [],
+					icon: 'simple-circle',
+					id: '39769',
+					name: 'Clara Web Content',
+				},
+				{
+					children: [],
+					icon: 'simple-circle',
+					id: '39767',
+					name: 'XXX Web Content',
+				},
+			],
+			expanded: true,
+			icon: 'folder',
+			id: '0',
+			name: 'Web Content',
+		},
+		{
+			children: [
+				{
+					children: [],
+					icon: 'simple-circle',
+					id: '49768',
+					name: 'Subtype of document1',
+				},
+				{
+					children: [],
+					icon: 'simple-circle',
+					id: '49769',
+					name: 'Subtype of document2',
+				},
+				{
+					children: [],
+					icon: 'simple-circle',
+					id: '49767',
+					name: 'Subtype of document',
+				},
+			],
+			expanded: false,
+			icon: 'folder',
+			id: '1',
+			name: 'Document',
+		},
+	];
+	const itemSelectorSaveEvent =
+		'_com_liferay_content_dashboard_web_portlet_ContentDashboardAdminPortlet_selectedAssetType';
 
-    const selectedNodesRef = useRef(null);
+	/* End mocked values */
 
-    const initialSelectedNodeIds = useMemo(() => {
+	const [filterQuery, setFilterQuery] = useState('');
+
+	const selectedNodesRef = useRef(null);
+
+	const initialSelectedNodeIds = useMemo(() => {
 		const selectedNodes = [];
 
 		visit(nodes, (node) => {
@@ -81,98 +119,97 @@ function SelectTypeAndSubtype() {
 		return selectedNodes;
 	}, [nodes]);
 
-    const handleSelectionChange = (selectedNodes) => {
-        const data = {};
+	const handleSelectionChange = (selectedNodes) => {
+		const data = {};
 
-        // // Mark newly selected nodes as selected.
-        visit(nodes, (node) => {
-            if (selectedNodes.has(node.id)) {
-                data[node.id] = {
-                    subtypeId: node.children ? 0 : node.id,
-                    nodePath: node.nodePath,
-                    value: node.name,
-                    typeId: node.children ? node.id : 0,
-                };
-            }
-        });
+		// Mark newly selected nodes as selected.
 
-        // Mark unselected nodes as unchecked.
-        if (selectedNodesRef.current) {
-            Object.entries(selectedNodesRef.current).forEach(([id, node]) => {
-                if (!selectedNodes.has(id)) {
-                    data[id] = {
-                        ...node,
-                        unchecked: true,
-                    };
-                }
-            });
-        }
+		visit(nodes, (node) => {
+			if (selectedNodes.has(node.id)) {
+				data[node.id] = {
+					nodePath: node.nodePath,
+					subtypeId: node.children ? 0 : node.id,
+					typeId: node.children ? node.id : 0,
+					value: node.name,
+				};
+			}
+		});
 
-        selectedNodesRef.current = data;
+		// Mark unselected nodes as unchecked.
 
-        const openerWindow = Liferay.Util.getOpener();
+		if (selectedNodesRef.current) {
+			Object.entries(selectedNodesRef.current).forEach(([id, node]) => {
+				if (!selectedNodes.has(id)) {
+					data[id] = {
+						...node,
+						unchecked: true,
+					};
+				}
+			});
+		}
 
-        openerWindow.Liferay.fire(itemSelectorSaveEvent, {data});
-    };
+		selectedNodesRef.current = data;
 
-    return (
-    <div className="select-type-and-subtype">
-        <form
-            className="mb-4 pb-3 pt-3 select-type-and-subtype-filter"
-            onSubmit={(event) => event.preventDefault()}
-            role="search"
-        >
-            <ClayLayout.ContainerFluid className="d-flex">
-                <div className="input-group">
-                    <div className="input-group-item">
-                        <input
-                            className="form-control h-100 input-group-inset input-group-inset-after"
-                            onChange={(event) =>
-                                setFilterQuery(event.target.value)
-                            }
-                            placeholder={Liferay.Language.get('search')}
-                            type="text"
-                        />
+		const openerWindow = Liferay.Util.getOpener();
 
-                        <div className="input-group-inset-item input-group-inset-item-after pr-3">
-                            <ClayIcon symbol="search" />
-                        </div>
-                    </div>
-                </div>
-            </ClayLayout.ContainerFluid>
-        </form>
+		openerWindow.Liferay.fire(itemSelectorSaveEvent, {data});
+	};
 
-        <form name={`${namespace}selectSelectTypeAndSubtypeFm`}>
-            <ClayLayout.ContainerFluid containerElement="fieldset">
-                <div
-                    className="type-tree"
-                    id={`${namespace}typeContainer`}
-                >
-                    {nodes.length > 0 ? (
-                        <Treeview
-                            NodeComponent={Treeview.Card}
-                            filter={getFilter(filterQuery)}
-                            initialSelectedNodeIds={initialSelectedNodeIds}
-                            multiSelection={true}
-                            nodes={nodes}
-                            onSelectedNodesChange={handleSelectionChange}
-                            inheritSelection={true}
-                        />
-                    ) : (
-                        <div className="border-0 pt-0 sheet taglib-empty-result-message">
-                            <div className="taglib-empty-result-message-header"></div>
-                            <div className="sheet-text text-center">
-                                {Liferay.Language.get(
-                                    'no-types-were-found'
-                                )}
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </ClayLayout.ContainerFluid>
-        </form>
-    </div>
-    )
+	return (
+		<div className="select-type-and-subtype">
+			<form
+				className="mb-4 pb-3 pt-3 select-type-and-subtype-filter"
+				onSubmit={(event) => event.preventDefault()}
+				role="search"
+			>
+				<ClayLayout.ContainerFluid className="d-flex">
+					<div className="input-group">
+						<div className="input-group-item">
+							<input
+								className="form-control h-100 input-group-inset input-group-inset-after"
+								onChange={(event) =>
+									setFilterQuery(event.target.value)
+								}
+								placeholder={Liferay.Language.get('search')}
+								type="text"
+							/>
+
+							<div className="input-group-inset-item input-group-inset-item-after pr-3">
+								<ClayIcon symbol="search" />
+							</div>
+						</div>
+					</div>
+				</ClayLayout.ContainerFluid>
+			</form>
+
+			<form name={`${namespace}selectSelectTypeAndSubtypeFm`}>
+				<ClayLayout.ContainerFluid containerElement="fieldset">
+					<div className="type-tree" id={`${namespace}typeContainer`}>
+						{nodes.length > 0 ? (
+							<Treeview
+								NodeComponent={Treeview.Card}
+								filter={getFilter(filterQuery)}
+								inheritSelection={true}
+								initialSelectedNodeIds={initialSelectedNodeIds}
+								multiSelection={true}
+								nodes={nodes}
+								onSelectedNodesChange={handleSelectionChange}
+							/>
+						) : (
+							<div className="border-0 pt-0 sheet taglib-empty-result-message">
+								<div className="taglib-empty-result-message-header"></div>
+								<div className="sheet-text text-center">
+									{Liferay.Language.get(
+										'no-types-were-found'
+									)}
+								</div>
+							</div>
+						)}
+					</div>
+				</ClayLayout.ContainerFluid>
+			</form>
+		</div>
+	);
 }
 
 export default SelectTypeAndSubtype;
