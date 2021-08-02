@@ -28,6 +28,7 @@ ContentDashboardItemSubtypeItemSelectorViewDisplayContext contentDashboardItemSu
 
 <react:component
 	module="js/SelectTypeAndSubtype"
+	props="<%= contentDashboardItemSubtypeItemSelectorViewDisplayContext.getData() %>"
 />
 
 <!-- <clay:management-toolbar
