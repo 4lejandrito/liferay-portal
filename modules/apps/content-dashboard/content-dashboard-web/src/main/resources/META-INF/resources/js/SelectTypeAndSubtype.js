@@ -18,23 +18,29 @@ import {Treeview} from 'frontend-js-components-web';
 import PropTypes from 'prop-types';
 import React, {useMemo, useRef, useState} from 'react';
 
-const nodeTreeArrayMapper = (nodesArray) => {
-	return nodesArray.map((node, index) => {
+/**
+ * Map the node array prop in an understandable format for the Treeview component
+ * @param {array} nodeArray - Array of nodes.
+ * @return {array} A new array of nodes.
+ */
+const nodeTreeArrayMapper = (nodeArray) => {
+	return nodeArray.map((node, index) => {
 		const hasChildren = !!node.itemTypes?.length;
+
+		const _getNodeId = ({index, node}) =>
+			hasChildren ? `_${index}` : `${node.className}_${node.classPK}`;
 
 		return {
 			...node,
 			children: hasChildren ? nodeTreeArrayMapper(node.itemTypes) : null,
-			className: node.className || null,
-			expanded: !index && hasChildren ? true : false,
-			icon: node.icon || null,
-			id: node.classPK || `_${index}`,
+			expanded: !!(!index && hasChildren) || false,
+			id: _getNodeId({index, node}),
 			name: node.label,
 		};
 	});
 };
 
-function visit(nodes, callback) {
+const visit = (nodes, callback) => {
 	nodes.forEach((node) => {
 		callback(node);
 
@@ -42,9 +48,9 @@ function visit(nodes, callback) {
 			visit(node.children, callback);
 		}
 	});
-}
+};
 
-function getFilter(filterQuery) {
+const getFilter = (filterQuery) => {
 	if (!filterQuery) {
 		return null;
 	}
@@ -54,13 +60,13 @@ function getFilter(filterQuery) {
 	return (node) =>
 		!node.vocabulary &&
 		node.name.toLowerCase().indexOf(filterQueryLowerCase) !== -1;
-}
+};
 
-function SelectTypeAndSubtype({
+const SelectTypeAndSubtype = ({
 	contentDashboardItemTypes,
 	itemSelectorSaveEvent,
 	portletNamespace,
-}) {
+}) => {
 	const nodes = nodeTreeArrayMapper(contentDashboardItemTypes);
 
 	const [filterQuery, setFilterQuery] = useState('');
@@ -80,18 +86,18 @@ function SelectTypeAndSubtype({
 	}, [nodes]);
 
 	const handleSelectionChange = (selectedNodes) => {
-		const data = {};
+		const data = [];
 
 		// Mark newly selected nodes as selected.
 
 		visit(nodes, (node) => {
-			if (selectedNodes.has(node.id)) {
-				data[node.id] = {
-					nodePath: node.nodePath,
-					subtypeId: node.children ? 0 : node.id,
-					typeId: node.children ? node.id : 0,
-					value: node.name,
-				};
+			const isChildNode = !node.children;
+
+			if (selectedNodes.has(node.id) && isChildNode) {
+				data.push({
+					className: node.className,
+					classPK: node.classPK,
+				});
 			}
 		});
 
@@ -99,8 +105,10 @@ function SelectTypeAndSubtype({
 
 		if (selectedNodesRef.current) {
 			Object.entries(selectedNodesRef.current).forEach(([id, node]) => {
-				if (!selectedNodes.has(id)) {
-					data[id] = {
+				const nodeIndex = data.findIndex((node) => node.id === id);
+
+				if (!selectedNodes.has(id) && nodeIndex > -1) {
+					data[nodeIndex] = {
 						...node,
 						unchecked: true,
 					};
@@ -173,7 +181,7 @@ function SelectTypeAndSubtype({
 			</form>
 		</div>
 	);
-}
+};
 
 SelectTypeAndSubtype.propTypes = {
 	contentDashboardItemTypes: PropTypes.array.isRequired,
