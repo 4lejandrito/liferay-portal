@@ -15,7 +15,24 @@
 import ClayIcon from '@clayui/icon';
 import ClayLayout from '@clayui/layout';
 import {Treeview} from 'frontend-js-components-web';
+import PropTypes from 'prop-types';
 import React, {useMemo, useRef, useState} from 'react';
+
+const nodeTreeArrayMapper = (nodesArray) => {
+	return nodesArray.map((node, index) => {
+		const hasChildren = !!node.itemTypes?.length;
+
+		return {
+			...node,
+			children: hasChildren ? nodeTreeArrayMapper(node.itemTypes) : null,
+			className: node.className || null,
+			expanded: !index && hasChildren ? true : false,
+			icon: node.icon || null,
+			id: node.classPK || `_${index}`,
+			name: node.label,
+		};
+	});
+};
 
 function visit(nodes, callback) {
 	nodes.forEach((node) => {
@@ -39,69 +56,12 @@ function getFilter(filterQuery) {
 		node.name.toLowerCase().indexOf(filterQueryLowerCase) !== -1;
 }
 
-function SelectTypeAndSubtype() {
-
-	/* Mocked values, should be props */
-	const namespace = 'mynamespace';
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	const nodes = [
-		{
-			children: [
-				{
-					children: [],
-					icon: 'simple-circle',
-					id: '39768',
-					name: 'Basic Web Content',
-				},
-				{
-					children: [],
-					icon: 'simple-circle',
-					id: '39769',
-					name: 'Clara Web Content',
-				},
-				{
-					children: [],
-					icon: 'simple-circle',
-					id: '39767',
-					name: 'XXX Web Content',
-				},
-			],
-			expanded: true,
-			icon: 'folder',
-			id: '0',
-			name: 'Web Content',
-		},
-		{
-			children: [
-				{
-					children: [],
-					icon: 'simple-circle',
-					id: '49768',
-					name: 'Subtype of document1',
-				},
-				{
-					children: [],
-					icon: 'simple-circle',
-					id: '49769',
-					name: 'Subtype of document2',
-				},
-				{
-					children: [],
-					icon: 'simple-circle',
-					id: '49767',
-					name: 'Subtype of document',
-				},
-			],
-			expanded: false,
-			icon: 'folder',
-			id: '1',
-			name: 'Document',
-		},
-	];
-	const itemSelectorSaveEvent =
-		'_com_liferay_content_dashboard_web_portlet_ContentDashboardAdminPortlet_selectedAssetType';
-
-	/* End mocked values */
+function SelectTypeAndSubtype({
+	contentDashboardItemTypes,
+	itemSelectorSaveEvent,
+	portletNamespace,
+}) {
+	const nodes = nodeTreeArrayMapper(contentDashboardItemTypes);
 
 	const [filterQuery, setFilterQuery] = useState('');
 
@@ -182,9 +142,12 @@ function SelectTypeAndSubtype() {
 				</ClayLayout.ContainerFluid>
 			</form>
 
-			<form name={`${namespace}selectSelectTypeAndSubtypeFm`}>
+			<form name={`${portletNamespace}selectSelectTypeAndSubtypeFm`}>
 				<ClayLayout.ContainerFluid containerElement="fieldset">
-					<div className="type-tree" id={`${namespace}typeContainer`}>
+					<div
+						className="type-tree"
+						id={`${portletNamespace}typeContainer`}
+					>
 						{nodes.length > 0 ? (
 							<Treeview
 								NodeComponent={Treeview.Card}
@@ -211,5 +174,11 @@ function SelectTypeAndSubtype() {
 		</div>
 	);
 }
+
+SelectTypeAndSubtype.propTypes = {
+	contentDashboardItemTypes: PropTypes.array.isRequired,
+	itemSelectorSaveEvent: PropTypes.string.isRequired,
+	portletNamespace: PropTypes.string.isRequired,
+};
 
 export default SelectTypeAndSubtype;
