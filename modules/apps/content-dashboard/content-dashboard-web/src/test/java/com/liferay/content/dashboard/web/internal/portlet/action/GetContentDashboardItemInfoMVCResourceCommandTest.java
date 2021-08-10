@@ -291,7 +291,7 @@ public class GetContentDashboardItemInfoMVCResourceCommandTest {
 			@Override
 			public JSONObject getSpecificInformationJSONObject(
 				Locale locale, LiferayPortletResponse liferayPortletResponse,
-				String back) {
+				String backURL) {
 
 				return null;
 			}
