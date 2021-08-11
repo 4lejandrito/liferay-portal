@@ -40,10 +40,13 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.FileVersion;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.FileUtil;
+import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.URLCodec;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import java.util.ArrayList;
@@ -325,9 +328,11 @@ public class FileEntryContentDashboardItem
 	@Override
 	public JSONObject getSpecificInformationJSONObject(
 		Locale locale, LiferayPortletResponse liferayPortletResponse,
-		String backURL) {
+		String backURL, ThemeDisplay themeDisplay) {
 
 		return JSONUtil.put(
+			"absoluteURL", _getAbsoluteURL(themeDisplay)
+		).put(
 			"description", getDescription(locale)
 		).put(
 			"downloadURL", _getDownloadURL()
@@ -340,7 +345,7 @@ public class FileEntryContentDashboardItem
 		).put(
 			"size", _getSize(locale)
 		).put(
-			"viewURL", getViewURL(liferayPortletResponse, backURL)
+			"viewURL", _getViewURL(liferayPortletResponse, backURL)
 		);
 	}
 
@@ -403,20 +408,6 @@ public class FileEntryContentDashboardItem
 		}
 	}
 
-	public String getViewURL(
-		LiferayPortletResponse liferayPortletResponse, String redirect) {
-
-		return PortletURLBuilder.createRenderURL(
-			liferayPortletResponse, DLPortletKeys.DOCUMENT_LIBRARY_ADMIN
-		).setMVCRenderCommandName(
-			"/document_library/view_file_entry"
-		).setRedirect(
-			redirect
-		).setParameter(
-			"fileEntryId", _fileEntry.getFileEntryId()
-		).buildString();
-	}
-
 	@Override
 	public boolean isViewable(HttpServletRequest httpServletRequest) {
 		if (ListUtil.isEmpty(
@@ -440,6 +431,24 @@ public class FileEntryContentDashboardItem
 		).orElse(
 			false
 		);
+	}
+
+	private String _getAbsoluteURL(ThemeDisplay themeDisplay) {
+		themeDisplay.getPortalURL();
+
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(themeDisplay.getPortalURL());
+		sb.append(_portal.getPathContext());
+		sb.append("/documents/");
+		sb.append(_fileEntry.getRepositoryId());
+		sb.append(StringPool.SLASH);
+		sb.append(_fileEntry.getFolderId());
+		sb.append(StringPool.SLASH);
+		sb.append(
+			URLCodec.encodeURL(HtmlUtil.unescape(_fileEntry.getFileName())));
+
+		return sb.toString();
 	}
 
 	private String _getDownloadURL() {
@@ -500,6 +509,20 @@ public class FileEntryContentDashboardItem
 
 	private String _getSize(Locale locale) {
 		return LanguageUtil.formatStorageSize(_fileEntry.getSize(), locale);
+	}
+
+	private String _getViewURL(
+		LiferayPortletResponse liferayPortletResponse, String redirect) {
+
+		return PortletURLBuilder.createRenderURL(
+			liferayPortletResponse, DLPortletKeys.DOCUMENT_LIBRARY_ADMIN
+		).setMVCRenderCommandName(
+			"/document_library/view_file_entry"
+		).setRedirect(
+			redirect
+		).setParameter(
+			"fileEntryId", _fileEntry.getFileEntryId()
+		).buildString();
 	}
 
 	private ContentDashboardItemAction _toContentDashboardItemAction(
