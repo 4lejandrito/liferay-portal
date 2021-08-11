@@ -12,8 +12,10 @@
  * details.
  */
 
-import {act, cleanup, render} from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import {act, cleanup, fireEvent, render} from '@testing-library/react';
+
+// import userEvent from '@testing-library/user-event';
+
 import React, {useState} from 'react';
 
 import Sidebar from '../../../src/main/resources/META-INF/resources/js/components/Sidebar';
@@ -26,6 +28,9 @@ const ControlledSidebar = ({open, title = ''}) => {
 	return (
 		<Sidebar onClose={() => setIsOpen(false)} open={isOpen}>
 			<Sidebar.Header title={title} />
+			<Sidebar.Body>
+				<p>Dummy children</p>
+			</Sidebar.Body>
 		</Sidebar>
 	);
 };
@@ -106,11 +111,13 @@ describe('Sidebar', () => {
 
 		expect(closeIcon).toBeInTheDocument();
 
-		userEvent.click(closeIcon);
-
-		act(() => {
-			jest.runAllTimers();
-		});
+		fireEvent(
+			closeIcon,
+			new MouseEvent('click', {
+				bubbles: true,
+				cancelable: true,
+			})
+		);
 
 		expect(document.body).not.toHaveAttribute('class', 'sidebar-open');
 	});
