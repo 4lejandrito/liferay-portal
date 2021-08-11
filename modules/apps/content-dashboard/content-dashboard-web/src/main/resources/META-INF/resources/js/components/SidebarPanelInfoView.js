@@ -121,7 +121,7 @@ const SidebarPanelInfoView = ({
 		subType === 'Basic Document' &&
 		!!downloadURL &&
 		!!extension &&
-		parseInt(size, 10) > 0;
+		parseInt(size?.split(' ')[0], 10) > 0;
 
 	const documentUsesPreview = !!preview || documentIsAFile;
 
