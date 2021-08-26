@@ -20,6 +20,7 @@ import com.liferay.document.library.kernel.model.DLFolderConstants;
 import com.liferay.document.library.kernel.service.DLAppLocalServiceUtil;
 import com.liferay.item.selector.ItemSelectorCriterion;
 import com.liferay.item.selector.ItemSelectorView;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.model.Group;
@@ -87,13 +88,14 @@ public class ContentDashboardFileExtensionItemSelectorViewTest {
 		_addFileEntry("txt");
 		_addFileEntry("xls");
 		_addFileEntry("zip");
+		_addFileEntry("liferay");
 
 		Map<String, Object> data = _getData();
 
 		JSONArray fileExtensionGroupsJSONArray = (JSONArray)data.get(
 			"fileExtensionGroups");
 
-		Assert.assertEquals(9, fileExtensionGroupsJSONArray.length());
+		Assert.assertEquals(10, fileExtensionGroupsJSONArray.length());
 
 		_assertExtensionGroupJSONObject(
 			"mp3", "document-multimedia", "Audio",
@@ -122,6 +124,9 @@ public class ContentDashboardFileExtensionItemSelectorViewTest {
 		_assertExtensionGroupJSONObject(
 			"mp4", "document-multimedia", "Video",
 			fileExtensionGroupsJSONArray.getJSONObject(8));
+		_assertExtensionGroupJSONObject(
+			"liferay", "document-default", "Other",
+			fileExtensionGroupsJSONArray.getJSONObject(9));
 
 		Assert.assertNotNull(data.get("itemSelectorSaveEvent"));
 	}
