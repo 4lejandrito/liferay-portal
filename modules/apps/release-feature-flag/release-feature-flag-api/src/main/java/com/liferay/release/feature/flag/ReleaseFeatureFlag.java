@@ -46,4 +46,7 @@ package com.liferay.release.feature.flag;
  * 	</code>
  */
 public enum ReleaseFeatureFlag {
+
+	DISABLE_BLOGS_SUBTITLE
+
 }

@@ -30,6 +30,8 @@ import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.release.feature.flag.ReleaseFeatureFlag;
+import com.liferay.release.feature.flag.ReleaseFeatureFlagManagerUtil;
 import com.liferay.trash.TrashHelper;
 
 import java.util.Date;
@@ -121,6 +123,12 @@ public class BlogsEntryVerticalCard extends BaseVerticalCard {
 
 	@Override
 	public String getSubtitle() {
+		if (ReleaseFeatureFlagManagerUtil.isEnabled(
+				ReleaseFeatureFlag.DISABLE_BLOGS_SUBTITLE)) {
+
+			return null;
+		}
+
 		Date modifiedDate = _blogsEntry.getModifiedDate();
 
 		String modifiedDateDescription = LanguageUtil.getTimeDescription(
