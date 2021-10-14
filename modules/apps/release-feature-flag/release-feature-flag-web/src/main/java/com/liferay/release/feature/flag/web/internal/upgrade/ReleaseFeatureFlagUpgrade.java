@@ -32,6 +32,25 @@ public class ReleaseFeatureFlagUpgrade implements UpgradeStepRegistrator {
 			"0.0.0", "1.0.0",
 			new UpgradeReleaseFeatureFlag(
 				ReleaseFeatureFlag.DISABLE_BLOGS_SUBTITLE));
+
+		/**
+		 * This would be the result of adding more RFFs:
+		 *
+		 * registry.register(
+		 * 		"1.0.0", "1.0.1",
+		 * 		new UpgradeReleaseFeatureFlag(
+		 * 			ReleaseFeatureFlag.SOME_OTHER_FEATURE_FLAG_1));
+		 *
+		 * 	registry.register(
+		 * 		"1.0.1", "1.0.2",
+		 * 		new UpgradeReleaseFeatureFlag(
+		 * 			ReleaseFeatureFlag.SOME_OTHER_FEATURE_FLAG_2));
+		 *
+		 * 	registry.register(
+		 * 		"1.0.2", "1.0.3",
+		 * 		new UpgradeReleaseFeatureFlag(
+		 * 			ReleaseFeatureFlag.SOME_OTHER_FEATURE_FLAG_3));
+		 */
 	}
 
 }
