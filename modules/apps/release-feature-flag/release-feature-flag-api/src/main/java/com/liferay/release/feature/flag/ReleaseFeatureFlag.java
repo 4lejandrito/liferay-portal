@@ -18,4 +18,5 @@ package com.liferay.release.feature.flag;
  * @author Alejandro Tardín
  */
 public enum ReleaseFeatureFlag {
+	REMOVE_SEGMENTATION
 }

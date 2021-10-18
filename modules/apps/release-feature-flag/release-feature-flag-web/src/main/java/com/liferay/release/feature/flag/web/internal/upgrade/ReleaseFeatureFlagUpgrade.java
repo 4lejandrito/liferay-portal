@@ -38,6 +38,11 @@ public class ReleaseFeatureFlagUpgrade implements UpgradeStepRegistrator {
 		/*registry.register(
 			"0.0.0", "1.0.0",
 			new ReleaseFeatureFlagUpgradeStep(ReleaseFeatureFlag.XYZ));*/
+
+		registry.register(
+			"0.0.0", "1.0.0",
+			new ReleaseFeatureFlagUpgradeStep(
+				ReleaseFeatureFlag.REMOVE_SEGMENTATION));
 	}
 
 	public class ReleaseFeatureFlagUpgradeStep implements UpgradeStep {
