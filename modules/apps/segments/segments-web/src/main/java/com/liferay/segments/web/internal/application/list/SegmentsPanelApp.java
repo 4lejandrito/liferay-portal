@@ -21,6 +21,8 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.release.feature.flag.ReleaseFeatureFlag;
+import com.liferay.release.feature.flag.ReleaseFeatureFlagManagerUtil;
 import com.liferay.segments.constants.SegmentsPortletKeys;
 
 import org.osgi.service.component.annotations.Component;
@@ -48,7 +50,10 @@ public class SegmentsPanelApp extends BasePanelApp {
 	public boolean isShow(PermissionChecker permissionChecker, Group group)
 		throws PortalException {
 
-		if (group.isLayoutSetPrototype() || group.isUser()) {
+		if (ReleaseFeatureFlagManagerUtil.isEnabled(
+				ReleaseFeatureFlag.REMOVE_SEGMENTATION) ||
+			group.isLayoutSetPrototype() || group.isUser()) {
+
 			return false;
 		}
 

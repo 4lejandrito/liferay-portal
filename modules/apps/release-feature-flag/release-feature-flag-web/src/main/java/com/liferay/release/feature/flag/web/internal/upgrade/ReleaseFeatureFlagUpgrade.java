@@ -32,6 +32,11 @@ public class ReleaseFeatureFlagUpgrade implements UpgradeStepRegistrator {
 			"0.0.0", "1.0.0",
 			new UpgradeReleaseFeatureFlag(
 				ReleaseFeatureFlag.DISABLE_BLOGS_SUBTITLE));
+
+		registry.register(
+			"1.0.0", "1.0.1",
+			new UpgradeReleaseFeatureFlag(
+				ReleaseFeatureFlag.REMOVE_SEGMENTATION));
 	}
 
 }
