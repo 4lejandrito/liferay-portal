@@ -74,6 +74,10 @@ public class ConfigYAML {
 		return _testDir;
 	}
 
+	public boolean isBatchPlannerExportEnabled() {
+		return _batchPlannerExportEnabled;
+	}
+
 	public boolean isForceClientVersionDescription() {
 		return _forceClientVersionDescription;
 	}
@@ -128,6 +132,12 @@ public class ConfigYAML {
 
 	public void setAuthor(String author) {
 		_author = author;
+	}
+
+	public void setBatchPlannerExportEnabled(
+		boolean batchPlannerExportEnabled) {
+
+		_batchPlannerExportEnabled = batchPlannerExportEnabled;
 	}
 
 	public void setClientDir(String clientDir) {
@@ -222,6 +232,7 @@ public class ConfigYAML {
 	private String _apiPackagePath;
 	private Application _application;
 	private String _author;
+	private boolean _batchPlannerExportEnabled;
 	private String _clientDir;
 	private String _clientMavenGroupId;
 	private List<String> _disabledBatchSchemaNames = Collections.emptyList();
