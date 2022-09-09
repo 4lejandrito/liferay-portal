@@ -7,10 +7,16 @@ on:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.repository_owner, 'liferay-') }}
     steps:
     - uses: actions/checkout@v2
+    - name: Check if organization member
+      id: check-org
+      uses: jamessingleton/is-organization-member@v1
+      with:
+        organization: liferay
+        token: ${{ github.token }}
     - uses: aormsby/Fork-Sync-With-Upstream-action@v3.2
+      if: ${{ steps.check-org.outputs.result }}
       with:
         target_sync_branch: master
         target_repo_token: ${{ github.token }}
