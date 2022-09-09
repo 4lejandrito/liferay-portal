@@ -12,22 +12,19 @@
  * details.
  */
 
-/**
- * Checks if the string includes the query
- */
-export function stringIncludesQuery(str: string, query: string) {
-	return str.toLowerCase().includes(query.toLowerCase());
-}
+package com.liferay.object.field.builder;
+
+import com.liferay.object.constants.ObjectFieldConstants;
 
 /**
- * Convert the received string into the format of a URL parameter
+ * @author Feliphe Marinho
  */
-export function stringToURLParameterFormat(str: string) {
+public class AttachmentObjectFieldBuilder extends ObjectFieldBuilder {
 
-	// @ts-ignore
+	public AttachmentObjectFieldBuilder() {
+		objectField.setBusinessType(
+			ObjectFieldConstants.BUSINESS_TYPE_ATTACHMENT);
+		objectField.setDBType(ObjectFieldConstants.DB_TYPE_LONG);
+	}
 
-	const spacesReplaced = str.replaceAll(' ', '%20');
-	const urlParameter = spacesReplaced.replaceAll("'", '%27');
-
-	return urlParameter;
 }
