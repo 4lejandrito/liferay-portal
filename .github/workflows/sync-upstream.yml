@@ -8,10 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: repo-sync
-      uses: repo-sync/github-sync@v2
+    - name: Sync upstream changes     
+      uses: aormsby/Fork-Sync-With-Upstream-action@v3.2
       with:
-        source_repo: "liferay/liferay-portal"
-        source_branch: "master"
-        destination_branch: "master"
-        github_token: ${{ github.token }}
+        target_sync_branch: master
+        target_repo_token: ${{ github.token }}
+        upstream_sync_branch: master
+        upstream_sync_repo: liferay/liferay-portal
