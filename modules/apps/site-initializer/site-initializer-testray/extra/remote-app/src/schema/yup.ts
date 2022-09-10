@@ -120,9 +120,11 @@ const yupSchema = {
 		name: yup.string().required(),
 	}),
 	factorOption: yup.object({
-		factorCategoryId: yup.string().required(),
+		factorCategoryId: yup
+			.string()
+			.required(i18n.translate('this-field-is-required')),
 		id: yup.string(),
-		name: yup.string().required(),
+		name: yup.string().required(i18n.translate('this-field-is-required')),
 	}),
 	option: yup.object({
 		name: yup.string(),
@@ -141,7 +143,7 @@ const yupSchema = {
 	}),
 	requirement: yup.object({
 		componentId: yup.string().required(),
-		description: yup.string().required(),
+		description: yup.string(),
 		descriptionType: yup.string().required(),
 		id: yup.string(),
 		key: yup.string(),
