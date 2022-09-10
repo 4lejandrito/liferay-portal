@@ -14,6 +14,4 @@
  */
 --%>
 
-<%@ page import="com.liferay.analytics.settings.web.internal.display.context.QADisplayContext" %>
-
 <%@ include file="/init.jsp" %>
