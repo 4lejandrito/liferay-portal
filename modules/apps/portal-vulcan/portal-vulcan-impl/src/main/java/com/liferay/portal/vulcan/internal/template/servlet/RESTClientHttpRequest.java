@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -31,8 +32,12 @@ import javax.servlet.http.HttpServletRequestWrapper;
  */
 public class RESTClientHttpRequest extends HttpServletRequestWrapper {
 
-	public RESTClientHttpRequest(HttpServletRequest httpServletRequest) {
+	public RESTClientHttpRequest(
+		HttpServletRequest httpServletRequest, Map<String, String> headers) {
+
 		super(httpServletRequest);
+
+		_headers = headers;
 	}
 
 	@Override
@@ -41,7 +46,7 @@ public class RESTClientHttpRequest extends HttpServletRequestWrapper {
 			return ContentTypes.APPLICATION_JSON;
 		}
 
-		return super.getHeader(name);
+		return _headers.getOrDefault(name, super.getHeader(name));
 	}
 
 	@Override
@@ -51,6 +56,10 @@ public class RESTClientHttpRequest extends HttpServletRequestWrapper {
 				Arrays.asList(ContentTypes.APPLICATION_JSON));
 		}
 
+		if (_headers.containsKey(name)) {
+			return Collections.enumeration(Arrays.asList(_headers.get(name)));
+		}
+
 		return super.getHeaders(name);
 	}
 
@@ -58,5 +67,7 @@ public class RESTClientHttpRequest extends HttpServletRequestWrapper {
 	public String getMethod() {
 		return HttpMethods.GET;
 	}
+
+	private final Map<String, String> _headers;
 
 }

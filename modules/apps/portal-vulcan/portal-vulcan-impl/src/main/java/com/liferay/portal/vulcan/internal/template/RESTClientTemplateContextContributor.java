@@ -25,6 +25,7 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.vulcan.internal.template.servlet.RESTClientHttpRequest;
 import com.liferay.portal.vulcan.internal.template.servlet.RESTClientHttpResponse;
 
+import java.util.Collections;
 import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
@@ -68,6 +69,12 @@ public class RESTClientTemplateContextContributor
 		}
 
 		public Object get(String path) throws Exception {
+			return get(path, Collections.emptyMap());
+		}
+
+		public Object get(String path, Map<String, String> headers)
+			throws Exception {
+
 			UnsyncStringWriter unsyncStringWriter = new UnsyncStringWriter();
 
 			ServletContext servletContext = _getServletContext();
@@ -76,7 +83,7 @@ public class RESTClientTemplateContextContributor
 				servletContext.getRequestDispatcher(Portal.PATH_MODULE + path);
 
 			requestDispatcher.forward(
-				new RESTClientHttpRequest(_httpServletRequest),
+				new RESTClientHttpRequest(_httpServletRequest, headers),
 				new RESTClientHttpResponse(
 					new PipingServletResponse(
 						_httpServletResponse, unsyncStringWriter)));
