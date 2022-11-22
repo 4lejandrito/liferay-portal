@@ -48,6 +48,7 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Repository;
 import com.liferay.portal.kernel.model.User;
@@ -55,12 +56,20 @@ import com.liferay.portal.kernel.portletfilerepository.PortletFileRepository;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.security.auth.EmailAddressValidator;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
+import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.PersistedModelLocalService;
 import com.liferay.portal.kernel.service.PersistedModelLocalServiceRegistry;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
+import com.liferay.portal.kernel.servlet.DirectRequestDispatcherFactoryUtil;
 import com.liferay.portal.kernel.servlet.DummyHttpServletResponse;
+import com.liferay.portal.kernel.servlet.DynamicServletRequest;
+import com.liferay.portal.kernel.servlet.HttpMethods;
+import com.liferay.portal.kernel.servlet.ProtectedPrincipal;
+import com.liferay.portal.kernel.servlet.ServletContextPool;
 import com.liferay.portal.kernel.template.StringTemplateResource;
 import com.liferay.portal.kernel.template.Template;
 import com.liferay.portal.kernel.template.TemplateConstants;
@@ -68,20 +77,34 @@ import com.liferay.portal.kernel.template.TemplateContextContributor;
 import com.liferay.portal.kernel.template.TemplateManagerUtil;
 import com.liferay.portal.kernel.templateparser.TemplateNode;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.ConcurrentHashMapBuilder;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.Http;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.MapUtil;
+import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.security.auth.EmailAddressValidatorFactory;
+import com.liferay.portal.theme.ThemeDisplayFactory;
 import com.liferay.portlet.display.template.PortletDisplayTemplate;
 import com.liferay.template.transformer.TemplateNodeFactory;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.StringWriter;
 
+import java.io.UnsupportedEncodingException;
+import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -94,7 +117,21 @@ import java.util.regex.Pattern;
 
 import javax.mail.internet.InternetAddress;
 
+import javax.servlet.AsyncContext;
+import javax.servlet.DispatcherType;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionContext;
+import javax.servlet.http.HttpUpgradeHandler;
+import javax.servlet.http.Part;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -452,7 +489,7 @@ public class EmailNotificationType extends BaseNotificationType {
 				body),
 			true);
 
-		_setRestClient(template);
+		_setRestClient(template, notificationContext);
 
 		InfoItemFieldValuesProvider<Object> infoItemFieldValuesProvider =
 			_infoItemServiceRegistry.getFirstInfoItemService(
@@ -587,7 +624,8 @@ public class EmailNotificationType extends BaseNotificationType {
 		}
 	}
 
-	private void _setRestClient(Template template) {
+	private void _setRestClient(Template template, NotificationContext notificationContext)
+		throws PortalException {
 		ServiceContext serviceContext =
 			ServiceContextThreadLocal.getServiceContext();
 
@@ -611,15 +649,560 @@ public class EmailNotificationType extends BaseNotificationType {
 			throw new NullPointerException("HttpServletRequest is null");
 		}
 
-		ThemeDisplay themeDisplay = new ThemeDisplay();
+//		ThemeDisplay themeDisplay = new ThemeDisplay();
+//
+//		themeDisplay.setResponse(new DummyHttpServletResponse());
+//
+//		template.put("themeDisplay", themeDisplay);
+//
+//		_templateContextContributor.prepare(template, httpServletRequest);
+//
+//		template.remove("themeDisplay");
 
-		themeDisplay.setResponse(new DummyHttpServletResponse());
+
+		HttpServletRequest mockHttpServletRequest =
+			_getHttpServletRequest(new DummyHttpServletResponse(),
+				notificationContext);
+
+
+		ThemeDisplay themeDisplay =
+			(ThemeDisplay)mockHttpServletRequest.getAttribute(
+				WebKeys.THEME_DISPLAY);
 
 		template.put("themeDisplay", themeDisplay);
 
-		_templateContextContributor.prepare(template, httpServletRequest);
+		_templateContextContributor.prepare(template, mockHttpServletRequest);
 
 		template.remove("themeDisplay");
+	}
+
+	private HttpServletRequest _getHttpServletRequest(
+		HttpServletResponse httpServletResponse, NotificationContext notificationContext)
+		throws PortalException {
+
+//		HttpServletRequest httpServletRequest =
+//			DynamicServletRequest.addQueryString(
+//				new MockHttpServletRequest(), "p_l_id=" + "0",
+//				false);
+
+		User user = userLocalService.getUser(notificationContext.getUserId());
+
+		siteDefaultLocale = portal.getSiteDefaultLocale(user.getGroupId());
+		userLocale = user.getLocale();
+
+		HttpServletRequest httpServletRequest = new MockHttpServletRequest(user);
+
+		httpServletRequest.setAttribute(
+			WebKeys.COMPANY_ID, Long.valueOf(user.getCompanyId()));
+
+//		ThemeDisplay themeDisplay = _getThemeDisplay(user);
+		ThemeDisplay themeDisplay =new ThemeDisplay();
+
+		themeDisplay.setLanguageId(LocaleUtil.toLanguageId(userLocale));
+		themeDisplay.setLocale(userLocale);
+		themeDisplay.setRequest(httpServletRequest);
+		themeDisplay.setResponse(httpServletResponse);
+
+		httpServletRequest.setAttribute(
+			WebKeys.THEME_DISPLAY, themeDisplay);
+
+		httpServletRequest.setAttribute(WebKeys.USER, user);
+		httpServletRequest.setAttribute(WebKeys.USER_ID, user.getUserId());
+
+		return httpServletRequest;
+	}
+
+	private ThemeDisplay _getThemeDisplay(User user) throws PortalException {
+
+		ThemeDisplay themeDisplay = ThemeDisplayFactory.create();
+
+		Company company = _companyLocalService.getCompany(
+			user.getCompanyId());
+
+		themeDisplay.setCompany(company);
+
+//		themeDisplay.setLayoutTypePortlet(
+//			(LayoutTypePortlet)_layout.getLayoutType());
+		//themeDisplay.setPermissionChecker(PermissionCheckerFactoryUtil.create(user));
+		//themeDisplay.setPlid(0);
+		themeDisplay.setPortalDomain(company.getVirtualHostname());
+		themeDisplay.setPortalURL(
+			company.getPortalURL(user.getGroupId()));
+		themeDisplay.setRealUser(user);
+		themeDisplay.setScopeGroupId(user.getGroupId());
+		themeDisplay.setServerPort(
+			_portal.getPortalServerPort(_isHttpsEnabled()));
+		themeDisplay.setSiteGroupId(user.getGroupId());
+		themeDisplay.setTimeZone(user.getTimeZone());
+		themeDisplay.setUser(user);
+
+		return themeDisplay;
+	}
+
+
+	private boolean _isHttpsEnabled() {
+		return Objects.equals(
+			Http.HTTPS,
+			PropsUtil.get(PropsKeys.PORTAL_INSTANCE_PROTOCOL)) ||
+			   Objects.equals(
+				   Http.HTTPS, PropsUtil.get(PropsKeys.WEB_SERVER_PROTOCOL));
+	}
+
+
+	private class MockHttpServletRequest implements HttpServletRequest {
+
+		private final User _user;
+
+		public MockHttpServletRequest(User user){
+
+			_user = user;
+		}
+
+		@Override
+		public boolean authenticate(HttpServletResponse httpServletResponse)
+			throws IOException, ServletException {
+
+			return false;
+		}
+
+		@Override
+		public String changeSessionId() {
+			return null;
+		}
+
+		@Override
+		public AsyncContext getAsyncContext() {
+			return null;
+		}
+
+		@Override
+		public Object getAttribute(String name) {
+			return _attributes.get(name);
+		}
+
+		@Override
+		public Enumeration<String> getAttributeNames() {
+			return Collections.enumeration(_attributes.keySet());
+		}
+
+		@Override
+		public String getAuthType() {
+			return null;
+		}
+
+		@Override
+		public String getCharacterEncoding() {
+			return null;
+		}
+
+		@Override
+		public int getContentLength() {
+			return 0;
+		}
+
+		@Override
+		public long getContentLengthLong() {
+			return 0;
+		}
+
+		@Override
+		public String getContentType() {
+			return null;
+		}
+
+		@Override
+		public String getContextPath() {
+			return null;
+		}
+
+		@Override
+		public Cookie[] getCookies() {
+			return new Cookie[0];
+		}
+
+		@Override
+		public long getDateHeader(String name) {
+			return 0;
+		}
+
+		@Override
+		public DispatcherType getDispatcherType() {
+			return null;
+		}
+
+		@Override
+		public String getHeader(String name) {
+			return null;
+		}
+
+		@Override
+		public Enumeration<String> getHeaderNames() {
+			return Collections.emptyEnumeration();
+		}
+
+		@Override
+		public Enumeration<String> getHeaders(String name) {
+			return null;
+		}
+
+		@Override
+		public ServletInputStream getInputStream() throws IOException {
+			return null;
+		}
+
+		@Override
+		public int getIntHeader(String name) {
+			return 0;
+		}
+
+		@Override
+		public String getLocalAddr() {
+			return null;
+		}
+
+		@Override
+		public Locale getLocale() {
+			return _user.getLocale();
+		}
+
+		@Override
+		public Enumeration<Locale> getLocales() {
+			return null;
+		}
+
+		@Override
+		public String getLocalName() {
+			return null;
+		}
+
+		@Override
+		public int getLocalPort() {
+			return 0;
+		}
+
+		@Override
+		public String getMethod() {
+			return HttpMethods.GET;
+		}
+
+		@Override
+		public String getParameter(String name) {
+			return null;
+		}
+
+		@Override
+		public Map<String, String[]> getParameterMap() {
+			return Collections.emptyMap();
+		}
+
+		@Override
+		public Enumeration<String> getParameterNames() {
+			return null;
+		}
+
+		@Override
+		public String[] getParameterValues(String name) {
+			return new String[0];
+		}
+
+		@Override
+		public Part getPart(String name) throws IOException, ServletException {
+			return null;
+		}
+
+		@Override
+		public Collection<Part> getParts()
+			throws IOException, ServletException {
+
+			return null;
+		}
+
+		@Override
+		public String getPathInfo() {
+			return null;
+		}
+
+		@Override
+		public String getPathTranslated() {
+			return null;
+		}
+
+		@Override
+		public String getProtocol() {
+			return null;
+		}
+
+		@Override
+		public String getQueryString() {
+			return null;
+		}
+
+		@Override
+		public BufferedReader getReader() throws IOException {
+			return null;
+		}
+
+		@Override
+		public String getRealPath(String path) {
+			return null;
+		}
+
+		@Override
+		public String getRemoteAddr() {
+			return null;
+		}
+
+		@Override
+		public String getRemoteHost() {
+			return null;
+		}
+
+		@Override
+		public int getRemotePort() {
+			return 0;
+		}
+
+		@Override
+		public String getRemoteUser() {
+			return _user.getScreenName();
+		}
+
+		@Override
+		public RequestDispatcher getRequestDispatcher(String path) {
+			return DirectRequestDispatcherFactoryUtil.getRequestDispatcher(
+				ServletContextPool.get(StringPool.BLANK), path);
+		}
+
+		@Override
+		public String getRequestedSessionId() {
+			return null;
+		}
+
+		@Override
+		public String getRequestURI() {
+			return StringPool.BLANK;
+		}
+
+		@Override
+		public StringBuffer getRequestURL() {
+			return null;
+		}
+
+		@Override
+		public String getScheme() {
+			return null;
+		}
+
+		@Override
+		public String getServerName() {
+			return null;
+		}
+
+		@Override
+		public int getServerPort() {
+			return 0;
+		}
+
+		@Override
+		public ServletContext getServletContext() {
+			return ServletContextPool.get(StringPool.BLANK);
+		}
+
+		@Override
+		public String getServletPath() {
+			return null;
+		}
+
+		@Override
+		public HttpSession getSession() {
+			return _httpSession;
+		}
+
+		@Override
+		public HttpSession getSession(boolean create) {
+			return _httpSession;
+		}
+
+		@Override
+		public Principal getUserPrincipal() {
+			return new ProtectedPrincipal(_user.getScreenName());
+		}
+
+		@Override
+		public boolean isAsyncStarted() {
+			return false;
+		}
+
+		@Override
+		public boolean isAsyncSupported() {
+			return false;
+		}
+
+		@Override
+		public boolean isRequestedSessionIdFromCookie() {
+			return false;
+		}
+
+		@Override
+		public boolean isRequestedSessionIdFromUrl() {
+			return false;
+		}
+
+		@Override
+		public boolean isRequestedSessionIdFromURL() {
+			return false;
+		}
+
+		@Override
+		public boolean isRequestedSessionIdValid() {
+			return false;
+		}
+
+		@Override
+		public boolean isSecure() {
+			return false;
+		}
+
+		@Override
+		public boolean isUserInRole(String role) {
+			return true;
+		}
+
+		@Override
+		public void login(String userName, String password)
+			throws ServletException {
+		}
+
+		@Override
+		public void logout() throws ServletException {
+		}
+
+		@Override
+		public void removeAttribute(String name) {
+			_attributes.remove(name);
+		}
+
+		@Override
+		public void setAttribute(String name, Object value) {
+			if ((name != null) && (value != null)) {
+				_attributes.put(name, value);
+			}
+		}
+
+		@Override
+		public void setCharacterEncoding(String encoding)
+			throws UnsupportedEncodingException {
+		}
+
+		@Override
+		public AsyncContext startAsync() throws IllegalStateException {
+			return null;
+		}
+
+		@Override
+		public AsyncContext startAsync(
+			ServletRequest servletRequest, ServletResponse servletResponse)
+			throws IllegalStateException {
+
+			return null;
+		}
+
+		@Override
+		public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass)
+			throws IOException, ServletException {
+
+			return null;
+		}
+
+		private final Map<String, Object> _attributes =
+			ConcurrentHashMapBuilder.<String, Object>put(
+				WebKeys.CTX, ServletContextPool.get(StringPool.BLANK)
+			).build();
+
+		private final HttpSession _httpSession = new HttpSession() {
+
+			@Override
+			public Object getAttribute(String name) {
+				return _attributes.get(name);
+			}
+
+			@Override
+			public Enumeration<String> getAttributeNames() {
+				return Collections.enumeration(_attributes.keySet());
+			}
+
+			@Override
+			public long getCreationTime() {
+				return 0;
+			}
+
+			@Override
+			public String getId() {
+				return StringPool.BLANK;
+			}
+
+			@Override
+			public long getLastAccessedTime() {
+				return 0;
+			}
+
+			@Override
+			public int getMaxInactiveInterval() {
+				return 0;
+			}
+
+			@Override
+			public ServletContext getServletContext() {
+				return null;
+			}
+
+			@Override
+			public HttpSessionContext getSessionContext() {
+				return null;
+			}
+
+			@Override
+			public Object getValue(String name) {
+				return null;
+			}
+
+			@Override
+			public String[] getValueNames() {
+				return new String[0];
+			}
+
+			@Override
+			public void invalidate() {
+			}
+
+			@Override
+			public boolean isNew() {
+				return true;
+			}
+
+			@Override
+			public void putValue(String name, Object value) {
+			}
+
+			@Override
+			public void removeAttribute(String name) {
+			}
+
+			@Override
+			public void removeValue(String name) {
+			}
+
+			@Override
+			public void setAttribute(String name, Object value) {
+				_attributes.put(name, value);
+			}
+
+			@Override
+			public void setMaxInactiveInterval(int interval) {
+			}
+
+		};
+
 	}
 
 	private InternetAddress[] _toInternetAddresses(String string)
@@ -676,5 +1259,11 @@ public class EmailNotificationType extends BaseNotificationType {
 
 	@Reference
 	private TemplateNodeFactory _templateNodeFactory;
+
+	@Reference
+	private CompanyLocalService _companyLocalService;
+
+	@Reference
+	private Portal _portal;
 
 }
