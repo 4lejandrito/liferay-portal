@@ -12,40 +12,32 @@
  * details.
  */
 
-package com.liferay.portal.vulcan.internal.template;
+package com.liferay.portal.vulcan.internal.template.rest.client;
 
-import com.liferay.portal.kernel.template.TemplateContextContributor;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.vulcan.internal.template.servlet.RESTClientSyntheticHttpRequest;
+import com.liferay.portal.vulcan.template.rest.client.RESTClient;
 import com.liferay.portal.vulcan.template.rest.client.RESTClientFactory;
 
-import java.util.Map;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Alejandro Tardín
  */
-@Component(
-	property = {
-		"name=RESTClient", "type=" + TemplateContextContributor.TYPE_GLOBAL
-	},
-	service = TemplateContextContributor.class
-)
-public class RESTClientTemplateContextContributor
-	implements TemplateContextContributor {
+@Component(service = RESTClientFactory.class)
+public class RESTClientFactoryImpl implements RESTClientFactory {
 
-	@Override
-	public void prepare(
-		Map<String, Object> contextObjects,
-		HttpServletRequest httpServletRequest) {
-
-		contextObjects.put(
-			"restClient", _restClientFactory.getRestClient(httpServletRequest));
+	public RESTClient getRestClient(HttpServletRequest httpServletRequest) {
+		return new RESTClientImpl(httpServletRequest);
 	}
 
-	@Reference
-	private RESTClientFactory _restClientFactory;
+	public RESTClient getRestClient(Locale locale, User user) {
+		return new RESTClientImpl(
+			new RESTClientSyntheticHttpRequest(locale, user));
+	}
 
 }
