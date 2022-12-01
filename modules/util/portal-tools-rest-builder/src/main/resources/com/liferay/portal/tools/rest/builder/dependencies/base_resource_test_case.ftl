@@ -98,6 +98,8 @@ import javax.ws.rs.core.MultivaluedHashMap;
 
 import org.apache.commons.lang.time.DateUtils;
 
+import org.hamcrest.CoreMatchers;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -490,7 +492,7 @@ public abstract class Base${schemaName}ResourceTestCase {
 							Assert.assertEquals(1, page.getTotalCount());
 
 							assertEquals(Arrays.asList(irrelevant${schemaName}), (List<${schemaName}>)page.getItems());
-							assertValid(page);
+							assertValid(page, irrelevant${javaMethodSignature.javaMethodParameters[0].parameterName?cap_first});
 						}
 					</#if>
 
@@ -533,10 +535,10 @@ public abstract class Base${schemaName}ResourceTestCase {
 					<#if topLevel>
 						assertContains(${schemaVarName}1, (List<${schemaName}>)page.getItems());
 						assertContains(${schemaVarName}2, (List<${schemaName}>)page.getItems());
-						assertValid(page);
+						assertValid(page, ${javaMethodSignature.javaMethodParameters[0].parameterName});
 					<#else>
 						assertEqualsIgnoringOrder(Arrays.asList(${schemaVarName}1, ${schemaVarName}2), (List<${schemaName}>)page.getItems());
-						assertValid(page);
+						assertValid(page, ${javaMethodSignature.javaMethodParameters[0].parameterName});
 					</#if>
 
 					<#if freeMarkerTool.hasJavaMethodSignature(javaMethodSignatures, "delete" + schemaName)>
@@ -2152,7 +2154,7 @@ public abstract class Base${schemaName}ResourceTestCase {
 		}
 	</#if>
 
-	protected void assertValid(Page<${schemaClientJavaType}> page) {
+	protected void assertValid(Page<${schemaClientJavaType}> page, long groupId) {
 		boolean valid = false;
 
 		java.util.Collection<${schemaClientJavaType}> ${schemaVarNames} = page.getItems();
@@ -2165,7 +2167,7 @@ public abstract class Base${schemaName}ResourceTestCase {
 
 		Assert.assertTrue(valid);
 
-		<#if supportsBatch>
+		<#if true>
 			Map<String, Map> actions = page.getActions();
 
 			Map updateBatchAction = actions.get("updateBatch");
@@ -2176,7 +2178,7 @@ public abstract class Base${schemaName}ResourceTestCase {
 				"updateBatch does not contain valid href",
 				String.valueOf(updateBatchAction.get("href")),
 				CoreMatchers.endsWith(
-					"/o/${appName}/v1.0/${endpointName}/batch"));
+					"/o/appName/v1.0/endpointName/batch"));
 
 			Map createBatchAction = actions.get("createBatch");
 
