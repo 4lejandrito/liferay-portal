@@ -492,7 +492,7 @@ public abstract class Base${schemaName}ResourceTestCase {
 							Assert.assertEquals(1, page.getTotalCount());
 
 							assertEquals(Arrays.asList(irrelevant${schemaName}), (List<${schemaName}>)page.getItems());
-							assertValid(page, irrelevant${javaMethodSignature.javaMethodParameters[0].parameterName?cap_first});
+							assertValid(page, irrelevant${javaMethodSignature.javaMethodParameters[0].parameterName?cap_first}, "${javaMethodSignature.path}");
 						}
 					</#if>
 
@@ -535,10 +535,12 @@ public abstract class Base${schemaName}ResourceTestCase {
 					<#if topLevel>
 						assertContains(${schemaVarName}1, (List<${schemaName}>)page.getItems());
 						assertContains(${schemaVarName}2, (List<${schemaName}>)page.getItems());
-						assertValid(page, ${javaMethodSignature.javaMethodParameters[0].parameterName});
+						String[] parts = "${javaMethodSignature.path}".split("/");
+						assertValid(page, ${javaMethodSignature.javaMethodParameters[0].parameterName}, parts[parts.length - 1]);
 					<#else>
 						assertEqualsIgnoringOrder(Arrays.asList(${schemaVarName}1, ${schemaVarName}2), (List<${schemaName}>)page.getItems());
-						assertValid(page, ${javaMethodSignature.javaMethodParameters[0].parameterName});
+						String[] parts = "${javaMethodSignature.path}".split("/");
+						assertValid(page, ${javaMethodSignature.javaMethodParameters[0].parameterName}, parts[parts.length - 1]);
 					</#if>
 
 					<#if freeMarkerTool.hasJavaMethodSignature(javaMethodSignatures, "delete" + schemaName)>
@@ -2154,7 +2156,7 @@ public abstract class Base${schemaName}ResourceTestCase {
 		}
 	</#if>
 
-	protected void assertValid(Page<${schemaClientJavaType}> page, long groupId) {
+	protected void assertValid(Page<${schemaClientJavaType}> page, long groupId, String path) {
 		boolean valid = false;
 
 		java.util.Collection<${schemaClientJavaType}> ${schemaVarNames} = page.getItems();
