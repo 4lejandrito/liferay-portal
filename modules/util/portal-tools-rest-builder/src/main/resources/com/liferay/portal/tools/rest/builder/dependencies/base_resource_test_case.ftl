@@ -2178,7 +2178,7 @@ public abstract class Base${schemaName}ResourceTestCase {
 				"updateBatch does not contain valid href",
 				String.valueOf(updateBatchAction.get("href")),
 				CoreMatchers.endsWith(
-					"/o/appName/v1.0/endpointName/batch"));
+					"${configYAML.application.baseURI}/${openAPIYAML.info.version}/endpointName/batch"));
 
 			Map createBatchAction = actions.get("createBatch");
 
@@ -2188,8 +2188,7 @@ public abstract class Base${schemaName}ResourceTestCase {
 				"createBatch does not contain valid href",
 				String.valueOf(createBatchAction.get("href")),
 				CoreMatchers.endsWith(
-					"/o/headless-admin-taxonomy/v1.0/sites/" + groupId +
-					"/taxonomy-vocabularies/batch"));
+					"${configYAML.application.baseURI}/${openAPIYAML.info.version}/sites/" + groupId + "/endpointName/batch"));
 
 			Map deleteBatchAction = actions.get("deleteBatch");
 
@@ -2199,7 +2198,7 @@ public abstract class Base${schemaName}ResourceTestCase {
 				"deleteBatch does not contain valid href",
 				String.valueOf(deleteBatchAction.get("href")),
 				CoreMatchers.endsWith(
-					"/o/headless-admin-taxonomy/v1.0/taxonomy-vocabularies/batch"));
+					"${configYAML.application.baseURI}/${openAPIYAML.info.version}/endpointName/batch"));
 		</#if>
 	}
 
