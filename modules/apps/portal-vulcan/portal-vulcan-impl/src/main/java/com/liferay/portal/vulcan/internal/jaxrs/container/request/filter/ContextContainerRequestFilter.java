@@ -158,20 +158,11 @@ public class ContextContainerRequestFilter implements ContainerRequestFilter {
 		_filterExcludedOperationIds(
 			containerRequestContext, httpServletRequest, message);
 
-		_setInstanceFields(
-			instance.getClass(), httpServletRequest, message, instance);
-	}
+		Class<?> clazz = instance.getClass();
 
-	private void _setInstanceFields(
-			Class<?> clazz, HttpServletRequest httpServletRequest,
-			Message message, Object instance)
-		throws Exception {
+		Class<?> superClass = clazz.getSuperclass();
 
-		if (clazz == Object.class) {
-			return;
-		}
-
-		for (Field field : clazz.getDeclaredFields()) {
+		for (Field field : superClass.getDeclaredFields()) {
 			if (Modifier.isFinal(field.getModifiers()) ||
 				Modifier.isStatic(field.getModifiers())) {
 
@@ -393,9 +384,6 @@ public class ContextContainerRequestFilter implements ContainerRequestFilter {
 				field.set(instance, _vulcanBatchEngineImportTaskResource);
 			}
 		}
-
-		_setInstanceFields(
-			clazz.getSuperclass(), httpServletRequest, message, instance);
 	}
 
 	private final ConfigurationAdmin _configurationAdmin;
