@@ -192,11 +192,11 @@ public class YAMLUtil {
 			"required", List.class, "getRequiredPropertySchemaNames",
 			"setRequiredPropertySchemaNames");
 
+		schemaTypeDescription.addPropertyParameters("required", String.class);
+
 		schemaTypeDescription.substituteProperty(
 			"xSchemaDefinition", SchemaDefinition.class, "getSchemaDefinition",
 			"setSchemaDefinition");
-
-		schemaTypeDescription.addPropertyParameters("required", String.class);
 
 		openAPIYAMLConstructor.addTypeDescription(schemaTypeDescription);
 
