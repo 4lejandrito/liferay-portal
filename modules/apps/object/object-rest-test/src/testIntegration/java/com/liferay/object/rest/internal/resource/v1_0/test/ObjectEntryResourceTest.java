@@ -173,11 +173,6 @@ public class ObjectEntryResourceTest {
 	public void testGetNestedFieldDetailsInOneToManyRelationships()
 		throws Exception {
 
-		PropsUtil.addProperties(
-			UnicodePropertiesBuilder.setProperty(
-				"feature.flag.LPS-161364", "true"
-			).build());
-
 		_objectRelationship = _addObjectRelationshipAndRelateObjectsEntries(
 			ObjectRelationshipConstants.TYPE_ONE_TO_MANY);
 
@@ -196,21 +191,11 @@ public class ObjectEntryResourceTest {
 				_objectDefinition2.getRESTContextPath(), "?nestedFields=",
 				_objectRelationship.getName()),
 			_objectRelationship.getName());
-
-		PropsUtil.addProperties(
-			UnicodePropertiesBuilder.setProperty(
-				"feature.flag.LPS-161364", "false"
-			).build());
 	}
 
 	@Test
 	public void testGetObjectRelationshipERCFieldNameInOneToManyRelationship()
 		throws Exception {
-
-		PropsUtil.addProperties(
-			UnicodePropertiesBuilder.setProperty(
-				"feature.flag.LPS-161364", "true"
-			).build());
 
 		_objectRelationship = _addObjectRelationshipAndRelateObjectsEntries(
 			ObjectRelationshipConstants.TYPE_ONE_TO_MANY);
@@ -227,21 +212,11 @@ public class ObjectEntryResourceTest {
 		Assert.assertEquals(
 			itemJSONObject.getString(_objectRelationship.getName() + "ERC"),
 			_objectEntry1.getExternalReferenceCode());
-
-		PropsUtil.addProperties(
-			UnicodePropertiesBuilder.setProperty(
-				"feature.flag.LPS-161364", "false"
-			).build());
 	}
 
 	@Test
 	public void testGetObjectRelationshipERCFieldNameInOneToManyRelationshipFromRelatedObjectEntry()
 		throws Exception {
-
-		PropsUtil.addProperties(
-			UnicodePropertiesBuilder.setProperty(
-				"feature.flag.LPS-161364", "true"
-			).build());
 
 		_objectRelationship = _addObjectRelationshipAndRelateObjectsEntries(
 			ObjectRelationshipConstants.TYPE_ONE_TO_MANY);
@@ -271,11 +246,6 @@ public class ObjectEntryResourceTest {
 			relatedObjectEntryJSONObject.getString(
 				_objectRelationship.getName() + "ERC"),
 			_objectEntry1.getExternalReferenceCode());
-
-		PropsUtil.addProperties(
-			UnicodePropertiesBuilder.setProperty(
-				"feature.flag.LPS-161364", "false"
-			).build());
 	}
 
 	@Test
