@@ -602,6 +602,9 @@ public abstract class BaseMessageBoardThreadResourceImpl
 				messageBoardThread.getArticleBody());
 		}
 
+		existingMessageBoardThread.setCustomFields(
+			messageBoardThread.getCustomFields());
+
 		if (messageBoardThread.getEncodingFormat() != null) {
 			existingMessageBoardThread.setEncodingFormat(
 				messageBoardThread.getEncodingFormat());
