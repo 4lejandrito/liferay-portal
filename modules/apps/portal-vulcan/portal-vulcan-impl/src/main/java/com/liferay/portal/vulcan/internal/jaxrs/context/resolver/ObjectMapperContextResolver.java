@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.vulcan.internal.jaxrs.deserializer.JSONStringStdDeserializer;
 import com.liferay.portal.vulcan.internal.jaxrs.serializer.JSONArrayStdSerializer;
 import com.liferay.portal.vulcan.internal.jaxrs.serializer.JSONObjectStdSerializer;
 
@@ -50,6 +51,9 @@ public class ObjectMapperContextResolver
 			registerModule(
 				new SimpleModule() {
 					{
+						addDeserializer(
+							String.class,
+							new JSONStringStdDeserializer(String.class));
 						addSerializer(
 							JSONArray.class,
 							new JSONArrayStdSerializer(JSONArray.class));
