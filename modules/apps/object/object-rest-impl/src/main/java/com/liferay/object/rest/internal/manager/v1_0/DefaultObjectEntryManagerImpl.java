@@ -154,7 +154,7 @@ public class DefaultObjectEntryManagerImpl
 
 		if (FeatureFlagManagerUtil.isEnabled("LPS-153117")) {
 			serviceBuilderObjectEntry = _addOrUpdateNestedObjectEntries(
-				dtoConverterContext, objectDefinition, objectEntry,
+				dtoConverterContext, groupId, objectDefinition, objectEntry,
 				_getObjectRelationships(objectDefinition, objectEntry),
 				serviceBuilderObjectEntry.getPrimaryKey());
 		}
@@ -670,7 +670,8 @@ public class DefaultObjectEntryManagerImpl
 
 		if (FeatureFlagManagerUtil.isEnabled("LPS-153117")) {
 			serviceBuilderObjectEntry = _addOrUpdateNestedObjectEntries(
-				dtoConverterContext, objectDefinition, objectEntry,
+				dtoConverterContext, serviceBuilderObjectEntry.getGroupId(),
+				objectDefinition, objectEntry,
 				_getObjectRelationships(objectDefinition, objectEntry),
 				serviceBuilderObjectEntry.getPrimaryKey());
 		}
@@ -732,7 +733,7 @@ public class DefaultObjectEntryManagerImpl
 
 	private com.liferay.object.model.ObjectEntry
 			_addOrUpdateNestedObjectEntries(
-				DTOConverterContext dtoConverterContext,
+				DTOConverterContext dtoConverterContext, long groupId,
 				ObjectDefinition objectDefinition, ObjectEntry objectEntry,
 				Map<String, ObjectRelationship> objectRelationships,
 				long primaryKey)
@@ -787,6 +788,32 @@ public class DefaultObjectEntryManagerImpl
 				List<ObjectEntry> nestedObjectEntries =
 					objectRelationshipElementsParser.parse(
 						objectRelationship, properties.get(entry.getKey()));
+
+				if (!nestedObjectEntries.isEmpty()) {
+					ObjectRelatedModelsProvider objectRelatedModelsProvider =
+						_objectRelatedModelsProviderRegistry.
+							getObjectRelatedModelsProvider(
+								objectDefinition.getClassName(),
+								objectDefinition.getCompanyId(),
+								objectRelationship.getType());
+
+					for (Object objectRelatedModel :
+							objectRelatedModelsProvider.getRelatedModels(
+								groupId,
+								objectRelationship.getObjectRelationshipId(),
+								primaryKey, -1, -1)) {
+
+						com.liferay.object.model.ObjectEntry
+							relatedObjectEntry =
+								(com.liferay.object.model.ObjectEntry)
+									objectRelatedModel;
+
+						objectRelatedModelsProvider.disassociateRelatedModels(
+							dtoConverterContext.getUserId(),
+							objectRelationship.getObjectRelationshipId(),
+							primaryKey, relatedObjectEntry.getObjectEntryId());
+					}
+				}
 
 				for (ObjectEntry nestedObjectEntry : nestedObjectEntries) {
 					nestedObjectEntry = objectEntryManager.updateObjectEntry(
