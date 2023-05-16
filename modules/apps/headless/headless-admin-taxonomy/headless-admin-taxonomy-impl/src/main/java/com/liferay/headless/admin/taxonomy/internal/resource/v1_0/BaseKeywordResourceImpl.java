@@ -14,6 +14,7 @@
 
 package com.liferay.headless.admin.taxonomy.internal.resource.v1_0;
 
+import com.liferay.asset.kernel.model.AssetTag;
 import com.liferay.headless.admin.taxonomy.dto.v1_0.Keyword;
 import com.liferay.headless.admin.taxonomy.resource.v1_0.KeywordResource;
 import com.liferay.petra.function.UnsafeBiConsumer;
@@ -60,6 +61,7 @@ import com.liferay.portal.vulcan.permission.Permission;
 import com.liferay.portal.vulcan.permission.PermissionUtil;
 import com.liferay.portal.vulcan.resource.EntityModelResource;
 import com.liferay.portal.vulcan.util.ActionUtil;
+import com.liferay.portlet.asset.service.permission.AssetTagsPermission;
 
 import java.io.Serializable;
 
@@ -1711,6 +1713,46 @@ public abstract class BaseKeywordResourceImpl
 
 		return TransformUtil.unsafeTransformToLongArray(
 			collection, unsafeFunction);
+	}
+
+	protected String getKeywordReplaceActionKey() {
+		throw new UnsupportedOperationException();
+	}
+
+	protected String getKeywordGetActionKey() {
+		throw new UnsupportedOperationException();
+	}
+
+	protected String getKeywordDeleteActionKey() {
+		throw new UnsupportedOperationException();
+	}
+
+	protected HashMap<String, Map<String, String>> getKeywordActions(Keyword keyword) throws Exception {
+		return HashMapBuilder.put(
+			"delete",
+			addAction(
+				getKeywordDeleteActionKey(),keyword.getId(),
+				// With rest builder
+				"deleteKeyword", keyword.getCreator().getId(),
+				getPermissionCheckerResourceName(keyword.getId()),
+				keyword.getSiteId())
+		).put(
+			"get",
+			addAction(
+				getKeywordGetActionKey(), keyword.getId(),
+				// With rest builder
+				"getKeyword", keyword.getCreator().getId(),
+				getPermissionCheckerResourceName(keyword.getId()),
+				keyword.getSiteId())
+		).put(
+			"replace",
+			addAction(
+				getKeywordReplaceActionKey(), keyword.getId(),
+				// With rest builder
+				"putKeyword", keyword.getCreator().getId(),
+				getPermissionCheckerResourceName(keyword.getId()),
+				keyword.getSiteId())
+		).build();
 	}
 
 	protected AcceptLanguage contextAcceptLanguage;
