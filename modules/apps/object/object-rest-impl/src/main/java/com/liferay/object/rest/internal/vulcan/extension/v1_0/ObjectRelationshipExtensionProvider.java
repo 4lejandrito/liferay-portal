@@ -45,6 +45,7 @@ import com.liferay.portal.vulcan.pagination.Pagination;
 
 import java.io.Serializable;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -107,17 +108,24 @@ public class ObjectRelationshipExtensionProvider
 
 				long primaryKey = getPrimaryKey(entity);
 
-				Page<ObjectEntry> relatedObjectEntriesPage =
-					defaultObjectEntryManager.
-						getObjectEntryRelatedObjectEntries(
-							_getDefaultDTOConverterContext(
-								objectDefinition, primaryKey, null),
-							objectDefinition, primaryKey,
-							objectRelationship.getName(),
-							Pagination.of(
-								QueryUtil.ALL_POS, QueryUtil.ALL_POS));
+				if (Objects.equals(
+					objectRelationship.getType(),
+					ObjectRelationshipConstants.TYPE_ONE_TO_MANY) && objectRelationship.getObjectDefinitionId2() == objectDefinition) {
+					return defaultObjectEntryManager.getManyToOneRelatedObjectEntry(
+							objectDefinition, objectRelationship, primaryKey);
+				} else {
+					Page<ObjectEntry> relatedObjectEntriesPage =
+						defaultObjectEntryManager.
+							getObjectEntryRelatedObjectEntries(
+								_getDefaultDTOConverterContext(
+									objectDefinition, primaryKey, null),
+								objectDefinition, primaryKey,
+								objectRelationship.getName(),
+								Pagination.of(
+									QueryUtil.ALL_POS, QueryUtil.ALL_POS));
 
-				return (Serializable)relatedObjectEntriesPage.getItems();
+					return (Serializable) relatedObjectEntriesPage.getItems();
+				}
 			});
 	}
 

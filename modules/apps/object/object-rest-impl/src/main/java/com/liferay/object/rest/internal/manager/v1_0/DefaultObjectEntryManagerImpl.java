@@ -29,6 +29,7 @@ import com.liferay.object.model.ObjectAction;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectField;
 import com.liferay.object.model.ObjectRelationship;
+import com.liferay.object.related.models.ManyToOneObjectRelatedModelProvider;
 import com.liferay.object.related.models.ObjectRelatedModelsProvider;
 import com.liferay.object.related.models.ObjectRelatedModelsProviderRegistry;
 import com.liferay.object.rest.dto.v1_0.ListEntry;
@@ -697,6 +698,30 @@ public class DefaultObjectEntryManagerImpl
 					groupId, dtoConverterContext.getUserId(), objectDefinition,
 					objectEntry, 0L, dtoConverterContext.getLocale()),
 				serviceContext));
+	}
+
+	@Override
+	public ObjectEntry getManyToOneRelatedObjectEntry(
+		ObjectDefinition objectDefinition,
+		ObjectRelationship objectRelationship, long primaryKey)
+		throws PortalException {
+
+		ObjectRelatedModelsProvider objectRelatedModelsProvider =
+			_objectRelatedModelsProviderRegistry.getObjectRelatedModelsProvider(
+				objectDefinition.getClassName(),
+				objectDefinition.getCompanyId(), objectRelationship.getType());
+
+		ManyToOneObjectRelatedModelProvider manyToOneObjectRelatedModelProvider = (ManyToOneObjectRelatedModelProvider) objectRelatedModelsProvider;
+
+		// TODO This can be system or custom? Use the right type
+		Object relatedObjectEntry =
+			manyToOneObjectRelatedModelProvider.getRelatedModel(
+				// TODO Set right group id
+				0,
+				objectRelationship.getObjectRelationshipId(), primaryKey);
+
+		// TODO pass the right parameters
+		return _toObjectEntry(null, objectDefinition, null);
 	}
 
 	private Map<String, String> _addAction(

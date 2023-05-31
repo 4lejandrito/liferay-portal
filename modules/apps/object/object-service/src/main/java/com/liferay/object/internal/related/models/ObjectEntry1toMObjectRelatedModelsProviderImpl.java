@@ -20,6 +20,7 @@ import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
 import com.liferay.object.model.ObjectField;
 import com.liferay.object.model.ObjectRelationship;
+import com.liferay.object.related.models.ManyToOneObjectRelatedModelProvider;
 import com.liferay.object.related.models.ObjectRelatedModelsProvider;
 import com.liferay.object.service.ObjectEntryService;
 import com.liferay.object.service.ObjectFieldLocalService;
@@ -40,7 +41,8 @@ import java.util.Objects;
  * @author Brian Wing Shun Chan
  */
 public class ObjectEntry1toMObjectRelatedModelsProviderImpl
-	implements ObjectRelatedModelsProvider<ObjectEntry> {
+	implements ObjectRelatedModelsProvider<ObjectEntry>,
+	ManyToOneObjectRelatedModelProvider<ObjectEntry> {
 
 	public ObjectEntry1toMObjectRelatedModelsProviderImpl(
 		ObjectDefinition objectDefinition,
@@ -144,6 +146,14 @@ public class ObjectEntry1toMObjectRelatedModelsProviderImpl
 	@Override
 	public long getCompanyId() {
 		return _companyId;
+	}
+
+	@Override
+	public ObjectEntry getRelatedModel(
+		long groupId, long objectRelationshipId, long primaryKey)
+		throws PortalException {
+		// TODO Implement this
+		return null;
 	}
 
 	@Override
