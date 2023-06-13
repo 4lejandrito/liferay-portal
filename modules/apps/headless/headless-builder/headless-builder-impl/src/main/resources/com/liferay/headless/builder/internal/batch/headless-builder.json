@@ -85,6 +85,7 @@
 				"en_US": "API Sorts"
 			},
 			"portlet": false,
+			"restContextPath": "/headless-builder/sorts",
 			"scope": "company",
 			"status": {
 				"code": 0
@@ -135,6 +136,7 @@
 				"en_US": "API Filters"
 			},
 			"portlet": false,
+			"restContextPath": "/headless-builder/filters",
 			"scope": "company",
 			"status": {
 				"code": 0
@@ -305,6 +307,7 @@
 				"en_US": "API Endpoints"
 			},
 			"portlet": false,
+			"restContextPath": "/headless-builder/endpoints",
 			"scope": "company",
 			"status": {
 				"code": 0
@@ -419,6 +422,7 @@
 				"en_US": "API Properties"
 			},
 			"portlet": false,
+			"restContextPath": "/headless-builder/properties",
 			"scope": "company",
 			"status": {
 				"code": 0
@@ -530,6 +534,7 @@
 				"en_US": "API Schemas"
 			},
 			"portlet": false,
+			"restContextPath": "/headless-builder/schemas",
 			"scope": "company",
 			"status": {
 				"code": 0
@@ -694,6 +699,7 @@
 				"en_US": "API Applications"
 			},
 			"portlet": false,
+			"restContextPath": "/headless-builder/applications",
 			"scope": "company",
 			"status": {
 				"code": 0
