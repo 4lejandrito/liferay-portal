@@ -78,7 +78,7 @@ public class ObjectDefinitionCacheModel
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(69);
+		StringBundler sb = new StringBundler(71);
 
 		sb.append("{mvccVersion=");
 		sb.append(mvccVersion);
@@ -140,6 +140,8 @@ public class ObjectDefinitionCacheModel
 		sb.append(portlet);
 		sb.append(", scope=");
 		sb.append(scope);
+		sb.append(", restContextPath=");
+		sb.append(restContextPath);
 		sb.append(", storageType=");
 		sb.append(storageType);
 		sb.append(", system=");
@@ -287,6 +289,13 @@ public class ObjectDefinitionCacheModel
 			objectDefinitionImpl.setScope(scope);
 		}
 
+		if (restContextPath == null) {
+			objectDefinitionImpl.setRESTContextPath("");
+		}
+		else {
+			objectDefinitionImpl.setRESTContextPath(restContextPath);
+		}
+
 		if (storageType == null) {
 			objectDefinitionImpl.setStorageType("");
 		}
@@ -349,6 +358,7 @@ public class ObjectDefinitionCacheModel
 
 		portlet = objectInput.readBoolean();
 		scope = objectInput.readUTF();
+		restContextPath = objectInput.readUTF();
 		storageType = objectInput.readUTF();
 
 		system = objectInput.readBoolean();
@@ -484,6 +494,13 @@ public class ObjectDefinitionCacheModel
 			objectOutput.writeUTF(scope);
 		}
 
+		if (restContextPath == null) {
+			objectOutput.writeUTF("");
+		}
+		else {
+			objectOutput.writeUTF(restContextPath);
+		}
+
 		if (storageType == null) {
 			objectOutput.writeUTF("");
 		}
@@ -528,6 +545,7 @@ public class ObjectDefinitionCacheModel
 	public String pluralLabel;
 	public boolean portlet;
 	public String scope;
+	public String restContextPath;
 	public String storageType;
 	public boolean system;
 	public int version;

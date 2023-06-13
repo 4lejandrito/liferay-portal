@@ -78,6 +78,7 @@ public class ObjectDefinitionWrapper
 		attributes.put("pluralLabel", getPluralLabel());
 		attributes.put("portlet", isPortlet());
 		attributes.put("scope", getScope());
+		attributes.put("restContextPath", getRESTContextPath());
 		attributes.put("storageType", getStorageType());
 		attributes.put("system", isSystem());
 		attributes.put("version", getVersion());
@@ -275,6 +276,12 @@ public class ObjectDefinitionWrapper
 
 		if (scope != null) {
 			setScope(scope);
+		}
+
+		String restContextPath = (String)attributes.get("restContextPath");
+
+		if (restContextPath != null) {
+			setRESTContextPath(restContextPath);
 		}
 
 		String storageType = (String)attributes.get("storageType");
@@ -744,6 +751,11 @@ public class ObjectDefinitionWrapper
 		return model.getResourceName();
 	}
 
+	/**
+	 * Returns the rest context path of this object definition.
+	 *
+	 * @return the rest context path of this object definition
+	 */
 	@Override
 	public String getRESTContextPath() {
 		return model.getRESTContextPath();
@@ -1351,6 +1363,16 @@ public class ObjectDefinitionWrapper
 	@Override
 	public void setPrimaryKey(long primaryKey) {
 		model.setPrimaryKey(primaryKey);
+	}
+
+	/**
+	 * Sets the rest context path of this object definition.
+	 *
+	 * @param restContextPath the rest context path of this object definition
+	 */
+	@Override
+	public void setRESTContextPath(String restContextPath) {
+		model.setRESTContextPath(restContextPath);
 	}
 
 	/**

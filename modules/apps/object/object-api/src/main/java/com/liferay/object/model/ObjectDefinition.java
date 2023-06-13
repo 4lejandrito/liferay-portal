@@ -71,8 +71,6 @@ public interface ObjectDefinition
 
 	public String getResourceName();
 
-	public String getRESTContextPath();
-
 	public String getShortName();
 
 	public boolean isApproved();
