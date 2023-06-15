@@ -16,6 +16,7 @@ package com.liferay.headless.builder.internal.generator.publisher;
 
 import com.liferay.headless.builder.internal.generator.application.ApiApplication;
 import com.liferay.headless.builder.internal.generator.jaxrs.application.HeadlessBuilderApplication;
+import com.liferay.headless.builder.internal.generator.operation.handler.OperationHandler;
 import com.liferay.headless.builder.internal.generator.resource.HeadlessBuilderResource;
 import com.liferay.portal.kernel.util.HashMapDictionaryBuilder;
 import com.liferay.portal.kernel.util.ObjectValuePair;
@@ -141,7 +142,7 @@ public class ApplicationPublisherImpl implements ApplicationPublisher {
 							serviceRegistration) {
 
 						return new HeadlessBuilderResource(
-							_portal, _serviceTracker);
+							_operationHandler, _portal, _serviceTracker);
 					}
 
 					@Override
@@ -218,6 +219,9 @@ public class ApplicationPublisherImpl implements ApplicationPublisher {
 			 <ServiceRegistration<Application>, List<ServiceRegistration<?>>>>
 				_headlessBuilderApplicationServiceRegistrationMap =
 					new HashMap<>();
+
+	@Reference
+	private OperationHandler _operationHandler;
 
 	@Reference
 	private Portal _portal;

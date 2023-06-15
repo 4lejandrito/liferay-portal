@@ -15,6 +15,8 @@
 package com.liferay.headless.builder.internal.generator.resource;
 
 import com.liferay.headless.builder.internal.generator.application.ApiApplication;
+import com.liferay.headless.builder.internal.generator.application.Operation;
+import com.liferay.headless.builder.internal.generator.operation.handler.OperationHandler;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
 
@@ -35,21 +37,22 @@ import org.osgi.util.tracker.ServiceTracker;
 public class HeadlessBuilderResource extends BaseHeadlessBuilderResource {
 
 	public HeadlessBuilderResource(
-		Portal portal,
+		OperationHandler operationHandler, Portal portal,
 		ServiceTracker<Application, ApiApplication> serviceTracker) {
 
+		_operationHandler = operationHandler;
 		_portal = portal;
 		_serviceTracker = serviceTracker;
 	}
 
 	@Override
 	public Response get() throws Exception {
-		ApiApplication apiApplication = _getCurrentApiApplication(
-			contextHttpServletRequest);
-
-		return Response.ok(
-			apiApplication
-		).build();
+		return _operationHandler.handle(
+			contextAcceptLanguage, contextCompany, contextHttpServletRequest,
+			contextUriInfo, contextUser,
+			_getOperation(
+				_getCurrentApiApplication(contextHttpServletRequest),
+				contextHttpServletRequest));
 	}
 
 	private ApiApplication _getCurrentApiApplication(
@@ -73,6 +76,24 @@ public class HeadlessBuilderResource extends BaseHeadlessBuilderResource {
 		throw new NotFoundException();
 	}
 
+	private Operation _getOperation(
+		ApiApplication apiApplication, HttpServletRequest httpServletRequest) {
+
+		String currentEndpoint = _sanitizeURL(
+			httpServletRequest.getRequestURI());
+
+		String currentEndpointPath = StringUtil.removeSubstring(
+			currentEndpoint, apiApplication.getBaseURL());
+
+		for (Operation operation : apiApplication.getOperations()) {
+			if (Objects.equals(operation.getPath(), currentEndpointPath)) {
+				return operation;
+			}
+		}
+
+		throw new NotFoundException();
+	}
+
 	private boolean _isCurrentApiApplication(
 		ApiApplication apiApplication, String baseURL, long companyId) {
 
@@ -89,6 +110,7 @@ public class HeadlessBuilderResource extends BaseHeadlessBuilderResource {
 		return StringUtil.removeSubstring(url, "/o/");
 	}
 
+	private final OperationHandler _operationHandler;
 	private final Portal _portal;
 	private final ServiceTracker<Application, ApiApplication> _serviceTracker;
 

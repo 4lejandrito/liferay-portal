@@ -12,18 +12,15 @@
  * details.
  */
 
-package com.liferay.headless.builder.internal.generator.resource;
+package com.liferay.headless.builder.internal.generator.operation.handler;
 
+import com.liferay.headless.builder.internal.generator.application.Operation;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
 
 import javax.servlet.http.HttpServletRequest;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -31,26 +28,12 @@ import javax.ws.rs.core.UriInfo;
  * @author Carlos Correa
  * @author Luis Miguel Barcos
  */
-public abstract class BaseHeadlessBuilderResource {
+public interface OperationHandler {
 
-	@GET
-	@Path("{any: .*}")
-	@Produces({"application/json", "application/xml"})
-	public abstract Response get() throws Exception;
-
-	@Context
-	protected AcceptLanguage contextAcceptLanguage;
-
-	@Context
-	protected Company contextCompany;
-
-	@Context
-	protected HttpServletRequest contextHttpServletRequest;
-
-	@Context
-	protected UriInfo contextUriInfo;
-
-	@Context
-	protected User contextUser;
+	public Response handle(
+			AcceptLanguage contextAcceptLanguage, Company contextCompany,
+			HttpServletRequest contextHttpServletRequest,
+			UriInfo contextUriInfo, User contextUser, Operation operation)
+		throws Exception;
 
 }
