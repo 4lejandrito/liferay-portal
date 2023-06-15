@@ -1,0 +1,227 @@
+/**
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
+
+package com.liferay.headless.builder.internal.generator.publisher;
+
+import com.liferay.headless.builder.internal.generator.application.ApiApplication;
+import com.liferay.headless.builder.internal.generator.jaxrs.application.HeadlessBuilderApplication;
+import com.liferay.headless.builder.internal.generator.resource.HeadlessBuilderResource;
+import com.liferay.portal.kernel.util.HashMapDictionaryBuilder;
+import com.liferay.portal.kernel.util.ObjectValuePair;
+import com.liferay.portal.kernel.util.Portal;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.core.Application;
+
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.PrototypeServiceFactory;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.util.tracker.ServiceTracker;
+
+/**
+ * @author Luis Miguel Barcos
+ */
+@Component(service = ApplicationPublisher.class)
+public class ApplicationPublisherImpl implements ApplicationPublisher {
+
+	@Override
+	public void publish(ApiApplication apiApplication) throws Exception {
+		_headlessBuilderApplicationServiceRegistrationMap.put(
+			apiApplication.getOsgiJaxRsName(),
+			_createHeadlessBuilderApplication(apiApplication));
+	}
+
+	@Override
+	public void unpublish(ApiApplication apiApplication) throws Exception {
+		_undeploy(apiApplication);
+	}
+
+	@Activate
+	protected void activate(BundleContext bundleContext) {
+		_bundleContext = bundleContext;
+
+		_serviceTracker = new ServiceTracker<Application, ApiApplication>(
+			bundleContext, Application.class, null) {
+
+			@Override
+			public ApiApplication addingService(
+				ServiceReference<Application> serviceReference) {
+
+				Object property = serviceReference.getProperty(
+					"liferay.headless.builder.application");
+
+				if ((property != null) && (Boolean)property) {
+					HeadlessBuilderApplication headlessBuilderApplication =
+						(HeadlessBuilderApplication)bundleContext.getService(
+							serviceReference);
+
+					return headlessBuilderApplication.getApiApplication();
+				}
+
+				return null;
+			}
+
+		};
+
+		_serviceTracker.open();
+	}
+
+	@Deactivate
+	protected void deactivate() {
+		_undeployAll();
+		_serviceTracker.close();
+	}
+
+	private ObjectValuePair
+		<ServiceRegistration<Application>, List<ServiceRegistration<?>>>
+			_createHeadlessBuilderApplication(ApiApplication apiApplication) {
+
+		return new ObjectValuePair<>(
+			_registerHeadlessBuilderApplication(apiApplication),
+			_registerHeadlessBuilderApplicationServices(apiApplication));
+	}
+
+	private ServiceRegistration<Application>
+		_registerHeadlessBuilderApplication(ApiApplication apiApplication) {
+
+		return _bundleContext.registerService(
+			Application.class, new HeadlessBuilderApplication(apiApplication),
+			HashMapDictionaryBuilder.<String, Object>put(
+				"companyId", apiApplication.getCompanyId()
+			).put(
+				"liferay.filter.disabled", true
+			).put(
+				"liferay.headless.builder.application", true
+			).put(
+				"liferay.jackson", false
+			).put(
+				"osgi.jaxrs.application.base", apiApplication.getBaseURL()
+			).put(
+				"osgi.jaxrs.extension.select",
+				"(osgi.jaxrs.name=Liferay.Vulcan)"
+			).put(
+				"osgi.jaxrs.name", apiApplication.getOsgiJaxRsName()
+			).build());
+	}
+
+	private List<ServiceRegistration<?>>
+		_registerHeadlessBuilderApplicationServices(
+			ApiApplication apiApplication) {
+
+		return Collections.singletonList(
+			_bundleContext.registerService(
+				HeadlessBuilderResource.class,
+				new PrototypeServiceFactory<HeadlessBuilderResource>() {
+
+					@Override
+					public HeadlessBuilderResource getService(
+						Bundle bundle,
+						ServiceRegistration<HeadlessBuilderResource>
+							serviceRegistration) {
+
+						return new HeadlessBuilderResource(
+							_portal, _serviceTracker);
+					}
+
+					@Override
+					public void ungetService(
+						Bundle bundle,
+						ServiceRegistration<HeadlessBuilderResource>
+							serviceRegistration,
+						HeadlessBuilderResource objectEntryResource) {
+					}
+
+				},
+				HashMapDictionaryBuilder.<String, Object>put(
+					"api.version", "v1.0"
+				).put(
+					"osgi.jaxrs.application.select",
+					"(osgi.jaxrs.name=" + apiApplication.getOsgiJaxRsName() +
+						")"
+				).put(
+					"osgi.jaxrs.resource", "true"
+				).build()));
+	}
+
+	private void _undeploy(ApiApplication apiApplication) {
+		ObjectValuePair
+			<ServiceRegistration<Application>, List<ServiceRegistration<?>>>
+				headlessBuilderApplicationServiceRegistrations =
+					_headlessBuilderApplicationServiceRegistrationMap.remove(
+						apiApplication.getOsgiJaxRsName());
+
+		if (headlessBuilderApplicationServiceRegistrations != null) {
+			_unregisterServiceRegistration(
+				headlessBuilderApplicationServiceRegistrations.getKey());
+
+			_unregisterHeadlessBuilderApplicationServices(
+				headlessBuilderApplicationServiceRegistrations.getValue());
+		}
+	}
+
+	private void _undeployAll() {
+		Object[] services = _serviceTracker.getServices();
+
+		if (services == null) {
+			return;
+		}
+
+		for (Object service : services) {
+			_undeploy((ApiApplication)service);
+		}
+	}
+
+	private void _unregisterHeadlessBuilderApplicationServices(
+		List<ServiceRegistration<?>> headlessBuilderApplicationServices) {
+
+		for (ServiceRegistration<?> serviceRegistration :
+				headlessBuilderApplicationServices) {
+
+			_unregisterServiceRegistration(serviceRegistration);
+		}
+	}
+
+	private void _unregisterServiceRegistration(
+		ServiceRegistration<?> serviceRegistration) {
+
+		if (serviceRegistration != null) {
+			serviceRegistration.unregister();
+		}
+	}
+
+	private static BundleContext _bundleContext;
+
+	private final Map
+		<String,
+		 ObjectValuePair
+			 <ServiceRegistration<Application>, List<ServiceRegistration<?>>>>
+				_headlessBuilderApplicationServiceRegistrationMap =
+					new HashMap<>();
+
+	@Reference
+	private Portal _portal;
+
+	private ServiceTracker<Application, ApiApplication> _serviceTracker;
+
+}
