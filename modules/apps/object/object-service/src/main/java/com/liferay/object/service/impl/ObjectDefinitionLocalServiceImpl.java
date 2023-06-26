@@ -29,6 +29,7 @@ import com.liferay.object.constants.ObjectFieldConstants;
 import com.liferay.object.constants.ObjectFieldSettingConstants;
 import com.liferay.object.constants.ObjectRelationshipConstants;
 import com.liferay.object.deployer.ObjectDefinitionDeployer;
+import com.liferay.object.exception.ForbiddenObjectDefinitionExternalReferenceCodeException;
 import com.liferay.object.exception.NoSuchObjectFieldException;
 import com.liferay.object.exception.ObjectDefinitionAccountEntryRestrictedException;
 import com.liferay.object.exception.ObjectDefinitionAccountEntryRestrictedObjectFieldIdException;
@@ -1674,9 +1675,8 @@ public class ObjectDefinitionLocalServiceImpl
 			(!modifiable && system &&
 			 !StringUtil.startsWith(externalReferenceCode, "USOD_"))) {
 
-			throw new ObjectDefinitionNameException.
-				ForbiddenObjectDefinitionExternalReferenceCode(
-					externalReferenceCode);
+			throw new ForbiddenObjectDefinitionExternalReferenceCodeException(
+				externalReferenceCode);
 		}
 	}
 
@@ -1700,8 +1700,8 @@ public class ObjectDefinitionLocalServiceImpl
 			!ObjectDefinitionUtil.isAllowedModifiableSystemObjectDefinitionName(
 				name)) {
 
-			throw new ObjectDefinitionNameException.
-				ForbiddenModifiableSystemObjectDefinitionName(name);
+			throw new ForbiddenObjectDefinitionExternalReferenceCodeException(
+				name);
 		}
 
 		if (Validator.isNull(name) || (!system && name.equals("C_"))) {

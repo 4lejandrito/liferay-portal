@@ -839,6 +839,7 @@
 		<exception>DefaultObjectView</exception>
 		<exception>DuplicateObjectFieldExternalReferenceCode</exception>
 		<exception>DuplicateObjectRelationship</exception>
+		<exception>ForbiddenObjectDefinitionExternalReferenceCode</exception>
 		<exception>ObjectActionConditionExpression</exception>
 		<exception>ObjectActionErrorMessage</exception>
 		<exception>ObjectActionExecutorKey</exception>

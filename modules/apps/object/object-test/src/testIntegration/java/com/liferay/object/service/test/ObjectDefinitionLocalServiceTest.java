@@ -18,6 +18,7 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.object.constants.ObjectDefinitionConstants;
 import com.liferay.object.constants.ObjectFieldConstants;
 import com.liferay.object.constants.ObjectRelationshipConstants;
+import com.liferay.object.exception.ForbiddenObjectDefinitionExternalReferenceCodeException;
 import com.liferay.object.exception.NoSuchObjectFieldException;
 import com.liferay.object.exception.ObjectDefinitionAccountEntryRestrictedException;
 import com.liferay.object.exception.ObjectDefinitionActiveException;
@@ -416,15 +417,13 @@ public class ObjectDefinitionLocalServiceTest {
 			WorkflowConstants.STATUS_DRAFT, objectDefinition.getStatus());
 
 		_assertFailure(
-			ObjectDefinitionNameException.
-				ForbiddenObjectDefinitionExternalReferenceCode.class,
-			"Forbidden object definition external reference code MSOD_TEST_ERC",
+			ForbiddenObjectDefinitionExternalReferenceCodeException.class,
+			"MSOD_TEST_ERC",
 			() -> _objectDefinitionLocalService.addObjectDefinition(
 				"MSOD_TEST_ERC", user.getUserId()));
 		_assertFailure(
-			ObjectDefinitionNameException.
-				ForbiddenObjectDefinitionExternalReferenceCode.class,
-			"Forbidden object definition external reference code USOD_TEST_ERC",
+			ForbiddenObjectDefinitionExternalReferenceCodeException.class,
+			"USOD_TEST_ERC",
 			() -> _objectDefinitionLocalService.addObjectDefinition(
 				"USOD_TEST_ERC", user.getUserId()));
 
@@ -1370,10 +1369,8 @@ public class ObjectDefinitionLocalServiceTest {
 				objectDefinition.getScope());
 
 		_assertFailure(
-			ObjectDefinitionNameException.
-				ForbiddenObjectDefinitionExternalReferenceCode.class,
-			"Forbidden object definition external reference code MSOD_TEST_ERC",
-			objectDefinition,
+			ForbiddenObjectDefinitionExternalReferenceCodeException.class,
+			"MSOD_TEST_ERC", objectDefinition,
 			objectDefinitionId ->
 				_objectDefinitionLocalService.updateCustomObjectDefinition(
 					"MSOD_TEST_ERC", objectDefinitionId, 0, 0, 0, false, true,
@@ -1382,10 +1379,8 @@ public class ObjectDefinitionLocalServiceTest {
 					null, false, LocalizedMapUtil.getLocalizedMap("Bakers"),
 					ObjectDefinitionConstants.SCOPE_COMPANY));
 		_assertFailure(
-			ObjectDefinitionNameException.
-				ForbiddenObjectDefinitionExternalReferenceCode.class,
-			"Forbidden object definition external reference code USOD_TEST_ERC",
-			objectDefinition,
+			ForbiddenObjectDefinitionExternalReferenceCodeException.class,
+			"USOD_TEST_ERC", objectDefinition,
 			objectDefinitionId ->
 				_objectDefinitionLocalService.updateCustomObjectDefinition(
 					"USOD_TEST_ERC", objectDefinitionId, 0, 0, 0, false, true,
@@ -1412,18 +1407,14 @@ public class ObjectDefinitionLocalServiceTest {
 			customObjectDefinition.getObjectDefinitionId(), "TEST_ERC");
 
 		_assertFailure(
-			ObjectDefinitionNameException.
-				ForbiddenObjectDefinitionExternalReferenceCode.class,
-			"Forbidden object definition external reference code USOD_TEST_ERC",
-			customObjectDefinition,
+			ForbiddenObjectDefinitionExternalReferenceCodeException.class,
+			"USOD_TEST_ERC", customObjectDefinition,
 			objectDefinitionId ->
 				_objectDefinitionLocalService.updateExternalReferenceCode(
 					objectDefinitionId, "USOD_TEST_ERC"));
 		_assertFailure(
-			ObjectDefinitionNameException.
-				ForbiddenObjectDefinitionExternalReferenceCode.class,
-			"Forbidden object definition external reference code MSOD_TEST_ERC",
-			customObjectDefinition,
+			ForbiddenObjectDefinitionExternalReferenceCodeException.class,
+			"MSOD_TEST_ERC", customObjectDefinition,
 			objectDefinitionId ->
 				_objectDefinitionLocalService.updateExternalReferenceCode(
 					objectDefinitionId, "MSOD_TEST_ERC"));
@@ -1447,18 +1438,14 @@ public class ObjectDefinitionLocalServiceTest {
 			"MSOD_TEST_ERC");
 
 		_assertFailure(
-			ObjectDefinitionNameException.
-				ForbiddenObjectDefinitionExternalReferenceCode.class,
-			"Forbidden object definition external reference code USOD_TEST_ERC",
-			modifiableSystemObjectDefinition,
+			ForbiddenObjectDefinitionExternalReferenceCodeException.class,
+			"USOD_TEST_ERC", modifiableSystemObjectDefinition,
 			objectDefinitionId ->
 				_objectDefinitionLocalService.updateExternalReferenceCode(
 					objectDefinitionId, "USOD_TEST_ERC"));
 		_assertFailure(
-			ObjectDefinitionNameException.
-				ForbiddenObjectDefinitionExternalReferenceCode.class,
-			"Forbidden object definition external reference code TEST_ERC",
-			modifiableSystemObjectDefinition,
+			ForbiddenObjectDefinitionExternalReferenceCodeException.class,
+			"TEST_ERC", modifiableSystemObjectDefinition,
 			objectDefinitionId ->
 				_objectDefinitionLocalService.updateExternalReferenceCode(
 					objectDefinitionId, "TEST_ERC"));
@@ -1471,18 +1458,14 @@ public class ObjectDefinitionLocalServiceTest {
 			"USOD_TEST_ERC");
 
 		_assertFailure(
-			ObjectDefinitionNameException.
-				ForbiddenObjectDefinitionExternalReferenceCode.class,
-			"Forbidden object definition external reference code MSOD_TEST_ERC",
-			unmodifiableSystemObjectDefinition,
+			ForbiddenObjectDefinitionExternalReferenceCodeException.class,
+			"MSOD_TEST_ERC", unmodifiableSystemObjectDefinition,
 			objectDefinitionId ->
 				_objectDefinitionLocalService.updateExternalReferenceCode(
 					objectDefinitionId, "MSOD_TEST_ERC"));
 		_assertFailure(
-			ObjectDefinitionNameException.
-				ForbiddenObjectDefinitionExternalReferenceCode.class,
-			"Forbidden object definition external reference code TEST_ERC",
-			unmodifiableSystemObjectDefinition,
+			ForbiddenObjectDefinitionExternalReferenceCodeException.class,
+			"TEST_ERC", unmodifiableSystemObjectDefinition,
 			objectDefinitionId ->
 				_objectDefinitionLocalService.updateExternalReferenceCode(
 					objectDefinitionId, "TEST_ERC"));
@@ -1562,18 +1545,14 @@ public class ObjectDefinitionLocalServiceTest {
 		long titleObjectFieldId = objectDefinition.getTitleObjectFieldId();
 
 		_assertFailure(
-			ObjectDefinitionNameException.
-				ForbiddenObjectDefinitionExternalReferenceCode.class,
-			"Forbidden object definition external reference code USOD_TEST_ERC",
-			objectDefinition,
+			ForbiddenObjectDefinitionExternalReferenceCodeException.class,
+			"USOD_TEST_ERC", objectDefinition,
 			objectDefinitionId ->
 				_objectDefinitionLocalService.updateSystemObjectDefinition(
 					"USOD_TEST_ERC", objectDefinitionId, titleObjectFieldId));
 		_assertFailure(
-			ObjectDefinitionNameException.
-				ForbiddenObjectDefinitionExternalReferenceCode.class,
-			"Forbidden object definition external reference code TEST_ERC",
-			objectDefinition,
+			ForbiddenObjectDefinitionExternalReferenceCodeException.class,
+			"TEST_ERC", objectDefinition,
 			objectDefinitionId ->
 				_objectDefinitionLocalService.updateSystemObjectDefinition(
 					"TEST_ERC", objectDefinitionId, titleObjectFieldId));
@@ -1648,18 +1627,14 @@ public class ObjectDefinitionLocalServiceTest {
 			externalReferenceCode, objectDefinition.getExternalReferenceCode());
 
 		_assertFailure(
-			ObjectDefinitionNameException.
-				ForbiddenObjectDefinitionExternalReferenceCode.class,
-			"Forbidden object definition external reference code MSOD_TEST_ERC",
-			objectDefinition,
+			ForbiddenObjectDefinitionExternalReferenceCodeException.class,
+			"MSOD_TEST_ERC", objectDefinition,
 			objectDefinitionId ->
 				_objectDefinitionLocalService.updateSystemObjectDefinition(
 					"MSOD_TEST_ERC", objectDefinitionId, 0));
 		_assertFailure(
-			ObjectDefinitionNameException.
-				ForbiddenObjectDefinitionExternalReferenceCode.class,
-			"Forbidden object definition external reference code TEST_ERC",
-			objectDefinition,
+			ForbiddenObjectDefinitionExternalReferenceCodeException.class,
+			"TEST_ERC", objectDefinition,
 			objectDefinitionId ->
 				_objectDefinitionLocalService.updateSystemObjectDefinition(
 					"TEST_ERC", objectDefinitionId, 0));
