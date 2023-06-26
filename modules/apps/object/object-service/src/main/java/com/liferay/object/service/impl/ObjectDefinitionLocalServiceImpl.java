@@ -193,7 +193,11 @@ public class ObjectDefinitionLocalServiceImpl
 			String externalReferenceCode, long userId)
 		throws PortalException {
 
-		_validateExternalReferenceCode(externalReferenceCode, true, false);
+		boolean modifiable = true;
+		boolean system = false;
+
+		_validateExternalReferenceCode(
+			externalReferenceCode, modifiable, system);
 
 		ObjectDefinition objectDefinition = objectDefinitionPersistence.create(
 			counterLocalService.increment());
@@ -208,13 +212,13 @@ public class ObjectDefinitionLocalServiceImpl
 
 		objectDefinition.setActive(false);
 		objectDefinition.setLabel(externalReferenceCode);
-		objectDefinition.setModifiable(true);
+		objectDefinition.setModifiable(modifiable);
 		objectDefinition.setName(externalReferenceCode);
 		objectDefinition.setPluralLabel(externalReferenceCode);
 		objectDefinition.setScope(ObjectDefinitionConstants.SCOPE_COMPANY);
 		objectDefinition.setStorageType(
 			ObjectDefinitionConstants.STORAGE_TYPE_DEFAULT);
-		objectDefinition.setSystem(false);
+		objectDefinition.setSystem(system);
 		objectDefinition.setStatus(WorkflowConstants.STATUS_DRAFT);
 
 		objectDefinition = objectDefinitionPersistence.update(objectDefinition);
