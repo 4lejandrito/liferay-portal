@@ -1382,6 +1382,9 @@ public class ObjectDefinitionLocalServiceImpl
 
 		boolean originalActive = objectDefinition.isActive();
 
+		_validateExternalReferenceCode(
+			externalReferenceCode, objectDefinition.isModifiable(),
+			objectDefinition.isSystem());
 		_validateAccountEntryRestrictedObjectFieldId(
 			accountEntryRestrictedObjectFieldId, accountEntryRestricted,
 			objectDefinition);
@@ -1398,9 +1401,6 @@ public class ObjectDefinitionLocalServiceImpl
 			objectDefinition.isEnableObjectEntryHistory() !=
 				enableObjectEntryHistory,
 			objectDefinition.isModifiable(), objectDefinition.getStorageType(),
-			objectDefinition.isSystem());
-		_validateExternalReferenceCode(
-			externalReferenceCode, objectDefinition.isModifiable(),
 			objectDefinition.isSystem());
 		_validateLabel(labelMap);
 		_validatePluralLabel(pluralLabelMap);
