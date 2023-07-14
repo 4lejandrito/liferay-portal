@@ -140,11 +140,13 @@ public class BatchEngineBundleTracker {
 					BatchEngineUnitConfiguration batchEngineUnitConfiguration =
 						batchEngineUnit.getBatchEngineUnitConfiguration();
 
-					if (batchEngineUnitConfiguration.isMultiCompany()) {
-						multiCompanyBatchEngineUnits.add(batchEngineUnit);
+					if ((batchEngineUnitConfiguration == null) ||
+						!batchEngineUnitConfiguration.isMultiCompany()) {
+
+						singleCompanyBatchEngineUnits.add(batchEngineUnit);
 					}
 					else {
-						singleCompanyBatchEngineUnits.add(batchEngineUnit);
+						multiCompanyBatchEngineUnits.add(batchEngineUnit);
 					}
 				}
 				catch (Exception exception) {

@@ -48,7 +48,7 @@ public class AdvancedBundleBatchEngineUnitImpl implements BatchEngineUnit {
 			AdvancedJSONReader<BatchEngineUnitConfiguration>
 				advancedJSONReader = new AdvancedJSONReader<>(inputStream);
 
-			return advancedJSONReader.getObject(
+			return advancedJSONReader.getObjectOrNull(
 				"configuration", BatchEngineUnitConfiguration.class);
 		}
 	}

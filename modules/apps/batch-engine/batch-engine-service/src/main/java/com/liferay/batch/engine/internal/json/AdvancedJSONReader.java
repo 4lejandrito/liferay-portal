@@ -46,6 +46,26 @@ public class AdvancedJSONReader<T> {
 			byteArrayOutputStream.toByteArray(), clazz);
 	}
 
+	public T getObjectOrNull(String name, Class<T> clazz) throws IOException {
+		_readUntil("\"" + name + "\":");
+
+		if (_inputStream.available() <= 0) {
+			return null;
+		}
+
+		ByteArrayOutputStream byteArrayOutputStream =
+			new ByteArrayOutputStream();
+
+		_transferBlock(
+			CharPool.OPEN_CURLY_BRACE, CharPool.CLOSE_CURLY_BRACE,
+			byteArrayOutputStream);
+
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		return objectMapper.readValue(
+			byteArrayOutputStream.toByteArray(), clazz);
+	}
+
 	public boolean hasKey(String name) throws IOException {
 		_readUntil("\"" + name + "\":");
 
