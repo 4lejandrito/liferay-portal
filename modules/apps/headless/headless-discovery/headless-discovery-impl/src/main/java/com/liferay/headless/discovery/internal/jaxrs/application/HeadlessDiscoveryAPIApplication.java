@@ -13,7 +13,6 @@ import com.liferay.headless.discovery.internal.dto.Resource;
 import com.liferay.headless.discovery.internal.dto.Resources;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
-import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.module.util.BundleUtil;
 import com.liferay.portal.kernel.security.auth.AuthTokenUtil;
 import com.liferay.portal.kernel.util.Portal;
@@ -83,14 +82,10 @@ public class HeadlessDiscoveryAPIApplication extends Application {
 			@Context HttpServletResponse httpServletResponse)
 		throws Exception {
 
-		if ((accept != null) && accept.contains(MediaType.TEXT_HTML)) {
-			boolean apiExplorerEnabled =
-				_headlessDiscoveryConfiguration.enableAPIExplorer();
+		if ((accept != null) && accept.contains(MediaType.TEXT_HTML) &&
+			_headlessDiscoveryConfiguration.enableAPIExplorer()) {
 
-			String urlParameter =
-				apiExplorerEnabled ? "index.html" : "error.html";
-
-			URL url = _getURL(urlParameter);
+			URL url = _getURL("index.html");
 
 			if (url == null) {
 				return Response.serverError(
@@ -110,19 +105,10 @@ public class HeadlessDiscoveryAPIApplication extends Application {
 			html = StringUtil.replace(
 				html, "href=\"main.css\"",
 				"href=\"" + _portal.getPathContext() + "/o/api/main.css\"");
-
-			if (apiExplorerEnabled) {
-				html = StringUtil.replace(
-					html, "src=\"headless-discovery-web-min.js\"",
-					"src=\"" + _portal.getPathContext() +
-						"/o/api/headless-discovery-web-min.js\"");
-			}
-			else {
-				html = StringUtil.replace(
-					html, "%error-message%",
-					_language.get(
-						httpServletRequest, "enable-api-explorer-error"));
-			}
+			html = StringUtil.replace(
+				html, "src=\"headless-discovery-web-min.js\"",
+				"src=\"" + _portal.getPathContext() +
+					"/o/api/headless-discovery-web-min.js\"");
 
 			String finalHtml = html;
 
@@ -313,9 +299,6 @@ public class HeadlessDiscoveryAPIApplication extends Application {
 
 	@Reference
 	private JaxrsServiceRuntime _jaxrsServiceRuntime;
-
-	@Reference
-	private Language _language;
 
 	@Reference
 	private Portal _portal;
