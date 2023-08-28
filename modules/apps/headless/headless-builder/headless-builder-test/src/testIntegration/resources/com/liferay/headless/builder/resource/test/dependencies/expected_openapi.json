@@ -306,6 +306,13 @@
 				"parameters": [
 					{
 						"in": "query",
+						"name": "filter",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
 						"name": "page",
 						"schema": {
 							"type": "string"
@@ -314,6 +321,13 @@
 					{
 						"in": "query",
 						"name": "pageSize",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "sort",
 						"schema": {
 							"type": "string"
 						}
@@ -346,6 +360,13 @@
 				"operationId": "getScopeScopeKeyNoSchemaPage",
 				"parameters": [
 					{
+						"in": "query",
+						"name": "filter",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
 						"in": "path",
 						"name": "scopeKey",
 						"required": true,
@@ -363,6 +384,13 @@
 					{
 						"in": "query",
 						"name": "pageSize",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "sort",
 						"schema": {
 							"type": "string"
 						}
@@ -380,6 +408,13 @@
 				"operationId": "getScopeScopeKeySiteScopedPathPage",
 				"parameters": [
 					{
+						"in": "query",
+						"name": "filter",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
 						"in": "path",
 						"name": "scopeKey",
 						"required": true,
@@ -397,6 +432,13 @@
 					{
 						"in": "query",
 						"name": "pageSize",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "sort",
 						"schema": {
 							"type": "string"
 						}
