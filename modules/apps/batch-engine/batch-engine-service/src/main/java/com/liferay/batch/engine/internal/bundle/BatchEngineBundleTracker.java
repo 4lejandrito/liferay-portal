@@ -17,6 +17,7 @@ import com.liferay.portal.instance.lifecycle.PortalInstanceLifecycleListener;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
 import com.liferay.portal.kernel.util.FileUtil;
+import com.liferay.portal.kernel.util.HashMapDictionaryBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -176,7 +177,9 @@ public class BatchEngineBundleTracker {
 						}
 
 					},
-					null));
+					HashMapDictionaryBuilder.<String, Object>put(
+						"service.ranking", Integer.MIN_VALUE
+					).build()));
 
 			return bundle;
 		}
