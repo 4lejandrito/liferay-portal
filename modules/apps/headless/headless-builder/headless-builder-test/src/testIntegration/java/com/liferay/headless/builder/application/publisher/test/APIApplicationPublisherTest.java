@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-package com.liferay.headless.builder.model.listener.test;
+package com.liferay.headless.builder.application.publisher.test;
 
 import com.liferay.headless.builder.test.BaseTestCase;
 import com.liferay.headless.builder.util.APIApplicationTestUtil;
@@ -21,8 +21,7 @@ import org.junit.Test;
  * @author Sergio Jiménez del Coso
  */
 @FeatureFlags("LPS-178642")
-public class APIApplicationPublisherObjectEntryModelListenerTest
-	extends BaseTestCase {
+public class APIApplicationPublisherTest extends BaseTestCase {
 
 	@Test
 	public void testPublishAPIApplicationOnPatch() throws Exception {

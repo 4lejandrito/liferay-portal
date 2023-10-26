@@ -5,10 +5,13 @@
 
 package com.liferay.headless.builder.internal.model.listener;
 
+import com.liferay.headless.builder.application.publisher.APIApplicationPublisher;
 import com.liferay.object.exception.ObjectEntryValuesException;
 import com.liferay.object.model.ObjectEntry;
 import com.liferay.object.model.ObjectField;
 import com.liferay.object.model.listener.RelevantObjectEntryModelListener;
+import com.liferay.object.service.ObjectDefinitionLocalService;
+import com.liferay.object.service.ObjectEntryLocalService;
 import com.liferay.object.service.ObjectFieldLocalService;
 import com.liferay.portal.kernel.exception.ModelListenerException;
 import com.liferay.portal.kernel.model.BaseModelListener;
@@ -40,10 +43,34 @@ public class APIApplicationRelevantObjectEntryModelListener
 	}
 
 	@Override
+	public void onAfterCreate(ObjectEntry objectEntry)
+		throws ModelListenerException {
+
+		_schedulePublication(objectEntry);
+	}
+
+	@Override
+	public void onAfterUpdate(ObjectEntry originalModel, ObjectEntry model)
+		throws ModelListenerException {
+
+		super.onAfterUpdate(originalModel, model);
+	}
+
+	@Override
 	public void onBeforeCreate(ObjectEntry objectEntry)
 		throws ModelListenerException {
 
 		_validate(objectEntry);
+	}
+
+	@Override
+	public void onBeforeRemove(ObjectEntry objectEntry)
+		throws ModelListenerException {
+
+		Map<String, Serializable> values = objectEntry.getValues();
+
+		_apiApplicationPublisher.unpublish(
+			(String)values.get("baseURL"), objectEntry.getCompanyId());
 	}
 
 	@Override
@@ -52,6 +79,26 @@ public class APIApplicationRelevantObjectEntryModelListener
 		throws ModelListenerException {
 
 		_validate(objectEntry);
+	}
+
+	private void _schedulePublication(ObjectEntry objectEntry) {
+		Map<String, Serializable> values = objectEntry.getValues();
+
+		if (StringUtil.equals(
+				(String)values.get("applicationStatus"), "unpublished")) {
+
+			_apiApplicationPublisher.unpublish(
+				(String)values.get("baseURL"), objectEntry.getCompanyId());
+		}
+		else {
+			try {
+				_apiApplicationPublisher.publish(
+					(String)values.get("baseURL"), objectEntry.getCompanyId());
+			}
+			catch (Exception exception) {
+				throw new ModelListenerException(exception);
+			}
+		}
 	}
 
 	private void _validate(ObjectEntry objectEntry) {
@@ -109,6 +156,15 @@ public class APIApplicationRelevantObjectEntryModelListener
 
 	private static final Pattern _baseURLPattern = Pattern.compile(
 		"[a-z-0-9-]{1,255}");
+
+	@Reference
+	private APIApplicationPublisher _apiApplicationPublisher;
+
+	@Reference
+	private ObjectDefinitionLocalService _objectDefinitionLocalService;
+
+	@Reference
+	private ObjectEntryLocalService _objectEntryLocalService;
 
 	@Reference
 	private ObjectFieldLocalService _objectFieldLocalService;
