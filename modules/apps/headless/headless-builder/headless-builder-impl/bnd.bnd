@@ -2,3 +2,4 @@ Bundle-Name: Liferay Headless Builder Implementation
 Bundle-SymbolicName: com.liferay.headless.builder.impl
 Bundle-Version: 1.0.18
 Liferay-Client-Extension-Batch: com/liferay/headless/builder/internal/batch
+-fixupmessages: "^Classes found in the wrong directory: \\\\{META-INF/versions/9/";is:=warning

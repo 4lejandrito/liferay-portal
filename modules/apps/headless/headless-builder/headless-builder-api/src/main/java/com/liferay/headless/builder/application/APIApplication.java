@@ -113,8 +113,6 @@ public interface APIApplication {
 
 		public String getDescription();
 
-		public String getExternalReferenceCode();
-
 		public String getName();
 
 		public List<String> getObjectRelationshipNames();
@@ -136,8 +134,6 @@ public interface APIApplication {
 	public interface Schema {
 
 		public String getDescription();
-
-		public String getExternalReferenceCode();
 
 		public String getMainObjectDefinitionExternalReferenceCode();
 

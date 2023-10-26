@@ -11,23 +11,35 @@ import com.liferay.headless.builder.internal.helper.ObjectEntryHelper;
 import com.liferay.object.constants.ObjectFieldConstants;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectField;
-import com.liferay.object.rest.dto.v1_0.ListEntry;
 import com.liferay.object.rest.dto.v1_0.ObjectEntry;
 import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectFieldLocalService;
 import com.liferay.petra.function.transform.TransformUtil;
-import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.ListUtil;
-import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
-import java.util.Arrays;
+import io.swagger.parser.OpenAPIParser;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.MediaType;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.responses.ApiResponses;
+import io.swagger.v3.parser.core.models.SwaggerParseResult;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -62,136 +74,126 @@ public class APIApplicationProviderImpl implements APIApplicationProvider {
 	}
 
 	private List<APIApplication.Endpoint> _getEndpoints(
-			String apiApplicationExternalReferenceCode, long companyId,
-			List<APIApplication.Schema> schemas)
-		throws Exception {
+		OpenAPI openAPI, List<APIApplication.Schema> schemas) {
+
+		Paths paths = openAPI.getPaths();
 
 		return TransformUtil.transform(
-			_objectEntryHelper.getObjectEntries(
-				companyId,
-				"apiApplicationToAPIEndpoints/externalReferenceCode eq '" +
-					apiApplicationExternalReferenceCode + "'",
-				Arrays.asList(
-					"apiEndpointToAPIFilters", "apiEndpointToAPISorts"),
-				"L_API_ENDPOINT", null),
-			objectEntry -> {
-				Map<String, Object> properties = objectEntry.getProperties();
+			paths.entrySet(),
+			pathEntry -> {
+				PathItem pathItem = pathEntry.getValue();
+
+				Operation getOperation = pathItem.getGet();
+
+				Map<String, Object> extensions = getOperation.getExtensions();
+
+				ApiResponses apiResponses = getOperation.getResponses();
+
+				ApiResponse apiResponse = apiResponses.get("200");
+
+				Content content = apiResponse.getContent();
+
+				MediaType mediaType = content.get("application/json");
+
+				Schema<?> responseSchema = mediaType.getSchema();
 
 				return new APIApplication.Endpoint() {
 
 					@Override
 					public APIApplication.Filter getFilter() {
-						return _getFilter(properties);
+						return () -> (String)extensions.get(
+							"x-liferay-odata-filter");
 					}
 
 					@Override
 					public Http.Method getMethod() {
-						ListEntry listEntry = (ListEntry)properties.get(
-							"httpMethod");
-
-						return Http.Method.valueOf(
-							StringUtil.toUpperCase(listEntry.getKey()));
+						return Http.Method.GET;
 					}
 
 					@Override
 					public String getPath() {
-						return (String)properties.get("path");
+						return pathEntry.getKey();
 					}
 
 					@Override
 					public String getPathParameter() {
-						return (String)properties.get("pathParameter");
+						return (String)extensions.get(
+							"x-liferay-path-parameter");
 					}
 
 					@Override
 					public APIApplication.Schema getRequestSchema() {
-						return _getSchema(
-							(String)properties.get(
-								"r_requestAPISchemaToAPIEndpoints_c_" +
-									"apiSchemaERC"),
-							schemas);
+						return null;
 					}
 
 					@Override
 					public APIApplication.Schema getResponseSchema() {
-						return _getSchema(
-							(String)properties.get(
-								"r_responseAPISchemaToAPIEndpoints_c_" +
-									"apiSchemaERC"),
-							schemas);
+						Schema<?> itemSchema = _getItemSchema(responseSchema);
+
+						return _getSchema(itemSchema.get$ref(), schemas);
 					}
 
 					@Override
 					public RetrieveType getRetrieveType() {
-						ListEntry listEntry = (ListEntry)properties.get(
-							"retrieveType");
+						if (Objects.equals(responseSchema.getType(), "array")) {
+							return RetrieveType.COLLECTION;
+						}
 
-						return RetrieveType.parse(listEntry.getKey());
+						return RetrieveType.SINGLE_ELEMENT;
 					}
 
 					@Override
 					public Scope getScope() {
-						ListEntry listEntry = (ListEntry)properties.get(
-							"scope");
-
-						return Scope.parse(listEntry.getKey());
+						return Scope.parse(
+							(String)extensions.get("x-liferay-scope"));
 					}
 
 					@Override
 					public APIApplication.Sort getSort() {
-						return _getSort(properties);
+						return () -> (String)extensions.get(
+							"x-liferay-odata-sort");
 					}
 
 				};
 			});
 	}
 
-	private APIApplication.Filter _getFilter(
-		Map<String, Object> endpointProperties) {
+	private Schema<?> _getItemSchema(Schema<?> schema) {
+		if (schema instanceof ArraySchema) {
+			ArraySchema arraySchema = (ArraySchema)schema;
 
-		ObjectEntry[] objectEntries = (ObjectEntry[])endpointProperties.get(
-			"apiEndpointToAPIFilters");
-
-		if (ArrayUtil.isEmpty(objectEntries)) {
-			return null;
+			return arraySchema.getItems();
 		}
 
-		ObjectEntry objectEntry = objectEntries[0];
-
-		Map<String, Object> properties = objectEntry.getProperties();
-
-		return new APIApplication.Filter() {
-
-			@Override
-			public String getODataFilterString() {
-				return (String)properties.get("oDataFilter");
-			}
-
-		};
+		return schema;
 	}
 
 	private List<APIApplication.Property> _getProperties(
-		Map<String, Object> schemaProperties, long companyId) {
+		Schema<?> schema, long companyId) {
 
-		return TransformUtil.transformToList(
-			(ObjectEntry[])schemaProperties.get("apiSchemaToAPIProperties"),
-			propertyObjectEntry -> {
-				Map<String, Object> properties =
-					propertyObjectEntry.getProperties();
+		Map<String, Object> schemaExtensions = schema.getExtensions();
 
-				String mainObjectDefinitionERC = MapUtil.getString(
-					schemaProperties, "mainObjectDefinitionERC");
+		Map<String, Schema> properties = schema.getProperties();
 
-				properties.put(
-					"mainObjectDefinitionERC", mainObjectDefinitionERC);
+		return TransformUtil.transform(
+			properties.entrySet(),
+			propertyEntry -> {
+				String mainObjectDefinitionERC = (String)schemaExtensions.get(
+					"x-liferay-object-definition-external-reference-code");
 
 				ObjectDefinition objectDefinition =
 					_objectDefinitionLocalService.
 						getObjectDefinitionByExternalReferenceCode(
 							mainObjectDefinitionERC, companyId);
 
-				String objectRelationshipNames = (String)properties.get(
-					"objectRelationshipNames");
+				Schema<?> propertySchema = propertyEntry.getValue();
+
+				Map<String, Object> propertySchemaExtensions =
+					propertySchema.getExtensions();
+
+				String objectRelationshipNames =
+					(String)propertySchemaExtensions.get(
+						"x-liferay-object-relationship-names");
 
 				if (!Validator.isBlank(objectRelationshipNames)) {
 					objectDefinition =
@@ -203,24 +205,20 @@ public class APIApplicationProviderImpl implements APIApplicationProvider {
 
 				ObjectField objectField =
 					_objectFieldLocalService.getObjectField(
-						(String)properties.get("objectFieldERC"),
+						(String)propertySchemaExtensions.get(
+							"x-liferay-object-field-external-reference-code"),
 						objectDefinition.getObjectDefinitionId());
 
 				return new APIApplication.Property() {
 
 					@Override
 					public String getDescription() {
-						return (String)properties.get("description");
-					}
-
-					@Override
-					public String getExternalReferenceCode() {
-						return propertyObjectEntry.getExternalReferenceCode();
+						return propertySchema.getDescription();
 					}
 
 					@Override
 					public String getName() {
-						return (String)properties.get("name");
+						return propertyEntry.getKey();
 					}
 
 					@Override
@@ -258,65 +256,61 @@ public class APIApplicationProviderImpl implements APIApplicationProvider {
 	}
 
 	private APIApplication.Schema _getSchema(
-		String externalReferenceCode, List<APIApplication.Schema> schemas) {
+		String ref, List<APIApplication.Schema> schemas) {
 
-		if (Validator.isBlank(externalReferenceCode)) {
+		if (ref == null) {
 			return null;
 		}
 
 		for (APIApplication.Schema schema : schemas) {
 			if (StringUtil.equals(
-					schema.getExternalReferenceCode(), externalReferenceCode)) {
+					schema.getName(),
+					StringUtil.removeFirst(ref, "#/components/schemas/"))) {
 
 				return schema;
 			}
 		}
 
 		throw new IllegalStateException(
-			"The schema with external reference code " + externalReferenceCode +
-				" is not defined");
+			"The schema with ref " + ref + " is not defined");
 	}
 
 	private List<APIApplication.Schema> _getSchemas(
-			ObjectEntry apiApplicationObjectEntry, long companyId)
-		throws Exception {
+		OpenAPI openAPI, long companyId) {
+
+		Components components = openAPI.getComponents();
+
+		Map<String, Schema> schemas = components.getSchemas();
 
 		return TransformUtil.transform(
-			_objectEntryHelper.getObjectEntries(
-				companyId,
-				"apiApplicationToAPISchemas/externalReferenceCode eq '" +
-					apiApplicationObjectEntry.getExternalReferenceCode() + "'",
-				Arrays.asList("apiSchemaToAPIProperties"), "L_API_SCHEMA",
-				null),
-			objectEntry -> {
-				Map<String, Object> properties = objectEntry.getProperties();
+			schemas.entrySet(),
+			schemaEntry -> {
+				Schema<?> schema = schemaEntry.getValue();
 
 				List<APIApplication.Property> applicationProperties =
-					_getProperties(properties, companyId);
+					_getProperties(schema, companyId);
 
 				return new APIApplication.Schema() {
 
 					@Override
 					public String getDescription() {
-						return (String)properties.get("description");
-					}
-
-					@Override
-					public String getExternalReferenceCode() {
-						return objectEntry.getExternalReferenceCode();
+						return schema.getDescription();
 					}
 
 					@Override
 					public String
 						getMainObjectDefinitionExternalReferenceCode() {
 
-						return (String)properties.get(
-							"mainObjectDefinitionERC");
+						Map<String, Object> extensions = schema.getExtensions();
+
+						return (String)extensions.get(
+							"x-liferay-object-definition-external-reference-" +
+								"code");
 					}
 
 					@Override
 					public String getName() {
-						return (String)properties.get("name");
+						return schemaEntry.getKey();
 					}
 
 					@Override
@@ -328,52 +322,32 @@ public class APIApplicationProviderImpl implements APIApplicationProvider {
 			});
 	}
 
-	private APIApplication.Sort _getSort(
-		Map<String, Object> endpointProperties) {
-
-		ObjectEntry[] objectEntries = (ObjectEntry[])endpointProperties.get(
-			"apiEndpointToAPISorts");
-
-		if (ArrayUtil.isEmpty(objectEntries)) {
-			return null;
-		}
-
-		ObjectEntry objectEntry = objectEntries[0];
-
-		Map<String, Object> properties = objectEntry.getProperties();
-
-		return new APIApplication.Sort() {
-
-			@Override
-			public String getODataSortString() {
-				return (String)properties.get("oDataSort");
-			}
-
-		};
-	}
-
 	private APIApplication _toApiApplication(
-			ObjectEntry apiApplicationObjectEntry, long companyId)
-		throws Exception {
+		ObjectEntry apiApplicationObjectEntry, long companyId) {
 
 		if (apiApplicationObjectEntry == null) {
 			return null;
 		}
 
-		List<APIApplication.Schema> schemas = _getSchemas(
-			apiApplicationObjectEntry, companyId);
+		OpenAPIParser openAPIParser = new OpenAPIParser();
 
-		List<APIApplication.Endpoint> endpoints = _getEndpoints(
-			apiApplicationObjectEntry.getExternalReferenceCode(), companyId,
-			schemas);
+		SwaggerParseResult swaggerParseResult = openAPIParser.readContents(
+			(String)apiApplicationObjectEntry.getPropertyValue("openAPIJSON"),
+			null, null);
 
-		Map<String, Object> properties =
-			apiApplicationObjectEntry.getProperties();
+		OpenAPI openAPI = swaggerParseResult.getOpenAPI();
+
+		Info info = openAPI.getInfo();
+
+		List<APIApplication.Schema> schemas = _getSchemas(openAPI, companyId);
 
 		return new APIApplication() {
 
 			@Override
 			public String getBaseURL() {
+				Map<String, Object> properties =
+					apiApplicationObjectEntry.getProperties();
+
 				return (String)properties.get("baseURL");
 			}
 
@@ -384,12 +358,12 @@ public class APIApplicationProviderImpl implements APIApplicationProvider {
 
 			@Override
 			public String getDescription() {
-				return (String)properties.get("description");
+				return info.getDescription();
 			}
 
 			@Override
 			public List<Endpoint> getEndpoints() {
-				return endpoints;
+				return _getEndpoints(openAPI, schemas);
 			}
 
 			@Override
@@ -399,12 +373,12 @@ public class APIApplicationProviderImpl implements APIApplicationProvider {
 
 			@Override
 			public String getTitle() {
-				return (String)properties.get("title");
+				return info.getTitle();
 			}
 
 			@Override
 			public String getVersion() {
-				return (String)properties.get("version");
+				return info.getVersion();
 			}
 
 		};

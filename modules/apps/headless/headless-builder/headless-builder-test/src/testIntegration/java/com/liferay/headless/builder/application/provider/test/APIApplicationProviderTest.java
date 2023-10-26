@@ -8,7 +8,6 @@ package com.liferay.headless.builder.application.provider.test;
 import com.liferay.headless.builder.application.APIApplication;
 import com.liferay.headless.builder.application.provider.APIApplicationProvider;
 import com.liferay.headless.builder.test.BaseTestCase;
-import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.test.util.HTTPTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
@@ -32,73 +31,90 @@ public class APIApplicationProviderTest extends BaseTestCase {
 	public void test() throws Exception {
 		HTTPTestUtil.invokeToJSONObject(
 			JSONUtil.put(
-				"apiApplicationToAPIEndpoints",
-				JSONUtil.put(
-					JSONUtil.put(
-						"description", "description"
-					).put(
-						"externalReferenceCode", _API_ENDPOINT_ERC
-					).put(
-						"httpMethod", "get"
-					).put(
-						"name", "name"
-					).put(
-						"path", "/path"
-					).put(
-						"retrieveType",
-						APIApplication.Endpoint.RetrieveType.COLLECTION.
-							getValue()
-					).put(
-						"scope",
-						APIApplication.Endpoint.Scope.COMPANY.getValue()
-					))
-			).put(
-				"apiApplicationToAPISchemas",
-				JSONUtil.put(
-					JSONUtil.put(
-						"apiSchemaToAPIProperties",
-						JSONUtil.put(
-							JSONUtil.put(
-								"description", "description"
-							).put(
-								"name", "name"
-							).put(
-								"objectFieldERC", "APPLICATION_STATUS"
-							))
-					).put(
-						"description", "description"
-					).put(
-						"externalReferenceCode", _API_SCHEMA_ERC
-					).put(
-						"mainObjectDefinitionERC", "L_API_APPLICATION"
-					).put(
-						"name", "name"
-					))
-			).put(
 				"applicationStatus", "unpublished"
 			).put(
 				"baseURL", "test"
 			).put(
 				"externalReferenceCode", _API_APPLICATION_ERC
 			).put(
-				"title", "title"
+				"openAPIJSON",
+				JSONUtil.put(
+					"components",
+					JSONUtil.put(
+						"schemas",
+						JSONUtil.put(
+							"Schema",
+							JSONUtil.put(
+								"description", "description"
+							).put(
+								"properties",
+								JSONUtil.put(
+									"name",
+									JSONUtil.put(
+										"description", "description"
+									).put(
+										"type", "string"
+									).put(
+										"x-liferay-object-field-external-" +
+											"reference-code",
+										"APPLICATION_STATUS"
+									))
+							).put(
+								"type", "object"
+							).put(
+								"x-liferay-object-definition-external-" +
+									"reference-code",
+								"L_API_APPLICATION"
+							)))
+				).put(
+					"info",
+					JSONUtil.put(
+						"description", "description"
+					).put(
+						"title", "title"
+					).put(
+						"version", "1.0.0"
+					)
+				).put(
+					"openapi", "3.0.0"
+				).put(
+					"paths",
+					JSONUtil.put(
+						"/path",
+						JSONUtil.put(
+							"get",
+							JSONUtil.put(
+								"description", "description"
+							).put(
+								"responses",
+								JSONUtil.put(
+									"200",
+									JSONUtil.put(
+										"content",
+										JSONUtil.put(
+											"application/json",
+											JSONUtil.put(
+												"schema",
+												JSONUtil.put(
+													"items",
+													JSONUtil.put(
+														"$ref",
+														"#/components/schemas" +
+															"/Schema")
+												).put(
+													"type", "array"
+												)))))
+							).put(
+								"x-liferay-odata-filter",
+								"baseURL ne 'testName'"
+							).put(
+								"x-liferay-odata-sort", "baseURL:asc"
+							).put(
+								"x-liferay-scope", "company"
+							)))
+				).toString()
 			).toString(),
 			"headless-builder/applications", Http.Method.POST);
-
-		HTTPTestUtil.invokeToJSONObject(
-			null,
-			StringBundler.concat(
-				"headless-builder/schemas/by-external-reference-code/",
-				_API_SCHEMA_ERC, "/requestAPISchemaToAPIEndpoints/",
-				_API_ENDPOINT_ERC),
-			Http.Method.PUT);
-		HTTPTestUtil.invokeToJSONObject(
-			null,
-			StringBundler.concat(
-				"headless-builder/schemas/by-external-reference-code/",
-				_API_SCHEMA_ERC, "/responseAPISchemaToAPIEndpoints/",
-				_API_ENDPOINT_ERC),
-			Http.Method.PUT);
 
 		APIApplication apiApplication =
 			_apiApplicationProvider.fetchAPIApplication(
@@ -113,8 +129,7 @@ public class APIApplicationProviderTest extends BaseTestCase {
 		APIApplication.Schema schema = schemas.get(0);
 
 		Assert.assertEquals("description", schema.getDescription());
-		Assert.assertNotNull(schema.getExternalReferenceCode());
-		Assert.assertEquals("name", schema.getName());
+		Assert.assertEquals("Schema", schema.getName());
 
 		List<APIApplication.Endpoint> endpoints = apiApplication.getEndpoints();
 
@@ -122,10 +137,18 @@ public class APIApplicationProviderTest extends BaseTestCase {
 
 		APIApplication.Endpoint endpoint = endpoints.get(0);
 
-		Assert.assertNull(endpoint.getFilter());
+		APIApplication.Filter filter = endpoint.getFilter();
+
+		Assert.assertEquals(
+			"baseURL ne 'testName'", filter.getODataFilterString());
+
+		APIApplication.Sort sort = endpoint.getSort();
+
+		Assert.assertEquals("baseURL:asc", sort.getODataSortString());
+
 		Assert.assertEquals(Http.Method.GET, endpoint.getMethod());
 		Assert.assertEquals("/path", endpoint.getPath());
-		Assert.assertEquals(schema, endpoint.getRequestSchema());
+		Assert.assertNull(endpoint.getRequestSchema());
 		Assert.assertEquals(schema, endpoint.getResponseSchema());
 		Assert.assertEquals(
 			APIApplication.Endpoint.RetrieveType.COLLECTION,
@@ -143,76 +166,10 @@ public class APIApplicationProviderTest extends BaseTestCase {
 		Assert.assertEquals("name", property.getName());
 		Assert.assertEquals(
 			APIApplication.Property.Type.PICKLIST, property.getType());
-
-		HTTPTestUtil.invokeToJSONObject(
-			JSONUtil.put(
-				"apiEndpointToAPIFilters",
-				JSONUtil.put(
-					JSONUtil.put(
-						"externalReferenceCode", _API_ENDPOINT_FILTER_ERC
-					).put(
-						"oDataFilter", "name ne 'testName'"
-					))
-			).put(
-				"externalReferenceCode", _API_ENDPOINT_ERC
-			).toString(),
-			"headless-builder/endpoints/by-external-reference-code/" +
-				_API_ENDPOINT_ERC,
-			Http.Method.PATCH);
-
-		apiApplication = _apiApplicationProvider.fetchAPIApplication(
-			"test", TestPropsValues.getCompanyId());
-
-		endpoints = apiApplication.getEndpoints();
-
-		endpoint = endpoints.get(0);
-
-		APIApplication.Filter filter = endpoint.getFilter();
-
-		Assert.assertEquals(
-			"name ne 'testName'", filter.getODataFilterString());
-
-		HTTPTestUtil.invokeToJSONObject(
-			JSONUtil.put(
-				"apiEndpointToAPISorts",
-				JSONUtil.put(
-					JSONUtil.put(
-						"externalReferenceCode", _API_ENDPOINT_SORT_ERC
-					).put(
-						"oDataSort", "name:asc"
-					))
-			).put(
-				"externalReferenceCode", _API_ENDPOINT_ERC
-			).toString(),
-			"headless-builder/endpoints/by-external-reference-code/" +
-				_API_ENDPOINT_ERC,
-			Http.Method.PATCH);
-
-		apiApplication = _apiApplicationProvider.fetchAPIApplication(
-			"test", TestPropsValues.getCompanyId());
-
-		endpoints = apiApplication.getEndpoints();
-
-		endpoint = endpoints.get(0);
-
-		APIApplication.Sort sort = endpoint.getSort();
-
-		Assert.assertEquals("name:asc", sort.getODataSortString());
 	}
 
 	private static final String _API_APPLICATION_ERC =
 		RandomTestUtil.randomString();
-
-	private static final String _API_ENDPOINT_ERC =
-		RandomTestUtil.randomString();
-
-	private static final String _API_ENDPOINT_FILTER_ERC =
-		RandomTestUtil.randomString();
-
-	private static final String _API_ENDPOINT_SORT_ERC =
-		RandomTestUtil.randomString();
-
-	private static final String _API_SCHEMA_ERC = RandomTestUtil.randomString();
 
 	@Inject
 	private APIApplicationProvider _apiApplicationProvider;
