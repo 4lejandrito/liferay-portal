@@ -104,14 +104,6 @@ public class APIPropertyRelevantObjectEntryModelListener
 			long apiSchemaId = (long)values.get(
 				"r_apiSchemaToAPIProperties_c_apiSchemaId");
 
-			if (!_objectEntryHelper.isValidObjectEntry(
-					apiSchemaId, "L_API_SCHEMA")) {
-
-				throw new ObjectEntryValuesException.InvalidObjectField(
-					null, "An API property must be related to an API schema",
-					"an-api-property-must-be-related-to-an-api-schema");
-			}
-
 			if (!_validate(
 					apiSchemaId, (String)values.get("objectFieldERC"),
 					(String)values.get("objectRelationshipNames"))) {

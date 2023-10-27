@@ -94,16 +94,6 @@ public class ObjectDefinitionUtil {
 		_allowedModifiableSystemObjectDefinitionNames = HashMapBuilder.put(
 			"APIApplication", "/headless-builder/applications"
 		).put(
-			"APIEndpoint", "/headless-builder/endpoints"
-		).put(
-			"APIFilter", "/headless-builder/filters"
-		).put(
-			"APIProperty", "/headless-builder/properties"
-		).put(
-			"APISchema", "/headless-builder/schemas"
-		).put(
-			"APISort", "/headless-builder/sorts"
-		).put(
 			"Bookmark", "/bookmarks"
 		).put(
 			"FDSAction", "/data-set-manager/actions"
