@@ -118,7 +118,7 @@ public abstract class BaseUserResourceImpl implements UserResource {
 	@javax.ws.rs.POST
 	@javax.ws.rs.Produces("application/scim+json")
 	@Override
-	public Response postV2UserSearch(QueryAttributes queryAttributes)
+	public Response postV2UserDotSearch(QueryAttributes queryAttributes)
 		throws Exception {
 
 		Response.ResponseBuilder responseBuilder = Response.ok();
@@ -178,7 +178,7 @@ public abstract class BaseUserResourceImpl implements UserResource {
 	@javax.ws.rs.Path("/v2/Users/{id}")
 	@javax.ws.rs.Produces("application/scim+json")
 	@Override
-	public Object getV2UserById(
+	public Object getV2User(
 			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 			@javax.validation.constraints.NotNull @javax.ws.rs.PathParam("id")
 			String id)

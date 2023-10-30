@@ -41,10 +41,10 @@ public interface UserResource {
 	public HttpInvoker.HttpResponse postV2UserHttpResponse(User user)
 		throws Exception;
 
-	public void postV2UserSearch(QueryAttributes queryAttributes)
+	public void postV2UserDotSearch(QueryAttributes queryAttributes)
 		throws Exception;
 
-	public HttpInvoker.HttpResponse postV2UserSearchHttpResponse(
+	public HttpInvoker.HttpResponse postV2UserDotSearchHttpResponse(
 			QueryAttributes queryAttributes)
 		throws Exception;
 
@@ -53,9 +53,9 @@ public interface UserResource {
 	public HttpInvoker.HttpResponse deleteV2UserHttpResponse(String id)
 		throws Exception;
 
-	public Object getV2UserById(String id) throws Exception;
+	public Object getV2User(String id) throws Exception;
 
-	public HttpInvoker.HttpResponse getV2UserByIdHttpResponse(String id)
+	public HttpInvoker.HttpResponse getV2UserHttpResponse(String id)
 		throws Exception;
 
 	public void putV2User(String id, User user) throws Exception;
@@ -365,11 +365,11 @@ public interface UserResource {
 			return httpInvoker.invoke();
 		}
 
-		public void postV2UserSearch(QueryAttributes queryAttributes)
+		public void postV2UserDotSearch(QueryAttributes queryAttributes)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				postV2UserSearchHttpResponse(queryAttributes);
+				postV2UserDotSearchHttpResponse(queryAttributes);
 
 			String content = httpResponse.getContent();
 
@@ -419,7 +419,7 @@ public interface UserResource {
 			}
 		}
 
-		public HttpInvoker.HttpResponse postV2UserSearchHttpResponse(
+		public HttpInvoker.HttpResponse postV2UserDotSearchHttpResponse(
 				QueryAttributes queryAttributes)
 			throws Exception {
 
@@ -546,9 +546,8 @@ public interface UserResource {
 			return httpInvoker.invoke();
 		}
 
-		public Object getV2UserById(String id) throws Exception {
-			HttpInvoker.HttpResponse httpResponse = getV2UserByIdHttpResponse(
-				id);
+		public Object getV2User(String id) throws Exception {
+			HttpInvoker.HttpResponse httpResponse = getV2UserHttpResponse(id);
 
 			String content = httpResponse.getContent();
 
@@ -609,7 +608,7 @@ public interface UserResource {
 			}
 		}
 
-		public HttpInvoker.HttpResponse getV2UserByIdHttpResponse(String id)
+		public HttpInvoker.HttpResponse getV2UserHttpResponse(String id)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();

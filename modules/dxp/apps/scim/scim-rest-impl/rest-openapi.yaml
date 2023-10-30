@@ -353,7 +353,7 @@ paths:
         post:
             description:
                 Query users.
-            operationId: postV2UserSearch
+            operationId: postV2UserDotSearch
             requestBody:
                 content:
                     application/scim+json:
@@ -391,7 +391,6 @@ paths:
         get:
             description:
                 Retrieves a user.
-            operationId: getV2UserById
             parameters:
                 - in: path
                   name: id

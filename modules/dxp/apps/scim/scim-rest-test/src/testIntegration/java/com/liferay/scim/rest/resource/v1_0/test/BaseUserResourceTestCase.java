@@ -209,7 +209,7 @@ public abstract class BaseUserResourceTestCase {
 	}
 
 	@Test
-	public void testPostV2UserSearch() throws Exception {
+	public void testPostV2UserDotSearch() throws Exception {
 		Assert.assertTrue(false);
 	}
 
@@ -219,7 +219,7 @@ public abstract class BaseUserResourceTestCase {
 	}
 
 	@Test
-	public void testGetV2UserById() throws Exception {
+	public void testGetV2User() throws Exception {
 		Assert.assertTrue(false);
 	}
 

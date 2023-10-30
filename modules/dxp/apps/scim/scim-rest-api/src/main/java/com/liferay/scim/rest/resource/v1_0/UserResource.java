@@ -49,12 +49,12 @@ public interface UserResource {
 
 	public Response postV2User(User user) throws Exception;
 
-	public Response postV2UserSearch(QueryAttributes queryAttributes)
+	public Response postV2UserDotSearch(QueryAttributes queryAttributes)
 		throws Exception;
 
 	public Response deleteV2User(String id) throws Exception;
 
-	public Object getV2UserById(String id) throws Exception;
+	public Object getV2User(String id) throws Exception;
 
 	public Response putV2User(String id, User user) throws Exception;
 
