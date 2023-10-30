@@ -30,9 +30,10 @@ public interface UserResource {
 		return new Builder();
 	}
 
-	public Object getV2User(Integer count, Integer startIndex) throws Exception;
+	public Object getV2Users(Integer count, Integer startIndex)
+		throws Exception;
 
-	public HttpInvoker.HttpResponse getV2UserHttpResponse(
+	public HttpInvoker.HttpResponse getV2UsersHttpResponse(
 			Integer count, Integer startIndex)
 		throws Exception;
 
@@ -167,10 +168,10 @@ public interface UserResource {
 
 	public static class UserResourceImpl implements UserResource {
 
-		public Object getV2User(Integer count, Integer startIndex)
+		public Object getV2Users(Integer count, Integer startIndex)
 			throws Exception {
 
-			HttpInvoker.HttpResponse httpResponse = getV2UserHttpResponse(
+			HttpInvoker.HttpResponse httpResponse = getV2UsersHttpResponse(
 				count, startIndex);
 
 			String content = httpResponse.getContent();
@@ -232,7 +233,7 @@ public interface UserResource {
 			}
 		}
 
-		public HttpInvoker.HttpResponse getV2UserHttpResponse(
+		public HttpInvoker.HttpResponse getV2UsersHttpResponse(
 				Integer count, Integer startIndex)
 			throws Exception {
 

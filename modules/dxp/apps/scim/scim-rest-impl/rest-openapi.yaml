@@ -306,7 +306,7 @@ paths:
         get:
             description:
                 Lists users.
-            operationId: getV2User
+            operationId: getV2Users
             parameters:
                 - in: query
                   name: count
@@ -391,6 +391,7 @@ paths:
         get:
             description:
                 Retrieves a user.
+            operationId: getV2User
             parameters:
                 - in: path
                   name: id

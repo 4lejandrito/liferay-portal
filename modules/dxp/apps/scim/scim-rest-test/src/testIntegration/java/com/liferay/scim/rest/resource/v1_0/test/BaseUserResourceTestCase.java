@@ -199,7 +199,7 @@ public abstract class BaseUserResourceTestCase {
 	}
 
 	@Test
-	public void testGetV2User() throws Exception {
+	public void testGetV2Users() throws Exception {
 		Assert.assertTrue(false);
 	}
 
