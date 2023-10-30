@@ -926,15 +926,24 @@ public class ResourceOpenAPIParser {
 			return operation.getOperationId();
 		}
 
-		boolean collection = StringUtil.startsWith(
+		String pluralSchemaName = TextFormatter.formatPlural(schemaName);
+
+		boolean pageReturnType = StringUtil.startsWith(
 			returnType, Page.class.getName() + "<");
+
+		boolean collection = false;
+
+		if (pageReturnType ||
+			(path.endsWith(pluralSchemaName) && (operation instanceof Get))) {
+
+			collection = true;
+		}
 
 		List<String> methodNameSegments = new ArrayList<>();
 
 		methodNameSegments.add(OpenAPIParserUtil.getHTTPMethod(operation));
 
 		String[] pathSegments = path.split("/");
-		String pluralSchemaName = TextFormatter.formatPlural(schemaName);
 
 		for (int i = 0; i < pathSegments.length; i++) {
 			String pathSegment = pathSegments[i];
@@ -966,6 +975,12 @@ public class ResourceOpenAPIParser {
 			}
 
 			if ((i == (pathSegments.length - 1)) && collection) {
+				if (!pageReturnType) {
+					methodNameSegments.add(pathName);
+
+					continue;
+				}
+
 				String previousMethodNameSegment = methodNameSegments.get(
 					methodNameSegments.size() - 1);
 
