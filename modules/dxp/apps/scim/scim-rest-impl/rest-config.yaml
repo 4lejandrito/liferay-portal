@@ -7,6 +7,6 @@ application:
 author: "Olivér Kecskeméty"
 clientDir: "../scim-rest-client/src/main/java"
 compatibilityVersion: 3
-forcePredictableOperationId: false
+forcePredictableOperationId: true
 generateGraphQL: false
 testDir: "../scim-rest-test/src/testIntegration/java"
