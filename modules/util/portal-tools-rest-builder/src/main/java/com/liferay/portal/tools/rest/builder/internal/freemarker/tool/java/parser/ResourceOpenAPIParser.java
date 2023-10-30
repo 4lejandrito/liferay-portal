@@ -51,8 +51,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Consumer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author Peter Shin
@@ -1370,22 +1368,21 @@ public class ResourceOpenAPIParser {
 	}
 
 	private static String _replaceDotAndUppercase(String inputString) {
-		int lastIndex = 0;
-		Matcher matcher = _dotPattern.matcher(inputString);
 		StringBuilder sb = new StringBuilder();
 
-		while (matcher.find()) {
-			sb.append(inputString, lastIndex, matcher.start());
-			sb.append("Dot");
+		for (int i = 0; i < inputString.length(); i++) {
+			if (inputString.charAt(i) == '.') {
+				sb.append("Dot");
+				i++;
 
-			String group = matcher.group(1);
-
-			sb.append(Character.toUpperCase(group.charAt(0)));
-
-			lastIndex = matcher.end();
+				if (i < inputString.length()) {
+					sb.append(Character.toUpperCase(inputString.charAt(i)));
+				}
+			}
+			else {
+				sb.append(inputString.charAt(i));
+			}
 		}
-
-		sb.append(inputString.substring(lastIndex));
 
 		return sb.toString();
 	}
@@ -1457,8 +1454,6 @@ public class ResourceOpenAPIParser {
 
 	private static final javax.ws.rs.core.Response.Status.Family
 		_FAMILY_SUCCESSFUL = javax.ws.rs.core.Response.Status.Family.SUCCESSFUL;
-
-	private static final Pattern _dotPattern = Pattern.compile("\\.(.)");
 
 	private enum BatchOperationType {
 
