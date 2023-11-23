@@ -10,10 +10,13 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.vulcan.graphql.annotation.GraphQLTypeExtension;
 import com.liferay.portal.vulcan.graphql.servlet.ServletData;
 import com.liferay.portal.vulcan.graphql.validation.GraphQLRequestContext;
+import com.liferay.portal.vulcan.internal.configuration.util.ConfigurationUtil;
 
 import java.lang.reflect.Method;
 
 import java.util.Objects;
+
+import org.osgi.service.cm.ConfigurationAdmin;
 
 /**
  * @author Carlos Correa
@@ -21,13 +24,14 @@ import java.util.Objects;
 public class ServletDataRequestContext implements GraphQLRequestContext {
 
 	public ServletDataRequestContext(
-		long companyId, Method method, boolean mutation,
-		ServletData servletData) {
+		long companyId, ConfigurationAdmin configurationAdmin, Method method,
+		boolean mutation, ServletData servletData) {
 
 		_companyId = companyId;
+		_configurationAdmin = configurationAdmin;
 		_servletData = servletData;
 
-		_namespace = _getNamespace(servletData);
+		_namespace = _getNamespace(configurationAdmin, servletData);
 		_resourceClass = _getResourceClass(method, mutation, servletData);
 		_resourceMethod = _getResourceMethod(method, mutation, servletData);
 	}
@@ -81,15 +85,17 @@ public class ServletDataRequestContext implements GraphQLRequestContext {
 		return value.getSimpleName() + "." + method.getName();
 	}
 
-	private String _getNamespace(ServletData servletData) {
-		if ((servletData == null) ||
-			(servletData.getGraphQLNamespace() == null)) {
+	private String _getNamespace(
+		ConfigurationAdmin configurationAdmin, ServletData servletData) {
 
+		String graphQLNamespace = ConfigurationUtil.getGraphQLNamespace(
+			configurationAdmin, servletData);
+
+		if (graphQLNamespace == null) {
 			return null;
 		}
 
-		return StringUtil.upperCaseFirstLetter(
-			servletData.getGraphQLNamespace());
+		return StringUtil.upperCaseFirstLetter(graphQLNamespace);
 	}
 
 	private Class<?> _getResourceClass(
@@ -140,6 +146,7 @@ public class ServletDataRequestContext implements GraphQLRequestContext {
 	}
 
 	private final long _companyId;
+	private final ConfigurationAdmin _configurationAdmin;
 	private final String _namespace;
 	private final Class<?> _resourceClass;
 	private final Method _resourceMethod;

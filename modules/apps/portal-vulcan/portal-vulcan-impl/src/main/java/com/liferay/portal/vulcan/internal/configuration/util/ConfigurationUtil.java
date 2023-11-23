@@ -10,8 +10,12 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.SetUtil;
+import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.vulcan.graphql.servlet.ServletData;
 import com.liferay.portal.vulcan.internal.configuration.VulcanCompanyConfiguration;
 import com.liferay.portal.vulcan.internal.configuration.VulcanConfiguration;
+
+import graphql.annotations.processor.util.NamingKit;
 
 import java.util.Dictionary;
 import java.util.HashSet;
@@ -53,6 +57,44 @@ public class ConfigurationUtil {
 		}
 
 		return new HashSet<>();
+	}
+
+	public static String getGraphQLNamespace(
+		ConfigurationAdmin configurationAdmin, ServletData servletData) {
+
+		if (servletData == null) {
+			return null;
+		}
+
+		try {
+			Configuration[] configurations =
+				configurationAdmin.listConfigurations(
+					String.format(
+						"(&(path=%s)(service.factoryPid=%s))",
+						servletData.getPath(),
+						VulcanConfiguration.class.getName()));
+
+			if (configurations != null) {
+				for (Configuration configuration : configurations) {
+					Dictionary<String, Object> properties =
+						configuration.getProperties();
+
+					String graphQLNamespace = GetterUtil.getString(
+						properties.get("graphQLNamespace"));
+
+					if (Validator.isNotNull(graphQLNamespace)) {
+						return NamingKit.toGraphqlName(graphQLNamespace);
+					}
+				}
+			}
+		}
+		catch (Exception exception) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(exception);
+			}
+		}
+
+		return servletData.getGraphQLNamespace();
 	}
 
 	private static Set<String> _getExcludedOperationIds(

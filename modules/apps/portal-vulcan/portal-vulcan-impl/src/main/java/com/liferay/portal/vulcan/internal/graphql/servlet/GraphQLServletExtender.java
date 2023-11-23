@@ -816,7 +816,10 @@ public class GraphQLServletExtender {
 		Map<String, TreeSet<Method>> methods = new HashMap<>();
 
 		for (ServletData servletData : servletDatas) {
-			if (servletData.getGraphQLNamespace() != null) {
+			String graphQLNamespace = ConfigurationUtil.getGraphQLNamespace(
+				_configurationAdmin, servletData);
+
+			if (graphQLNamespace != null) {
 				continue;
 			}
 
@@ -1614,7 +1617,8 @@ public class GraphQLServletExtender {
 		List<ServletData> servletDatas) {
 
 		for (ServletData servletData : servletDatas) {
-			String graphQLNamespace = servletData.getGraphQLNamespace();
+			String graphQLNamespace = ConfigurationUtil.getGraphQLNamespace(
+				_configurationAdmin, servletData);
 
 			if (graphQLNamespace == null) {
 				continue;
@@ -1666,7 +1670,8 @@ public class GraphQLServletExtender {
 							graphQLNamespace, method.getName()),
 						new LiferayMethodDataFetcher(
 							new ServletDataRequestContext(
-								_companyId, method, mutation, servletData),
+								_companyId, _configurationAdmin, method,
+								mutation, servletData),
 							_graphQLRequestContextValidators,
 							_liferayMethodDataFetchingProcessor, method)
 					).build());
@@ -2522,7 +2527,8 @@ public class GraphQLServletExtender {
 			graphQLFieldDefinitionBuilder.dataFetcher(
 				new LiferayMethodDataFetcher(
 					new ServletDataRequestContext(
-						_companyId, method, !canonicalName.contains("Query"),
+						_companyId, _configurationAdmin, method,
+						!canonicalName.contains("Query"),
 						_servletDataMap.get(method)),
 					_graphQLRequestContextValidators,
 					_liferayMethodDataFetchingProcessor, method));

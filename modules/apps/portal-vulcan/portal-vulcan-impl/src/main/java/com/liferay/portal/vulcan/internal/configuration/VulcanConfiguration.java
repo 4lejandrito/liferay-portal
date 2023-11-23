@@ -36,4 +36,7 @@ public interface VulcanConfiguration {
 	@Meta.AD(name = "excluded-operation-ids", required = false)
 	public String excludedOperationIds();
 
+	@Meta.AD(name = "graphql-namespace", required = false)
+	public String graphQLNamespace();
+
 }
