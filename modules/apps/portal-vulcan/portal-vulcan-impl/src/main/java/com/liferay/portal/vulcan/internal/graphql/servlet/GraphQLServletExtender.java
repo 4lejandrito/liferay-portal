@@ -15,6 +15,7 @@ import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapListener;
 import com.liferay.petra.function.transform.TransformUtil;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClassDefinition;
 import com.liferay.portal.configuration.module.configuration.ConfigurationProvider;
@@ -166,6 +167,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -174,6 +176,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
@@ -810,7 +813,7 @@ public class GraphQLServletExtender {
 		ProcessingElementsContainer processingElementsContainer,
 		List<ServletData> servletDatas) {
 
-		Map<String, Method> methods = new HashMap<>();
+		Map<String, TreeSet<Method>> methods = new HashMap<>();
 
 		for (ServletData servletData : servletDatas) {
 			if (servletData.getGraphQLNamespace() != null) {
@@ -832,28 +835,71 @@ public class GraphQLServletExtender {
 
 				_servletDataMap.put(method, servletData);
 
-				methods.compute(
+				Comparator<ServletData> comparator = Comparator.comparing(
+					ServletData::getApplicationName);
+
+				TreeSet<Method> methodTreeSet = methods.computeIfAbsent(
 					method.getName(),
-					(key, value) -> {
-						if ((value == null) ||
-							((value != null) &&
-							 (_getVersion(value) < _getVersion(method)))) {
+					key -> new TreeSet<>(
+						(a, b) -> {
+							int value = comparator.compare(
+								_servletDataMap.get(a), _servletDataMap.get(b));
 
-							return method;
-						}
+							if (value == 0) {
+								return _getVersion(b) - _getVersion(a);
+							}
 
-						return value;
-					});
+							return value;
+						}));
+
+				methodTreeSet.add(method);
 			}
 		}
 
-		for (Method method : methods.values()) {
-			Class<?> clazz = method.getDeclaringClass();
+		for (TreeSet<Method> methodTreeSet : methods.values()) {
+			for (Method method : methodTreeSet) {
+				Class<?> clazz = method.getDeclaringClass();
 
-			graphQLObjectTypeBuilder.field(
-				_graphQLFieldRetriever.getField(
-					clazz.getSimpleName(), method,
-					processingElementsContainer));
+				GraphQLFieldDefinition field = _graphQLFieldRetriever.getField(
+					clazz.getSimpleName(), method, processingElementsContainer);
+
+				Method firstMethod = methodTreeSet.first();
+
+				if (method == firstMethod) {
+					graphQLObjectTypeBuilder.field(field);
+				}
+				else {
+					ServletData firstServletData = _servletDataMap.get(
+						firstMethod);
+
+					ServletData servletData = _servletDataMap.get(method);
+
+					String fieldName = servletData.getPath();
+
+					fieldName = fieldName.substring(1);
+					fieldName = fieldName.replaceAll(
+						"[/-]", StringPool.UNDERLINE);
+					fieldName = NamingKit.toGraphqlName(
+						fieldName + "_" + field.getName());
+
+					_log.error(
+						StringBundler.concat(
+							"Error when trying to register the GraphQL field ",
+							"\"", field.getName(), "\" from the application \"",
+							servletData.getPath(),
+							"\". There is already a field with the same name ",
+							"coming from the application \"",
+							firstServletData.getPath(),
+							"\". It will be renamed to \"", fieldName, "\"."));
+
+					graphQLObjectTypeBuilder.field(
+						GraphQLFieldDefinition.newFieldDefinition(
+							field
+						).name(
+							fieldName
+						));
+				}
+			}
 		}
 	}
 
