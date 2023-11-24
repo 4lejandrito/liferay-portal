@@ -1,0 +1,18 @@
+{
+	"com.liferay.portal.vulcan.internal.configuration.VulcanConfiguration~analytics-settings": {
+		"graphQLNamespace": "analytics_settings_v1_0",
+		"path": "/analytics-settings-rest-graphql/v1_0"
+	},
+	"com.liferay.portal.vulcan.internal.configuration.VulcanConfiguration~commerce-admin-account": {
+		"graphQLNamespace": "commerce_admin_account_v1_0",
+		"path": "/headless-commerce-admin-account-graphql/v1_0"
+	},
+	"com.liferay.portal.vulcan.internal.configuration.VulcanConfiguration~commerce-admin-channel": {
+		"graphQLNamespace": "commerce_admin_channel_v1_0",
+		"path": "/headless-commerce-admin-channel-graphql/v1_0"
+	},
+	"com.liferay.portal.vulcan.internal.configuration.VulcanConfiguration~commerce-admin-pricing": {
+		"graphQLNamespace": "commerce_admin_pricing_v1_0",
+		"path": "/headless-commerce-admin-pricing-graphql/v1_0"
+	}
+}
