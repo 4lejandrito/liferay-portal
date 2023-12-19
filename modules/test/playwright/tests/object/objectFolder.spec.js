@@ -5,40 +5,38 @@
 
 import {expect, mergeTests} from '@playwright/test';
 
-import {test as base} from '../../fixtures/test.fixture';
 import {test as applicationsMenuPageTest} from '../../fixtures/applicationsMenuPages.fixture';
 import {test as objectPagesTest} from '../../fixtures/objectPages.fixture';
+import {test as base} from '../../fixtures/test.fixture';
 import {getRandomInt} from '../../utils/util';
 
-export const test = mergeTests(
-	base,
-	applicationsMenuPageTest,
-	objectPagesTest
-);
+export const test = mergeTests(base, applicationsMenuPageTest, objectPagesTest);
 
 test('created object folders are on the left side bar', async ({
 	_apiHelpers,
-	_withFeatureFlags,
 	_objectDefinitionsPage,
-}) => _withFeatureFlags(['LPS-148856'], async () => {
-	await _objectDefinitionsPage.goto();
+	_withFeatureFlags,
+}) =>
+	_withFeatureFlags(['LPS-148856'], async () => {
+		await _objectDefinitionsPage.goto();
 
-	const objectFolderExternalReferenceCode = 'objectFolder' + getRandomInt();
+		const objectFolderExternalReferenceCode =
+			'objectFolder' + getRandomInt();
 
-	const objectFolder = await _objectDefinitionsPage.createObjectFolder(
-		objectFolderExternalReferenceCode
-	);
+		const objectFolder = await _objectDefinitionsPage.createObjectFolder(
+			objectFolderExternalReferenceCode
+		);
 
-	await expect(
-		_objectDefinitionsPage.page
-			.locator('li')
-			.filter({hasText: objectFolderExternalReferenceCode})
-	).toBeVisible();
+		await expect(
+			_objectDefinitionsPage.page
+				.locator('li')
+				.filter({hasText: objectFolderExternalReferenceCode})
+		).toBeVisible();
 
-	// Clean up
+		// Clean up
 
-	await _apiHelpers.objectAdmin.deleteObjectFolder(objectFolder.id);
-}));
+		await _apiHelpers.objectAdmin.deleteObjectFolder(objectFolder.id);
+	}));
 
 test('uncategorized folder does not contains delete and edit options', async ({
 	_apiHelpers,

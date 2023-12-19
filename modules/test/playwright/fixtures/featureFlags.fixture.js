@@ -9,11 +9,17 @@ exports.test = test.extend({
 	_withFeatureFlags: async ({_apiHelpers}, use) => {
 		await use(async (featureFlags, code) => {
 			for (const featureFlag of featureFlags) {
-				await _apiHelpers.featureFlag.updateFeatureFlag(featureFlag, 'true');
+				await _apiHelpers.featureFlag.updateFeatureFlag(
+					featureFlag,
+					'true'
+				);
 			}
 			await code();
 			for (const featureFlag of featureFlags) {
-				await _apiHelpers.featureFlag.updateFeatureFlag(featureFlag, 'false');
+				await _apiHelpers.featureFlag.updateFeatureFlag(
+					featureFlag,
+					'false'
+				);
 			}
 		});
 	},
