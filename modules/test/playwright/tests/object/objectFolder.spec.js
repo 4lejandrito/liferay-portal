@@ -5,15 +5,13 @@
 
 import {expect, mergeTests} from '@playwright/test';
 
-import {test as apiHelpersTest} from '../../fixtures/apiHelpers.fixture';
-import {test as featureFlagsTest} from '../../fixtures/featureFlags.fixture';
+import {test as base} from '../../fixtures/test.fixture';
 import {test as applicationsMenuPageTest} from '../../fixtures/applicationsMenuPages.fixture';
 import {test as objectPagesTest} from '../../fixtures/objectPages.fixture';
 import {getRandomInt} from '../../utils/util';
 
 export const test = mergeTests(
-	apiHelpersTest,
-	featureFlagsTest,
+	base,
 	applicationsMenuPageTest,
 	objectPagesTest
 );
