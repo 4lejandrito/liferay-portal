@@ -5,24 +5,23 @@
 
 import {expect, mergeTests} from '@playwright/test';
 
-import {test as apiHelpersTest} from '../../fixtures/apiHelpers.fixture';
+import {test as base} from '../../fixtures/test.fixture';
 import {test as applicationsMenuPageTest} from '../../fixtures/applicationsMenuPages.fixture';
 import {test as objectPagesTest} from '../../fixtures/objectPages.fixture';
 import {getRandomInt} from '../../utils/util';
 
 export const test = mergeTests(
-	apiHelpersTest,
+	base,
 	applicationsMenuPageTest,
 	objectPagesTest
 );
 
 test('can create relationship by dragging node handles', async ({
 	_apiHelpers,
+	_withFeatureFlags,
 	_modelBuilderPage,
 	_objectDefinitionsPage,
-}) => {
-	await _apiHelpers.featureFlag.updateFeatureFlag('LPS-148856', 'true');
-
+}) => _withFeatureFlags(['LPS-148856'], async () => {
 	const objectFolder = await _apiHelpers.objectAdmin.postRandomObjectFolder();
 
 	const objectDefinition1 = await _apiHelpers.objectAdmin.postRandomObjectDefinition(
@@ -75,4 +74,4 @@ test('can create relationship by dragging node handles', async ({
 	await _apiHelpers.objectAdmin.deleteObjectDefinition(objectDefinition2.id);
 
 	await _apiHelpers.objectAdmin.deleteObjectFolder(objectFolder.id);
-});
+}));
