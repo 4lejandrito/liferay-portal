@@ -6,22 +6,23 @@
 import {expect, mergeTests} from '@playwright/test';
 
 import {test as apiHelpersTest} from '../../fixtures/apiHelpers.fixture';
+import {test as featureFlagsTest} from '../../fixtures/featureFlags.fixture';
 import {test as applicationsMenuPageTest} from '../../fixtures/applicationsMenuPages.fixture';
 import {test as objectPagesTest} from '../../fixtures/objectPages.fixture';
 import {getRandomInt} from '../../utils/util';
 
 export const test = mergeTests(
 	apiHelpersTest,
+	featureFlagsTest,
 	applicationsMenuPageTest,
 	objectPagesTest
 );
 
 test('created object folders are on the left side bar', async ({
 	_apiHelpers,
+	_withFeatureFlags,
 	_objectDefinitionsPage,
-}) => {
-	await _apiHelpers.featureFlag.updateFeatureFlag('LPS-148856', 'true');
-
+}) => _withFeatureFlags(['LPS-148856'], async () => {
 	await _objectDefinitionsPage.goto();
 
 	const objectFolderExternalReferenceCode = 'objectFolder' + getRandomInt();
@@ -39,7 +40,7 @@ test('created object folders are on the left side bar', async ({
 	// Clean up
 
 	await _apiHelpers.objectAdmin.deleteObjectFolder(objectFolder.id);
-});
+}));
 
 test('uncategorized folder does not contains delete and edit options', async ({
 	_apiHelpers,
