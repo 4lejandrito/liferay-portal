@@ -14,12 +14,16 @@ exports.test = test.extend({
 					'true'
 				);
 			}
-			await code();
-			for (const featureFlag of featureFlags) {
-				await _apiHelpers.featureFlag.updateFeatureFlag(
-					featureFlag,
-					'false'
-				);
+			try {
+				await code();
+			}
+			finally {
+				for (const featureFlag of featureFlags) {
+					await _apiHelpers.featureFlag.updateFeatureFlag(
+						featureFlag,
+						'false'
+					);
+				}
 			}
 		});
 	},
