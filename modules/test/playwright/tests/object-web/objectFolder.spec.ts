@@ -8,6 +8,7 @@ import {expect, mergeTests} from '@playwright/test';
 import {apiHelpersTest} from '../../fixtures/apiHelpers.fixture';
 import {applicationsMenuPageTest} from '../../fixtures/applicationsMenuPages.fixture';
 import {objectPagesTest} from '../../fixtures/objectPages.fixture';
+import {ObjectAdminV10ObjectFolderService} from '../../headless';
 import {getRandomInt} from '../../utils/util';
 
 export const test = mergeTests(
@@ -38,7 +39,9 @@ test('created object folders are on the left side bar', async ({
 
 	// Clean up
 
-	await _apiHelpers.objectAdmin.deleteObjectFolder(objectFolder.id);
+	await ObjectAdminV10ObjectFolderService.objectAdminV10DeleteObjectFolder(
+		objectFolder.id
+	);
 });
 
 test('uncategorized folder does not contains delete and edit options', async ({

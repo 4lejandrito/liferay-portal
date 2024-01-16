@@ -8,6 +8,11 @@ import {expect, mergeTests} from '@playwright/test';
 import {apiHelpersTest} from '../../fixtures/apiHelpers.fixture';
 import {applicationsMenuPageTest} from '../../fixtures/applicationsMenuPages.fixture';
 import {objectPagesTest} from '../../fixtures/objectPages.fixture';
+import {
+	ObjectAdminV10ObjectDefinitionService,
+	ObjectAdminV10ObjectFolderService,
+	ObjectAdminV10ObjectRelationshipService,
+} from '../../headless';
 import {getRandomInt} from '../../utils/util';
 
 export const test = mergeTests(
@@ -16,6 +21,31 @@ export const test = mergeTests(
 	objectPagesTest
 );
 
+async function postRandomObjectDefinition(
+	objectFolderExternalReferenceCode: string
+) {
+	const objectDefinitionExternalReferenceCode1 =
+		'ObjectDefinition' + getRandomInt();
+
+	const objectDefinition1 =
+		await ObjectAdminV10ObjectDefinitionService.objectAdminV10PostObjectDefinition(
+			{
+				externalReferenceCode: objectDefinitionExternalReferenceCode1,
+				label: {
+					en_US: objectDefinitionExternalReferenceCode1,
+				},
+				name: objectDefinitionExternalReferenceCode1,
+				objectFolderExternalReferenceCode,
+				pluralLabel: {
+					en_US: objectDefinitionExternalReferenceCode1,
+				},
+				scope: 'company',
+			}
+		);
+
+	return objectDefinition1;
+}
+
 test('can create relationship by dragging node handles', async ({
 	_apiHelpers,
 	_modelBuilderPage,
@@ -23,16 +53,24 @@ test('can create relationship by dragging node handles', async ({
 }) => {
 	await _apiHelpers.featureFlag.updateFeatureFlag('LPS-148856', true);
 
-	const objectFolder = await _apiHelpers.objectAdmin.postRandomObjectFolder();
+	const objectFolderExternalReferenceCode = 'objectFolder' + getRandomInt();
 
-	const objectDefinition1 =
-		await _apiHelpers.objectAdmin.postRandomObjectDefinition(
-			objectFolder.externalReferenceCode
-		);
-	const objectDefinition2 =
-		await _apiHelpers.objectAdmin.postRandomObjectDefinition(
-			objectFolder.externalReferenceCode
-		);
+	const objectFolder =
+		await ObjectAdminV10ObjectFolderService.objectAdminV10PostObjectFolder({
+			externalReferenceCode: objectFolderExternalReferenceCode,
+			label: {
+				en_US: objectFolderExternalReferenceCode,
+			},
+			name: objectFolderExternalReferenceCode,
+		});
+
+	const objectDefinition1 = await postRandomObjectDefinition(
+		objectFolderExternalReferenceCode
+	);
+
+	const objectDefinition2 = await postRandomObjectDefinition(
+		objectFolderExternalReferenceCode
+	);
 
 	await _objectDefinitionsPage.goto();
 
@@ -49,8 +87,8 @@ test('can create relationship by dragging node handles', async ({
 	const objectRelationshipLabel = 'objectRelationship' + getRandomInt();
 
 	const objectRelationship = await _modelBuilderPage.createObjectRelationship(
-		objectDefinition1.id,
-		objectDefinition2.id,
+		`${objectDefinition1.id}`,
+		`${objectDefinition2.id}`,
 		objectRelationshipLabel,
 		'One to Many'
 	);
@@ -75,12 +113,18 @@ test('can create relationship by dragging node handles', async ({
 
 	// Clean up
 
-	await _apiHelpers.objectAdmin.deleteObjectRelationship(
+	await ObjectAdminV10ObjectRelationshipService.objectAdminV10DeleteObjectRelationship(
 		objectRelationship.id
 	);
 
-	await _apiHelpers.objectAdmin.deleteObjectDefinition(objectDefinition1.id);
-	await _apiHelpers.objectAdmin.deleteObjectDefinition(objectDefinition2.id);
+	await ObjectAdminV10ObjectDefinitionService.objectAdminV10DeleteObjectDefinition(
+		`${objectDefinition1.id}`
+	);
+	await ObjectAdminV10ObjectDefinitionService.objectAdminV10DeleteObjectDefinition(
+		`${objectDefinition2.id}`
+	);
 
-	await _apiHelpers.objectAdmin.deleteObjectFolder(objectFolder.id);
+	await ObjectAdminV10ObjectFolderService.objectAdminV10DeleteObjectFolder(
+		`${objectFolder.id}`
+	);
 });

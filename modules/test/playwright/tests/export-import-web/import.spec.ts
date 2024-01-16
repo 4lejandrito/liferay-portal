@@ -8,18 +8,13 @@
 import {expect, mergeTests} from '@playwright/test';
 import * as path from 'path';
 
-import {apiHelpersTest} from '../../fixtures/apiHelpers.fixture';
 import {documentLibraryPagesTest} from '../../fixtures/documentLibraryPages.fixtures';
 import {exportImportPagesTest} from '../../fixtures/exportImportPages.fixtures';
+import {HeadlessDeliveryV10DocumentFolderService} from '../../headless';
 
-export const test = mergeTests(
-	apiHelpersTest,
-	documentLibraryPagesTest,
-	exportImportPagesTest
-);
+export const test = mergeTests(documentLibraryPagesTest, exportImportPagesTest);
 
 test('can import a folder with document type restrictions and workflow', async ({
-	_apiHelpers,
 	_documentLibraryEditFolderPage,
 	_documentLibraryPage,
 	_exportImportFramePage,
@@ -37,7 +32,8 @@ test('can import a folder with document type restrictions and workflow', async (
 		await _documentLibraryEditFolderPage.getSelectedWorkflowDefinition()
 	).toBe('Single Approver@1');
 
-	await _apiHelpers.headlessDelivery.deleteSiteDocumentsFolderByExternalReferenceCode(
+	HeadlessDeliveryV10DocumentFolderService.headlessDeliveryV10DeleteSiteDocumentsFolderByExternalReferenceCode(
+		'Guest',
 		'LPS-205933'
 	);
 });
