@@ -73,6 +73,7 @@ export class UsersAndOrganizationsPage {
 	}
 
 	async openOptionsMenu() {
+		this.page.waitForSelector('button[title=Options]', {state: 'attached'});
 		await this.optionsMenu.click();
 	}
 }
