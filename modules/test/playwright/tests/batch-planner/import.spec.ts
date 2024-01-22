@@ -9,12 +9,14 @@ import * as path from 'path';
 import {apiHelpersTest} from '../../fixtures/apiHelpersTest';
 import {applicationsMenuPageTest} from '../../fixtures/applicationsMenuPageTest';
 import {dataMigrationCenterPagesTest} from '../../fixtures/dataMigrationCenterPages';
+import {loginTest} from '../../fixtures/loginTest';
 import {objectPagesTest} from '../../fixtures/objectPagesTest';
 import {OBJECT_ENTRY_ENTITY_TYPE} from './utils/constants';
 
 export const test = mergeTests(
 	apiHelpersTest,
 	applicationsMenuPageTest,
+	loginTest,
 	dataMigrationCenterPagesTest,
 	objectPagesTest
 );
@@ -304,6 +306,7 @@ const siteObjectDefinition = {
 test('can import CSV file with an unexisting field', async ({
 	apiHelpers,
 	dataMigrationCenterPage,
+	login,
 	page,
 }) => {
 	await apiHelpers.featureFlag.updateFeatureFlag('COMMERCE-8087', true);
@@ -365,6 +368,7 @@ test('can import CSV file with an unexisting field', async ({
 test('can import CSV file with custom columns order', async ({
 	apiHelpers,
 	dataMigrationCenterPage,
+	login,
 	page,
 }) => {
 	await apiHelpers.featureFlag.updateFeatureFlag('COMMERCE-8087', true);
@@ -432,6 +436,7 @@ test('can import CSV file with custom columns order', async ({
 test('can import CSV file with multiple site scoped object entries', async ({
 	apiHelpers,
 	dataMigrationCenterPage,
+	login,
 	page,
 }) => {
 	await apiHelpers.featureFlag.updateFeatureFlag('COMMERCE-8087', true);
@@ -523,6 +528,7 @@ test('can import CSV file with multiple site scoped object entries', async ({
 test('can import CSV file with new and existing site scoped object entries', async ({
 	apiHelpers,
 	dataMigrationCenterPage,
+	login,
 	page,
 }) => {
 	await apiHelpers.featureFlag.updateFeatureFlag('COMMERCE-8087', true);
@@ -626,6 +632,7 @@ test('can import CSV file with new and existing site scoped object entries', asy
 test('can import CSV file with new and modified existing company scoped object entries', async ({
 	apiHelpers,
 	dataMigrationCenterPage,
+	login,
 	page,
 }) => {
 	await apiHelpers.featureFlag.updateFeatureFlag('COMMERCE-8087', true);
@@ -723,6 +730,7 @@ test('can import CSV file with new and modified existing company scoped object e
 test('can map all imported fields', async ({
 	apiHelpers,
 	dataMigrationCenterPage,
+	login,
 	page,
 }) => {
 	await apiHelpers.featureFlag.updateFeatureFlag('COMMERCE-8087', true);
@@ -759,6 +767,7 @@ test('can map all imported fields', async ({
 test('can preview CSV file', async ({
 	apiHelpers,
 	dataMigrationCenterPage,
+	login,
 	page,
 }) => {
 	await apiHelpers.featureFlag.updateFeatureFlag('COMMERCE-8087', true);
@@ -834,6 +843,7 @@ test('can preview CSV file', async ({
 test('can show duplicate error message with CSV import existing entry and only add new record fields', async ({
 	apiHelpers,
 	dataMigrationCenterPage,
+	login,
 	page,
 }) => {
 	await apiHelpers.featureFlag.updateFeatureFlag('COMMERCE-8087', true);
@@ -875,6 +885,7 @@ test('can show duplicate error message with CSV import existing entry and only a
 test('cannot import CSV file without headers row', async ({
 	apiHelpers,
 	dataMigrationCenterPage,
+	login,
 	page,
 }) => {
 	await apiHelpers.featureFlag.updateFeatureFlag('COMMERCE-8087', true);
@@ -903,6 +914,7 @@ test('cannot import CSV file without headers row', async ({
 test('cannot import CSV file with empty headers row', async ({
 	apiHelpers,
 	dataMigrationCenterPage,
+	login,
 	page,
 }) => {
 	await apiHelpers.featureFlag.updateFeatureFlag('COMMERCE-8087', true);
@@ -944,6 +956,7 @@ test('cannot import CSV file with empty headers row', async ({
 test('cannot import CSV file with object entry with UPSERT strategy', async ({
 	apiHelpers,
 	dataMigrationCenterPage,
+	login,
 	page,
 }) => {
 	await apiHelpers.featureFlag.updateFeatureFlag('COMMERCE-8087', true);
@@ -976,6 +989,7 @@ test('cannot import CSV file with object entry with UPSERT strategy', async ({
 test('cannot import empty CSV file', async ({
 	apiHelpers,
 	dataMigrationCenterPage,
+	login,
 	page,
 }) => {
 	await apiHelpers.featureFlag.updateFeatureFlag('COMMERCE-8087', true);
