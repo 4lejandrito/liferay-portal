@@ -25,7 +25,6 @@ test('can import a folder with document type restrictions and workflow', async (
 	documentLibraryEditFolderPage,
 	documentLibraryPage,
 	exportImportFramePage,
-	login,
 }) => {
 	await documentLibraryPage.goto();
 	await documentLibraryPage.openOptionsMenu();

@@ -20,7 +20,6 @@ export const test = mergeTests(
 
 test('can create relationship by dragging node handles', async ({
 	apiHelpers,
-	login,
 	modelBuilderPage,
 	objectDefinitionsPage,
 }) => {

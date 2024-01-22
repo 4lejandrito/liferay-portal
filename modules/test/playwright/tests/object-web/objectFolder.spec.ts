@@ -20,7 +20,6 @@ export const test = mergeTests(
 
 test('created object folders are on the left side bar', async ({
 	apiHelpers,
-	login,
 	objectDefinitionsPage,
 }) => {
 	await apiHelpers.featureFlag.updateFeatureFlag('LPS-148856', true);
@@ -46,7 +45,6 @@ test('created object folders are on the left side bar', async ({
 
 test('default folder does not contains delete and edit options', async ({
 	apiHelpers,
-	login,
 	objectDefinitionsPage,
 }) => {
 	await apiHelpers.featureFlag.updateFeatureFlag('LPS-148856', true);
