@@ -439,7 +439,8 @@ public class ObjectEntryDTOConverter
 		}
 
 		if (FeatureFlagManagerUtil.isEnabled(
-			objectDefinition.getCompanyId(), "LPS-174455")) {
+				objectDefinition.getCompanyId(), "LPS-174455")) {
+
 			fileEntry.setFileBase64(
 				(String)NestedFieldsSupplier.supply(
 					objectFieldName + ".fileBase64",
