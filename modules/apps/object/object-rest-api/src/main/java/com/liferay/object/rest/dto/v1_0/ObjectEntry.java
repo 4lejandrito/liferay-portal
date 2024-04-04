@@ -50,8 +50,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "ObjectEntry")
 public class ObjectEntry implements Serializable {
 
-	private Map<String, UnsafeSupplier<Object, Exception>> _lazyProperties;
-
 	public static ObjectEntry toDTO(String json) {
 		return ObjectMapperUtil.readValue(ObjectEntry.class, json);
 	}
@@ -397,21 +395,27 @@ public class ObjectEntry implements Serializable {
 	private Supplier<String[]> _keywordsSupplier;
 
 	@JsonAnyGetter
-	@Schema
-	@Valid
 	public Map<String, UnsafeSupplier<Object, Exception>> getLazyProperties() {
 		return _lazyProperties;
 	}
 
-	public Map<String, Object> getProperties() {
-		if (properties != null) {
-			return properties;
-		}
+	@JsonIgnore
+	public void setLazyProperties(
+		Map<String, UnsafeSupplier<Object, Exception>> lazyProperties) {
 
+		this._lazyProperties = lazyProperties;
+	}
+
+	private Map<String, UnsafeSupplier<Object, Exception>> _lazyProperties;
+
+	@Schema
+	@Valid
+	public Map<String, Object> getProperties() {
 		if (_lazyProperties != null) {
 			properties = new HashMap<>();
 
-			_lazyProperties.forEach((key, value) -> {
+			_lazyProperties.forEach(
+				(key, value) -> {
 					try {
 						properties.put(key, value.get());
 					}
@@ -420,10 +424,15 @@ public class ObjectEntry implements Serializable {
 					}
 				});
 
-				_propertiesSupplier = null;
+			_propertiesSupplier = null;
+			_lazyProperties = null;
 
-				return properties;
-			}
+			return properties;
+		}
+
+		if (properties != null) {
+			return properties;
+		}
 
 		if (_propertiesSupplier != null) {
 			properties = _propertiesSupplier.get();
@@ -438,10 +447,7 @@ public class ObjectEntry implements Serializable {
 		this.properties = properties;
 
 		_propertiesSupplier = null;
-	}
-
-	public void setLazyProperties(Map<String, UnsafeSupplier<Object, Exception>> lazyProperties) {
-		this._lazyProperties = lazyProperties;
+		_lazyProperties = null;
 	}
 
 	@JsonIgnore
@@ -1034,4 +1040,5 @@ public class ObjectEntry implements Serializable {
 	};
 
 	private Map<String, Serializable> _extendedProperties;
+
 }
