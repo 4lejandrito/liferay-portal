@@ -15,6 +15,7 @@ import com.liferay.object.rest.dto.v1_0.ListEntry;
 import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectFieldLocalService;
 import com.liferay.petra.function.UnsafeFunction;
+import com.liferay.petra.function.UnsafeSupplier;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -53,7 +54,7 @@ public class ColumnDescriptorProviderImpl implements ColumnDescriptorProvider {
 			objectDefinition.getObjectDefinitionId(), fieldName);
 
 		ObjectValuePair<Field, Method> propertiesObjectValuePair =
-			objectValuePairs.get("properties");
+			objectValuePairs.get("lazyProperties");
 
 		if (Objects.equals(
 				objectField.getBusinessType(),
@@ -172,6 +173,18 @@ public class ColumnDescriptorProviderImpl implements ColumnDescriptorProvider {
 
 					Object value = map.get(fieldNames[0]);
 
+					try {
+						if (value instanceof UnsafeSupplier) {
+							UnsafeSupplier<Object, Exception> unsafeSupplier =
+								(UnsafeSupplier<Object, Exception>)value;
+
+							value = unsafeSupplier.get();
+						}
+					}
+					catch (Throwable throwable) {
+						throw new RuntimeException(throwable);
+					}
+
 					if (value == null) {
 						return StringPool.BLANK;
 					}
@@ -199,6 +212,18 @@ public class ColumnDescriptorProviderImpl implements ColumnDescriptorProvider {
 
 					Object value = map.get(fieldNames[0]);
 
+					try {
+						if (value instanceof UnsafeSupplier) {
+							UnsafeSupplier<Object, Exception> unsafeSupplier =
+								(UnsafeSupplier<Object, Exception>)value;
+
+							value = unsafeSupplier.get();
+						}
+					}
+					catch (Throwable throwable) {
+						throw new RuntimeException(throwable);
+					}
+
 					if (value == null) {
 						return StringPool.BLANK;
 					}
@@ -220,6 +245,18 @@ public class ColumnDescriptorProviderImpl implements ColumnDescriptorProvider {
 					object, propertiesObjectValuePair);
 
 				Object value = map.get(fieldNames[0]);
+
+				try {
+					if (value instanceof UnsafeSupplier) {
+						UnsafeSupplier<Object, Exception> unsafeSupplier =
+							(UnsafeSupplier<Object, Exception>)value;
+
+						value = unsafeSupplier.get();
+					}
+				}
+				catch (Throwable throwable) {
+					throw new RuntimeException(throwable);
+				}
 
 				if (value == null) {
 					return StringPool.BLANK;
