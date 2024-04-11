@@ -157,114 +157,44 @@ public class ColumnDescriptorProviderImpl implements ColumnDescriptorProvider {
 			ObjectValuePair<Field, Method> propertiesObjectValuePair,
 			String... fieldNames) {
 
-		if (Objects.equals(
-				objectFieldBusinessType,
-				ObjectFieldConstants.BUSINESS_TYPE_MULTISELECT_PICKLIST)) {
+		return object -> {
+			Map<?, ?> map = (Map<?, ?>)_getValue(
+				object, propertiesObjectValuePair);
 
-			return new UnsafeFunction
-				<Object, Object, ReflectiveOperationException>() {
+			Object value = map.get(fieldNames[0]);
 
-				@Override
-				public Object apply(Object object)
-					throws ReflectiveOperationException {
+			try {
+				if (value instanceof UnsafeSupplier) {
+					UnsafeSupplier<Object, Exception> unsafeSupplier =
+						(UnsafeSupplier<Object, Exception>)value;
 
-					Map<?, ?> map = (Map<?, ?>)_getValue(
-						object, propertiesObjectValuePair);
-
-					Object value = map.get(fieldNames[0]);
-
-					try {
-						if (value instanceof UnsafeSupplier) {
-							UnsafeSupplier<Object, Exception> unsafeSupplier =
-								(UnsafeSupplier<Object, Exception>)value;
-
-							value = unsafeSupplier.get();
-						}
-					}
-					catch (Throwable throwable) {
-						throw new RuntimeException(throwable);
-					}
-
-					if (value == null) {
-						return StringPool.BLANK;
-					}
-
-					return _getMultiselectListEntryValue(
-						fieldNames[1], (List<ListEntry>)value);
+					value = unsafeSupplier.get();
 				}
-
-			};
-		}
-
-		if (Objects.equals(
-				objectFieldBusinessType,
-				ObjectFieldConstants.BUSINESS_TYPE_PICKLIST)) {
-
-			return new UnsafeFunction
-				<Object, Object, ReflectiveOperationException>() {
-
-				@Override
-				public Object apply(Object object)
-					throws ReflectiveOperationException {
-
-					Map<?, ?> map = (Map<?, ?>)_getValue(
-						object, propertiesObjectValuePair);
-
-					Object value = map.get(fieldNames[0]);
-
-					try {
-						if (value instanceof UnsafeSupplier) {
-							UnsafeSupplier<Object, Exception> unsafeSupplier =
-								(UnsafeSupplier<Object, Exception>)value;
-
-							value = unsafeSupplier.get();
-						}
-					}
-					catch (Throwable throwable) {
-						throw new RuntimeException(throwable);
-					}
-
-					if (value == null) {
-						return StringPool.BLANK;
-					}
-
-					return _getListEntryValue(fieldNames[1], value);
-				}
-
-			};
-		}
-
-		return new UnsafeFunction
-			<Object, Object, ReflectiveOperationException>() {
-
-			@Override
-			public Object apply(Object object)
-				throws ReflectiveOperationException {
-
-				Map<?, ?> map = (Map<?, ?>)_getValue(
-					object, propertiesObjectValuePair);
-
-				Object value = map.get(fieldNames[0]);
-
-				try {
-					if (value instanceof UnsafeSupplier) {
-						UnsafeSupplier<Object, Exception> unsafeSupplier =
-							(UnsafeSupplier<Object, Exception>)value;
-
-						value = unsafeSupplier.get();
-					}
-				}
-				catch (Throwable throwable) {
-					throw new RuntimeException(throwable);
-				}
-
-				if (value == null) {
-					return StringPool.BLANK;
-				}
-
-				return CSVUtil.encode(value);
+			}
+			catch (Throwable throwable) {
+				throw new RuntimeException(throwable);
 			}
 
+			if (value == null) {
+				return StringPool.BLANK;
+			}
+
+			if (Objects.equals(
+					objectFieldBusinessType,
+					ObjectFieldConstants.BUSINESS_TYPE_MULTISELECT_PICKLIST)) {
+
+				return _getMultiselectListEntryValue(
+					fieldNames[1], (List<ListEntry>)value);
+			}
+
+			if (Objects.equals(
+					objectFieldBusinessType,
+					ObjectFieldConstants.BUSINESS_TYPE_PICKLIST)) {
+
+				return _getListEntryValue(fieldNames[1], value);
+			}
+
+			return CSVUtil.encode(value);
 		};
 	}
 
