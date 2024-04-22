@@ -118,14 +118,19 @@ test('LPD-22886 Update published status on product relations', async ({
 
 		await commerceAdminProductDetailsPage.productRelationsTab.click();
 
+		// Your selector was not matching for me locally since it did not have qa-id
 		await expect(
-			commerceAdminProductDetailsPage.workflowStatusLabel('draft')
+			page.locator('.workflow-status', {hasText: 'Draft'})
 		).toBeVisible();
+
+		// This makes it work, I suspect JS need to be fully loaded before clicking publish, find a better way to do it (ideally button should be disabled and only enabled when the js has fully loaded)
+		await new Promise(resolve => setTimeout(resolve, 5000));
 
 		await commerceAdminProductDetailsPage.headerActionButton('Publish').click();
 
+		// Your selector was not matching for me locally since it did not have qa-id
 		await expect(
-			commerceAdminProductDetailsPage.workflowStatusLabel('approved')
+			page.locator('.workflow-status', {hasText: 'Approved'})
 		).toBeVisible();
 	}
 	finally {
