@@ -26,4 +26,8 @@
 		<from>^/web/guest/community/forums/message_boards(.{0,2000})$</from>
 		<to type="permanent-redirect">%{context-path}/web/guest/community/forums/-/message_boards$1</to>
 	</rule>
+	<rule>
+		<from>^/o/old-base-uri/(.*)$</from>
+		<to type="permanent-redirect">%{context-path}/o/new-base-uri/$1</to>
+	</rule>
 </urlrewrite>
