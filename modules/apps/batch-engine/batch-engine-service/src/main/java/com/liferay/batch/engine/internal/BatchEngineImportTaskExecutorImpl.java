@@ -39,6 +39,8 @@ import com.liferay.portal.configuration.module.configuration.ConfigurationProvid
 import com.liferay.portal.kernel.change.tracking.CTCollectionThreadLocal;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.search.Indexer;
+import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
@@ -297,6 +299,17 @@ public class BatchEngineImportTaskExecutorImpl
 		Map<String, Serializable> parameters = _getParameters(
 			batchEngineImportTask);
 
+		Indexer<?> indexer = IndexerRegistryUtil.getIndexer(
+			batchEngineTaskItemDelegate.getModelClassName());
+
+		boolean indexerEnabled = false;
+
+		if (indexer != null) {
+			indexerEnabled = indexer.isIndexerEnabled();
+
+			indexer.setIndexerEnabled(false);
+		}
+
 		try (BatchEngineImportTaskItemReader batchEngineImportTaskItemReader =
 				_getBatchEngineImportTaskItemReader(
 					batchEngineImportTask,
@@ -364,6 +377,20 @@ public class BatchEngineImportTaskExecutorImpl
 				_commitItems(
 					batchEngineImportTask, batchEngineTaskItemDelegateExecutor,
 					items, processedItemsCount);
+			}
+
+			if (indexer != null) {
+				indexer.setIndexerEnabled(true);
+
+				indexer.reindex(
+					new String[] {
+						String.valueOf(batchEngineImportTask.getCompanyId())
+					});
+			}
+		}
+		finally {
+			if (indexer != null) {
+				indexer.setIndexerEnabled(indexerEnabled);
 			}
 		}
 	}

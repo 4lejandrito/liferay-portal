@@ -188,6 +188,11 @@ public class ObjectEntryResourceImpl extends BaseObjectEntryResourceImpl {
 	}
 
 	@Override
+	public String getModelClassName() {
+		return _objectDefinition.getClassName();
+	}
+
+	@Override
 	public Page<ObjectEntry> getObjectEntriesPage(
 			Boolean flatten, String search, Aggregation aggregation,
 			Filter filter, Pagination pagination, Sort[] sorts)
