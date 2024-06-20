@@ -201,7 +201,7 @@ public class RESTBuilder {
 				_checkOpenAPIYAMLFile(freeMarkerTool, file);
 			}
 			catch (Exception exception) {
-				_log.error(exception);
+				exception.printStackTrace();
 
 				throw new RuntimeException(
 					StringBundler.concat(
