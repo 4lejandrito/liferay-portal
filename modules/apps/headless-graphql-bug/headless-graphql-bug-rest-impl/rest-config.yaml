@@ -1,0 +1,11 @@
+apiDir: "../headless-graphql-bug-rest-api/src/main/java"
+apiPackagePath: "com.liferay.graphql.bug.rest"
+application:
+    baseURI: "/headless-bug"
+    className: "HeadlessBugRESTApplication"
+    name: "Liferay.Headless.Bug.REST"
+author: "Thiago Buarque"
+clientDir: "../headless-graphql-bug-rest-client/src/main/java"
+compatibilityVersion: 6
+forcePredictableOperationId: true
+testDir: "../headless-graphql-bug-rest-test/src/testIntegration/java"

@@ -1,0 +1,44 @@
+components:
+    schemas:
+        Message:
+            properties:
+                key:
+                    type: string
+                languageId:
+                    type: string
+                value:
+                    type: string
+            type: object
+info:
+    license:
+        name: "Apache 2.0"
+        url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+    title: "Graphql Bug"
+    version: v1.0
+openapi: 3.0.1
+paths:
+    "/messages":
+        get:
+            operationId: getMessagesPage
+            parameters:
+                - in: query
+                  name: keys
+                  required: true
+                  schema:
+                      items:
+                        type: string
+                      type: array
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/Message"
+                                type: array
+                        application/xml:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/Message"
+                                type: array
+            tags: ["Message"]
