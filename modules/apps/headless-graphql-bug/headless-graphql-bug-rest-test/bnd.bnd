@@ -1,0 +1,3 @@
+Bundle-Name: Liferay Graphql Bug REST TEST
+Bundle-SymbolicName: com.liferay.graphql.bug.rest.test
+Bundle-Version: 1.0.0

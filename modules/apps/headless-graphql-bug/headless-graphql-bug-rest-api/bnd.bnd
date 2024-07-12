@@ -1,0 +1,6 @@
+Bundle-Name: Liferay Graphql Bug REST API
+Bundle-SymbolicName: com.liferay.graphql.bug.rest.api
+Bundle-Version: 1.0.0
+Export-Package:\
+	com.liferay.graphql.bug.rest.dto.v1_0,\
+	com.liferay.graphql.bug.rest.resource.v1_0
