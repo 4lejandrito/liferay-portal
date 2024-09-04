@@ -9,6 +9,7 @@ import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.rest.dto.v1_0.ObjectEntry;
 import com.liferay.object.rest.dto.v1_0.Status;
 import com.liferay.object.service.ObjectEntryLocalServiceUtil;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.service.ResourceActionLocalService;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
@@ -21,6 +22,7 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterContext;
 import com.liferay.portal.vulcan.permission.ModelPermissionsUtil;
+import com.liferay.portal.vulcan.permission.Permission;
 
 /**
  * @author Sergio Jiménez del Coso
@@ -45,12 +47,10 @@ public class ServiceContextUtil {
 			return serviceContext;
 		}
 
-		serviceContext.setModelPermissions(
-			ModelPermissionsUtil.toModelPermissions(
-				objectDefinition.getCompanyId(), objectEntry.getPermissions(),
-				GetterUtil.getLong(objectEntry.getId()),
-				objectDefinition.getClassName(), resourceActionLocalService,
-				resourcePermissionLocalService, roleLocalService));
+		_setModelPermissions(
+			objectDefinition, GetterUtil.getLong(objectEntry.getId()),
+			objectEntry.getPermissions(), resourceActionLocalService,
+			resourcePermissionLocalService, roleLocalService, serviceContext);
 
 		return serviceContext;
 	}
@@ -71,6 +71,24 @@ public class ServiceContextUtil {
 			serviceContext.setWorkflowAction(
 				WorkflowConstants.ACTION_SAVE_DRAFT);
 		}
+
+		return serviceContext;
+	}
+
+	public static ServiceContext createServiceContext(
+			ObjectDefinition objectDefinition, long objectEntryId,
+			Permission[] permissions,
+			ResourceActionLocalService resourceActionLocalService,
+			ResourcePermissionLocalService resourcePermissionLocalService,
+			RoleLocalService roleLocalService)
+		throws PortalException {
+
+		ServiceContext serviceContext = createServiceContext(objectEntryId);
+
+		_setModelPermissions(
+			objectDefinition, objectEntryId, permissions,
+			resourceActionLocalService, resourcePermissionLocalService,
+			roleLocalService, serviceContext);
 
 		return serviceContext;
 	}
@@ -110,6 +128,21 @@ public class ServiceContextUtil {
 		}
 
 		return false;
+	}
+
+	private static void _setModelPermissions(
+			ObjectDefinition objectDefinition, long objectEntryId,
+			Permission[] permissions,
+			ResourceActionLocalService resourceActionLocalService,
+			ResourcePermissionLocalService resourcePermissionLocalService,
+			RoleLocalService roleLocalService, ServiceContext serviceContext)
+		throws PortalException {
+
+		serviceContext.setModelPermissions(
+			ModelPermissionsUtil.toModelPermissions(
+				objectDefinition.getCompanyId(), permissions, objectEntryId,
+				objectDefinition.getClassName(), resourceActionLocalService,
+				resourcePermissionLocalService, roleLocalService));
 	}
 
 }

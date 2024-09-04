@@ -5,7 +5,6 @@
 
 package com.liferay.object.rest.internal.resource.v1_0;
 
-import com.liferay.object.entry.util.ObjectEntryModelPermissionsUtil;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectRelationship;
 import com.liferay.object.rest.dto.v1_0.ObjectEntry;
@@ -19,7 +18,6 @@ import com.liferay.object.scope.ObjectScopeProvider;
 import com.liferay.object.scope.ObjectScopeProviderRegistry;
 import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectEntryLocalService;
-import com.liferay.object.service.ObjectFieldLocalService;
 import com.liferay.object.service.ObjectRelationshipService;
 import com.liferay.object.system.SystemObjectDefinitionManager;
 import com.liferay.object.system.SystemObjectDefinitionManagerRegistry;
@@ -29,8 +27,6 @@ import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.service.ResourceActionLocalService;
-import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
-import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -66,12 +62,9 @@ public class ObjectEntryResourceImpl extends BaseObjectEntryResourceImpl {
 		ObjectDefinitionLocalService objectDefinitionLocalService,
 		ObjectEntryLocalService objectEntryLocalService,
 		ObjectEntryManagerRegistry objectEntryManagerRegistry,
-		ObjectFieldLocalService objectFieldLocalService,
 		ObjectRelationshipService objectRelationshipService,
 		ObjectScopeProviderRegistry objectScopeProviderRegistry,
 		ResourceActionLocalService resourceActionLocalService,
-		ResourcePermissionLocalService resourcePermissionLocalService,
-		RoleLocalService roleLocalService,
 		SystemObjectDefinitionManagerRegistry
 			systemObjectDefinitionManagerRegistry) {
 
@@ -81,12 +74,9 @@ public class ObjectEntryResourceImpl extends BaseObjectEntryResourceImpl {
 		_objectDefinitionLocalService = objectDefinitionLocalService;
 		_objectEntryLocalService = objectEntryLocalService;
 		_objectEntryManagerRegistry = objectEntryManagerRegistry;
-		_objectFieldLocalService = objectFieldLocalService;
 		_objectRelationshipService = objectRelationshipService;
 		_objectScopeProviderRegistry = objectScopeProviderRegistry;
 		_resourceActionLocalService = resourceActionLocalService;
-		_resourcePermissionLocalService = resourcePermissionLocalService;
-		_roleLocalService = roleLocalService;
 		_systemObjectDefinitionManagerRegistry =
 			systemObjectDefinitionManagerRegistry;
 	}
@@ -468,17 +458,12 @@ public class ObjectEntryResourceImpl extends BaseObjectEntryResourceImpl {
 			Long objectEntryId, Permission[] permissions)
 		throws Exception {
 
-		ObjectEntry objectEntry = getObjectEntry(objectEntryId);
-
-		objectEntry.setPermissions(() -> permissions);
-
-		ObjectEntryModelPermissionsUtil.updateResourcePermissions(
-			_objectDefinition,
+		_objectEntryLocalService.updateResourcePermissions(
 			_objectEntryLocalService.getObjectEntry(objectEntryId),
 			ServiceContextUtil.createServiceContext(
-				_getDTOConverterContext(objectEntryId), _objectDefinition,
-				objectEntry, _resourceActionLocalService,
-				_resourcePermissionLocalService, _roleLocalService));
+				_objectDefinition, objectEntryId, permissions,
+				resourceActionLocalService, resourcePermissionLocalService,
+				roleLocalService));
 
 		return Page.of(
 			HashMapBuilder.put(
@@ -683,13 +668,9 @@ public class ObjectEntryResourceImpl extends BaseObjectEntryResourceImpl {
 	private final ObjectDefinitionLocalService _objectDefinitionLocalService;
 	private final ObjectEntryLocalService _objectEntryLocalService;
 	private final ObjectEntryManagerRegistry _objectEntryManagerRegistry;
-	private final ObjectFieldLocalService _objectFieldLocalService;
 	private final ObjectRelationshipService _objectRelationshipService;
 	private final ObjectScopeProviderRegistry _objectScopeProviderRegistry;
 	private final ResourceActionLocalService _resourceActionLocalService;
-	private final ResourcePermissionLocalService
-		_resourcePermissionLocalService;
-	private final RoleLocalService _roleLocalService;
 	private final SystemObjectDefinitionManagerRegistry
 		_systemObjectDefinitionManagerRegistry;
 
