@@ -740,6 +740,16 @@ public class ObjectEntryLocalServiceWrapper
 	}
 
 	@Override
+	public void updateResourcePermissions(
+			com.liferay.object.model.ObjectEntry objectEntry,
+			com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		_objectEntryLocalService.updateResourcePermissions(
+			objectEntry, serviceContext);
+	}
+
+	@Override
 	public com.liferay.object.model.ObjectEntry updateStatus(
 			long userId, long objectEntryId, int status,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)

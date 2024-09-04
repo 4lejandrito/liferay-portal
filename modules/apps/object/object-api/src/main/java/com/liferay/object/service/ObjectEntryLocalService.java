@@ -489,6 +489,10 @@ public interface ObjectEntryLocalService
 	@Indexable(type = IndexableType.REINDEX)
 	public ObjectEntry updateObjectEntry(ObjectEntry objectEntry);
 
+	public void updateResourcePermissions(
+			ObjectEntry objectEntry, ServiceContext serviceContext)
+		throws PortalException;
+
 	public ObjectEntry updateStatus(
 			long userId, long objectEntryId, int status,
 			ServiceContext serviceContext)

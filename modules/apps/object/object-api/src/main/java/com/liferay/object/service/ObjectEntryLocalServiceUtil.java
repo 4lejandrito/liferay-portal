@@ -643,6 +643,14 @@ public class ObjectEntryLocalServiceUtil {
 		return getService().updateObjectEntry(objectEntry);
 	}
 
+	public static void updateResourcePermissions(
+			ObjectEntry objectEntry,
+			com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws PortalException {
+
+		getService().updateResourcePermissions(objectEntry, serviceContext);
+	}
+
 	public static ObjectEntry updateStatus(
 			long userId, long objectEntryId, int status,
 			com.liferay.portal.kernel.service.ServiceContext serviceContext)
