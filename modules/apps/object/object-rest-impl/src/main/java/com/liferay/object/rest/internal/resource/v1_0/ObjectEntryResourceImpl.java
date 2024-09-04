@@ -22,6 +22,7 @@ import com.liferay.object.service.ObjectRelationshipService;
 import com.liferay.object.system.SystemObjectDefinitionManager;
 import com.liferay.object.system.SystemObjectDefinitionManagerRegistry;
 import com.liferay.petra.function.UnsafeFunction;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.filter.Filter;
@@ -45,6 +46,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.NotSupportedException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
@@ -457,6 +459,10 @@ public class ObjectEntryResourceImpl extends BaseObjectEntryResourceImpl {
 	public Page<Permission> putObjectEntryPermissionsPage(
 			Long objectEntryId, Permission[] permissions)
 		throws Exception {
+
+		if (!FeatureFlagManagerUtil.isEnabled("LPD-28799")) {
+			throw new NotFoundException();
+		}
 
 		_objectEntryLocalService.updateResourcePermissions(
 			_objectEntryLocalService.getObjectEntry(objectEntryId),
