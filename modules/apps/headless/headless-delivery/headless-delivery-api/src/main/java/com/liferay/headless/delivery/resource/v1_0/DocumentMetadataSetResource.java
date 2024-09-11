@@ -59,6 +59,17 @@ public interface DocumentMetadataSetResource {
 			String fieldNames)
 		throws Exception;
 
+	public DocumentMetadataSet postAssetLibraryDocumentMetadataSet(
+			Long assetLibraryId,
+			com.liferay.data.engine.rest.dto.v2_0.DataDefinition dataDefinition)
+		throws Exception;
+
+	public Response postAssetLibraryDocumentMetadataSetBatch(
+			Long assetLibraryId,
+			com.liferay.data.engine.rest.dto.v2_0.DataDefinition dataDefinition,
+			String callbackURL, Object object)
+		throws Exception;
+
 	public DocumentMetadataSet getDocumentMetadataSet(
 			Long documentMetadataSetId)
 		throws Exception;
@@ -70,6 +81,17 @@ public interface DocumentMetadataSetResource {
 	public Response postSiteDocumentMetadataSetsPageExportBatch(
 			Long siteId, String callbackURL, String contentType,
 			String fieldNames)
+		throws Exception;
+
+	public DocumentMetadataSet postSiteDocumentMetadataSet(
+			Long siteId,
+			com.liferay.data.engine.rest.dto.v2_0.DataDefinition dataDefinition)
+		throws Exception;
+
+	public Response postSiteDocumentMetadataSetBatch(
+			Long siteId,
+			com.liferay.data.engine.rest.dto.v2_0.DataDefinition dataDefinition,
+			String callbackURL, Object object)
 		throws Exception;
 
 	public default void setContextAcceptLanguage(
