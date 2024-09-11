@@ -6690,14 +6690,10 @@ paths:
                     content:
                         application/json:
                             schema:
-                                items:
-                                    $ref: "#/components/schemas/DocumentMetadataSet"
-                                type: array
+                                $ref: "#/components/schemas/DocumentMetadataSet"
                         application/xml:
                             schema:
-                                items:
-                                    $ref: "#/components/schemas/DocumentMetadataSet"
-                                type: array
+                                $ref: "#/components/schemas/DocumentMetadataSet"
             tags: ["DocumentMetadataSet"]
         get:
             operationId: getAssetLibraryDocumentMetadataSetsPage
@@ -13172,14 +13168,10 @@ paths:
                     content:
                         application/json:
                             schema:
-                                items:
-                                    $ref: "#/components/schemas/DocumentMetadataSet"
-                                type: array
+                                $ref: "#/components/schemas/DocumentMetadataSet"
                         application/xml:
                             schema:
-                                items:
-                                    $ref: "#/components/schemas/DocumentMetadataSet"
-                                type: array
+                                $ref: "#/components/schemas/DocumentMetadataSet"
             tags: ["DocumentMetadataSet"]
         get:
             operationId: getSiteDocumentMetadataSetsPage
