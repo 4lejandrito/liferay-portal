@@ -32,6 +32,7 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.role.RoleConstants;
+import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
@@ -217,9 +218,14 @@ public class BatchEngineUnitProcessorImpl implements BatchEngineUnitProcessor {
 				batchEngineUnitConfiguration.getTaskItemDelegateName(),
 				batchEngineTaskItemDelegate);
 
+		long companyThreadLocalCompanyId = CompanyThreadLocal.getCompanyId();
+
 		try {
 			BatchEngineUnitThreadLocal.setFileName(
 				batchEngineUnit.getFileName());
+
+			CompanyThreadLocal.setCompanyId(
+				batchEngineUnitConfiguration.getCompanyId());
 
 			_batchEngineImportTaskExecutor.execute(
 				batchEngineImportTask, batchEngineTaskItemDelegate,
@@ -227,6 +233,8 @@ public class BatchEngineUnitProcessorImpl implements BatchEngineUnitProcessor {
 		}
 		finally {
 			BatchEngineUnitThreadLocal.setFileName(StringPool.BLANK);
+
+			CompanyThreadLocal.setCompanyId(companyThreadLocalCompanyId);
 		}
 
 		if (_log.isInfoEnabled()) {
