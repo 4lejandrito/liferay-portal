@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.ResourcePermission;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.filter.Filter;
+import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.service.GroupLocalService;
@@ -26,6 +27,8 @@ import com.liferay.portal.kernel.service.ResourceActionLocalService;
 import com.liferay.portal.kernel.service.ResourceLocalServiceUtil;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
 import com.liferay.portal.kernel.service.RoleLocalService;
+import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.service.permission.ModelPermissions;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.GroupThreadLocal;
@@ -1271,8 +1274,16 @@ public abstract class BaseObjectEntryResourceImpl
 			"createStrategy", "INSERT");
 
 		if (StringUtil.equalsIgnoreCase(createStrategy, "INSERT")) {
-			objectEntryUnsafeFunction = objectEntry -> postObjectEntry(
-				objectEntry);
+			objectEntryUnsafeFunction = objectEntry ->  {
+				if (GetterUtil.getBoolean(parameters.get("keepOriginalUserIds"))) {
+					contextUser = UserLocalServiceUtil.getUser(
+						objectEntry.getCreator().getId());
+
+					// The reason for this is in the comment tagged as ###
+					PrincipalThreadLocal.setName(String.valueOf(contextUser.getUserId()));
+				}
+				return postObjectEntry(objectEntry);
+			};
 		}
 
 		if (StringUtil.equalsIgnoreCase(createStrategy, "UPSERT")) {

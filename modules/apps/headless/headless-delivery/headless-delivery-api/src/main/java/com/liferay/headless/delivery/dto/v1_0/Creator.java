@@ -252,7 +252,7 @@ public class Creator implements Serializable {
 	}
 
 	@GraphQLField(description = "The author's ID.")
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	protected Long id;
 
 	@JsonIgnore

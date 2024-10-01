@@ -52,6 +52,7 @@ import com.liferay.portal.kernel.model.UserNotificationEvent;
 import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.module.configuration.ConfigurationException;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
+import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactory;
@@ -120,6 +121,7 @@ public class ObjectEntryServiceImpl extends ObjectEntryServiceBaseImpl {
 		_validateSubmissionLimit(objectDefinitionId, getUser());
 
 		return objectEntryLocalService.addObjectEntry(
+			// ### This ignores the user from serviceContext, the right fix should be here??  
 			getUserId(), groupId, objectDefinitionId, values, serviceContext);
 	}
 
