@@ -406,14 +406,10 @@ public class AssetTagLocalServiceTest {
 				null, TestPropsValues.getUserId(), group2.getGroupId(), "tag2",
 				_serviceContext);
 
-			_assetTagLocalService.getTags(
+			List<AssetTag> assetTags = _assetTagLocalService.getTags(
 				group1.getGroupId(), classNameId, null);
 
-			Assert.assertEquals(
-				1,
-				_assetTagLocalService.getTags(
-					group1.getGroupId(), classNameId, null
-				).size());
+			Assert.assertEquals(1, assetTags.size());
 		}
 		finally {
 			GroupTestUtil.deleteGroup(group1);
