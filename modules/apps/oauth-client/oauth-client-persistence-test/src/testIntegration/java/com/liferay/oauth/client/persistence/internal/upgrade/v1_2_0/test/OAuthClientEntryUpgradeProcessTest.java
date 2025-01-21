@@ -112,7 +112,7 @@ public class OAuthClientEntryUpgradeProcessTest {
 					oAuthClientEntry2.getOAuthClientEntryId());
 
 			Assert.assertEquals(
-				OAuthClientEntryConstants.DEFAULT_METADATA_CACHE_TIME,
+				OAuthClientEntryConstants.METADATA_CACHE_TIME_DEFAULT,
 				oAuthClientEntry2.getMetadataCacheTime());
 		}
 		finally {
