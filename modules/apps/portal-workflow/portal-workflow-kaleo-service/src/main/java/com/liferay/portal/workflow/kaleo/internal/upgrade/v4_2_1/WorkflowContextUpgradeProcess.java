@@ -24,7 +24,7 @@ import java.sql.SQLException;
 public class WorkflowContextUpgradeProcess extends UpgradeProcess {
 
 	@Override
-	protected void doUpgrade() throws JSONException, SQLException {
+	protected void doUpgrade() throws Exception {
 		_upgradeWorkflowContext("kaleoInstanceId", "KaleoInstance");
 		_upgradeWorkflowContext("kaleoLogId", "KaleoLog");
 		_upgradeWorkflowContext(
@@ -32,7 +32,7 @@ public class WorkflowContextUpgradeProcess extends UpgradeProcess {
 	}
 
 	private void _upgradeWorkflowContext(String columnName, String tableName)
-		throws JSONException, SQLException {
+		throws Exception {
 
 		try (PreparedStatement preparedStatement1 = connection.prepareStatement(
 				StringBundler.concat(
