@@ -332,7 +332,7 @@ public class AssetTagLocalServiceTest {
 	}
 
 	@Test
-	public void testGetTagsFromDifferentGroups() throws Exception {
+	public void testGetTagsWithDifferentGroups() throws Exception {
 		Group group1 = GroupTestUtil.addGroup();
 		Group group2 = GroupTestUtil.addGroup();
 
