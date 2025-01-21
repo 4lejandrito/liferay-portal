@@ -402,7 +402,6 @@ public class AssetTagLocalServiceTest {
 			_assetTagLocalService.addTag(
 				null, TestPropsValues.getUserId(), group1.getGroupId(), "tag1",
 				_serviceContext);
-
 			_assetTagLocalService.addTag(
 				null, TestPropsValues.getUserId(), group2.getGroupId(), "tag2",
 				_serviceContext);
