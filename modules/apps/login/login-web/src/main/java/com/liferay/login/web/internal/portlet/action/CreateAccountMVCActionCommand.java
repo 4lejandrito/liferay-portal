@@ -286,7 +286,7 @@ public class CreateAccountMVCActionCommand extends BaseMVCActionCommand {
 					actionRequest, actionResponse, themeDisplay, user,
 					user.getPasswordUnencrypted());
 
-				_verifyStrangersURL(
+				_sendCompanySecurityStrangersURLRedirect(
 					actionRequest, actionResponse, themeDisplay);
 
 				return;
@@ -346,7 +346,7 @@ public class CreateAccountMVCActionCommand extends BaseMVCActionCommand {
 			}
 		}
 
-		_verifyStrangersURL(actionRequest, actionResponse, themeDisplay);
+		_sendCompanySecurityStrangersURLRedirect(actionRequest, actionResponse, themeDisplay);
 	}
 
 	protected CaptchaConfiguration getCaptchaConfiguration()
@@ -570,7 +570,7 @@ public class CreateAccountMVCActionCommand extends BaseMVCActionCommand {
 			actionRequest, actionResponse, themeDisplay, user, password1);
 	}
 
-	private void _verifyStrangersURL(
+	private void _sendCompanySecurityStrangersURLRedirect(
 			ActionRequest actionRequest, ActionResponse actionResponse,
 			ThemeDisplay themeDisplay)
 		throws Exception {
