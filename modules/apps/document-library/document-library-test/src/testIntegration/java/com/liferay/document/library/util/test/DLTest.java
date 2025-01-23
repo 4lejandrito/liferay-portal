@@ -68,7 +68,7 @@ public class DLTest {
 	public void testGetUniqueFileName() throws Exception {
 		String fileNamePrefix = RandomTestUtil.randomString();
 
-		String fileName = fileNamePrefix + "1.0.txt";
+		String fileName = fileNamePrefix + ".txt";
 
 		Assert.assertEquals(
 			fileName,
@@ -78,7 +78,7 @@ public class DLTest {
 		_addFileEntry(fileName, RandomTestUtil.randomString());
 
 		Assert.assertEquals(
-			fileNamePrefix + "1.0 (1).txt",
+			fileNamePrefix + " (1).txt",
 			DLUtil.getUniqueFileName(
 				_group.getGroupId(), _dlFolder.getFolderId(), fileName, false));
 	}
@@ -87,7 +87,7 @@ public class DLTest {
 	public void testGetUniqueTitle() throws Exception {
 		String titlePrefix = RandomTestUtil.randomString();
 
-		String title = titlePrefix + "1.0";
+		String title = titlePrefix;
 
 		Assert.assertEquals(
 			title,
@@ -97,7 +97,7 @@ public class DLTest {
 		_addFileEntry(RandomTestUtil.randomString(), title);
 
 		Assert.assertEquals(
-			titlePrefix + "1.0 (1)",
+			titlePrefix + " (1)",
 			DLUtil.getUniqueTitle(
 				_group.getGroupId(), _dlFolder.getFolderId(), title));
 	}
