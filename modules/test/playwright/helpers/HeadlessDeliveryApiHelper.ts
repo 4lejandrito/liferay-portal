@@ -185,9 +185,9 @@ export class HeadlessDeliveryApiHelper {
 	}
 
 	async postMessageBoardMessage({
-									  articleBody,
-									  messageBoardThreadId,
-								  }: {
+		articleBody,
+		messageBoardThreadId,
+	}: {
 		articleBody: string;
 		messageBoardThreadId: string;
 	}): Promise<MessageBoardMessage> {
