@@ -133,7 +133,7 @@ public class ObjectFieldResourceImpl extends BaseObjectFieldResourceImpl {
 				GetterUtil.getBoolean(objectField.getIndexed()),
 				GetterUtil.getBoolean(objectField.getIndexedAsKeyword()),
 				objectField.getIndexedLanguageId(),
-				LocalizedMapUtil.getLocalizedMap(objectField.getLabel()),
+				LocalizedMapUtil.populateLocalizedMap(objectField.getLabel()),
 				GetterUtil.getBoolean(
 					objectField.getLocalized(),
 					objectDefinition.isEnableLocalization()),
@@ -180,7 +180,7 @@ public class ObjectFieldResourceImpl extends BaseObjectFieldResourceImpl {
 				GetterUtil.getBoolean(objectField.getIndexed()),
 				GetterUtil.getBoolean(objectField.getIndexedAsKeyword()),
 				objectField.getIndexedLanguageId(),
-				LocalizedMapUtil.getLocalizedMap(objectField.getLabel()),
+				LocalizedMapUtil.populateLocalizedMap(objectField.getLabel()),
 				GetterUtil.getBoolean(objectField.getLocalized()),
 				objectField.getName(), objectField.getReadOnlyAsString(),
 				objectField.getReadOnlyConditionExpression(),

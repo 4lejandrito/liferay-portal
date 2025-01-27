@@ -57,7 +57,6 @@ import com.liferay.object.system.SystemObjectDefinitionManagerRegistry;
 import com.liferay.petra.lang.SafeCloseable;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
-import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.mass.delete.MassDeleteCacheThreadLocal;
@@ -91,7 +90,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -256,13 +254,13 @@ public class ObjectDefinitionResourceImpl
 						objectDefinition.getEnableIndexSearch()),
 					GetterUtil.getBoolean(
 						objectDefinition.getEnableLocalization()),
-					_getLocalizedMap(
+					LocalizedMapUtil.populateLocalizedMap(
 						objectDefinition.getDefaultLanguageId(),
 						objectDefinition.getLabel()),
 					objectDefinition.getName(),
 					objectDefinition.getPanelAppOrder(),
 					objectDefinition.getPanelCategoryKey(),
-					_getLocalizedMap(
+					LocalizedMapUtil.populateLocalizedMap(
 						objectDefinition.getDefaultLanguageId(),
 						objectDefinition.getPluralLabel()),
 					GetterUtil.getBoolean(objectDefinition.getPortlet()),
@@ -294,13 +292,13 @@ public class ObjectDefinitionResourceImpl
 						objectDefinition.getEnableLocalization()),
 					GetterUtil.getBoolean(
 						objectDefinition.getEnableObjectEntryDraft()),
-					_getLocalizedMap(
+					LocalizedMapUtil.populateLocalizedMap(
 						objectDefinition.getDefaultLanguageId(),
 						objectDefinition.getLabel()),
 					objectDefinition.getName(),
 					objectDefinition.getPanelAppOrder(),
 					objectDefinition.getPanelCategoryKey(),
-					_getLocalizedMap(
+					LocalizedMapUtil.populateLocalizedMap(
 						objectDefinition.getDefaultLanguageId(),
 						objectDefinition.getPluralLabel()),
 					GetterUtil.getBoolean(objectDefinition.getPortlet(), true),
@@ -540,14 +538,14 @@ public class ObjectDefinitionResourceImpl
 						objectDefinition.getEnableObjectEntryDraft()),
 					GetterUtil.getBoolean(
 						objectDefinition.getEnableObjectEntryHistory()),
-					_getLocalizedMap(
+					LocalizedMapUtil.populateLocalizedMap(
 						objectDefinition.getDefaultLanguageId(),
 						objectDefinition.getLabel()),
 					objectDefinition.getName(),
 					objectDefinition.getPanelAppOrder(),
 					objectDefinition.getPanelCategoryKey(),
 					GetterUtil.getBoolean(objectDefinition.getPortlet()),
-					_getLocalizedMap(
+					LocalizedMapUtil.populateLocalizedMap(
 						objectDefinition.getDefaultLanguageId(),
 						objectDefinition.getPluralLabel()),
 					objectDefinition.getScope(), statusInt);
@@ -658,10 +656,9 @@ public class ObjectDefinitionResourceImpl
 				GetterUtil.getBoolean(objectField.getIndexed()),
 				GetterUtil.getBoolean(objectField.getIndexedAsKeyword()),
 				objectField.getIndexedLanguageId(),
-				LocalizedMapUtil.getLocalizedMap(
-					LocalizedMapUtil.populateI18nMap(
-						objectDefinition.getDefaultLanguageId(),
-						objectField.getLabel(), objectField.getName())),
+				LocalizedMapUtil.populateLocalizedMap(
+					objectDefinition.getDefaultLanguageId(),
+					objectField.getLabel(), objectField.getName()),
 				GetterUtil.getBoolean(objectField.getLocalized()),
 				objectField.getName(), objectField.getReadOnlyAsString(),
 				objectField.getReadOnlyConditionExpression(),
@@ -1146,13 +1143,6 @@ public class ObjectDefinitionResourceImpl
 		return accountEntryRestrictedObjectRelationshipsNames;
 	}
 
-	private Map<Locale, String> _getLocalizedMap(
-		String defaultLanguageId, Map<String, String> i18nMap) {
-
-		return LocalizedMapUtil.getLocalizedMap(
-			LocalizedMapUtil.populateI18nMap(defaultLanguageId, i18nMap, null));
-	}
-
 	private long _getObjectFolderId(String objectFolderExternalReferenceCode)
 		throws Exception {
 
@@ -1275,9 +1265,6 @@ public class ObjectDefinitionResourceImpl
 	private static final TransactionConfig _transactionConfig =
 		TransactionConfig.Factory.create(
 			Propagation.REQUIRES_NEW, new Class<?>[] {Exception.class});
-
-	@Reference
-	private Language _language;
 
 	@Reference
 	private ListTypeDefinitionLocalService _listTypeDefinitionLocalService;
