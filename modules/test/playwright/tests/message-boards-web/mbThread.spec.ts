@@ -131,3 +131,58 @@ test(
 		await expect(messageBoardsEditThreadPage.bodyTextBox).toBeVisible();
 	}
 );
+
+test(
+	'Can open two different replies',
+	{
+		tag: '@LPD-45199',
+	},
+	async ({
+		apiHelpers,
+		messageBoardsEditThreadPage,
+		messageBoardsPage,
+		page,
+		site,
+	}) => {
+		const threadTitle = 'MB Thread title';
+		const messageBody = 'MB Thread message';
+
+		const messageBoardThread =
+			await apiHelpers.headlessDelivery.postMessageBoardThread({
+				articleBody: getRandomString(),
+				headline: threadTitle,
+				siteId: site.id,
+			});
+
+		await apiHelpers.headlessDelivery.postMessageBoardMessage({
+			articleBody: messageBody,
+			messageBoardThreadId: messageBoardThread.id,
+		});
+
+		await messageBoardsPage.goto(site.friendlyUrlPath);
+
+		await page.getByRole('link', {name: threadTitle}).click();
+
+		await page.getByRole('button', {name: 'Reply'}).click();
+
+		await expect(messageBoardsEditThreadPage.bodyTextBox).toBeVisible();
+
+		const actionsButton = page
+			.locator('.panel-heading')
+			.filter({hasText: 'RE: ' + threadTitle})
+			.getByRole('button', {name: 'Actions'});
+
+		await clickAndExpectToBeVisible({
+			autoClick: true,
+			target: page.getByRole('link', {
+				exact: true,
+				name: 'Reply',
+			}),
+			trigger: actionsButton,
+		});
+
+		const editors = await page.locator('iframe');
+
+		await expect(editors).toHaveCount(2);
+	}
+);
