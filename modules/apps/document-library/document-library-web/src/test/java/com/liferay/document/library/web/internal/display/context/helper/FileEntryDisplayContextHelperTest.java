@@ -167,9 +167,7 @@ public class FileEntryDisplayContextHelperTest {
 	}
 
 	@Test
-	public void testIsCopyActionAvailableWhenGuestUser()
-		throws PortalException {
-
+	public void testIsCopyActionAvailable() throws PortalException {
 		PermissionChecker permissionChecker = Mockito.mock(
 			PermissionChecker.class);
 
