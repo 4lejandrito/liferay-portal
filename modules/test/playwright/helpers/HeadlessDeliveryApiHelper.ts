@@ -184,6 +184,24 @@ export class HeadlessDeliveryApiHelper {
 		);
 	}
 
+	async postMessageBoardMessage({
+									  articleBody,
+									  messageBoardThreadId,
+								  }: {
+		articleBody: string;
+		messageBoardThreadId: string;
+	}): Promise<MessageBoardMessage> {
+		return this.apiHelpers.post(
+			`${this.apiHelpers.baseUrl}${this.basePath}/message-board-threads/${messageBoardThreadId}/message-board-messages`,
+			{
+				data: {
+					articleBody,
+				},
+				failOnStatusCode: true,
+			}
+		);
+	}
+
 	async postStructuredContent({
 		categoryIds,
 		contentStructureId,
