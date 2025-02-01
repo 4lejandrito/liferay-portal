@@ -189,6 +189,7 @@ public class CTRowUtil {
 		}
 
 		sb.setStringAt(")", sb.index() - 1);
+
 		sb.append(")");
 
 		return sb.toString();

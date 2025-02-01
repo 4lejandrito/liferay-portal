@@ -118,6 +118,7 @@ public class CTServiceCopier<T extends CTModel<T>> {
 		}
 
 		sb.setStringAt(")", sb.index() - 1);
+
 		sb.append(")");
 
 		CTRowUtil.copyCTRows(ctPersistence, connection, sb.toString());

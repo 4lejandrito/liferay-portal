@@ -480,6 +480,7 @@ public class CTCollectionLocalServiceImpl
 					for (long modelClassPK : entry.getValue()) {
 						if (i == _BATCH_SIZE) {
 							sb.setStringAt(")", sb.index() - 1);
+
 							sb.append(" or ");
 							sb.append(primaryKeyName);
 							sb.append(" in (");
@@ -494,6 +495,7 @@ public class CTCollectionLocalServiceImpl
 					}
 
 					sb.setStringAt(")", sb.index() - 1);
+
 					sb.append(")");
 
 					Connection connection = _currentConnection.getConnection(
@@ -1475,6 +1477,7 @@ public class CTCollectionLocalServiceImpl
 		for (CTEntry ctEntry : ctEntries) {
 			if (i == _BATCH_SIZE) {
 				sb.setStringAt(")", sb.index() - 1);
+
 				sb.append(" or ");
 				sb.append(primaryKeyName);
 				sb.append(" in (");
@@ -1489,6 +1492,7 @@ public class CTCollectionLocalServiceImpl
 		}
 
 		sb.setStringAt(")", sb.index() - 1);
+
 		sb.append(")");
 
 		Connection connection = _currentConnection.getConnection(
@@ -1538,6 +1542,7 @@ public class CTCollectionLocalServiceImpl
 		for (CTEntry ctEntry : ctEntries) {
 			if (i == _BATCH_SIZE) {
 				sb.setStringAt(")", sb.index() - 1);
+
 				sb.append(" or ");
 				sb.append(primaryKeyName);
 				sb.append(" in (");
@@ -1552,6 +1557,7 @@ public class CTCollectionLocalServiceImpl
 		}
 
 		sb.setStringAt(")", sb.index() - 1);
+
 		sb.append(")");
 
 		Connection connection = _currentConnection.getConnection(
