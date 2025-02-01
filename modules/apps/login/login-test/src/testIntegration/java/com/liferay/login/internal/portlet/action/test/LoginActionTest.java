@@ -109,11 +109,11 @@ public class LoginActionTest {
 	public void testLoginRedirectWithCustomContextFromAUtilityPage()
 		throws Exception {
 
-		String context = "/mycontext";
+		String contextPath = "/" + RandomTestUtil.randomString();
 
 		try (AutoCloseable autoCloseable =
 				ReflectionTestUtil.setFieldValueWithAutoCloseable(
-					_portal, "_pathContext", context)) {
+					_portal, "_pathContext", contextPath)) {
 
 			HttpURLConnection httpURLConnection = _getHttpURLConnection();
 
@@ -127,7 +127,8 @@ public class LoginActionTest {
 					StringBundler.concat(
 						"_com_liferay_login_web_portlet_LoginPortlet_redirect=",
 						"http%3A%2F%2Flocalhost%3A8080",
-						HtmlUtil.escapeURL(context), "%2Fweb%2Fguest%2Fhome"),
+						HtmlUtil.escapeURL(contextPath),
+						"%2Fweb%2Fguest%2Fhome"),
 					StringPool.BLANK));
 		}
 	}
