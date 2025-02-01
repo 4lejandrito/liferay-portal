@@ -467,9 +467,7 @@ public class CTCollectionLocalServiceImpl
 
 					List<Long> entryValue = entry.getValue();
 
-					StringBundler sb = new StringBundler(
-						(2 * entryValue.size()) +
-							((entryValue.size() % _BATCH_SIZE) * 3) + 8);
+					StringBundler sb = new StringBundler();
 
 					sb.append("delete from ");
 					sb.append(ctPersistence.getTableName());
@@ -1464,9 +1462,7 @@ public class CTCollectionLocalServiceImpl
 		long ctCollectionId, List<CTEntry> ctEntries,
 		CTPersistence<?> ctPersistence, String primaryKeyName) {
 
-		StringBundler sb = new StringBundler(
-			(2 * ctEntries.size()) + ((ctEntries.size() % _BATCH_SIZE) * 3) +
-				8);
+		StringBundler sb = new StringBundler();
 
 		sb.append("delete from ");
 		sb.append(ctPersistence.getTableName());
@@ -1527,9 +1523,7 @@ public class CTCollectionLocalServiceImpl
 		long fromCTCollectionId, long toCTCollectionId, List<CTEntry> ctEntries,
 		CTPersistence<?> ctPersistence, String primaryKeyName) {
 
-		StringBundler sb = new StringBundler(
-			(2 * ctEntries.size()) + ((ctEntries.size() % _BATCH_SIZE) * 3) +
-				10);
+		StringBundler sb = new StringBundler();
 
 		sb.append("update ");
 		sb.append(ctPersistence.getTableName());

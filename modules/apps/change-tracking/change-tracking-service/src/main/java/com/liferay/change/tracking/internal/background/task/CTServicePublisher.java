@@ -83,10 +83,10 @@ public class CTServicePublisher<T extends CTModel<T>> {
 			long tempCTCollectionId)
 		throws Exception {
 
+		StringBundler sb = new StringBundler();
+
 		Map<String, Integer> tableColumnsMap =
 			ctPersistence.getTableColumnsMap();
-
-		StringBundler sb = new StringBundler((5 * tableColumnsMap.size()) + 8);
 
 		sb.append("select ");
 
@@ -229,9 +229,7 @@ public class CTServicePublisher<T extends CTModel<T>> {
 					primaryKey, tempCTCollectionId);
 			}
 
-			StringBundler sb = new StringBundler(
-				(2 * _modificationCTEntries.size()) +
-					((_modificationCTEntries.size() % _BATCH_SIZE) * 5) + 8);
+			StringBundler sb = new StringBundler();
 
 			sb.append("delete from ");
 			sb.append(tableName);
@@ -384,9 +382,7 @@ public class CTServicePublisher<T extends CTModel<T>> {
 			Map<Serializable, CTEntry> ctEntries, long ctCollectionId)
 		throws Exception {
 
-		StringBundler sb = new StringBundler(
-			(2 * ctEntries.size()) + ((ctEntries.size() % _BATCH_SIZE) * 3) +
-				10);
+		StringBundler sb = new StringBundler();
 
 		sb.append("select ");
 		sb.append(primaryKeyName);
