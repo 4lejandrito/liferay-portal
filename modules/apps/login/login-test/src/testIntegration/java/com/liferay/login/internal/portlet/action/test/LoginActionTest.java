@@ -89,9 +89,7 @@ public class LoginActionTest {
 	}
 
 	@Test
-	public void testExclusiveStateInModalWhenLoginFromALayoutUtilityPageEntry()
-		throws Exception {
-
+	public void testExecuteHasExclusiveState() throws Exception {
 		HttpURLConnection httpURLConnection = _getHttpURLConnection();
 
 		Assert.assertEquals(200, httpURLConnection.getResponseCode());
@@ -104,9 +102,7 @@ public class LoginActionTest {
 	}
 
 	@Test
-	public void testLoginRedirectWithCustomContextFromAUtilityPage()
-		throws Exception {
-
+	public void testExecuteWithContextPath() throws Exception {
 		String contextPath = "/" + RandomTestUtil.randomString();
 
 		try (AutoCloseable autoCloseable =
@@ -132,9 +128,7 @@ public class LoginActionTest {
 	}
 
 	@Test
-	public void testLoginRedirectWithNoDefaultSiteNameFromAUtilityPage()
-		throws Exception {
-
+	public void testExecuteWithNoDefaultSiteName() throws Exception {
 		try (SafeCloseable safeCloseable =
 				PrefsPropsTestUtil.swapWithSafeCloseable(
 					TestPropsValues.getCompanyId(),
@@ -157,7 +151,7 @@ public class LoginActionTest {
 	}
 
 	@Test
-	public void testNormalStateWhenLoginFromAUtilityPage() throws Exception {
+	public void testExecuteWithPromptEnabled() throws Exception {
 		long groupId = _group.getGroupId();
 
 		try (GroupConfigurationTemporarySwapper configurationTemporarySwapper =
