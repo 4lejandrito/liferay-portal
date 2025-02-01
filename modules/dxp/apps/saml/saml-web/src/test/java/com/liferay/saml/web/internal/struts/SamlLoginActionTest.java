@@ -78,7 +78,7 @@ public class SamlLoginActionTest {
 	}
 
 	@Test
-	public void testExecuteWhenRedirectMessageIsDisabled() throws Exception {
+	public void testExecute() throws Exception {
 		String companyName = RandomTestUtil.randomString();
 		String layoutHtmlTitle = RandomTestUtil.randomString();
 
