@@ -39,11 +39,8 @@ public class DLValidatorImplTest {
 		DLValidatorImpl dlValidatorImpl = new DLValidatorImpl();
 
 		dlValidatorImpl.setConfigurationProvider(_configurationProvider);
-
 		dlValidatorImpl.setDLConfiguration(_dlConfiguration);
-
 		dlValidatorImpl.setGroupLocalService(_groupLocalService);
-
 		dlValidatorImpl.setUploadServletRequestConfigurationHelper(
 			_uploadServletRequestConfigurationProvider);
 
