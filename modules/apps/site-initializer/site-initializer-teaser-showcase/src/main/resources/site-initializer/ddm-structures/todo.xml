@@ -2,7 +2,7 @@
 
 <root>
 	<structure>
-		<name>To-Do</name>
+		<name>Todo</name>
 		<description></description>
 		<definition>
 			<![CDATA[
@@ -17,7 +17,7 @@
 							"fieldReference": "assignedTo",
 							"indexType": "keyword",
 							"label": {
-								"en_US": "Assigned to"
+								"en_US": "Assigned To"
 							},
 							"localizable": true,
 							"name": "assignedTo",
