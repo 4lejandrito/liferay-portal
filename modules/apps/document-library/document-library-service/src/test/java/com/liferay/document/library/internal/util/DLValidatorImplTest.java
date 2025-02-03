@@ -158,10 +158,8 @@ public class DLValidatorImplTest {
 	@Test(expected = FileMimeTypeException.class)
 	public void testValidateFileMimeType() throws Exception {
 		_validateFileMimeType(new String[] {"*"}, "text/plain");
-
-		_validateFileMimeType(new String[] {"text/plain"}, "text/plain");
-
 		_validateFileMimeType(new String[] {"text/plain"}, "application/pdf");
+		_validateFileMimeType(new String[] {"text/plain"}, "text/plain");
 	}
 
 	@Test
