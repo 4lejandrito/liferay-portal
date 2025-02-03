@@ -245,10 +245,8 @@ public class JournalArticleSitemapURLProvider implements SitemapURLProvider {
 			return;
 		}
 
-		Set<String> processedArticleIds = new HashSet<>();
-
 		String portalURL = _portal.getPortalURL(layoutSet, themeDisplay);
-
+		Set<String> processedArticleIds = new HashSet<>();
 		Set<Locale> siteAvailableLocales = _language.getAvailableLocales(
 			themeDisplay.getScopeGroupId());
 
