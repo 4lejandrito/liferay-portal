@@ -84,14 +84,16 @@ public class
 			AssetVocabulary assetVocabulary, long[] classNameIds)
 		throws Exception {
 
-		long[] classTypePKs = new long[classNameIds.length];
-		boolean[] requireds = new boolean[classNameIds.length];
-
-		Arrays.fill(classTypePKs, AssetCategoryConstants.ALL_CLASS_TYPE_PK);
-		Arrays.fill(requireds, false);
-
 		AssetVocabularySettingsHelper assetVocabularySettingsHelper =
 			new AssetVocabularySettingsHelper(assetVocabulary.getSettings());
+
+		long[] classTypePKs = new long[classNameIds.length];
+
+		Arrays.fill(classTypePKs, AssetCategoryConstants.ALL_CLASS_TYPE_PK);
+
+		boolean[] requireds = new boolean[classNameIds.length];
+
+		Arrays.fill(requireds, false);
 
 		assetVocabularySettingsHelper.setClassNameIdsAndClassTypePKs(
 			classNameIds, classTypePKs, requireds);
