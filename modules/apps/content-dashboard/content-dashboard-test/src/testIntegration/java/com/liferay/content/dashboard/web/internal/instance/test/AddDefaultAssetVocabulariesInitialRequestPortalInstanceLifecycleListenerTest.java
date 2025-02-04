@@ -53,13 +53,11 @@ public class
 			_assetVocabularyLocalService.fetchGroupVocabulary(
 				company.getGroupId(), "audience");
 
-		long[] originalClassNameIdClassNameIds =
-			assetVocabulary.getSelectedClassNameIds();
+		long[] selectedClassNameIds = assetVocabulary.getSelectedClassNameIds();
 
-		long classNameId = originalClassNameIdClassNameIds[0];
+		long classNameId = selectedClassNameIds[0];
 
-		Set<Long> classNameIds = SetUtil.fromArray(
-			originalClassNameIdClassNameIds);
+		Set<Long> classNameIds = SetUtil.fromArray(selectedClassNameIds);
 
 		classNameIds.remove(classNameId);
 
@@ -76,7 +74,7 @@ public class
 					assetVocabulary.getSelectedClassNameIds(), classNameId));
 		}
 		finally {
-			_updateVocabulary(assetVocabulary, originalClassNameIdClassNameIds);
+			_updateVocabulary(assetVocabulary, selectedClassNameIds);
 		}
 	}
 
