@@ -73,7 +73,7 @@ public class EditLayoutModeProductNavigationControlMenuEntryTest {
 	}
 
 	@Test
-	public void testIsShowForContentLayout() throws Exception {
+	public void testIsShow() throws Exception {
 		Layout layout = LayoutTestUtil.addTypeContentLayout(_group);
 
 		FileEntry fileEntry = _addFileEntry(_group);
