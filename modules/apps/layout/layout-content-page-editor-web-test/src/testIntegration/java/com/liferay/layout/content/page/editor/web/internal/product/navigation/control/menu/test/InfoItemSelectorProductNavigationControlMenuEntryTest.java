@@ -125,7 +125,6 @@ public class InfoItemSelectorProductNavigationControlMenuEntryTest {
 		MockHttpServletRequest mockHttpServletRequest =
 			new MockHttpServletRequest();
 
-		mockHttpServletRequest.setParameter("p_l_mode", Constants.EDIT);
 		mockHttpServletRequest.setAttribute(WebKeys.LAYOUT, layout);
 
 		ThemeDisplay themeDisplay = new ThemeDisplay();
@@ -141,6 +140,8 @@ public class InfoItemSelectorProductNavigationControlMenuEntryTest {
 
 		mockHttpServletRequest.setAttribute(
 			WebKeys.THEME_DISPLAY, themeDisplay);
+
+		mockHttpServletRequest.setParameter("p_l_mode", Constants.EDIT);
 
 		return mockHttpServletRequest;
 	}
