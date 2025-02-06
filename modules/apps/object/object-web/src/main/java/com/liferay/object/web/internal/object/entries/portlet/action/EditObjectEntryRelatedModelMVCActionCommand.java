@@ -93,10 +93,9 @@ public class EditObjectEntryRelatedModelMVCActionCommand
 
 				hideDefaultErrorMessage(actionRequest);
 
-				String redirect = ParamUtil.getString(
-					actionRequest, "redirect");
-
-				sendRedirect(actionRequest, actionResponse, redirect);
+				sendRedirect(
+					actionRequest, actionResponse,
+					ParamUtil.getString(actionRequest, "redirect"));
 			}
 			else {
 				throw exception;
