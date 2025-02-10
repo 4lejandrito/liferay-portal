@@ -5,7 +5,6 @@
 
 package com.liferay.object.model.impl;
 
-import com.liferay.object.constants.ObjectFieldConstants;
 import com.liferay.object.entry.util.ObjectEntryValuesUtil;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
@@ -75,6 +74,11 @@ public class ObjectEntryImpl extends ObjectEntryBaseImpl {
 
 	@Override
 	public String getTitleValue() throws PortalException {
+		return getTitleValue(null);
+	}
+
+	@Override
+	public String getTitleValue(String languageId) throws PortalException {
 		ObjectDefinition objectDefinition =
 			ObjectDefinitionLocalServiceUtil.getObjectDefinition(
 				getObjectDefinitionId());
@@ -87,21 +91,15 @@ public class ObjectEntryImpl extends ObjectEntryBaseImpl {
 					objectDefinition.getTitleObjectFieldId());
 
 			if (objectField != null) {
-				String title = ObjectEntryValuesUtil.getValueString(
-					objectField, getValues());
+				String title = String.valueOf(
+					ObjectEntryValuesUtil.getValue(
+						languageId, objectField, new HashMap<>(getValues())));
 
 				if (Validator.isNotNull(title)) {
 					return title;
 				}
 
-				if (!Objects.equals(
-						objectField.getBusinessType(),
-						ObjectFieldConstants.BUSINESS_TYPE_ATTACHMENT) &&
-					!Objects.equals(
-						objectField.getBusinessType(),
-						ObjectFieldConstants.BUSINESS_TYPE_RICH_TEXT) &&
-					Objects.equals(objectField.getName(), "id")) {
-
+				if (Objects.equals(objectField.getName(), "id")) {
 					return String.valueOf(getObjectEntryId());
 				}
 
