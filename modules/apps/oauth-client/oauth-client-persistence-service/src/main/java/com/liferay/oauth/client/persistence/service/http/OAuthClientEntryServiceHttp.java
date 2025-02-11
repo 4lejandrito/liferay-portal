@@ -45,7 +45,7 @@ public class OAuthClientEntryServiceHttp {
 			addOAuthClientEntry(
 				HttpPrincipal httpPrincipal, long userId,
 				String authRequestParametersJSON, String authServerWellKnownURI,
-				String infoJSON, long metadataCachingTime,
+				String infoJSON, long metadataCacheTime,
 				String oidcUserInfoMapperJSON,
 				String tokenRequestParametersJSON)
 		throws com.liferay.portal.kernel.exception.PortalException {
@@ -57,7 +57,7 @@ public class OAuthClientEntryServiceHttp {
 
 			MethodHandler methodHandler = new MethodHandler(
 				methodKey, userId, authRequestParametersJSON,
-				authServerWellKnownURI, infoJSON, metadataCachingTime,
+				authServerWellKnownURI, infoJSON, metadataCacheTime,
 				oidcUserInfoMapperJSON, tokenRequestParametersJSON);
 
 			Object returnObj = null;
@@ -460,7 +460,7 @@ public class OAuthClientEntryServiceHttp {
 			updateOAuthClientEntry(
 				HttpPrincipal httpPrincipal, long oAuthClientEntryId,
 				String authRequestParametersJSON, String authServerWellKnownURI,
-				String infoJSON, long metadataCachingTime,
+				String infoJSON, long metadataCacheTime,
 				String oidcUserInfoMapperJSON,
 				String tokenRequestParametersJSON)
 		throws com.liferay.portal.kernel.exception.PortalException {
@@ -472,7 +472,7 @@ public class OAuthClientEntryServiceHttp {
 
 			MethodHandler methodHandler = new MethodHandler(
 				methodKey, oAuthClientEntryId, authRequestParametersJSON,
-				authServerWellKnownURI, infoJSON, metadataCachingTime,
+				authServerWellKnownURI, infoJSON, metadataCacheTime,
 				oidcUserInfoMapperJSON, tokenRequestParametersJSON);
 
 			Object returnObj = null;
