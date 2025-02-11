@@ -72,6 +72,7 @@ import com.liferay.object.service.ObjectFieldLocalService;
 import com.liferay.object.service.ObjectFieldSettingLocalService;
 import com.liferay.object.service.ObjectLayoutLocalService;
 import com.liferay.object.service.ObjectRelationshipLocalService;
+import com.liferay.object.service.ObjectRelationshipService;
 import com.liferay.object.service.ObjectStateFlowLocalService;
 import com.liferay.object.service.ObjectStateLocalService;
 import com.liferay.object.service.ObjectViewLocalService;
@@ -524,7 +525,8 @@ public class ObjectDefinitionDeployerImpl implements ObjectDefinitionDeployer {
 				MVCActionCommand.class,
 				new EditObjectEntryRelatedModelMVCActionCommand(
 					_objectDefinitionLocalService,
-					_objectRelationshipLocalService, _portal),
+					_objectRelationshipLocalService,
+					_objectRelationshipService),
 				HashMapDictionaryBuilder.<String, Object>put(
 					"javax.portlet.name", objectDefinition.getPortletId()
 				).put(
@@ -759,6 +761,9 @@ public class ObjectDefinitionDeployerImpl implements ObjectDefinitionDeployer {
 
 	@Reference
 	private ObjectRelationshipLocalService _objectRelationshipLocalService;
+
+	@Reference
+	private ObjectRelationshipService _objectRelationshipService;
 
 	@Reference
 	private ObjectScopeProviderRegistry _objectScopeProviderRegistry;
