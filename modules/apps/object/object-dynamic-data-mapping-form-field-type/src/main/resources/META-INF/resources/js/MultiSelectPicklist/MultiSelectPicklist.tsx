@@ -15,8 +15,10 @@ interface MultiSelectOption {
 	value: string;
 }
 
+type Values = string[] | LocalizedValue<string[]>;
+
 interface MultiSelectPicklistProps {
-	errorMessage?: string;
+	errorMessage: string;
 	id: string;
 	label: string;
 	localizedValue?: Liferay.Language.FullyLocalizedValue<string> | {};
@@ -27,7 +29,7 @@ interface MultiSelectPicklistProps {
 	readOnly: boolean;
 	required: boolean;
 	tip?: string;
-	value: string[];
+	value: Values;
 }
 
 export default function MultiSelectPicklist({
@@ -57,6 +59,7 @@ export default function MultiSelectPicklist({
 			{...otherProps}
 		>
 			<MultipleSelection
+				{...otherProps}
 				errorMessage={errorMessage}
 				id={id}
 				label={label}
@@ -69,8 +72,6 @@ export default function MultiSelectPicklist({
 				tip={tip}
 				value={value}
 			/>
-
-			<input name={name} type="hidden" value={value} />
 		</FieldBase>
 	);
 }
