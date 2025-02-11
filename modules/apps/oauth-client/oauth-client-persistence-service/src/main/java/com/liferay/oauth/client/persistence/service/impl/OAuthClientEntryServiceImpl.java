@@ -186,7 +186,7 @@ public class OAuthClientEntryServiceImpl
 		return updateOAuthClientEntry(
 			oAuthClientEntryId, authRequestParametersJSON,
 			authServerWellKnownURI, infoJSON,
-			oAuthClientEntry.getMetadataCacheInMillis(), oidcUserInfoMapperJSON,
+			oAuthClientEntry.getMetadataCacheTime(), oidcUserInfoMapperJSON,
 			tokenRequestParametersJSON);
 	}
 

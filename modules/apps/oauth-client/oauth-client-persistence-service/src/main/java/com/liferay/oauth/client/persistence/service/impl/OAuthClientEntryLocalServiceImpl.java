@@ -306,7 +306,7 @@ public class OAuthClientEntryLocalServiceImpl
 		return updateOAuthClientEntry(
 			oAuthClientEntryId, authRequestParametersJSON,
 			authServerWellKnownURI, infoJSON,
-			oAuthClientEntry.getMetadataCacheInMillis(), oidcUserInfoMapperJSON,
+			oAuthClientEntry.getMetadataCacheTime(), oidcUserInfoMapperJSON,
 			tokenRequestParametersJSON);
 	}
 
