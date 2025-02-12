@@ -18,6 +18,18 @@ export class FormFieldsPage {
 			.getByTitle('Image');
 	}
 
+	async addMultipleSelectItem(optionName: string, nth?: number) {
+		const inputFieldLocator = this.page.getByRole('combobox');
+
+		if (nth !== null && nth !== undefined) {
+			await inputFieldLocator.nth(nth).click();	
+		} else {
+			await inputFieldLocator.click();
+		}
+
+		await this.page.getByRole('option', { name: optionName }).click();
+	};
+
 	async addSelectItem(optionName: string, nth?: number) {
 		const inputFieldLocator = this.page.getByRole('combobox');
 
