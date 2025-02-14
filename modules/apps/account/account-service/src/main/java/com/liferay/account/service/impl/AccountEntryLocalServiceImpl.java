@@ -19,6 +19,7 @@ import com.liferay.account.service.base.AccountEntryLocalServiceBaseImpl;
 import com.liferay.account.validator.AccountEntryEmailAddressValidator;
 import com.liferay.account.validator.AccountEntryEmailAddressValidatorFactory;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
+import com.liferay.batch.engine.kernel.BatchEngineThreadLocal;
 import com.liferay.expando.kernel.service.ExpandoRowLocalService;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.sql.dsl.DSLFunctionFactoryUtil;
@@ -226,13 +227,19 @@ public class AccountEntryLocalServiceImpl
 
 		// Workflow
 
-		if (_isWorkflowEnabled(accountEntry.getCompanyId())) {
+		if (!BatchEngineThreadLocal.isModelIncomplete() &&
+			_isWorkflowEnabled(accountEntry.getCompanyId())) {
+
 			_checkStatus(accountEntry.getStatus(), status);
 
 			accountEntry = _startWorkflowInstance(
 				userId, accountEntry, workflowServiceContext);
 		}
 		else {
+			if (BatchEngineThreadLocal.isModelIncomplete()) {
+				status = WorkflowConstants.STATUS_INCOMPLETE;
+			}
+
 			accountEntry = updateStatus(
 				userId, accountEntryId, status, workflowServiceContext,
 				Collections.emptyMap());
@@ -664,6 +671,10 @@ public class AccountEntryLocalServiceImpl
 
 			workflowServiceContext = (ServiceContext)serviceContext.clone();
 			workflowUserId = serviceContext.getUserId();
+		}
+
+		if (status == WorkflowConstants.STATUS_INCOMPLETE) {
+			status = WorkflowConstants.STATUS_APPROVED;
 		}
 
 		if (_isWorkflowEnabled(accountEntry.getCompanyId())) {
