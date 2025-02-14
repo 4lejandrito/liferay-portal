@@ -1232,6 +1232,15 @@ public class RoleLocalServiceUtil {
 		return getService().updateRole(role);
 	}
 
+	public static Role updateStatus(
+			long userId, long roleId, int status, ServiceContext serviceContext,
+			Map<String, Serializable> workflowContext)
+		throws PortalException {
+
+		return getService().updateStatus(
+			userId, roleId, status, serviceContext, workflowContext);
+	}
+
 	public static void validateName(String name) throws PortalException {
 		getService().validateName(name);
 	}
