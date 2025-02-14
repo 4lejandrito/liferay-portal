@@ -6,15 +6,21 @@
 package com.liferay.headless.admin.user.internal.resource.v1_0;
 
 import com.liferay.account.constants.AccountActionKeys;
+import com.liferay.account.constants.AccountConstants;
 import com.liferay.account.exception.NoSuchGroupException;
 import com.liferay.account.model.AccountEntry;
 import com.liferay.account.model.AccountGroupRel;
+import com.liferay.account.service.AccountEntryLocalService;
+import com.liferay.account.service.AccountGroupLocalService;
 import com.liferay.account.service.AccountGroupRelService;
 import com.liferay.account.service.AccountGroupService;
+import com.liferay.batch.engine.kernel.BatchEngineThreadLocal;
 import com.liferay.expando.kernel.service.ExpandoColumnLocalService;
 import com.liferay.expando.kernel.service.ExpandoTableLocalService;
 import com.liferay.headless.admin.user.dto.v1_0.Account;
+import com.liferay.headless.admin.user.dto.v1_0.AccountBrief;
 import com.liferay.headless.admin.user.dto.v1_0.AccountGroup;
+import com.liferay.headless.admin.user.dto.v1_0.Creator;
 import com.liferay.headless.admin.user.internal.dto.v1_0.converter.constants.DTOConverterConstants;
 import com.liferay.headless.admin.user.internal.dto.v1_0.util.CustomFieldsUtil;
 import com.liferay.headless.admin.user.internal.odata.entity.v1_0.AccountGroupEntityModel;
@@ -22,17 +28,30 @@ import com.liferay.headless.admin.user.resource.v1_0.AccountGroupResource;
 import com.liferay.headless.common.spi.odata.entity.EntityFieldsUtil;
 import com.liferay.headless.common.spi.service.context.ServiceContextBuilder;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.model.ResourceConstants;
+import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.model.UserConstants;
+import com.liferay.portal.kernel.model.role.RoleConstants;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
+import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
+import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortletKeys;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.odata.entity.EntityModel;
 import com.liferay.portal.search.expando.ExpandoBridgeIndexer;
 import com.liferay.portal.vulcan.dto.converter.DTOConverter;
@@ -41,8 +60,15 @@ import com.liferay.portal.vulcan.dto.converter.DefaultDTOConverterContext;
 import com.liferay.portal.vulcan.dto.converter.util.DTOConverterUtil;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
+import com.liferay.portal.vulcan.permission.Permission;
 import com.liferay.portal.vulcan.util.SearchUtil;
+import com.liferay.roles.admin.role.type.contributor.RoleTypeContributor;
+import com.liferay.roles.admin.role.type.contributor.provider.RoleTypeContributorProvider;
 
+import java.io.Serializable;
+
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -59,6 +85,23 @@ import org.osgi.service.component.annotations.ServiceScope;
 	scope = ServiceScope.PROTOTYPE, service = AccountGroupResource.class
 )
 public class AccountGroupResourceImpl extends BaseAccountGroupResourceImpl {
+
+	// THIS WILL BE REMOVED WHEN WE PUT BatchEngineThreadLocal.setBatchEngine IN THE BASE CLASS
+	@Override
+	public void create(
+			Collection<AccountGroup> accountGroups,
+			Map<String, Serializable> parameters)
+		throws Exception {
+
+		try {
+			BatchEngineThreadLocal.setBatchEngine(true);
+
+			super.create(accountGroups, parameters);
+		}
+		finally {
+			BatchEngineThreadLocal.setBatchEngine(false);
+		}
+	}
 
 	@Override
 	public void deleteAccountGroup(Long accountGroupId) throws Exception {
@@ -227,7 +270,8 @@ public class AccountGroupResourceImpl extends BaseAccountGroupResourceImpl {
 				serviceBuilderAccountGroup.getAccountGroupId(),
 				accountGroup.getExternalReferenceCode());
 
-		return _toAccountGroup(serviceBuilderAccountGroup);
+		return _toAccountGroup(
+			_updateNestedResources(accountGroup, serviceBuilderAccountGroup));
 	}
 
 	@Override
@@ -287,6 +331,53 @@ public class AccountGroupResourceImpl extends BaseAccountGroupResourceImpl {
 
 		return putAccountGroup(
 			serviceBuilderAccountGroup.getAccountGroupId(), accountGroup);
+	}
+
+	private com.liferay.account.model.AccountGroup _addAccountGroupRel(
+			AccountBrief accountBrief,
+			com.liferay.account.model.AccountGroup serviceBuilderAccountGroup)
+		throws Exception {
+
+		String externalReferenceCode = accountBrief.getExternalReferenceCode();
+		String type = accountBrief.getType();
+
+		if (Validator.isNull(externalReferenceCode) || Validator.isNull(type)) {
+			return serviceBuilderAccountGroup;
+		}
+
+		AccountEntry accountEntry =
+			_accountEntryLocalService.fetchAccountEntryByExternalReferenceCode(
+				externalReferenceCode,
+				serviceBuilderAccountGroup.getCompanyId());
+
+		if (accountEntry == null) {
+			try {
+				BatchEngineThreadLocal.setModelIncomplete(true);
+
+				accountEntry = _accountEntryLocalService.addAccountEntry(
+					contextUser.getUserId(),
+					AccountConstants.PARENT_ACCOUNT_ENTRY_ID_DEFAULT,
+					GetterUtil.get(
+						accountBrief.getName(), externalReferenceCode),
+					StringPool.BLANK, null, StringPool.BLANK, null,
+					StringPool.BLANK, type, WorkflowConstants.STATUS_INCOMPLETE,
+					null);
+
+				accountEntry =
+					_accountEntryLocalService.updateExternalReferenceCode(
+						accountEntry.getAccountEntryId(),
+						externalReferenceCode);
+			}
+			finally {
+				BatchEngineThreadLocal.setModelIncomplete(false);
+			}
+		}
+
+		_accountGroupRelService.addAccountGroupRel(
+			serviceBuilderAccountGroup.getAccountGroupId(),
+			AccountEntry.class.getName(), accountEntry.getAccountEntryId());
+
+		return serviceBuilderAccountGroup;
 	}
 
 	private ServiceContext _createServiceContext(AccountGroup accountGroup)
@@ -391,6 +482,80 @@ public class AccountGroupResourceImpl extends BaseAccountGroupResourceImpl {
 			contextUser);
 	}
 
+	private com.liferay.account.model.AccountGroup _setResourcePermissions(
+			Permission permission,
+			com.liferay.account.model.AccountGroup serviceBuilderAccountGroup)
+		throws Exception {
+
+		String[] actionIds = permission.getActionIds();
+		String externalReferenceCode =
+			permission.getRoleExternalReferenceCode();
+		String name = permission.getRoleName();
+
+		if (ArrayUtil.isEmpty(actionIds) ||
+			Validator.isNull(externalReferenceCode) || Validator.isNull(name)) {
+
+			return serviceBuilderAccountGroup;
+		}
+
+		Role role = _roleLocalService.fetchRoleByExternalReferenceCode(
+			externalReferenceCode, serviceBuilderAccountGroup.getCompanyId());
+
+		if (role == null) {
+			String className = StringPool.BLANK;
+
+			List<RoleTypeContributor> roleTypeContributors = ListUtil.filter(
+				_roleTypeContributorProvider.getRoleTypeContributors(),
+				roleTypeContributor -> {
+					if (Validator.isNull(permission.getRoleType())) {
+						return false;
+					}
+
+					return StringUtil.equals(
+						roleTypeContributor.getTypeLabel(),
+						permission.getRoleType());
+				});
+
+			if (ListUtil.isNotEmpty(roleTypeContributors)) {
+				RoleTypeContributor roleTypeContributor =
+					roleTypeContributors.get(0);
+
+				className = roleTypeContributor.getClassName();
+			}
+
+			Role existingRole =
+				_roleLocalService.fetchRoleByExternalReferenceCode(
+					externalReferenceCode,
+					serviceBuilderAccountGroup.getCompanyId());
+
+			if (existingRole != null) {
+				name = externalReferenceCode;
+			}
+
+			try {
+				BatchEngineThreadLocal.setModelIncomplete(true);
+
+				role = _roleLocalService.addRole(
+					externalReferenceCode, contextUser.getUserId(), className,
+					0, name, null, null,
+					RoleConstants.getLabelType(permission.getRoleType()),
+					StringPool.BLANK, new ServiceContext());
+			}
+			finally {
+				BatchEngineThreadLocal.setModelIncomplete(false);
+			}
+		}
+
+		_resourcePermissionLocalService.setResourcePermissions(
+			serviceBuilderAccountGroup.getCompanyId(),
+			com.liferay.account.model.AccountGroup.class.getName(),
+			ResourceConstants.SCOPE_INDIVIDUAL,
+			String.valueOf(serviceBuilderAccountGroup.getAccountGroupId()),
+			role.getRoleId(), actionIds);
+
+		return serviceBuilderAccountGroup;
+	}
+
 	private AccountGroup _toAccountGroup(
 			com.liferay.account.model.AccountGroup accountGroup)
 		throws Exception {
@@ -418,6 +583,92 @@ public class AccountGroupResourceImpl extends BaseAccountGroupResourceImpl {
 				serviceBuilderAccountGroup.getAccountGroupId(),
 				accountGroup.getExternalReferenceCode()));
 	}
+
+	private com.liferay.account.model.AccountGroup _updateNestedResources(
+			AccountGroup accountGroup,
+			com.liferay.account.model.AccountGroup serviceBuilderAccountGroup)
+		throws Exception {
+
+		if (!BatchEngineThreadLocal.isBatchEngine()) {
+			return serviceBuilderAccountGroup;
+		}
+
+		AccountBrief[] accountBriefs = accountGroup.getAccountBriefs();
+
+		if (ArrayUtil.isNotEmpty(accountBriefs)) {
+			for (AccountBrief accountBrief : accountBriefs) {
+				serviceBuilderAccountGroup = _addAccountGroupRel(
+					accountBrief, serviceBuilderAccountGroup);
+			}
+		}
+
+		Creator creator = accountGroup.getCreator();
+
+		if (creator != null) {
+			String emailAddress = creator.getEmailAddress();
+			String externalReferenceCode = creator.getExternalReferenceCode();
+
+			if (Validator.isNotNull(emailAddress) &&
+				Validator.isNotNull(externalReferenceCode)) {
+
+				User user = _userLocalService.fetchUserByExternalReferenceCode(
+					externalReferenceCode,
+					serviceBuilderAccountGroup.getCompanyId());
+
+				if (user == null) {
+					try {
+						BatchEngineThreadLocal.setModelIncomplete(true);
+
+						user = _userLocalService.addUserWithWorkflow(
+							contextUser.getUserId(),
+							serviceBuilderAccountGroup.getCompanyId(), true,
+							null, null, false,
+							GetterUtil.get(
+								creator.getScreenName(), externalReferenceCode),
+							emailAddress, LocaleUtil.getDefault(),
+							GetterUtil.get(
+								creator.getGivenName(), externalReferenceCode),
+							StringPool.BLANK,
+							GetterUtil.get(
+								creator.getFamilyName(), externalReferenceCode),
+							0, 0, true, 0, 1, 1970, StringPool.BLANK,
+							UserConstants.TYPE_REGULAR, null, null, null, null,
+							false, new ServiceContext());
+
+						user = _userLocalService.updateExternalReferenceCode(
+							user, externalReferenceCode);
+					}
+					finally {
+						BatchEngineThreadLocal.setModelIncomplete(false);
+					}
+				}
+
+				if (user.getUserId() != contextUser.getUserId()) {
+					serviceBuilderAccountGroup.setUserId(user.getUserId());
+
+					_accountGroupLocalService.updateAccountGroup(
+						serviceBuilderAccountGroup);
+				}
+			}
+		}
+
+		Permission[] permissions = accountGroup.getPermissions();
+
+		if (ArrayUtil.isNotEmpty(permissions)) {
+			for (Permission permission : permissions) {
+				serviceBuilderAccountGroup = _setResourcePermissions(
+					permission, serviceBuilderAccountGroup);
+			}
+		}
+
+		return serviceBuilderAccountGroup;
+	}
+
+	@Reference
+	private AccountEntryLocalService _accountEntryLocalService;
+
+	@Reference
+	private AccountGroupLocalService _accountGroupLocalService;
 
 	@Reference(
 		target = "(model.class.name=com.liferay.account.model.AccountGroup)"
@@ -451,5 +702,17 @@ public class AccountGroupResourceImpl extends BaseAccountGroupResourceImpl {
 
 	@Reference
 	private Portal _portal;
+
+	@Reference
+	private ResourcePermissionLocalService _resourcePermissionLocalService;
+
+	@Reference
+	private RoleLocalService _roleLocalService;
+
+	@Reference
+	private RoleTypeContributorProvider _roleTypeContributorProvider;
+
+	@Reference
+	private UserLocalService _userLocalService;
 
 }
