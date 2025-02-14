@@ -7,6 +7,7 @@ package com.liferay.portal.service.impl;
 
 import com.liferay.announcements.kernel.service.AnnouncementsDeliveryLocalService;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
+import com.liferay.batch.engine.kernel.BatchEngineThreadLocal;
 import com.liferay.expando.kernel.service.ExpandoRowLocalService;
 import com.liferay.mail.kernel.model.MailMessage;
 import com.liferay.mail.kernel.service.MailService;
@@ -195,6 +196,7 @@ import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.usersadmin.util.UsersAdminUtil;
 import com.liferay.ratings.kernel.service.RatingsStatsLocalService;
 import com.liferay.social.kernel.model.SocialRelation;
+import com.liferay.social.kernel.model.SocialRelationConstants;
 import com.liferay.social.kernel.service.SocialActivityLocalService;
 import com.liferay.social.kernel.service.SocialRequestLocalService;
 import com.liferay.social.kernel.service.persistence.SocialRelationPersistence;
@@ -1433,36 +1435,43 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 
 		// Workflow
 
-		long workflowUserId = creatorUserId;
-
-		if (workflowUserId == userId) {
-			workflowUserId = guestUser.getUserId();
-		}
-
 		ServiceContext workflowServiceContext = new ServiceContext();
 
 		if (serviceContext != null) {
 			workflowServiceContext = (ServiceContext)serviceContext.clone();
 		}
 
-		Map<String, Serializable> workflowContext =
-			(Map<String, Serializable>)workflowServiceContext.removeAttribute(
-				"workflowContext");
+		if (!BatchEngineThreadLocal.isModelIncomplete()) {
+			long workflowUserId = creatorUserId;
 
-		if (workflowContext == null) {
-			workflowContext = Collections.emptyMap();
+			if (workflowUserId == userId) {
+				workflowUserId = guestUser.getUserId();
+			}
+
+			Map<String, Serializable> workflowContext =
+				(Map<String, Serializable>)
+					workflowServiceContext.removeAttribute("workflowContext");
+
+			if (workflowContext == null) {
+				workflowContext = Collections.emptyMap();
+			}
+
+			workflowServiceContext.setAttributes(
+				new HashMap<String, Serializable>());
+
+			workflowServiceContext.setAttribute("autoPassword", autoPassword);
+			workflowServiceContext.setAttribute("sendEmail", sendEmail);
+
+			user = WorkflowHandlerRegistryUtil.startWorkflowInstance(
+				companyId, WorkflowConstants.DEFAULT_GROUP_ID, workflowUserId,
+				User.class.getName(), userId, user, workflowServiceContext,
+				workflowContext);
 		}
-
-		workflowServiceContext.setAttributes(
-			new HashMap<String, Serializable>());
-
-		workflowServiceContext.setAttribute("autoPassword", autoPassword);
-		workflowServiceContext.setAttribute("sendEmail", sendEmail);
-
-		user = WorkflowHandlerRegistryUtil.startWorkflowInstance(
-			companyId, WorkflowConstants.DEFAULT_GROUP_ID, workflowUserId,
-			User.class.getName(), userId, user, workflowServiceContext,
-			workflowContext);
+		else {
+			user = updateStatus(
+				user, WorkflowConstants.STATUS_INCOMPLETE,
+				workflowServiceContext);
+		}
 
 		if (serviceContext != null) {
 			String passwordUnencrypted = (String)serviceContext.getAttribute(
@@ -5751,6 +5760,28 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 
 		if ((serviceContext != null) && sendEmailAddressVerification) {
 			sendEmailAddressVerification(user, emailAddress, serviceContext);
+		}
+
+		if (user.getStatus() == WorkflowConstants.STATUS_INCOMPLETE) {
+			user.setStatus(WorkflowConstants.STATUS_DRAFT);
+
+			user = userPersistence.update(user, serviceContext);
+
+			// Workflow
+
+			ServiceContext workflowServiceContext = serviceContext;
+
+			if (workflowServiceContext == null) {
+				workflowServiceContext = new ServiceContext();
+			}
+
+			workflowServiceContext.setAttribute("autoPassword", Boolean.FALSE);
+			workflowServiceContext.setAttribute("sendEmail", Boolean.FALSE);
+
+			user = WorkflowHandlerRegistryUtil.startWorkflowInstance(
+				user.getCompanyId(), WorkflowConstants.DEFAULT_GROUP_ID, userId,
+				User.class.getName(), userId, user, workflowServiceContext,
+				Collections.emptyMap());
 		}
 
 		return user;
