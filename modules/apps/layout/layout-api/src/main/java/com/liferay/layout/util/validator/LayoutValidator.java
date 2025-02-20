@@ -3,12 +3,14 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-package com.liferay.layout.page.template.internal.validator;
+package com.liferay.layout.util.validator;
 
 /**
  * @author Mariano Álvaro Sáiz
  */
-public class LayoutPageTemplateEntryValidator {
+public class LayoutValidator {
+
+
 
 	public static boolean isBlacklistedChar(char c) {
 		for (char blacklistedChar : _BLACKLIST_CHAR) {
@@ -31,7 +33,7 @@ public class LayoutPageTemplateEntryValidator {
 	}
 
 	public static Character getBlacklistCharacter(
-			String string)  {
+		String string)  {
 
 		for (char c : _BLACKLIST_CHAR) {
 			if (string.indexOf(c) >= 0) {
