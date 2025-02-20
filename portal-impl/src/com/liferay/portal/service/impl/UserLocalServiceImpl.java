@@ -5762,6 +5762,7 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 			sendEmailAddressVerification(user, emailAddress, serviceContext);
 		}
 
+		// If a user is being updated and it was a dummy, set it to draft?
 		if (user.getStatus() == WorkflowConstants.STATUS_INCOMPLETE) {
 			user.setStatus(WorkflowConstants.STATUS_DRAFT);
 

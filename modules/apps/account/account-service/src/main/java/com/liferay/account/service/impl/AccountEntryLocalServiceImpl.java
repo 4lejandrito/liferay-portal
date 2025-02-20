@@ -673,6 +673,7 @@ public class AccountEntryLocalServiceImpl
 			workflowUserId = serviceContext.getUserId();
 		}
 
+		// How do we know this is complete at this point?
 		if (status == WorkflowConstants.STATUS_INCOMPLETE) {
 			status = WorkflowConstants.STATUS_APPROVED;
 		}

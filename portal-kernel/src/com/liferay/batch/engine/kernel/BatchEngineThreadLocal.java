@@ -10,8 +10,11 @@ import com.liferay.petra.lang.CentralizedThreadLocal;
 /**
  * @author Stefano Motta
  */
+// We should try to decouple this from batch engine and just use it from the batch engine modules. I suggest the names below.
+// Suggested name: LazyReferencingThreadLocal
 public class BatchEngineThreadLocal {
 
+	// Suggested name: isLazyReferencingEnabled
 	public static boolean isBatchEngine() {
 		return _batchEngine.get();
 	}
@@ -20,10 +23,12 @@ public class BatchEngineThreadLocal {
 		return _modelIncomplete.get();
 	}
 
+	// Suggested name: setLazyReferencingEnabled
 	public static void setBatchEngine(boolean batchEngine) {
 		_batchEngine.set(batchEngine);
 	}
 
+	// When updating nested entities we will probably need a stack of these
 	public static void setModelIncomplete(boolean modelIncomplete) {
 		_modelIncomplete.set(modelIncomplete);
 	}
