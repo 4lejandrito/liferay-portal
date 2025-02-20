@@ -732,7 +732,9 @@ async function createSiteTemplateWithWebContentOnWidgetPage({
 }): Promise<void> {
 	const layoutSetPrototype: LayoutSetPrototype =
 		await apiHelpers.jsonWebServicesLayoutSetPrototype.addLayoutSetPrototypes(
-			templateName
+			{
+				name: templateName
+			}
 		);
 	await page.goto(
 		'group/template-' + layoutSetPrototype.layoutSetPrototypeId
@@ -795,7 +797,9 @@ async function createSiteTemplateWithWebContentOnContentPage({
 }): Promise<void> {
 	const layoutSetPrototype: LayoutSetPrototype =
 		await apiHelpers.jsonWebServicesLayoutSetPrototype.addLayoutSetPrototypes(
-			templateName
+			{
+				name: templateName
+			}
 		);
 	await page.goto(
 		'group/template-' + layoutSetPrototype.layoutSetPrototypeId
@@ -850,7 +854,9 @@ async function createSiteTemplateWithWebContentOnHomePage({
 }): Promise<void> {
 	const layoutSetPrototype: LayoutSetPrototype =
 		await apiHelpers.jsonWebServicesLayoutSetPrototype.addLayoutSetPrototypes(
-			templateName
+			{
+				name: templateName
+			}
 		);
 	await page.goto(
 		'group/template-' + layoutSetPrototype.layoutSetPrototypeId
