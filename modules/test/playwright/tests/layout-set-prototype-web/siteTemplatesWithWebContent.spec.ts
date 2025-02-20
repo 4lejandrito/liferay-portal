@@ -116,16 +116,18 @@ testWithPrivatePages(
 			});
 
 			await applicationsMenuPage.goToSites();
-			site1Id = await sitesPage.createSiteFromTemplate(
-				siteTemplateName,
-				siteName1
-			);
+			site1Id = await sitesPage.createSiteFromTemplate({
+				defaultPagesAsPrivate: true,
+				siteName: siteName1,
+				templateName: siteTemplateName,
+			});
 
 			await applicationsMenuPage.goToSites();
-			site2Id = await sitesPage.createSiteFromTemplate(
-				siteTemplateName,
-				siteName2
-			);
+			site2Id = await sitesPage.createSiteFromTemplate({
+				defaultPagesAsPrivate: true,
+				siteName: siteName2,
+				templateName: siteTemplateName,
+			});
 
 			await applicationsMenuPage.goToSiteTemplates();
 			const siteTemplateUrl =
@@ -708,6 +710,7 @@ async function createSiteTemplateWithContentPageAndAssetPublisher({
 async function createSiteTemplateWithWebContentOnWidgetPage({
 	apiHelpers,
 	journalPage,
+	layoutsUpdateable = true,
 	page,
 	pagesAdminPage,
 	productMenuPage,
@@ -720,6 +723,7 @@ async function createSiteTemplateWithWebContentOnWidgetPage({
 }: {
 	apiHelpers: ApiHelpers;
 	journalPage: JournalPage;
+	layoutsUpdateable?: boolean;
 	page: Page;
 	pagesAdminPage: PagesAdminPage;
 	productMenuPage: ProductMenuPage;
@@ -733,7 +737,8 @@ async function createSiteTemplateWithWebContentOnWidgetPage({
 	const layoutSetPrototype: LayoutSetPrototype =
 		await apiHelpers.jsonWebServicesLayoutSetPrototype.addLayoutSetPrototypes(
 			{
-				name: templateName
+				layoutsUpdateable,
+				name: templateName,
 			}
 		);
 	await page.goto(
@@ -772,6 +777,7 @@ async function createSiteTemplateWithWebContentOnContentPage({
 	apiHelpers,
 	journalPage,
 	layoutSetPrototypePage,
+	layoutsUpdateable = true,
 	page,
 	pageEditorPage,
 	pagesAdminPage,
@@ -785,6 +791,7 @@ async function createSiteTemplateWithWebContentOnContentPage({
 	apiHelpers: ApiHelpers;
 	journalPage: JournalPage;
 	layoutSetPrototypePage: LayoutSetPrototypePage;
+	layoutsUpdateable?: boolean;
 	page: Page;
 	pageEditorPage: PageEditorPage;
 	pagesAdminPage: PagesAdminPage;
@@ -798,7 +805,8 @@ async function createSiteTemplateWithWebContentOnContentPage({
 	const layoutSetPrototype: LayoutSetPrototype =
 		await apiHelpers.jsonWebServicesLayoutSetPrototype.addLayoutSetPrototypes(
 			{
-				name: templateName
+				layoutsUpdateable,
+				name: templateName,
 			}
 		);
 	await page.goto(
@@ -830,6 +838,7 @@ async function createSiteTemplateWithWebContentOnHomePage({
 	apiHelpers,
 	journalPage,
 	layoutSetPrototypePage,
+	layoutsUpdateable = true,
 	page,
 	pageEditorPage,
 	productMenuPage,
@@ -843,6 +852,7 @@ async function createSiteTemplateWithWebContentOnHomePage({
 	applicationsMenuPage: ApplicationsMenuPage;
 	journalPage: JournalPage;
 	layoutSetPrototypePage: LayoutSetPrototypePage;
+	layoutsUpdateable?: boolean;
 	page: Page;
 	pageEditorPage: PageEditorPage;
 	productMenuPage: ProductMenuPage;
@@ -855,7 +865,8 @@ async function createSiteTemplateWithWebContentOnHomePage({
 	const layoutSetPrototype: LayoutSetPrototype =
 		await apiHelpers.jsonWebServicesLayoutSetPrototype.addLayoutSetPrototypes(
 			{
-				name: templateName
+				layoutsUpdateable,
+				name: templateName,
 			}
 		);
 	await page.goto(
