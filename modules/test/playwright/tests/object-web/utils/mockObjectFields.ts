@@ -18,6 +18,7 @@ interface MockObjectFieldsReturn {
 	objectEntry?: ObjectEntry;
 	objectFields: Partial<ObjectField>[];
 	titleObjectFieldName?: string;
+	translatedListTypeDefinitionItems?: string[];
 }
 
 type ObjectFieldBusinessTypesLabelName = {
@@ -208,17 +209,21 @@ function getRandomObjectFieldEntryValue(
 
 export async function mockObjectFields({
 	apiHelpers,
+	localeToTranslateListTypeItems,
 	localizeAllLocalizable,
 	objectEntryReturn,
 	objectFieldBusinessTypes,
 	titleObjectFieldName,
 }: {
+	
 	apiHelpers: ApiHelpers;
+	localeToTranslateListTypeItems?: Locale;
 	localizeAllLocalizable?: boolean;
 	objectEntryReturn?: {format: 'API' | 'UI'};
 	objectFieldBusinessTypes: ObjectFieldBusinessTypes[];
 	titleObjectFieldName?: ObjectFieldBusinessTypes;
 }): Promise<MockObjectFieldsReturn> {
+	let translatedListTypeDefinitionItems: string[];
 	let listTypeDefinition: ListTypeDefinition;
 	let listTypeDefinitionItems: string[];
 
@@ -229,14 +234,33 @@ export async function mockObjectFields({
 		listTypeDefinition =
 			await apiHelpers.listTypeAdmin.postRandomListTypeDefinition();
 
-		listTypeDefinitionItems = new Array(3)
+		apiHelpers.data.push({
+			id: listTypeDefinition.id,
+			type: 'listTypeDefinition',
+		});
+
+		const numberOfListTypeDefinitionItems = 3;
+
+		listTypeDefinitionItems = new Array(numberOfListTypeDefinitionItems)
 			.fill('')
 			.map(() => getRandomInt().toString());
 
-		for (const lisTypeEntry of listTypeDefinitionItems) {
+		if (localeToTranslateListTypeItems) {
+			translatedListTypeDefinitionItems = listTypeDefinitionItems.map(
+				() => getRandomInt().toString()
+			);
+		}
+
+		for (let i = 0; i < numberOfListTypeDefinitionItems; i++) {
 			await apiHelpers.listTypeAdmin.postListTypeEntry(
 				listTypeDefinition.externalReferenceCode,
-				lisTypeEntry
+				listTypeDefinitionItems[i],
+				translatedListTypeDefinitionItems
+					? {
+							[localeToTranslateListTypeItems]:
+								translatedListTypeDefinitionItems[i],
+						}
+					: {}
 			);
 		}
 	}
@@ -352,5 +376,6 @@ export async function mockObjectFields({
 		titleObjectFieldName: titleObjectFieldName
 			? objectFieldBusinessTypesLabelName[titleObjectFieldName].name
 			: undefined,
+		translatedListTypeDefinitionItems,
 	};
 }
