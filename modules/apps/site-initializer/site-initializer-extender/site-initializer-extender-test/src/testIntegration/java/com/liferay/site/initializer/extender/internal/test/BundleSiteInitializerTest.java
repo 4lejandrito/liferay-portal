@@ -3774,6 +3774,12 @@ public class BundleSiteInitializerTest {
 	}
 
 	private void _assertSiteConfiguration2() throws Exception {
+		Assert.assertEquals(
+			GroupConstants.DEFAULT_MEMBERSHIP_RESTRICTION,
+			_group.getMembershipRestriction());
+		Assert.assertEquals(GroupConstants.TYPE_SITE_OPEN, _group.getType());
+		Assert.assertTrue(_group.isManualMembership());
+
 		Assert.assertFalse(
 			_menuAccessConfigurationManager.isShowControlMenuByRole(
 				_group.getGroupId()));
