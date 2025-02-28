@@ -160,7 +160,7 @@ import com.liferay.portal.kernel.util.LinkedHashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.kernel.util.LocalizationUtil;
+import com.liferay.portal.kernel.util.Localization;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
@@ -3810,24 +3810,32 @@ public class ObjectEntryLocalServiceTest {
 
 	@Test
 	public void testUpdateAsset() throws Exception {
+		ObjectDefinition objectDefinition = _publishCustomObjectDefinition(
+			true,
+			Arrays.asList(
+				ObjectFieldUtil.createObjectField(
+					ObjectFieldConstants.BUSINESS_TYPE_TEXT,
+					ObjectFieldConstants.DB_TYPE_STRING, true, true, null,
+					RandomTestUtil.randomString(), "name",
+					Collections.emptyList(), false)));
+
 		ObjectField objectField = _objectFieldLocalService.getObjectField(
-			_objectDefinition.getObjectDefinitionId(), "emailAddressRequired");
+			objectDefinition.getObjectDefinitionId(), "name");
 
 		_objectDefinitionLocalService.updateTitleObjectFieldId(
-			_objectDefinition.getObjectDefinitionId(),
+			objectDefinition.getObjectDefinitionId(),
 			objectField.getObjectFieldId());
 
 		ObjectEntry objectEntry = _addObjectEntry(
+			0, objectDefinition.getObjectDefinitionId(),
 			HashMapBuilder.<String, Serializable>put(
-				"emailAddressRequired", "john@liferay.com"
-			).put(
-				"listTypeEntryKeyRequired", "listTypeEntryKey1"
+				"name", "john"
 			).build());
 
 		AssetEntry assetEntry = _assetEntryLocalService.fetchEntry(
-			_objectDefinition.getClassName(), objectEntry.getObjectEntryId());
+			objectDefinition.getClassName(), objectEntry.getObjectEntryId());
 
-		Assert.assertEquals("john@liferay.com", assetEntry.getTitle());
+		Assert.assertEquals("john", assetEntry.getTitle());
 
 		objectField = _addCustomObjectField(
 			new TextObjectFieldBuilder(
@@ -3836,44 +3844,40 @@ public class ObjectEntryLocalServiceTest {
 			).localized(
 				true
 			).name(
-				"textLocalized"
+				"a" + RandomTestUtil.randomString()
 			).objectDefinitionId(
-				_objectDefinition.getObjectDefinitionId()
+				objectDefinition.getObjectDefinitionId()
 			).build());
 
 		_objectDefinitionLocalService.updateTitleObjectFieldId(
-			_objectDefinition.getObjectDefinitionId(),
+			objectDefinition.getObjectDefinitionId(),
 			objectField.getObjectFieldId());
 
-		String value1 = "en_US " + RandomTestUtil.randomString();
-		String value2 = "pt_BR " + RandomTestUtil.randomString();
+		Map<String, String> localizedValues = HashMapBuilder.put(
+			"en_US", RandomTestUtil.randomString()
+		).put(
+			"pt_BR", RandomTestUtil.randomString()
+		).build();
 
 		objectEntry = _addObjectEntry(
+			0, objectDefinition.getObjectDefinitionId(),
 			HashMapBuilder.<String, Serializable>put(
-				"emailAddressRequired", "john@liferay.com"
+				"name", "john"
 			).put(
-				"listTypeEntryKeyRequired", "listTypeEntryKey1"
-			).put(
-				"textLocalized_i18n",
-				HashMapBuilder.put(
-					"en_US", value1
-				).put(
-					"pt_BR", value2
-				).build()
+				objectField.getI18nObjectFieldName(),
+				(Serializable)localizedValues
 			).build());
 
 		assetEntry = _assetEntryLocalService.fetchEntry(
-			_objectDefinition.getClassName(), objectEntry.getObjectEntryId());
+			objectDefinition.getClassName(), objectEntry.getObjectEntryId());
 
 		Assert.assertEquals(
-			LocalizationUtil.getXml(
-				HashMapBuilder.put(
-					"en_US", value1
-				).put(
-					"pt_BR", value2
-				).build(),
-				objectField.getDefaultLanguageId(), "title"),
+			_localization.getXml(
+				localizedValues, objectDefinition.getDefaultLanguageId(),
+				"title"),
 			assetEntry.getTitle());
+
+		_objectDefinitionLocalService.deleteObjectDefinition(objectDefinition);
 	}
 
 	@Test
@@ -5564,6 +5568,9 @@ public class ObjectEntryLocalServiceTest {
 
 	@Inject
 	private ListTypeDefinitionLocalService _listTypeDefinitionLocalService;
+
+	@Inject
+	private Localization _localization;
 
 	@Inject
 	private ObjectActionLocalService _objectActionLocalService;
