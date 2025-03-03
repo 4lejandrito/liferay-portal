@@ -656,21 +656,20 @@ public class StructuredContentResourceTest
 
 	@Test
 	public void testPostStructuredContentWithBatch() throws Exception {
-		Locale locale = LocaleUtil.getDefault();
-
 		StructuredContent randomStructuredContent1 = _randomStructuredContent(
-			locale);
+			LocaleUtil.getDefault());
 
-		JSONArray jsonArray = JSONFactoryUtil.createJSONArray().put(JSONFactoryUtil.createJSONObject(randomStructuredContent1.toString()));
+		HttpInvoker.HttpResponse httpResponse =
+			structuredContentResource.
+				postSiteStructuredContentBatchHttpResponse(
+					testGroup.getGroupId(), null,
+					JSONFactoryUtil.createJSONArray(
+					).put(
+						JSONFactoryUtil.createJSONObject(
+							randomStructuredContent1.toString())
+					));
 
-		HttpInvoker.HttpResponse batchHttpResponse = structuredContentResource.postSiteStructuredContentBatchHttpResponse(
-			testGroup.getGroupId(),
-			null,
-			jsonArray);
-
-		assertHttpResponseStatusCode(
-			202,
-			batchHttpResponse);
+		assertHttpResponseStatusCode(202, httpResponse);
 
 		User testCompanyAdminUser = UserTestUtil.getAdminUser(
 			testCompany.getCompanyId());
@@ -685,20 +684,27 @@ public class StructuredContentResourceTest
 			LocaleUtil.getDefault()
 		).build();
 
-		ImportTask importTask = importTaskResource.getImportTask(GetterUtil.getLong(JSONFactoryUtil.createJSONObject(batchHttpResponse.getContent()).getString("id")));
+		long importTaskId = JSONFactoryUtil.createJSONObject(
+			httpResponse.getContent()
+		).getLong(
+			"id"
+		);
 
 		while (true) {
-			importTask = importTaskResource.getImportTask(importTask.getId());
+			ImportTask importTask = importTaskResource.getImportTask(
+				importTaskId);
 
 			if (StringUtil.equals(
-				importTask.getExecuteStatusAsString(), "COMPLETED") ||
+					importTask.getExecuteStatusAsString(), "COMPLETED") ||
 				StringUtil.equals(
 					importTask.getExecuteStatusAsString(), "FAILED")) {
 
 				Assert.assertEquals(
 					"COMPLETED", importTask.getExecuteStatusAsString());
-				Assert.assertEquals(1L, (long) importTask.getProcessedItemsCount());
-				Assert.assertEquals(1L, (long) importTask.getTotalItemsCount());
+				Assert.assertEquals(
+					1L, (long)importTask.getProcessedItemsCount());
+				Assert.assertEquals(1L, (long)importTask.getTotalItemsCount());
+
 				break;
 			}
 		}
@@ -1091,81 +1097,6 @@ public class StructuredContentResourceTest
 		).header(
 			"X-Accept-All-Languages", "true"
 		).build();
-	}
-
-	private JSONArray _createBatchBody(long structureId) throws Exception {
-		StructuredContent structuredContent = new StructuredContent();
-
-		structuredContent.setAvailableLanguages(
-			new String[] {"en-US", "es-ES"});
-
-		ContentField contentField = new ContentField() {
-			{
-				contentFieldValue = new ContentFieldValue() {
-					{
-						data = "1";
-					}
-				};
-
-				contentFieldValue_i18n =
-					HashMapBuilder.<String, ContentFieldValue>put(
-						"en_US",
-						new ContentFieldValue() {
-							{
-								data = "1";
-							}
-						}
-					).put(
-						"es-ES",
-						new ContentFieldValue() {
-							{
-								data = "1 Hindi";
-							}
-						}
-					).build();
-
-				dataType = "string";
-				inputControl = "text";
-				label = "Text";
-				name = "MyText";
-				nestedContentFields = new ContentField[0];
-				repeatable = false;
-			}
-		};
-
-		structuredContent.setContentFields(new ContentField[] {contentField});
-
-		structuredContent.setContentStructureId(structureId);
-
-		Permission permission = new Permission() {
-			{
-				actionIds = new String[] {"VIEW"};
-				roleName = "Guest";
-			}
-		};
-
-		structuredContent.setPermissions(new Permission[] {permission});
-
-		structuredContent.setPriority(0.0);
-		structuredContent.setStructuredContentFolderId(0L);
-		structuredContent.setTaxonomyCategoryIds(new Long[0]);
-		structuredContent.setTitle("Section - 2");
-
-		structuredContent.setTitle_i18n(
-			HashMapBuilder.put(
-				"en_US", "Section - 2"
-			).put(
-				"es-ES", "Section - 2 Hindi"
-			).build());
-
-		String structuredContentJSON = structuredContent.toString();
-
-		JSONObject structuredContentJSONObject =
-			JSONFactoryUtil.createJSONObject(structuredContentJSON);
-
-		JSONArray batchPayloadJSONArray = JSONFactoryUtil.createJSONArray();
-
-		return batchPayloadJSONArray.put(structuredContentJSONObject);
 	}
 
 	private DDMFormField _createDDMFormField(
