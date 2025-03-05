@@ -644,14 +644,10 @@ public class PredicateExpressionVisitorImpl
 
 		EntityField entityField = _getEntityField(left, objectDefinition);
 
-		EntityField.Type entityType = entityField.getType();
-		String entityFieldFilterableName = entityField.getFilterableName(null);
-		String entityFieldName = entityField.getName();
-
 		try {
 			ObjectField objectField = _objectFieldLocalService.getObjectField(
-				_objectDefinition.getObjectDefinitionId(),
-				entityFieldFilterableName);
+				objectDefinition.getObjectDefinitionId(),
+				entityField.getFilterableName(null));
 
 			ObjectFieldBusinessType objectFieldBusinessType =
 				_objectFieldBusinessTypeRegistry.getObjectFieldBusinessType(
@@ -659,7 +655,7 @@ public class PredicateExpressionVisitorImpl
 
 			Object value = objectFieldBusinessType.getValue(
 				objectField, PrincipalThreadLocal.getUserId(),
-				Collections.singletonMap(entityFieldName, right));
+				Collections.singletonMap(entityField.getName(), right));
 
 			if (value == null) {
 				value = right;
@@ -680,7 +676,7 @@ public class PredicateExpressionVisitorImpl
 				_log.debug(portalException);
 			}
 
-			if (Objects.equals(entityType, EntityField.Type.ID) &&
+			if (Objects.equals(entityField.getType(), EntityField.Type.ID) &&
 				Validator.isNumber(String.valueOf(right))) {
 
 				return GetterUtil.getLong(right);
