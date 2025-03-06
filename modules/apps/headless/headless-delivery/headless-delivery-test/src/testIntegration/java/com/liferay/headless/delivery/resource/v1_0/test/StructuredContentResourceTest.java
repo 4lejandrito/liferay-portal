@@ -36,6 +36,8 @@ import com.liferay.dynamic.data.mapping.storage.StorageType;
 import com.liferay.dynamic.data.mapping.test.util.DDMStructureTestHelper;
 import com.liferay.dynamic.data.mapping.test.util.DDMTemplateTestUtil;
 import com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverter;
+import com.liferay.headless.batch.engine.client.dto.v1_0.ImportTask;
+import com.liferay.headless.batch.engine.test.util.HeadlessBatchEngineTestUtil;
 import com.liferay.headless.delivery.client.dto.v1_0.ContentDocument;
 import com.liferay.headless.delivery.client.dto.v1_0.ContentField;
 import com.liferay.headless.delivery.client.dto.v1_0.ContentFieldValue;
@@ -61,6 +63,7 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
@@ -613,6 +616,8 @@ public class StructuredContentResourceTest
 		Assert.assertEquals(
 			Double.valueOf(0.0), postStructuredContent3.getPriority());
 		assertValid(postStructuredContent3);
+
+		_testPostSiteStructuredContentBatch();
 	}
 
 	@Override
@@ -2404,6 +2409,24 @@ public class StructuredContentResourceTest
 			externalReferenceCode,
 			postStructuredContent.getExternalReferenceCode());
 		assertValid(postStructuredContent);
+	}
+
+	private void _testPostSiteStructuredContentBatch() throws Exception {
+		ImportTask importTask = HeadlessBatchEngineTestUtil.waitForFinish(
+			"COMPLETED",
+			structuredContentResource.
+				postSiteStructuredContentBatchHttpResponse(
+					testGroup.getGroupId(), null,
+					JSONUtil.putAll(
+						JSONFactoryUtil.createJSONObject(
+							String.valueOf(
+								_randomStructuredContent(
+									LocaleUtil.getDefault()))))
+				).getContent(),
+			testCompany);
+
+		Assert.assertEquals(1L, (long)importTask.getProcessedItemsCount());
+		Assert.assertEquals(1L, (long)importTask.getTotalItemsCount());
 	}
 
 	private static final String[] _COMPLETE_STRUCTURED_CONTENT_OPTIONS = {
