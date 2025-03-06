@@ -30,8 +30,23 @@ type TOrganization = {
 	externalReferenceCode?: string;
 	id?: string;
 	name?: string;
+	organizationContactInformation?: TOrganizationContactInformation;
 	parentOrganization?: TOrganization;
 	services?: TServices[];
+};
+
+type TOrganizationContactInformation = {
+	postalAddresses: TPostalAddresses[];
+};
+
+type TPostalAddresses = {
+	addressCountry: string;
+	addressLocality: string;
+	addressType: string;
+	externalReferenceCode?: string;
+	id?: string;
+	postalCode: string;
+	streetAddressLine1: string;
 };
 
 type TRole = {
