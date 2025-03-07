@@ -117,15 +117,7 @@ public class CETConfigurationFactory {
 			_companyLocalService, _properties,
 			companyId -> {
 				try {
-					if (_log.isInfoEnabled()) {
-						_log.info(
-							StringBundler.concat(
-								"Deleting CET for client extension ",
-								externalReferenceCode, " and company ",
-								companyId));
-					}
-
-					_cetManager.deleteCET(_cet);
+					_deleteCET(companyId);
 
 					if (!Objects.equals(
 							_cet.getType(),
@@ -146,17 +138,7 @@ public class CETConfigurationFactory {
 						return;
 					}
 
-					if (_log.isInfoEnabled()) {
-						_log.info(
-							StringBundler.concat(
-								"Deleting client extension entry relations ",
-								"for client extension ", externalReferenceCode,
-								" and company ", companyId));
-					}
-
-					_clientExtensionEntryRelLocalService.
-						deleteClientExtensionEntryRels(
-							companyId, _cet.getExternalReferenceCode());
+					_deleteClientExtensionEntryRels(companyId);
 				}
 				catch (Exception exception) {
 					_log.error(
@@ -192,15 +174,7 @@ public class CETConfigurationFactory {
 			_companyLocalService, properties,
 			companyId -> {
 				try {
-					if (_log.isInfoEnabled()) {
-						_log.info(
-							StringBundler.concat(
-								"Deleting CET for client extension ",
-								externalReferenceCode, " and company ",
-								companyId));
-					}
-
-					_cetManager.deleteCET(_cet);
+					_deleteCET(companyId);
 
 					if (_log.isInfoEnabled()) {
 						_log.info(
@@ -219,17 +193,7 @@ public class CETConfigurationFactory {
 						return;
 					}
 
-					if (_log.isInfoEnabled()) {
-						_log.info(
-							StringBundler.concat(
-								"Deleting client extension entry relations ",
-								"for client extension ", externalReferenceCode,
-								" and company ", companyId));
-					}
-
-					_clientExtensionEntryRelLocalService.
-						deleteClientExtensionEntryRels(
-							companyId, _cet.getExternalReferenceCode());
+					_deleteClientExtensionEntryRels(companyId);
 
 					_addControlPanelThemeCSSClientExtensionEntryRel(companyId);
 				}
@@ -290,6 +254,31 @@ public class CETConfigurationFactory {
 				"Only one theme CSS client extension can be applied at a " +
 					"time. To avoid conflicts, none of them will be applied.");
 		}
+	}
+
+	private void _deleteCET(Long companyId) {
+		if (_log.isInfoEnabled()) {
+			_log.info(
+				StringBundler.concat(
+					"Deleting CET for client extension ",
+					_cet.getExternalReferenceCode(), " and company ",
+					companyId));
+		}
+
+		_cetManager.deleteCET(_cet);
+	}
+
+	private void _deleteClientExtensionEntryRels(long companyId) {
+		if (_log.isInfoEnabled()) {
+			_log.info(
+				StringBundler.concat(
+					"Deleting client extension entry relations for client ",
+					"extension ", _cet.getExternalReferenceCode(),
+					" and company ", companyId));
+		}
+
+		_clientExtensionEntryRelLocalService.deleteClientExtensionEntryRels(
+			companyId, _cet.getExternalReferenceCode());
 	}
 
 	private Layout _getControlPanelLayout(long companyId)
