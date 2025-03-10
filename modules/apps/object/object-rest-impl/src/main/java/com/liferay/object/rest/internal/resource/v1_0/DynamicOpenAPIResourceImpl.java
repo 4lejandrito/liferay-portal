@@ -27,9 +27,9 @@ import javax.ws.rs.core.UriInfo;
  * @author Javier Gamarra
  */
 @OpenAPIDefinition(info = @Info(title = "Object", version = "v1.0"))
-public class OpenAPIResourceImpl {
+public class DynamicOpenAPIResourceImpl {
 
-	public OpenAPIResourceImpl(
+	public DynamicOpenAPIResourceImpl(
 		ObjectEntryOpenAPIResourceProvider objectEntryOpenAPIResourceProvider) {
 
 		_objectEntryOpenAPIResourceProvider =

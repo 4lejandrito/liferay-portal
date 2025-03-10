@@ -5,7 +5,7 @@
 
 package com.liferay.object.rest.internal.jaxrs.application;
 
-import com.liferay.object.rest.internal.resource.v1_0.OpenAPIResourceImpl;
+import com.liferay.object.rest.internal.resource.v1_0.DynamicOpenAPIResourceImpl;
 import com.liferay.object.rest.openapi.v1_0.ObjectEntryOpenAPIResourceProvider;
 
 import java.util.HashSet;
@@ -30,7 +30,7 @@ public class ObjectEntryApplication extends Application {
 		Set<Object> objects = new HashSet<>();
 
 		objects.add(
-			new OpenAPIResourceImpl(_objectEntryOpenAPIResourceProvider));
+			new DynamicOpenAPIResourceImpl(_objectEntryOpenAPIResourceProvider));
 
 		return objects;
 	}

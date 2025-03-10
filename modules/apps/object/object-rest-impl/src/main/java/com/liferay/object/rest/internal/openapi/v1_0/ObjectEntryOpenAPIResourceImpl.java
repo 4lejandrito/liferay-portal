@@ -16,7 +16,7 @@ import com.liferay.object.rest.dto.v1_0.FileEntry;
 import com.liferay.object.rest.dto.v1_0.ListEntry;
 import com.liferay.object.rest.internal.resource.v1_0.ObjectEntryRelatedObjectsResourceImpl;
 import com.liferay.object.rest.internal.resource.v1_0.ObjectEntryResourceImpl;
-import com.liferay.object.rest.internal.resource.v1_0.OpenAPIResourceImpl;
+import com.liferay.object.rest.internal.resource.v1_0.DynamicOpenAPIResourceImpl;
 import com.liferay.object.rest.internal.vulcan.openapi.contributor.ObjectEntryOpenAPIContributor;
 import com.liferay.object.rest.openapi.v1_0.ObjectEntryOpenAPIResource;
 import com.liferay.object.rest.openapi.v1_0.ObjectEntryOpenAPIResourceProvider;
@@ -434,7 +434,7 @@ public class ObjectEntryOpenAPIResourceImpl
 				{
 					add(ObjectEntryRelatedObjectsResourceImpl.class);
 					add(ObjectEntryResourceImpl.class);
-					add(OpenAPIResourceImpl.class);
+					add(DynamicOpenAPIResourceImpl.class);
 				}
 			},
 			type, uriInfo);
