@@ -1,5 +1,9 @@
 apiDir: "../object-rest-api/src/main/java"
 apiPackagePath: "com.liferay.object.rest"
+application:
+  baseURI: "/object"
+  className: "ObjectApplication"
+  name: "Liferay.Object"
 author: "Javier Gamarra"
 compatibilityVersion: 7
 forcePredictableOperationId: true
