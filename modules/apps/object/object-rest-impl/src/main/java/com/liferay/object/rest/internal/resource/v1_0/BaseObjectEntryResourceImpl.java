@@ -81,11 +81,17 @@ import javax.ws.rs.core.UriInfo;
  * @generated
  */
 @Generated("")
+@javax.ws.rs.Path("/v1.0")
 public abstract class BaseObjectEntryResourceImpl
 	implements EntityModelResource, ObjectEntryResource,
 			   VulcanBatchEngineTaskItemDelegate<ObjectEntry>,
 			   VulcanCRUDItemDelegate<ObjectEntry> {
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'GET' 'http://localhost:8080/o/object/v1.0'  -u 'test@liferay.com:test'
+	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -154,6 +160,11 @@ public abstract class BaseObjectEntryResourceImpl
 		return Page.of(Collections.emptyList());
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'POST' 'http://localhost:8080/o/object/v1.0/export-batch'  -u 'test@liferay.com:test'
+	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -227,6 +238,11 @@ public abstract class BaseObjectEntryResourceImpl
 		).build();
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'POST' 'http://localhost:8080/o/object/v1.0' -d $'{"dateCreated": ___, "dateModified": ___, "defaultLanguageId": ___, "externalReferenceCode": ___, "friendlyUrlPath": ___, "friendlyUrlPath_i18n": ___, "id": ___, "keywords": ___, "permissions": ___, "properties": ___, "status": ___, "taxonomyCategoryIds": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
+	 */
 	@io.swagger.v3.oas.annotations.tags.Tags(
 		value = {@io.swagger.v3.oas.annotations.tags.Tag(name = "ObjectEntry")}
 	)
@@ -241,6 +257,11 @@ public abstract class BaseObjectEntryResourceImpl
 		return new ObjectEntry();
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'POST' 'http://localhost:8080/o/object/v1.0/batch'  -u 'test@liferay.com:test'
+	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -280,6 +301,11 @@ public abstract class BaseObjectEntryResourceImpl
 		).build();
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'PUT' 'http://localhost:8080/o/object/v1.0/by-external-reference-code/{currentExternalReferenceCode}/{objectRelationshipName}/{relatedExternalReferenceCode}'  -u 'test@liferay.com:test'
+	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -324,6 +350,11 @@ public abstract class BaseObjectEntryResourceImpl
 		return new ObjectEntry();
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'DELETE' 'http://localhost:8080/o/object/v1.0/by-external-reference-code/{externalReferenceCode}'  -u 'test@liferay.com:test'
+	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -347,6 +378,11 @@ public abstract class BaseObjectEntryResourceImpl
 		throws Exception {
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'GET' 'http://localhost:8080/o/object/v1.0/by-external-reference-code/{externalReferenceCode}'  -u 'test@liferay.com:test'
+	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -384,6 +420,11 @@ public abstract class BaseObjectEntryResourceImpl
 		return new ObjectEntry();
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'PATCH' 'http://localhost:8080/o/object/v1.0/by-external-reference-code/{externalReferenceCode}' -d $'{"dateCreated": ___, "dateModified": ___, "defaultLanguageId": ___, "externalReferenceCode": ___, "friendlyUrlPath": ___, "friendlyUrlPath_i18n": ___, "id": ___, "keywords": ___, "permissions": ___, "properties": ___, "status": ___, "taxonomyCategoryIds": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
+	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -467,6 +508,11 @@ public abstract class BaseObjectEntryResourceImpl
 			externalReferenceCode, existingObjectEntry);
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'PUT' 'http://localhost:8080/o/object/v1.0/by-external-reference-code/{externalReferenceCode}' -d $'{"dateCreated": ___, "dateModified": ___, "defaultLanguageId": ___, "externalReferenceCode": ___, "friendlyUrlPath": ___, "friendlyUrlPath_i18n": ___, "id": ___, "keywords": ___, "permissions": ___, "properties": ___, "status": ___, "taxonomyCategoryIds": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
+	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -494,6 +540,11 @@ public abstract class BaseObjectEntryResourceImpl
 		return new ObjectEntry();
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'PUT' 'http://localhost:8080/o/object/v1.0/by-external-reference-code/{objectEntryExternalReferenceCode}/object-actions/{objectActionName}'  -u 'test@liferay.com:test'
+	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -528,6 +579,11 @@ public abstract class BaseObjectEntryResourceImpl
 		throws Exception {
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'DELETE' 'http://localhost:8080/o/object/v1.0/scopes/{scopeKey}/by-external-reference-code/{externalReferenceCode}'  -u 'test@liferay.com:test'
+	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -561,6 +617,11 @@ public abstract class BaseObjectEntryResourceImpl
 		throws Exception {
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'GET' 'http://localhost:8080/o/object/v1.0/scopes/{scopeKey}/by-external-reference-code/{externalReferenceCode}'  -u 'test@liferay.com:test'
+	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -608,6 +669,11 @@ public abstract class BaseObjectEntryResourceImpl
 		return new ObjectEntry();
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'PATCH' 'http://localhost:8080/o/object/v1.0/scopes/{scopeKey}/by-external-reference-code/{externalReferenceCode}' -d $'{"dateCreated": ___, "dateModified": ___, "defaultLanguageId": ___, "externalReferenceCode": ___, "friendlyUrlPath": ___, "friendlyUrlPath_i18n": ___, "id": ___, "keywords": ___, "permissions": ___, "properties": ___, "status": ___, "taxonomyCategoryIds": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
+	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -702,6 +768,11 @@ public abstract class BaseObjectEntryResourceImpl
 			scopeKey, externalReferenceCode, existingObjectEntry);
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'PUT' 'http://localhost:8080/o/object/v1.0/scopes/{scopeKey}/by-external-reference-code/{externalReferenceCode}' -d $'{"dateCreated": ___, "dateModified": ___, "defaultLanguageId": ___, "externalReferenceCode": ___, "friendlyUrlPath": ___, "friendlyUrlPath_i18n": ___, "id": ___, "keywords": ___, "permissions": ___, "properties": ___, "status": ___, "taxonomyCategoryIds": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
+	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -739,6 +810,11 @@ public abstract class BaseObjectEntryResourceImpl
 		return new ObjectEntry();
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'PUT' 'http://localhost:8080/o/object/v1.0/scopes/{scopeKey}/by-external-reference-code/{externalReferenceCode}/object-actions/{objectActionName}'  -u 'test@liferay.com:test'
+	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -780,6 +856,11 @@ public abstract class BaseObjectEntryResourceImpl
 		throws Exception {
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'DELETE' 'http://localhost:8080/o/object/v1.0/{objectEntryId}'  -u 'test@liferay.com:test'
+	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -803,6 +884,11 @@ public abstract class BaseObjectEntryResourceImpl
 		throws Exception {
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'DELETE' 'http://localhost:8080/o/object/v1.0/batch'  -u 'test@liferay.com:test'
+	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -842,6 +928,11 @@ public abstract class BaseObjectEntryResourceImpl
 		).build();
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'GET' 'http://localhost:8080/o/object/v1.0/{objectEntryId}'  -u 'test@liferay.com:test'
+	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -879,6 +970,11 @@ public abstract class BaseObjectEntryResourceImpl
 		return new ObjectEntry();
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'PATCH' 'http://localhost:8080/o/object/v1.0/{objectEntryId}' -d $'{"dateCreated": ___, "dateModified": ___, "defaultLanguageId": ___, "externalReferenceCode": ___, "friendlyUrlPath": ___, "friendlyUrlPath_i18n": ___, "id": ___, "keywords": ___, "permissions": ___, "properties": ___, "status": ___, "taxonomyCategoryIds": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
+	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -960,6 +1056,11 @@ public abstract class BaseObjectEntryResourceImpl
 		return putObjectEntry(objectEntryId, existingObjectEntry);
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'PUT' 'http://localhost:8080/o/object/v1.0/{objectEntryId}' -d $'{"dateCreated": ___, "dateModified": ___, "defaultLanguageId": ___, "externalReferenceCode": ___, "friendlyUrlPath": ___, "friendlyUrlPath_i18n": ___, "id": ___, "keywords": ___, "permissions": ___, "properties": ___, "status": ___, "taxonomyCategoryIds": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
+	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -987,6 +1088,11 @@ public abstract class BaseObjectEntryResourceImpl
 		return new ObjectEntry();
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'PUT' 'http://localhost:8080/o/object/v1.0/batch'  -u 'test@liferay.com:test'
+	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -1026,6 +1132,11 @@ public abstract class BaseObjectEntryResourceImpl
 		).build();
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'PUT' 'http://localhost:8080/o/object/v1.0/{objectEntryId}/object-actions/{objectActionName}'  -u 'test@liferay.com:test'
+	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -1057,6 +1168,11 @@ public abstract class BaseObjectEntryResourceImpl
 		throws Exception {
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'GET' 'http://localhost:8080/o/object/v1.0/{objectEntryId}/permissions'  -u 'test@liferay.com:test'
+	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -1120,6 +1236,11 @@ public abstract class BaseObjectEntryResourceImpl
 			resourceId, resourceName, roleNames);
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'PUT' 'http://localhost:8080/o/object/v1.0/{objectEntryId}/permissions'  -u 'test@liferay.com:test'
+	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -1204,6 +1325,11 @@ public abstract class BaseObjectEntryResourceImpl
 			resourceId, resourceName, null);
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'GET' 'http://localhost:8080/o/object/v1.0/scopes/{scopeKey}'  -u 'test@liferay.com:test'
+	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -1279,6 +1405,11 @@ public abstract class BaseObjectEntryResourceImpl
 		return Page.of(Collections.emptyList());
 	}
 
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'POST' 'http://localhost:8080/o/object/v1.0/scopes/{scopeKey}' -d $'{"dateCreated": ___, "dateModified": ___, "defaultLanguageId": ___, "externalReferenceCode": ___, "friendlyUrlPath": ___, "friendlyUrlPath_i18n": ___, "id": ___, "keywords": ___, "permissions": ___, "properties": ___, "status": ___, "taxonomyCategoryIds": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
+	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -1768,7 +1899,7 @@ public abstract class BaseObjectEntryResourceImpl
 	}
 
 	protected String getApplicationPath() {
-		return null;
+		return "object";
 	}
 
 	public void setVulcanBatchEngineExportTaskResource(

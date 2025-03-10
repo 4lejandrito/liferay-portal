@@ -1,11 +1,11 @@
 /**
- * SPDX-FileCopyrightText: (c) 2000 Liferay, Inc. https://liferay.com
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
 package com.liferay.object.rest.resource.v1_0;
 
-import com.liferay.object.rest.dto.v1_0.ObjectEntry;
+import com.liferay.object.rest.dto.v1_0.Folder2;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.service.GroupLocalService;
@@ -31,7 +31,6 @@ import javax.annotation.Generated;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.osgi.annotation.versioning.ProviderType;
@@ -46,116 +45,12 @@ import org.osgi.annotation.versioning.ProviderType;
  */
 @Generated("")
 @ProviderType
-public interface ObjectEntryResource {
+public interface Folder2Resource {
 
-	public Page<ObjectEntry> getObjectEntriesPage(
+	public Page<Folder2> getObjectFoldersPage(
 			Boolean flatten, String search,
 			com.liferay.portal.vulcan.aggregation.Aggregation aggregation,
 			Filter filter, Pagination pagination, Sort[] sorts)
-		throws Exception;
-
-	public Response postObjectEntriesPageExportBatch(
-			String search, Filter filter, Sort[] sorts, String callbackURL,
-			String contentType, String fieldNames)
-		throws Exception;
-
-	public ObjectEntry postObjectEntry(ObjectEntry objectEntry)
-		throws Exception;
-
-	public Response postObjectEntryBatch(String callbackURL, Object object)
-		throws Exception;
-
-	public ObjectEntry
-			putByExternalReferenceCodeCurrentExternalReferenceCodeObjectRelationshipNameRelatedExternalReferenceCode(
-				String currentExternalReferenceCode,
-				String objectRelationshipName,
-				String relatedExternalReferenceCode)
-		throws Exception;
-
-	public void deleteByExternalReferenceCode(String externalReferenceCode)
-		throws Exception;
-
-	public ObjectEntry getByExternalReferenceCode(String externalReferenceCode)
-		throws Exception;
-
-	public ObjectEntry patchByExternalReferenceCode(
-			String externalReferenceCode, ObjectEntry objectEntry)
-		throws Exception;
-
-	public ObjectEntry putByExternalReferenceCode(
-			String externalReferenceCode, ObjectEntry objectEntry)
-		throws Exception;
-
-	public void
-			putByExternalReferenceCodeObjectEntryExternalReferenceCodeObjectActionObjectActionName(
-				String objectEntryExternalReferenceCode,
-				String objectActionName)
-		throws Exception;
-
-	public void deleteScopeScopeKeyByExternalReferenceCode(
-			String scopeKey, String externalReferenceCode)
-		throws Exception;
-
-	public ObjectEntry getScopeScopeKeyByExternalReferenceCode(
-			String scopeKey, String externalReferenceCode)
-		throws Exception;
-
-	public ObjectEntry patchScopeScopeKeyByExternalReferenceCode(
-			String scopeKey, String externalReferenceCode,
-			ObjectEntry objectEntry)
-		throws Exception;
-
-	public ObjectEntry putScopeScopeKeyByExternalReferenceCode(
-			String scopeKey, String externalReferenceCode,
-			ObjectEntry objectEntry)
-		throws Exception;
-
-	public void
-			putScopeScopeKeyByExternalReferenceCodeObjectActionObjectActionName(
-				String scopeKey, String externalReferenceCode,
-				String objectActionName)
-		throws Exception;
-
-	public void deleteObjectEntry(Long objectEntryId) throws Exception;
-
-	public Response deleteObjectEntryBatch(String callbackURL, Object object)
-		throws Exception;
-
-	public ObjectEntry getObjectEntry(Long objectEntryId) throws Exception;
-
-	public ObjectEntry patchObjectEntry(
-			Long objectEntryId, ObjectEntry objectEntry)
-		throws Exception;
-
-	public ObjectEntry putObjectEntry(
-			Long objectEntryId, ObjectEntry objectEntry)
-		throws Exception;
-
-	public Response putObjectEntryBatch(String callbackURL, Object object)
-		throws Exception;
-
-	public void putObjectEntryObjectActionObjectActionName(
-			Long objectEntryId, String objectActionName)
-		throws Exception;
-
-	public Page<com.liferay.portal.vulcan.permission.Permission>
-			getObjectEntryPermissionsPage(Long objectEntryId, String roleNames)
-		throws Exception;
-
-	public Page<com.liferay.portal.vulcan.permission.Permission>
-			putObjectEntryPermissionsPage(
-				Long objectEntryId,
-				com.liferay.portal.vulcan.permission.Permission[] permissions)
-		throws Exception;
-
-	public Page<ObjectEntry> getScopeScopeKeyPage(
-			String scopeKey, Boolean flatten, String search,
-			com.liferay.portal.vulcan.aggregation.Aggregation aggregation,
-			Filter filter, Pagination pagination, Sort[] sorts)
-		throws Exception;
-
-	public ObjectEntry postScopeScopeKey(
-			String scopeKey, ObjectEntry objectEntry)
 		throws Exception;
 
 	public default void setContextAcceptLanguage(
@@ -223,7 +118,7 @@ public interface ObjectEntryResource {
 	@ProviderType
 	public interface Builder {
 
-		public ObjectEntryResource build();
+		public Folder2Resource build();
 
 		public Builder checkPermissions(boolean checkPermissions);
 
