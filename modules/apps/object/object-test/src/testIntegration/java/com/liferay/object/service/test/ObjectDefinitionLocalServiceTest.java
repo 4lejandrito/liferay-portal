@@ -1617,8 +1617,6 @@ public class ObjectDefinitionLocalServiceTest {
 		ClassName className = ClassNameLocalServiceUtil.getClassName(
 			objectDefinition.getClassName());
 
-		Assert.assertNotNull(className);
-
 		Assert.assertNotNull(
 			ClassNameLocalServiceUtil.fetchByClassNameId(
 				className.getClassNameId()));
