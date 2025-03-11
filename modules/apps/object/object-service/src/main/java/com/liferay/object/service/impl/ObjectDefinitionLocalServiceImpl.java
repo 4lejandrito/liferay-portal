@@ -605,6 +605,9 @@ public class ObjectDefinitionLocalServiceImpl
 
 			undeployObjectDefinition(objectDefinition);
 
+			// undeployObjectDefinition calls _invalidatePortalCache which calls
+			// _classNameLocalService#getClassNameId
+
 			ClassName className = _classNameLocalService.getClassName(
 				objectDefinition.getClassName());
 
