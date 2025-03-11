@@ -18,7 +18,6 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.test.util.ConfigurationTestUtil;
 import com.liferay.portal.kernel.exception.NoSuchLayoutException;
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Company;
@@ -195,14 +194,6 @@ public class CETConfigurationFactoryTest {
 			ConfigurationTestUtil.deleteConfiguration(pid1);
 			ConfigurationTestUtil.deleteConfiguration(pid2);
 		}
-	}
-
-	private Layout _getControlPanelLayout(long companyId)
-		throws PortalException {
-
-		Assert.assertEquals(
-			clientExtensionEntryRels.toString(), 0,
-			clientExtensionEntryRels.size());
 	}
 
 	@Test

@@ -234,7 +234,7 @@ public class CETConfigurationFactory {
 		if (count > 1) {
 			_log.error(
 				"Only one theme CSS client extension can be applied at a " +
-				"time. To avoid conflicts, none of them will be applied.");
+					"time. To avoid conflicts, none of them will be applied.");
 		}
 	}
 
@@ -282,12 +282,12 @@ public class CETConfigurationFactory {
 
 	private String _getExternalReferenceCode(Map<String, Object> properties) {
 		return "LXC:" +
-			   ConfigurationFactoryUtil.getExternalReferenceCode(properties);
+			ConfigurationFactoryUtil.getExternalReferenceCode(properties);
 	}
 
 	private boolean _isControlPanelScopedThemeCSSCET() {
 		if (!Objects.equals(
-			_cet.getType(), ClientExtensionEntryConstants.TYPE_THEME_CSS)) {
+				_cet.getType(), ClientExtensionEntryConstants.TYPE_THEME_CSS)) {
 
 			return false;
 		}
