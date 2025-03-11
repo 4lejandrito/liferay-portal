@@ -826,9 +826,6 @@ public class ObjectRelatedModelsProviderTest {
 			_objectRelationshipLocalService.deleteObjectRelationship(
 				_objectRelationship.getObjectRelationshipId());
 
-			_assetEntryLocalService.deleteEntry(
-				objectDefinition.getClassName(), objectEntry.getPrimaryKey());
-
 			_objectDefinitionLocalService.deleteObjectDefinition(
 				objectDefinition);
 
@@ -837,6 +834,9 @@ public class ObjectRelatedModelsProviderTest {
 					accountEntry1.getAccountEntryId(),
 					accountEntry2.getAccountEntryId()
 				});
+
+			_assetEntryLocalService.deleteEntry(
+				objectDefinition.getClassName(), objectEntry.getPrimaryKey());
 		}
 		finally {
 			PermissionThreadLocal.setPermissionChecker(
