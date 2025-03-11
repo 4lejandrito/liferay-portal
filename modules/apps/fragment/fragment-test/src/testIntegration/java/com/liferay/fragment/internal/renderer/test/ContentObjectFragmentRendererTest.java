@@ -436,11 +436,11 @@ public class ContentObjectFragmentRendererTest {
 		DefaultFragmentRendererContext defaultFragmentRendererContext =
 			new DefaultFragmentRendererContext(fragmentEntryLink);
 
-		defaultFragmentRendererContext.setMode(FragmentEntryLinkConstants.VIEW);
 		defaultFragmentRendererContext.setContextInfoItemReference(
 			new InfoItemReference(
 				JournalArticle.class.getName(),
 				journalArticle.getResourcePrimKey()));
+		defaultFragmentRendererContext.setMode(FragmentEntryLinkConstants.VIEW);
 
 		HttpServletRequest httpServletRequest = _getMockHttpServletRequest();
 
