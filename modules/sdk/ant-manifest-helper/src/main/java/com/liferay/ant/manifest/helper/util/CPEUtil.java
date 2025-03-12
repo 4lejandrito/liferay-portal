@@ -37,9 +37,9 @@ public class CPEUtil {
 
 			product = "dxp";
 
-			String qVersion = versionDisplayName.substring(0, index);
+			version = versionDisplayName.substring(0, index);
 
-			version = qVersion.toLowerCase();
+			version = version.toLowerCase();
 		}
 
 		return String.format(
