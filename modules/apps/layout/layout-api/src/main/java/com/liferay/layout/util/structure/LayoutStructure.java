@@ -1375,8 +1375,6 @@ public class LayoutStructure {
 					_log.debug(portalException);
 				}
 			}
-
-			return;
 		}
 
 		for (String childrenItemId : layoutStructureItem.getChildrenItemIds()) {
