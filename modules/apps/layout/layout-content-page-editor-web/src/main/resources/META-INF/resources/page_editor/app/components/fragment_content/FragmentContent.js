@@ -120,8 +120,10 @@ const FragmentContent = ({
 
 	const cssClasses = getLayoutDataItemCssClasses(item);
 
-	const portletCustomActions = useMemo(
-		() => getPortletCustomActions(fragmentEntryLink),
+	const showPortletTopper = useMemo(
+		() =>
+			getPortletCustomActions(fragmentEntryLink).length ||
+			fragmentEntryLink.fragmentEntryType !== 'widget',
 		[fragmentEntryLink]
 	);
 
@@ -269,8 +271,7 @@ const FragmentContent = ({
 								!hasInnerCommonStyles(fragmentEntryLink),
 							'custom-height': item.config.styles?.height,
 							'page-editor__fragment-content--portlet-topper-hidden':
-								!canConfigureWidgets ||
-								!portletCustomActions.length,
+								!canConfigureWidgets || !showPortletTopper,
 						}
 					)}
 					contentRef={elementRef}
