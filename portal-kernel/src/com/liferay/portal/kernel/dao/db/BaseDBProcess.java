@@ -15,8 +15,10 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.dao.jdbc.DataAccess;
+import com.liferay.portal.kernel.instance.PortalInstancePool;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.CompanyConstants;
 import com.liferay.portal.kernel.module.framework.ThrowableCollector;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.upgrade.recorder.UpgradeSQLRecorder;
@@ -612,9 +614,21 @@ public abstract class BaseDBProcess implements DBProcess {
 						NotificationThreadLocal.setEnabled(notificationEnabled);
 						WorkflowThreadLocal.setEnabled(workflowEnabled);
 
-						try (SafeCloseable safeCloseable =
-								CompanyThreadLocal.lock(companyId)) {
+						SafeCloseable safeCloseable = null;
 
+						if ((companyId == CompanyConstants.SYSTEM) ||
+							(companyId ==
+								PortalInstancePool.getDefaultCompanyId())) {
+
+							safeCloseable =
+								CompanyThreadLocal.
+									setCompanyIdWithSafeCloseable(companyId);
+						}
+						else {
+							safeCloseable = CompanyThreadLocal.lock(companyId);
+						}
+
+						try {
 							if (Validator.isNull(updateSQL)) {
 								unsafeConsumer.accept(current);
 							}
@@ -627,6 +641,9 @@ public abstract class BaseDBProcess implements DBProcess {
 						}
 						catch (Exception exception) {
 							throwableCollector.collect(exception);
+						}
+						finally {
+							safeCloseable.close();
 						}
 
 						return null;
