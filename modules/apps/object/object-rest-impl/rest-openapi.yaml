@@ -216,22 +216,6 @@ components:
                     type: string
                 validationKey:
                     type: string
-        ValidateRequest:
-            properties:
-                entry:
-                    $ref: "#/components/schemas/ObjectEntry"
-                validationKeys:
-                    items:
-                        type: string
-                    type: array
-        ValidateResult:
-            properties:
-                success:
-                    type: boolean
-                validateErrors:
-                    items:
-                        $ref: "#/components/schemas/ValidateError"
-                    type: array
 info:
     license:
         name: "Apache 2.0"
@@ -620,23 +604,32 @@ paths:
                   required: true
                   schema:
                       type: string
+                - in: path
+                  name: validationKeys
+                  required: true
+                  schema:
+                      type: string
             requestBody:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/ValidateRequest"
+                            $ref: "#/components/schemas/ObjectEntry"
                     application/xml:
                         schema:
-                            $ref: "#/components/schemas/ValidateRequest"
+                            $ref: "#/components/schemas/ObjectEntry"
             responses:
                 200:
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/ValidateResult"
+                                items:
+                                    $ref: "#/components/schemas/ValidationError"
+                                type: array
                         application/xml:
                             schema:
-                                $ref: "#/components/schemas/ValidateResult"
+                                items:
+                                    $ref: "#/components/schemas/ValidationError"
+                                type: array
             tags: ["ObjectEntry"]
     "/validate":
         post:
@@ -645,19 +638,23 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/ValidateRequest"
+                            $ref: "#/components/schemas/ObjectEntry"
                     application/xml:
                         schema:
-                            $ref: "#/components/schemas/ValidateRequest"
+                            $ref: "#/components/schemas/ObjectEntry"
             responses:
                 200:
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/ValidateResult"
+                                items:
+                                    $ref: "#/components/schemas/ValidationError"
+                                type: array
                         application/xml:
                             schema:
-                                $ref: "#/components/schemas/ValidateResult"
+                                items:
+                                    $ref: "#/components/schemas/ValidationError"
+                                type: array
             tags: ["ObjectEntry"]
     "/{objectEntryId}":
         delete:
