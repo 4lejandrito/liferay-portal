@@ -79,6 +79,13 @@ public class ObjectEntryImpl extends ObjectEntryBaseImpl {
 
 	@Override
 	public String getTitleValue(String languageId) throws PortalException {
+		return getTitleValue(languageId, false);
+	}
+
+	@Override
+	public String getTitleValue(String languageId, boolean useDefault)
+		throws PortalException {
+
 		ObjectDefinition objectDefinition =
 			ObjectDefinitionLocalServiceUtil.getObjectDefinition(
 				getObjectDefinitionId());
@@ -94,6 +101,13 @@ public class ObjectEntryImpl extends ObjectEntryBaseImpl {
 				String title = String.valueOf(
 					ObjectEntryValuesUtil.getValue(
 						languageId, objectField, new HashMap<>(getValues())));
+
+				if (Validator.isNull(title) && useDefault) {
+					title = String.valueOf(
+						ObjectEntryValuesUtil.getValue(
+							getDefaultLanguageId(), objectField,
+							new HashMap<>(getValues())));
+				}
 
 				if (Validator.isNotNull(title)) {
 					return title;
