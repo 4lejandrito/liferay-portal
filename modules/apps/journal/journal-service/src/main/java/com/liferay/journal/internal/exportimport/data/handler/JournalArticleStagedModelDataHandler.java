@@ -989,8 +989,8 @@ public class JournalArticleStagedModelDataHandler
 					article.getExternalReferenceCode();
 
 				if (Validator.isNull(newArticleId)) {
-					articleId = StringPool.BLANK;
 					externalReferenceCode = StringPool.BLANK;
+					articleId = StringPool.BLANK;
 					autoArticleId = true;
 				}
 
