@@ -27,12 +27,14 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.model.Address;
 import com.liferay.portal.kernel.model.Contact;
 import com.liferay.portal.kernel.model.Organization;
+import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.service.AddressLocalService;
 import com.liferay.portal.kernel.service.ListTypeLocalService;
 import com.liferay.portal.kernel.service.OrganizationLocalService;
+import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.webserver.WebServerServletToken;
@@ -194,14 +196,20 @@ public class AccountResourceDTOConverter
 			AccountEntry accountEntry, DTOConverterContext dtoConverterContext)
 		throws Exception {
 
-		if (!_accountEntryModelResourcePermission.contains(
+		int count = _resourcePermissionLocalService.getResourcePermissionsCount(
+			accountEntry.getCompanyId(), AccountEntry.class.getName(),
+			ResourceConstants.SCOPE_INDIVIDUAL,
+			String.valueOf(accountEntry.getAccountEntryId()));
+
+		if ((count == 0) ||
+			(!_accountEntryModelResourcePermission.contains(
 				PermissionThreadLocal.getPermissionChecker(),
 				accountEntry.getAccountEntryId(),
 				AccountActionKeys.MANAGE_ADDRESSES) &&
-			!_accountEntryModelResourcePermission.contains(
-				PermissionThreadLocal.getPermissionChecker(),
-				accountEntry.getAccountEntryId(),
-				AccountActionKeys.VIEW_ADDRESSES)) {
+			 !_accountEntryModelResourcePermission.contains(
+				 PermissionThreadLocal.getPermissionChecker(),
+				 accountEntry.getAccountEntryId(),
+				 AccountActionKeys.VIEW_ADDRESSES))) {
 
 			return null;
 		}
@@ -302,6 +310,9 @@ public class AccountResourceDTOConverter
 
 	@Reference
 	private OrganizationLocalService _organizationLocalService;
+
+	@Reference
+	private ResourcePermissionLocalService _resourcePermissionLocalService;
 
 	@Reference
 	private WebServerServletToken _webServerServletToken;
