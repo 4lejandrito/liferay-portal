@@ -247,6 +247,15 @@ portletDisplay.setURLBack(backURL);
 										response.detail
 									);
 
+									const alertClassName = '<portlet:namespace />alert';
+
+									const alertElements =
+										document.getElementsByClassName(alertClassName);
+
+									for (let i = 0; i < alertElements.length; i++) {
+										alertElements[i].remove();
+									}
+
 									for (const error of errorMessageArray) {
 										const portletBody =
 											document.querySelector('.portlet-body');
@@ -261,7 +270,8 @@ portletDisplay.setURLBack(backURL);
 										const alertElement =
 											document.createElement('div');
 
-										alertElement.className = 'alert alert-danger';
+										alertElement.className =
+											'alert alert-danger ' + alertClassName;
 										alertElement.setAttribute('role', 'alert');
 										alertElement.style.bottom = '20px';
 										alertElement.style.margin = '2rem auto 0';
