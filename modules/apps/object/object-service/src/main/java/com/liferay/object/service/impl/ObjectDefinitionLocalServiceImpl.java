@@ -777,6 +777,10 @@ public class ObjectDefinitionLocalServiceImpl
 	public Class<?>[] getAopInterfaces() {
 		return new Class<?>[] {
 			IdentifiableOSGiService.class, PersistedModelLocalService.class,
+
+			// LPD-49994 ObjectDefinitionLocalService must come after
+			// PersistedModelLocalService
+
 			ObjectDefinitionLocalService.class
 		};
 	}
