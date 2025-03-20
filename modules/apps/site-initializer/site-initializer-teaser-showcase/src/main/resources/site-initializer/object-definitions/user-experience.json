@@ -19,7 +19,6 @@
 			"conditionExpression": "",
 			"description": "",
 			"errorMessage": {
-				"en_US": "Sorry, it seems that something happened"
 			},
 			"label": {
 				"en_US": "Standalone User Confirmation"
@@ -53,7 +52,6 @@
 			"conditionExpression": "",
 			"description": "",
 			"errorMessage": {
-				"en_US": "Sorry, it seems that something happened"
 			},
 			"label": {
 				"en_US": "Standalone User Disconfirmation"
