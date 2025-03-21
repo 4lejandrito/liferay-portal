@@ -186,7 +186,6 @@ public class FragmentEntryProcessorHelperImpl
 		}
 
 		String className = _portal.fetchClassName(classNameId);
-
 		InfoItemIdentifier infoItemIdentifier = new ClassPKInfoItemIdentifier(
 			classPK);
 
