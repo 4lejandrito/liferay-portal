@@ -1165,7 +1165,7 @@ public class AccountResourceTest extends BaseAccountResourceTestCase {
 			_classNameLocalService.getClassNameId(AccountEntry.class),
 			"CUSTOM_FIELDS");
 
-		ExpandoColumn textExpandoColumn = _addExpandoColumn(
+		ExpandoColumn expandoColumn = _addExpandoColumn(
 			null, expandoTable, ExpandoColumnConstants.STRING,
 			HashMapBuilder.put(
 				ExpandoColumnConstants.INDEX_TYPE,
@@ -1184,7 +1184,6 @@ public class AccountResourceTest extends BaseAccountResourceTestCase {
 				ExpandoColumnConstants.PROPERTY_DISPLAY_TYPE,
 				ExpandoColumnConstants.PROPERTY_DISPLAY_TYPE_RADIO
 			).build());
-
 		ExpandoColumn doubleArrayExpandoColumn2 = _addExpandoColumn(
 			new double[] {
 				randomDouble, RandomTestUtil.randomDouble(),
@@ -1208,7 +1207,6 @@ public class AccountResourceTest extends BaseAccountResourceTestCase {
 				ExpandoColumnConstants.PROPERTY_DISPLAY_TYPE,
 				ExpandoColumnConstants.PROPERTY_DISPLAY_TYPE_RADIO
 			).build());
-
 		ExpandoColumn longArrayExpandoColumn2 = _addExpandoColumn(
 			new long[] {
 				randomLong, RandomTestUtil.randomLong(),
@@ -1232,7 +1230,6 @@ public class AccountResourceTest extends BaseAccountResourceTestCase {
 				ExpandoColumnConstants.PROPERTY_DISPLAY_TYPE,
 				ExpandoColumnConstants.PROPERTY_DISPLAY_TYPE_RADIO
 			).build());
-
 		ExpandoColumn stringArrayExpandoColumn2 = _addExpandoColumn(
 			new String[] {
 				randomString, RandomTestUtil.randomString(),
@@ -1258,7 +1255,7 @@ public class AccountResourceTest extends BaseAccountResourceTestCase {
 							}
 						};
 						dataType = "Text";
-						name = textExpandoColumn.getName();
+						name = expandoColumn.getName();
 					}
 				}
 			});
@@ -1268,7 +1265,7 @@ public class AccountResourceTest extends BaseAccountResourceTestCase {
 		Page<Account> page = accountResource.getAccountsPage(
 			null,
 			StringBundler.concat(
-				"(customFields/", textExpandoColumn.getName(), " eq '",
+				"(customFields/", expandoColumn.getName(), " eq '",
 				RandomTestUtil.randomString(), "')"),
 			Pagination.of(1, 2), null);
 
@@ -1277,7 +1274,7 @@ public class AccountResourceTest extends BaseAccountResourceTestCase {
 		page = accountResource.getAccountsPage(
 			null,
 			StringBundler.concat(
-				"(customFields/", textExpandoColumn.getName(), " eq '", value,
+				"(customFields/", expandoColumn.getName(), " eq '", value,
 				"')"),
 			Pagination.of(1, 2), null);
 
@@ -1294,31 +1291,26 @@ public class AccountResourceTest extends BaseAccountResourceTestCase {
 			Arrays.toString(
 				(Object[])_getCustomFieldCustomValueData(
 					actualAccount, doubleArrayExpandoColumn1.getName())));
-
 		Assert.assertEquals(
 			Arrays.toString(new double[] {randomDouble}),
 			Arrays.toString(
 				(Object[])_getCustomFieldCustomValueData(
 					actualAccount, doubleArrayExpandoColumn2.getName())));
-
 		Assert.assertEquals(
 			Arrays.toString(new long[] {0}),
 			Arrays.toString(
 				(Object[])_getCustomFieldCustomValueData(
 					actualAccount, longArrayExpandoColumn1.getName())));
-
 		Assert.assertEquals(
 			Arrays.toString(new long[] {randomLong}),
 			Arrays.toString(
 				(Object[])_getCustomFieldCustomValueData(
 					actualAccount, longArrayExpandoColumn2.getName())));
-
 		Assert.assertEquals(
 			Arrays.toString(new String[] {"false"}),
 			Arrays.toString(
 				(Object[])_getCustomFieldCustomValueData(
 					actualAccount, stringArrayExpandoColumn1.getName())));
-
 		Assert.assertEquals(
 			Arrays.toString(new String[] {randomString}),
 			Arrays.toString(
