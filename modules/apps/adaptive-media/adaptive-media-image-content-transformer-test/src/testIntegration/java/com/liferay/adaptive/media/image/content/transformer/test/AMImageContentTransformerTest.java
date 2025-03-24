@@ -94,7 +94,7 @@ public class AMImageContentTransformerTest {
 
 	@Test
 	public void testTransformASingleImageMultipleTimes() throws Exception {
-		int fileEntryCount = 5;
+		int fileEntriesCount = 5;
 
 		FileEntry fileEntry = _addImageFileEntry(
 			ServiceContextTestUtil.getServiceContext(
@@ -102,13 +102,13 @@ public class AMImageContentTransformerTest {
 
 		String transformedHTML = _contentTransformerHandler.transform(
 			_contentTransformerHandler.transform(
-				_getRawHTML(fileEntry, fileEntryCount)));
+				_getRawHTML(fileEntry, fileEntriesCount)));
 
 		String regex = _getRegex();
 
 		Assert.assertTrue(transformedHTML, transformedHTML.matches(regex));
 
-		_assertMatcher(fileEntryCount, regex, transformedHTML);
+		_assertMatcher(fileEntriesCount, regex, transformedHTML);
 	}
 
 	private FileEntry _addImageFileEntry(ServiceContext serviceContext)
@@ -124,7 +124,7 @@ public class AMImageContentTransformerTest {
 	}
 
 	private void _assertMatcher(
-		int fileEntryCount, String regex, String transformedHTML) {
+		int fileEntriesCount, String regex, String transformedHTML) {
 
 		Pattern pattern = Pattern.compile(regex);
 
@@ -136,7 +136,7 @@ public class AMImageContentTransformerTest {
 			count++;
 		}
 
-		Assert.assertEquals(fileEntryCount, count);
+		Assert.assertEquals(fileEntriesCount, count);
 	}
 
 	private String _getRawHTML(FileEntry fileEntry, int imageCount)
@@ -159,11 +159,11 @@ public class AMImageContentTransformerTest {
 
 	private String _getRegex() {
 		return StringBundler.concat(
-			"<picture data-fileentryid=\".+?\">",
-			"<source media=\"\\(max-width:.+?px\\)\" srcset=\".+?\" \\/>",
-			"<source media=\"\\(max-width:.+?px\\) and ",
-			"\\(min-width:.+?px\\)\" srcset=\".+?\" \\/>",
-			"<img data-fileentryid=\".+?\" src=\".+?\" \\/><\\/picture>");
+			"<picture data-fileentryid=\".+?\"><source ",
+			"media=\"\\(max-width:.+?px\\)\" srcset=\".+?\" \\/><source ",
+			"media=\"\\(max-width:.+?px\\) and \\(min-width:.+?px\\)\" ",
+			"srcset=\".+?\" \\/><img data-fileentryid=\".+?\" src=\".+?\" ",
+			"\\/><\\/picture>");
 	}
 
 	private AMImageConfigurationEntry _amImageConfigurationEntry;

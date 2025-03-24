@@ -98,7 +98,7 @@ public class HtmlContentTransformerImpl implements ContentTransformer {
 
 			FileEntry fileEntry = _dlAppLocalService.getFileEntry(fileEntryId);
 
-			if (_processedFileEntry(fileEntry, html.substring(i, imgEnd)) ||
+			if (_hasProcessedFileEntry(fileEntry, html.substring(i, imgEnd)) ||
 				!_amImageMimeTypeProvider.isMimeTypeSupported(
 					fileEntry.getMimeType())) {
 
@@ -121,7 +121,7 @@ public class HtmlContentTransformerImpl implements ContentTransformer {
 		return sb.toString();
 	}
 
-	private boolean _processedFileEntry(FileEntry fileEntry, String html) {
+	private boolean _hasProcessedFileEntry(FileEntry fileEntry, String html) {
 		StringBundler sb = new StringBundler(5);
 
 		sb.append("<picture ");
