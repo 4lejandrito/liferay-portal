@@ -19,7 +19,7 @@
 			"conditionExpression": "",
 			"description": "",
 			"errorMessage": {
-				"en_US": "Confirmation failed. Please try again later, or contact support."
+				"en_US": "Confirmation failed. Please try again later or contact support."
 			},
 			"label": {
 				"en_US": "Standalone User Confirmation"
@@ -53,7 +53,7 @@
 			"conditionExpression": "",
 			"description": "",
 			"errorMessage": {
-				"en_US": "Disconfirmation failed. Please try again later, or contact support."
+				"en_US": "Disconfirmation failed. Please try again later or contact support."
 			},
 			"label": {
 				"en_US": "Standalone User Disconfirmation"
