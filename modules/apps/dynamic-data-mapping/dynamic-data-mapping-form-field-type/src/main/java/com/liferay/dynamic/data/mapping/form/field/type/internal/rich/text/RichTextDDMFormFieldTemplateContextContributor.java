@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactoryUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import java.util.Map;
@@ -80,11 +81,14 @@ public class RichTextDDMFormFieldTemplateContextContributor
 			DDMFormFieldTemplateContextContributorUtil.getLocaleMap(
 				ddmForm.getDefaultLocale())
 		).putAll(
-			_getData(ddmFormFieldRenderingContext, ddmFormField.getType())
+			getData(
+				ddmFormField, ddmFormFieldRenderingContext,
+				ddmFormField.getType())
 		).build();
 	}
 
-	private Map<String, Object> _getData(
+	protected Map<String, Object> getData(
+		DDMFormField ddmFormField,
 		DDMFormFieldRenderingContext ddmFormFieldRenderingContext,
 		String ddmFormFieldType) {
 
@@ -113,7 +117,24 @@ public class RichTextDDMFormFieldTemplateContextContributor
 				themeDisplay,
 				RequestBackedPortletURLFactoryUtil.create(httpServletRequest));
 
-		return editorConfiguration.getData();
+		Map<String, Object> ddmFormFieldProperties =
+			ddmFormField.getProperties();
+
+		if (MapUtil.isEmpty(ddmFormFieldProperties)) {
+			return editorConfiguration.getData();
+		}
+
+		Map<String, Object> editorConfigurationData =
+			editorConfiguration.getData();
+
+		for (String key : editorConfigurationData.keySet()) {
+			if (ddmFormFieldProperties.containsKey(key)) {
+				editorConfigurationData.put(
+					key, ddmFormFieldProperties.get(key));
+			}
+		}
+
+		return editorConfigurationData;
 	}
 
 	private String _getPredefinedValue(
