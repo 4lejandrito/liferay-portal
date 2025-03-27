@@ -105,7 +105,7 @@ public class ObjectEntryImpl extends ObjectEntryBaseImpl {
 				if (Validator.isNull(title) && useDefault) {
 					title = String.valueOf(
 						ObjectEntryValuesUtil.getValue(
-							getDefaultLanguageId(), objectField,
+							objectField.getDefaultLanguageId(), objectField,
 							new HashMap<>(getValues())));
 				}
 
