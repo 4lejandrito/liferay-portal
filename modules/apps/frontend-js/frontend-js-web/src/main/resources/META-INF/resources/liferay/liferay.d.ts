@@ -244,6 +244,7 @@ declare module Liferay {
 		export function getTimeZone(): string;
 		export function getSiteGroupId(): number;
 		export function isControlPanel(): boolean;
+		export function isSignedIn(): boolean;
 	}
 
 	namespace Util {
