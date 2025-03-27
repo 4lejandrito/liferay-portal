@@ -58,6 +58,9 @@ public interface ObjectEntry extends ObjectEntryModel, PersistedModel {
 	public String getTitleValue(String languageId)
 		throws com.liferay.portal.kernel.exception.PortalException;
 
+	public String getTitleValue(String languageId, boolean useDefault)
+		throws com.liferay.portal.kernel.exception.PortalException;
+
 	public java.util.Map<String, java.io.Serializable> getValues();
 
 	public void setTransientValues(

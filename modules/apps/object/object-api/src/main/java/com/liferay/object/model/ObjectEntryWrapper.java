@@ -354,6 +354,13 @@ public class ObjectEntryWrapper
 		return model.getTitleValue(languageId);
 	}
 
+	@Override
+	public String getTitleValue(String languageId, boolean useDefault)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return model.getTitleValue(languageId, useDefault);
+	}
+
 	/**
 	 * Returns the user ID of this object entry.
 	 *
