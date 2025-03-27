@@ -1614,11 +1614,24 @@ public class ObjectDefinitionLocalServiceTest {
 			TestPropsValues.getUserId(),
 			objectDefinition.getObjectDefinitionId());
 
+		ClassName className = ClassNameLocalServiceUtil.getClassName(
+			objectDefinition.getClassName());
+
+		Assert.assertNotNull(className);
+
+		Assert.assertNotNull(
+			ClassNameLocalServiceUtil.fetchByClassNameId(
+				className.getClassNameId()));
+
 		_objectDefinitionLocalService.updateRootObjectDefinitionId(
 			objectDefinition.getObjectDefinitionId(), 0);
 
 		_objectDefinitionLocalService.deleteObjectDefinition(
 			objectDefinition.getObjectDefinitionId());
+
+		Assert.assertNull(
+			ClassNameLocalServiceUtil.fetchByClassNameId(
+				className.getClassNameId()));
 
 		// Database table
 
@@ -2372,32 +2385,6 @@ public class ObjectDefinitionLocalServiceTest {
 				Collections.<ObjectField>emptyList());
 
 		_testSystemObjectFields(objectDefinition);
-
-		_objectDefinitionLocalService.deleteObjectDefinition(objectDefinition);
-	}
-
-	@Test
-	public void testUndeployObjectDefinition() throws Exception {
-		ObjectDefinition objectDefinition =
-			ObjectDefinitionTestUtil.addCustomObjectDefinition();
-
-		ClassName className = ClassNameLocalServiceUtil.getClassName(
-			objectDefinition.getClassName());
-
-		Assert.assertNotNull(className);
-
-		_objectDefinitionLocalService.deployObjectDefinition(objectDefinition);
-
-		Assert.assertNotNull(
-			ClassNameLocalServiceUtil.fetchByClassNameId(
-				className.getClassNameId()));
-
-		_objectDefinitionLocalService.undeployObjectDefinition(
-			objectDefinition);
-
-		Assert.assertNull(
-			ClassNameLocalServiceUtil.fetchByClassNameId(
-				className.getClassNameId()));
 
 		_objectDefinitionLocalService.deleteObjectDefinition(objectDefinition);
 	}
