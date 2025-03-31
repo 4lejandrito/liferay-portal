@@ -269,7 +269,7 @@ public class AssetTagLocalServiceImpl extends AssetTagLocalServiceBaseImpl {
 	 */
 	@Override
 	public AssetTag fetchTag(long groupId, String name) {
-		List<AssetTag> assetTags = assetTagPersistence.findByG_LikeN(
+		List<AssetTag> assetTags = assetTagPersistence.findByG_N(
 			groupId, name);
 
 		for (AssetTag assetTag : assetTags) {
