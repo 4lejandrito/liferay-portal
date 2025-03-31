@@ -269,8 +269,6 @@ public class ObjectDefinitionResourceImpl
 						objectDefinition.getObjectFields(),
 						objectField -> ObjectFieldUtil.toObjectField(
 							objectDefinition.getDefaultLanguageId(),
-							GetterUtil.getBoolean(
-								objectDefinition.getEnableLocalization()),
 							_listTypeDefinitionLocalService, objectField,
 							_objectFieldLocalService,
 							_objectFieldSettingLocalService,
@@ -318,8 +316,6 @@ public class ObjectDefinitionResourceImpl
 										BUSINESS_TYPE_RELATIONSHIP)),
 						objectField -> ObjectFieldUtil.toObjectField(
 							objectDefinition.getDefaultLanguageId(),
-							GetterUtil.getBoolean(
-								objectDefinition.getEnableLocalization()),
 							_listTypeDefinitionLocalService, objectField,
 							_objectFieldLocalService,
 							_objectFieldSettingLocalService,
@@ -388,7 +384,7 @@ public class ObjectDefinitionResourceImpl
 								ObjectFieldConstants.
 									BUSINESS_TYPE_AGGREGATION)),
 						objectField -> ObjectFieldUtil.toObjectField(
-							objectDefinition.getDefaultLanguageId(), false,
+							objectDefinition.getDefaultLanguageId(),
 							_listTypeDefinitionLocalService, objectField,
 							_objectFieldLocalService,
 							_objectFieldSettingLocalService,
@@ -1075,9 +1071,9 @@ public class ObjectDefinitionResourceImpl
 			serviceBuilderObjectDefinition1.getObjectDefinitionId(),
 			serviceBuilderObjectDefinition2.getObjectDefinitionId(),
 			ObjectFieldUtil.toObjectField(
-				defaultLanguageId, false, _listTypeDefinitionLocalService,
-				objectField, _objectFieldLocalService,
-				_objectFieldSettingLocalService, _objectFilterLocalService));
+				defaultLanguageId, _listTypeDefinitionLocalService, objectField,
+				_objectFieldLocalService, _objectFieldSettingLocalService,
+				_objectFilterLocalService));
 	}
 
 	private Set<String> _getAccountEntryRestrictedObjectRelationshipsNames(
