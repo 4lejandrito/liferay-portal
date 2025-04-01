@@ -12,6 +12,7 @@ import com.liferay.list.type.service.ListTypeDefinitionLocalService;
 import com.liferay.object.admin.rest.client.dto.v1_0.ObjectAction;
 import com.liferay.object.admin.rest.client.dto.v1_0.ObjectDefinition;
 import com.liferay.object.admin.rest.client.dto.v1_0.ObjectField;
+import com.liferay.object.admin.rest.client.dto.v1_0.ObjectFieldSetting;
 import com.liferay.object.admin.rest.client.dto.v1_0.ObjectLayout;
 import com.liferay.object.admin.rest.client.dto.v1_0.ObjectLayoutBox;
 import com.liferay.object.admin.rest.client.dto.v1_0.ObjectLayoutColumn;
@@ -29,6 +30,7 @@ import com.liferay.object.admin.rest.client.serdes.v1_0.ObjectDefinitionSerDes;
 import com.liferay.object.constants.ObjectActionExecutorConstants;
 import com.liferay.object.constants.ObjectActionTriggerConstants;
 import com.liferay.object.constants.ObjectDefinitionConstants;
+import com.liferay.object.constants.ObjectFieldSettingConstants;
 import com.liferay.object.constants.ObjectFolderConstants;
 import com.liferay.object.constants.ObjectRelationshipConstants;
 import com.liferay.object.constants.ObjectValidationRuleConstants;
@@ -756,10 +758,20 @@ public class ObjectDefinitionResourceTest
 				},
 				new ObjectField() {
 					{
-						businessType = BusinessType.TEXT;
+						businessType = BusinessType.AUTO_INCREMENT;
 						DBType = ObjectField.DBType.create("String");
 						label = Collections.singletonMap("en_US", "Column");
 						name = StringUtil.randomId();
+						objectFieldSettings = new ObjectFieldSetting[] {
+							new ObjectFieldSetting() {
+								{
+									name =
+										ObjectFieldSettingConstants.
+											NAME_INITIAL_VALUE;
+									value = RandomTestUtil.randomInt();
+								}
+							}
+						};
 					}
 				}
 			});
