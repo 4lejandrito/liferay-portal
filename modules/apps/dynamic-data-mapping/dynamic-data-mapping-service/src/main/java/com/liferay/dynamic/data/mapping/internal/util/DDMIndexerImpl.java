@@ -965,6 +965,7 @@ public class DDMIndexerImpl implements DDMIndexer {
 
 		try {
 			JSONArray jsonArray = _jsonFactory.createJSONArray();
+
 			JSONArray sortableValueJSONArray = _jsonFactory.createJSONArray(
 				sortableValue);
 
