@@ -60,9 +60,9 @@ public abstract class BaseExternalReferenceCodeUpgradeProcess
 			selectSB.append("select ");
 			selectSB.append(primKeyColumnName);
 
-			boolean useUuid = useUuid(tableName);
+			boolean useUUID = useUUID(tableName);
 
-			if (useUuid) {
+			if (useUUID) {
 				selectSB.append(", uuid_");
 			}
 
@@ -89,7 +89,7 @@ public abstract class BaseExternalReferenceCodeUpgradeProcess
 				while (resultSet.next()) {
 					long primKey = resultSet.getLong(1);
 
-					if (useUuid) {
+					if (useUUID) {
 						String uuid = resultSet.getString(2);
 
 						preparedStatement2.setString(1, uuid);
@@ -109,7 +109,7 @@ public abstract class BaseExternalReferenceCodeUpgradeProcess
 		}
 	}
 
-	protected boolean useUuid(String tableName) throws Exception {
+	protected boolean useUUID(String tableName) throws Exception {
 		return hasColumn(tableName, "uuid_");
 	}
 
