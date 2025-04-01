@@ -2767,6 +2767,13 @@ public class DefaultObjectEntryManagerImplTest
 				_buildContainsExpressionFilterString("textObjectFieldName", "b")
 			).build(),
 			childObjectEntry2);
+		testGetObjectEntries(
+			HashMapBuilder.put(
+				"filter",
+				_buildContainsExpressionFilterString(
+					"textObjectFieldName", "Aab")
+			).build(),
+			childObjectEntry2);
 
 		// Equals expression
 
