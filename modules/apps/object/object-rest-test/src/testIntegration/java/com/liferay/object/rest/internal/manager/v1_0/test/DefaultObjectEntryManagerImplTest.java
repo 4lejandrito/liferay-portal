@@ -2653,6 +2653,8 @@ public class DefaultObjectEntryManagerImplTest
 							"localizedLongTextObjectFieldName",
 							"en_US localizedLongTextObjectFieldValue"
 						).put(
+							"longIntegerObjectFieldName", 200L
+						).put(
 							"picklistObjectFieldName", picklistObjectFieldValue2
 						).put(
 							"textObjectFieldName", "aab"
