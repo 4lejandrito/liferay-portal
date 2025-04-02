@@ -2758,6 +2758,13 @@ public class DefaultObjectEntryManagerImplTest
 			HashMapBuilder.put(
 				"filter",
 				_buildContainsExpressionFilterString(
+					"textObjectFieldName", "Aab")
+			).build(),
+			childObjectEntry2);
+		testGetObjectEntries(
+			HashMapBuilder.put(
+				"filter",
+				_buildContainsExpressionFilterString(
 					"textObjectFieldName", "aa")
 			).build(),
 			childObjectEntry1, childObjectEntry2);
@@ -2765,13 +2772,6 @@ public class DefaultObjectEntryManagerImplTest
 			HashMapBuilder.put(
 				"filter",
 				_buildContainsExpressionFilterString("textObjectFieldName", "b")
-			).build(),
-			childObjectEntry2);
-		testGetObjectEntries(
-			HashMapBuilder.put(
-				"filter",
-				_buildContainsExpressionFilterString(
-					"textObjectFieldName", "Aab")
 			).build(),
 			childObjectEntry2);
 
