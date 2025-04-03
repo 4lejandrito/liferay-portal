@@ -47,6 +47,7 @@ export class CommerceAdminChannelDetailsPage {
 	) => Promise<Locator>;
 	readonly guestCheckoutToggle: Locator;
 	readonly isActive: (tableName: string) => Promise<Locator>;
+	readonly maxOpenOrderAccountInput: Locator;
 	readonly page: Page;
 	readonly placeHolderTerm: (
 		isNestedFrame: boolean,
@@ -206,6 +207,9 @@ export class CommerceAdminChannelDetailsPage {
 		this.isActive = async (tableName: string) => {
 			return (await this.sidePanelFrame(tableName)).getByLabel('Active');
 		};
+		this.maxOpenOrderAccountInput = page.getByLabel(
+			'Maximum Number of Open Orders per Account'
+		);
 		this.sidePanelFrameButton = async (
 			buttonName: string,
 			tableName: string
