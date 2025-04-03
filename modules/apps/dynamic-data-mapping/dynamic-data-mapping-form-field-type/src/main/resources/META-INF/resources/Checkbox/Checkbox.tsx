@@ -27,6 +27,7 @@ const Checkbox: React.FC<IProps> = (props) => {
 export default function Main({
 	label,
 	localizedObjectField,
+	required,
 	...otherProps
 }: IProps) {
 	const Component =
@@ -36,18 +37,22 @@ export default function Main({
 
 	return (
 		<FieldBase showLabel={false} {...otherProps}>
-			<Component label={label} {...otherProps} />
+			<Component label={label} required={required} {...otherProps} />
 		</FieldBase>
 	);
 }
 
 interface IProps extends ICheckboxLocalizedObjectFieldProps {
+	errorMessage: string;
+	id?: string;
+	isLocalizationSupported: boolean;
 	localizedObjectField?: boolean;
 	predefinedValue?: boolean | String[];
 	readOnly?: boolean;
 	showAsSwitcher?: boolean;
 	showMaximumRepetitionsInfo?: boolean;
 	systemSettingsURL: string;
+	tip: string;
 	visible?: boolean;
 }
 

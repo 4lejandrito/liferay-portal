@@ -99,10 +99,13 @@ export default function CheckboxLocalizedObjectField(props: IProps) {
 }
 
 export interface IProps extends ICheckboxBaseProps {
-	availableLocales: EditingLocale[];
-	defaultLocale: EditingLocale;
+	availableLocales: AvailableLocale[];
+	editOnlyInDefaultLanguage: boolean;
+	errorMessage: string;
 	fieldName: string;
+	id?: string;
 	onChange: FieldChangeEventHandler<LocalizedValue<boolean>>;
 	systemSettingsURL: string;
+	tip: string;
 	value: LocalizedValue<boolean>;
 }
