@@ -381,7 +381,7 @@
 															"value": {
 																"href": {
 																	"value_i18n": {
-																		"en_US": "/web/[$GROUP_KEY$]/g/contacts"
+																		"en_US": "/web/[$GROUP_KEY$]/g/eyeglasses"
 																	}
 																}
 															}
@@ -535,7 +535,7 @@
 															"value": {
 																"href": {
 																	"value_i18n": {
-																		"en_US": "/web/[$GROUP_KEY$]/g/lenses"
+																		"en_US": "/web/[$GROUP_KEY$]/g/sunglasses"
 																	}
 																}
 															}
