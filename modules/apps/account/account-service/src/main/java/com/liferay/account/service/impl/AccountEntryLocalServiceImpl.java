@@ -19,7 +19,10 @@ import com.liferay.account.service.base.AccountEntryLocalServiceBaseImpl;
 import com.liferay.account.validator.AccountEntryEmailAddressValidator;
 import com.liferay.account.validator.AccountEntryEmailAddressValidatorFactory;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
+import com.liferay.expando.kernel.model.ExpandoBridge;
 import com.liferay.expando.kernel.service.ExpandoRowLocalService;
+import com.liferay.expando.kernel.util.ExpandoBridgeFactoryUtil;
+import com.liferay.object.entry.util.ObjectEntryThreadLocal;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.sql.dsl.DSLFunctionFactoryUtil;
 import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
@@ -639,40 +642,57 @@ public class AccountEntryLocalServiceImpl
 
 		accountEntry.setTaxIdNumber(taxIdNumber);
 		accountEntry.setStatus(WorkflowConstants.STATUS_DRAFT);
-		accountEntry.setExpandoBridgeAttributes(serviceContext);
 
-		accountEntry = accountEntryPersistence.update(accountEntry);
+		ExpandoBridge expandoBridge = ExpandoBridgeFactoryUtil.getExpandoBridge(
+			accountEntry.getCompanyId(), accountEntry.getModelClassName(),
+			accountEntryId);
 
-		if (domains != null) {
-			accountEntry = updateDomains(accountEntryId, domains);
+		try {
+			ObjectEntryThreadLocal.setExpandoValues(
+				expandoBridge.getAttributes());
+
+			accountEntry.setExpandoBridgeAttributes(serviceContext);
+
+			accountEntry = accountEntryPersistence.update(accountEntry);
+
+			if (domains != null) {
+				accountEntry = updateDomains(accountEntryId, domains);
+			}
+
+			if (status == WorkflowConstants.STATUS_INCOMPLETE) {
+				status = WorkflowConstants.STATUS_APPROVED;
+			}
+
+			ServiceContext workflowServiceContext = new ServiceContext();
+			long workflowUserId = accountEntry.getUserId();
+
+			if (serviceContext != null) {
+
+				// Asset
+
+				_updateAsset(accountEntry, serviceContext);
+
+				workflowServiceContext = (ServiceContext)serviceContext.clone();
+				workflowUserId = serviceContext.getUserId();
+			}
+
+			if (_isWorkflowEnabled(accountEntry.getCompanyId())) {
+				_checkStatus(accountEntry.getStatus(), status);
+
+				accountEntry = _startWorkflowInstance(
+					workflowUserId, accountEntry, workflowServiceContext);
+			}
+			else {
+				updateStatus(
+					workflowUserId, accountEntryId, status,
+					workflowServiceContext, Collections.emptyMap());
+			}
+
+			return accountEntry;
 		}
-
-		ServiceContext workflowServiceContext = new ServiceContext();
-		long workflowUserId = accountEntry.getUserId();
-
-		if (serviceContext != null) {
-
-			// Asset
-
-			_updateAsset(accountEntry, serviceContext);
-
-			workflowServiceContext = (ServiceContext)serviceContext.clone();
-			workflowUserId = serviceContext.getUserId();
+		finally {
+			ObjectEntryThreadLocal.clearExpandoValues();
 		}
-
-		if (_isWorkflowEnabled(accountEntry.getCompanyId())) {
-			_checkStatus(accountEntry.getStatus(), status);
-
-			accountEntry = _startWorkflowInstance(
-				workflowUserId, accountEntry, workflowServiceContext);
-		}
-		else {
-			updateStatus(
-				workflowUserId, accountEntryId, status, workflowServiceContext,
-				Collections.emptyMap());
-		}
-
-		return accountEntry;
 	}
 
 	@Indexable(type = IndexableType.REINDEX)

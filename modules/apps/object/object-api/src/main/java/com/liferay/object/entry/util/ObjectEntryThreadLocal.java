@@ -7,7 +7,10 @@ package com.liferay.object.entry.util;
 
 import com.liferay.petra.lang.CentralizedThreadLocal;
 
+import java.io.Serializable;
+
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -19,6 +22,14 @@ public class ObjectEntryThreadLocal {
 		Set<Long> validatedObjectEntryIds = _validatedObjectEntryIds.get();
 
 		validatedObjectEntryIds.add(objectEntryId);
+	}
+
+	public static void clearExpandoValues() {
+		_expandoValues.remove();
+	}
+
+	public static Map<String, Serializable> getExpandoValues() {
+		return _expandoValues.get();
 	}
 
 	public static boolean isDisassociateRelatedModels() {
@@ -49,6 +60,12 @@ public class ObjectEntryThreadLocal {
 		_disassociateRelatedModels.set(disassociateRelatedModels);
 	}
 
+	public static void setExpandoValues(
+		Map<String, Serializable> expandoValues) {
+
+		_expandoValues.set(expandoValues);
+	}
+
 	public static void setSkipObjectEntryResourcePermission(
 		boolean skipObjectEntryResourcePermission) {
 
@@ -72,6 +89,9 @@ public class ObjectEntryThreadLocal {
 		new CentralizedThreadLocal<>(
 			ObjectEntryThreadLocal.class + "._disassociateRelatedModels",
 			() -> false);
+	private static final ThreadLocal<Map<String, Serializable>> _expandoValues =
+		new CentralizedThreadLocal<>(
+			ObjectEntryThreadLocal.class + "._expandoValues");
 	private static final ThreadLocal<Boolean>
 		_skipObjectEntryResourcePermission = new CentralizedThreadLocal<>(
 			ObjectEntryThreadLocal.class +
