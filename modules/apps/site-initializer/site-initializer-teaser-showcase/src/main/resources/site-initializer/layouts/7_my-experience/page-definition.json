@@ -1479,7 +1479,7 @@
 																							"value": {
 																								"action": {
 																									"mapping": {
-																										"fieldKey": "ObjectAction_standaloneUserConfirmation",
+																										"fieldKey": "ObjectAction_standaloneUserAcceptance",
 																										"itemReference": {
 																											"contextSource": "CollectionItem"
 																										}
@@ -1566,7 +1566,7 @@
 																							"value": {
 																								"action": {
 																									"mapping": {
-																										"fieldKey": "ObjectAction_standaloneUserDisconfirmation",
+																										"fieldKey": "ObjectAction_standaloneUserRejection",
 																										"itemReference": {
 																											"contextSource": "CollectionItem"
 																										}
