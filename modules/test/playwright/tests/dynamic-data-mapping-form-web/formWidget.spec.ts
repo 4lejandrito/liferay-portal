@@ -86,9 +86,10 @@ test.describe('Forms widget', () => {
 		for (let index = 0; index < 8; index++) {
 			await formBuilderSidePanelPage.addFieldByDoubleClick('Paragraph');
 
-			await formBuilderSidePanelPage.fillParagraphField({
-				text: loremIpsumText,
-			});
+			await formBuilderSidePanelPage.fillParagraphField(
+				apiHelpers,
+				loremIpsumText
+			);
 
 			await formBuilderSidePanelPage.paragraphFieldTitle.fill(
 				`Paragraph ${index}`

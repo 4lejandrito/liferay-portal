@@ -6,12 +6,13 @@
 import {Page, expect, mergeTests} from '@playwright/test';
 import path from 'path';
 
+import {dataApiHelpersTest} from '../../fixtures/dataApiHelpersTest';
 import {formsPagesTest} from '../../fixtures/formsPagesTest';
 import {loginTest} from '../../fixtures/loginTest';
 import {getRandomInt} from '../../utils/getRandomInt';
 import {deleteItems} from './utils/deleteItems';
 
-export const test = mergeTests(loginTest(), formsPagesTest);
+export const test = mergeTests(dataApiHelpersTest, loginTest(), formsPagesTest);
 
 test.afterEach(async ({formsPage, page}) => {
 	await formsPage.goTo();
