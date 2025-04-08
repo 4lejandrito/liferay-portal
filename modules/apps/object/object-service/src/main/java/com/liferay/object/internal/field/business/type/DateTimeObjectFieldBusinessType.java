@@ -171,24 +171,24 @@ public class DateTimeObjectFieldBusinessType
 		return true;
 	}
 
+	private boolean _containsZoneId(String pattern) {
+		if (pattern.contains("Z") || pattern.contains("z")) {
+			return true;
+		}
+
+		return false;
+	}
+
 	private LocalDateTime _getLocalDateTime(
 		String sourceTimeZoneId, String targetTimeZoneId, String value) {
 
 		String pattern = ObjectFieldUtil.getDateTimePattern(value);
 
-		if (pattern.contains("'Z'")) {
-			sourceTimeZoneId = StringPool.UTC;
-		}
-		else if (pattern.contains("Z") || pattern.contains("zzz")) {
-			ZonedDateTime zonedDateTime = ZonedDateTime.parse(
-				value, DateTimeFormatter.ofPattern(pattern));
-
-			sourceTimeZoneId = zonedDateTime.getZone(
-			).getId();
-		}
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(
+			pattern);
 
 		LocalDateTime localDateTime = LocalDateTime.parse(
-			value, DateTimeFormatter.ofPattern(pattern));
+			value, dateTimeFormatter);
 
 		if (Validator.isNull(sourceTimeZoneId) ||
 			Validator.isNull(targetTimeZoneId)) {
@@ -196,8 +196,15 @@ public class DateTimeObjectFieldBusinessType
 			return localDateTime;
 		}
 
-		ZonedDateTime zonedDateTime = ZonedDateTime.of(
-			localDateTime, ZoneId.of(sourceTimeZoneId));
+		ZonedDateTime zonedDateTime = null;
+
+		if (_containsZoneId(pattern)) {
+			zonedDateTime = ZonedDateTime.parse(value, dateTimeFormatter);
+		}
+		else {
+			zonedDateTime = ZonedDateTime.of(
+				localDateTime, ZoneId.of(sourceTimeZoneId));
+		}
 
 		return LocalDateTime.ofInstant(
 			zonedDateTime.toInstant(), ZoneId.of(targetTimeZoneId));
