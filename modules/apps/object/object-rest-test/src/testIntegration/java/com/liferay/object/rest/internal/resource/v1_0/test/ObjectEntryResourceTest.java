@@ -7807,7 +7807,7 @@ public class ObjectEntryResourceTest {
 
 			user = _userLocalService.updateUser(user);
 
-			// With +0400 time zone offset
+			// Format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ" and positive offset
 
 			JSONAssert.assertEquals(
 				JSONUtil.put(
@@ -7828,7 +7828,7 @@ public class ObjectEntryResourceTest {
 				).toString(),
 				JSONCompareMode.LENIENT);
 
-			// With -0400 time zone offset
+			// Format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ" and negative offset
 
 			JSONAssert.assertEquals(
 				JSONUtil.put(
@@ -7849,7 +7849,7 @@ public class ObjectEntryResourceTest {
 				).toString(),
 				JSONCompareMode.LENIENT);
 
-			// With UTC time zone
+			// Format: "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
 			JSONAssert.assertEquals(
 				JSONUtil.put(
@@ -7870,7 +7870,7 @@ public class ObjectEntryResourceTest {
 				).toString(),
 				JSONCompareMode.LENIENT);
 
-			// With timezone abbreviation
+			// Format: "EEE MMM dd HH:mm:ss zzz yyyy"
 
 			JSONAssert.assertEquals(
 				JSONUtil.put(
@@ -7891,7 +7891,7 @@ public class ObjectEntryResourceTest {
 				).toString(),
 				JSONCompareMode.LENIENT);
 
-			// Without time zone
+			// Format: "yyyy-MM-dd'T'HH:mm:ss.SSS"
 
 			JSONAssert.assertEquals(
 				JSONUtil.put(
