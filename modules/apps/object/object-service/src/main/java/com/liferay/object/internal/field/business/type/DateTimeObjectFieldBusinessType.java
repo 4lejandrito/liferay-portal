@@ -172,7 +172,7 @@ public class DateTimeObjectFieldBusinessType
 		return true;
 	}
 
-	private boolean _containsZoneId(String pattern) {
+	private boolean _containsTimeZoneId(String pattern) {
 		if (pattern.contains("X") || pattern.contains("Z") ||
 			pattern.contains("z")) {
 
@@ -202,7 +202,7 @@ public class DateTimeObjectFieldBusinessType
 
 		ZonedDateTime zonedDateTime = null;
 
-		if (_containsZoneId(pattern)) {
+		if (_containsTimeZoneId(pattern)) {
 			zonedDateTime = ZonedDateTime.parse(value, dateTimeFormatter);
 		}
 		else {
