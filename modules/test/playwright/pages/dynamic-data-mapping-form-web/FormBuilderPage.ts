@@ -38,8 +38,13 @@ export class FormBuilderPage {
 			name: 'Open Form',
 		});
 		this.page = page;
-		this.previewButton = page.getByRole('button', {name: 'Preview'});
-		this.publishButton = page.getByRole('button', {name: 'Publish'});
+		this.previewButton = page
+			.getByRole('button', {name: 'Preview'})
+			.and(page.getByTitle('A form draft will be saved'));
+		this.publishButton = page.getByRole('button', {
+			exact: true,
+			name: 'Publish',
+		});
 		this.requireCaptchaToggle = page.getByLabel('Require CAPTCHA');
 		this.saveButton = page.getByRole('button', {name: 'Save'});
 		this.settingsAdvancedTab = page.getByRole('tab', {name: 'Advanced'});
