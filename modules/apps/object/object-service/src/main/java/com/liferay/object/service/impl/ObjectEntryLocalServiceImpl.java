@@ -2394,7 +2394,8 @@ public class ObjectEntryLocalServiceImpl
 			else {
 				objectFieldPredicate =
 					ObjectEntrySearchUtil.getObjectFieldPredicate(
-						column, objectField.getDBType(), search);
+						objectField.getBusinessType(), column,
+						objectField.getDBType(), search);
 			}
 
 			if (objectFieldPredicate == null) {
@@ -3416,7 +3417,8 @@ public class ObjectEntryLocalServiceImpl
 				ObjectEntryTable.INSTANCE.objectEntryId)) {
 
 			return ObjectEntrySearchUtil.getObjectFieldPredicate(
-				column, objectField.getDBType(), search);
+				titleObjectField.getBusinessType(), column,
+				objectField.getDBType(), search);
 		}
 
 		Predicate relatedModelsPredicate =
