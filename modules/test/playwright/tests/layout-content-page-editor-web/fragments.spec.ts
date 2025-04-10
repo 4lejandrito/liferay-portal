@@ -1225,7 +1225,7 @@ test.describe('Image Fragment', () => {
 					.locator('.component-image img')
 					.first()
 					.getAttribute('src')
-			).toContain('poodle-jpg');
+			).toContain('poodle.jpg');
 		}
 	);
 });
