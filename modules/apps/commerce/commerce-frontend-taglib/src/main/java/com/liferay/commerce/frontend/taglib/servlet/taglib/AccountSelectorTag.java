@@ -430,7 +430,7 @@ public class AccountSelectorTag extends IncludeTag {
 						_commerceChannelGroupId,
 						CommerceConstants.SERVICE_NAME_COMMERCE_ORDER_FIELDS));
 
-			int pendingCommerceOrdersCount =
+			int commerceOrdersCount =
 				(int)_commerceOrderLocalService.getCommerceOrdersCount(
 					_accountEntry.getCompanyId(), _commerceChannelGroupId,
 					new long[] {_accountEntry.getAccountEntryId()},
@@ -440,7 +440,7 @@ public class AccountSelectorTag extends IncludeTag {
 
 			if ((commerceOrderFieldsConfiguration.accountCartMaxAllowed() >
 					0) &&
-				(pendingCommerceOrdersCount >=
+				(commerceOrdersCount >=
 					commerceOrderFieldsConfiguration.accountCartMaxAllowed())) {
 
 				return false;
