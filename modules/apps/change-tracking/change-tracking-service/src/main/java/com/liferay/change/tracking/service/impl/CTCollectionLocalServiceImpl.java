@@ -1162,7 +1162,9 @@ public class CTCollectionLocalServiceImpl
 	}
 
 	private void _discardCTEntries(
-		CTCollection ctCollection, long classNameId, List<CTEntry> ctEntries) {
+			CTCollection ctCollection, long classNameId,
+			List<CTEntry> ctEntries)
+		throws PortalException {
 
 		CTService<?> ctService = _ctServiceRegistry.getCTService(classNameId);
 
@@ -1194,7 +1196,7 @@ public class CTCollectionLocalServiceImpl
 		for (CTEntry ctEntry : ctEntries) {
 			modelClassPKs.add(ctEntry.getModelClassPK());
 
-			_ctEntryPersistence.remove(ctEntry);
+			_ctEntryLocalService.deleteCTEntry(ctEntry);
 		}
 
 		try (SafeCloseable safeCloseable =
