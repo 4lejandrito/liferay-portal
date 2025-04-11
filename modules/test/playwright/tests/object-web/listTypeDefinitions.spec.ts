@@ -3,7 +3,10 @@
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
-import {ObjectDefinition} from '@liferay/object-admin-rest-client-js';
+import {
+	ObjectDefinition,
+	ObjectDefinitionApi,
+} from '@liferay/object-admin-rest-client-js';
 import {Page, expect, mergeTests} from '@playwright/test';
 
 import {accountSettingsPagesTest} from '../../fixtures/accountSettingsPagesTest';
@@ -15,6 +18,8 @@ import {loginTest} from '../../fixtures/loginTest';
 import {objectPagesTest} from '../../fixtures/objectPagesTest';
 import {siteSettingsPagesTest} from '../../fixtures/siteSettingsPagesTest';
 import {getRandomInt} from '../../utils/getRandomInt';
+import {waitForAlert} from '../../utils/waitForAlert';
+import {mockObjectFields} from './utils/mockObjectFields';
 
 export const test = mergeTests(
 	accountSettingsPagesTest,
@@ -209,6 +214,61 @@ test.describe('manage picklists inside the picklists portlet', () => {
 });
 
 test.describe('ensure picklist translation', () => {
+	test('verify if title of clear all button on multiselect picklist field is translated', async ({
+		apiHelpers,
+		formFieldsPage,
+		page,
+		viewObjectEntriesPage,
+	}) => {
+		const {
+			objectFields,
+			titleObjectFieldName,
+			translatedListTypeDefinitionItems,
+		} = await mockObjectFields({
+			apiHelpers,
+			localeToTranslateListTypeItems: 'pt_BR',
+			objectFieldBusinessTypes: ['multiselectPicklist'],
+		});
+
+		const objectDefinitionAPIClient =
+			await apiHelpers.buildRestClient(ObjectDefinitionApi);
+
+		const {body: objectDefinition} =
+			await objectDefinitionAPIClient.postObjectDefinition({
+				active: true,
+				enableLocalization: true,
+				label: {
+					en_US: 'ObjectDefinitionLabel' + getRandomInt(),
+				},
+				name: 'ObjectDefinitionName' + getRandomInt(),
+				objectFields,
+				pluralLabel: {
+					en_US: 'ObjectDefinitionLabel' + getRandomInt(),
+				},
+				portlet: true,
+				scope: 'company',
+				status: {
+					code: 0,
+				},
+				titleObjectFieldName,
+			});
+
+		apiHelpers.data.push({
+			id: objectDefinition.id,
+			type: 'objectDefinition',
+		});
+
+		await viewObjectEntriesPage.goto(objectDefinition.className, 'pt');
+
+		await viewObjectEntriesPage.addObjectEntryButton.click();
+
+		await formFieldsPage.addSelectItem(
+			translatedListTypeDefinitionItems[0]
+		);
+
+		await expect(page.getByTitle('Limpar Todos')).toBeVisible();
+	});
+
 	test('verify if translated picklist will be displayed on object admin', async ({
 		accountSettingsPage,
 		apiHelpers,
