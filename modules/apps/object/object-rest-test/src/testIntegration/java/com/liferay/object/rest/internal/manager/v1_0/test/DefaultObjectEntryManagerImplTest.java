@@ -393,6 +393,8 @@ public class DefaultObjectEntryManagerImplTest
 		_objectDefinition2 = _createObjectDefinition(
 			Arrays.asList(
 				new AttachmentObjectFieldBuilder(
+				).indexed(
+					true
 				).labelMap(
 					LocalizedMapUtil.getLocalizedMap(
 						RandomTestUtil.randomString())
@@ -405,8 +407,6 @@ public class DefaultObjectEntryManagerImplTest
 						_createObjectFieldSetting(
 							"fileSource", "documentsAndMedia"),
 						_createObjectFieldSetting("maximumFileSize", "100"))
-				).indexed(
-					true
 				).readOnly(
 					"conditional"
 				).readOnlyConditionExpression(
