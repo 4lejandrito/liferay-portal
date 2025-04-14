@@ -14,6 +14,7 @@ import com.liferay.portal.kernel.cache.PortalCache;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.module.configuration.ConfigurationException;
 import com.liferay.portal.kernel.util.HashMapDictionaryBuilder;
 
 import org.osgi.service.component.annotations.Activate;
@@ -56,7 +57,7 @@ public class FriendlyURLSeparatorConfigurationManagerImpl
 	@Override
 	public void updateFriendlyURLSeparatorCompanyConfiguration(
 			long companyId, String friendlyURLSeparatorsJSON)
-		throws PortalException {
+		throws ConfigurationException {
 
 		_configurationProvider.saveCompanyConfiguration(
 			FriendlyURLSeparatorCompanyConfiguration.class, companyId,
