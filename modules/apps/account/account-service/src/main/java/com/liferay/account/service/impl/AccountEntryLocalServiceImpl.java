@@ -648,7 +648,7 @@ public class AccountEntryLocalServiceImpl
 			accountEntryId);
 
 		try {
-			ObjectEntryThreadLocal.setExpandoValues(
+			ObjectEntryThreadLocal.setExpandoBridgeAttributes(
 				expandoBridge.getAttributes());
 
 			accountEntry.setExpandoBridgeAttributes(serviceContext);
@@ -691,7 +691,7 @@ public class AccountEntryLocalServiceImpl
 			return accountEntry;
 		}
 		finally {
-			ObjectEntryThreadLocal.clearExpandoValues();
+			ObjectEntryThreadLocal.clearExpandoBridgeAttributes();
 		}
 	}
 

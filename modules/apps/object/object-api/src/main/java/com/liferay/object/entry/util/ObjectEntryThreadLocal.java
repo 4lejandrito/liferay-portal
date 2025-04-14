@@ -24,12 +24,12 @@ public class ObjectEntryThreadLocal {
 		validatedObjectEntryIds.add(objectEntryId);
 	}
 
-	public static void clearExpandoValues() {
-		_expandoValues.remove();
+	public static void clearExpandoBridgeAttributes() {
+		_expandoBridgeAttributes.remove();
 	}
 
-	public static Map<String, Serializable> getExpandoValues() {
-		return _expandoValues.get();
+	public static Map<String, Serializable> getExpandoBridgeAttributes() {
+		return _expandoBridgeAttributes.get();
 	}
 
 	public static boolean isDisassociateRelatedModels() {
@@ -60,10 +60,10 @@ public class ObjectEntryThreadLocal {
 		_disassociateRelatedModels.set(disassociateRelatedModels);
 	}
 
-	public static void setExpandoValues(
+	public static void setExpandoBridgeAttributes(
 		Map<String, Serializable> expandoValues) {
 
-		_expandoValues.set(expandoValues);
+		_expandoBridgeAttributes.set(expandoValues);
 	}
 
 	public static void setSkipObjectEntryResourcePermission(
@@ -89,9 +89,9 @@ public class ObjectEntryThreadLocal {
 		new CentralizedThreadLocal<>(
 			ObjectEntryThreadLocal.class + "._disassociateRelatedModels",
 			() -> false);
-	private static final ThreadLocal<Map<String, Serializable>> _expandoValues =
-		new CentralizedThreadLocal<>(
-			ObjectEntryThreadLocal.class + "._expandoValues");
+	private static final ThreadLocal<Map<String, Serializable>>
+		_expandoBridgeAttributes = new CentralizedThreadLocal<>(
+			ObjectEntryThreadLocal.class + "._expandoBridgeAttributes");
 	private static final ThreadLocal<Boolean>
 		_skipObjectEntryResourcePermission = new CentralizedThreadLocal<>(
 			ObjectEntryThreadLocal.class +
