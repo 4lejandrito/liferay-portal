@@ -100,7 +100,7 @@ public class UpdateArticleMVCActionCommandTest {
 			_journalArticleLocalService.fetchArticleByUrlTitle(
 				_group.getGroupId(), "title");
 
-\		Assert.assertEquals(
+		Assert.assertEquals(
 			journalArticle1.getDisplayDate(), journalArticle2.getDisplayDate());
 		Assert.assertEquals(
 			WorkflowConstants.STATUS_APPROVED, journalArticle2.getStatus());
