@@ -86,7 +86,6 @@ public class UpdateArticleMVCActionCommandTest {
 			_journalArticleLocalService.fetchArticleByUrlTitle(
 				_group.getGroupId(), "title");
 
-		Assert.assertNotNull(journalArticle1);
 		Assert.assertNotNull(journalArticle1.getDisplayDate());
 		Assert.assertEquals(
 			WorkflowConstants.STATUS_APPROVED, journalArticle1.getStatus());
@@ -101,8 +100,7 @@ public class UpdateArticleMVCActionCommandTest {
 			_journalArticleLocalService.fetchArticleByUrlTitle(
 				_group.getGroupId(), "title");
 
-		Assert.assertNotNull(journalArticle2);
-		Assert.assertEquals(
+\		Assert.assertEquals(
 			journalArticle1.getDisplayDate(), journalArticle2.getDisplayDate());
 		Assert.assertEquals(
 			WorkflowConstants.STATUS_APPROVED, journalArticle2.getStatus());
