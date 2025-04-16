@@ -332,7 +332,9 @@ public class DBCopyTablesProcess {
 				return;
 			}
 
-			if (targetType == Types.DECIMAL) {
+			if ((targetType == Types.DECIMAL) ||
+				(targetType == Types.NUMERIC)) {
+
 				preparedStatement.setBigDecimal(index, value);
 
 				return;
@@ -521,7 +523,7 @@ public class DBCopyTablesProcess {
 			String value)
 		throws Exception {
 
-		if ((targetType == Types.BIGINT) || (targetType == Types.NUMERIC)) {
+		if (targetType == Types.BIGINT) {
 			preparedStatement.setLong(index, GetterUtil.getLong(value));
 		}
 		else if ((targetType == Types.BIT) || (targetType == Types.BOOLEAN)) {
@@ -551,6 +553,17 @@ public class DBCopyTablesProcess {
 		}
 		else if (targetType == Types.INTEGER) {
 			preparedStatement.setInt(index, GetterUtil.getInteger(value));
+		}
+		else if (targetType == Types.NUMERIC) {
+			Number number = GetterUtil.getNumber(value);
+
+			if (number instanceof Long) {
+				preparedStatement.setLong(index, (Long)number);
+			}
+			else {
+				preparedStatement.setBigDecimal(
+					index, (BigDecimal)GetterUtil.get(value, BigDecimal.ZERO));
+			}
 		}
 		else if ((targetType == Types.SMALLINT) ||
 				 (targetType == Types.TINYINT)) {
