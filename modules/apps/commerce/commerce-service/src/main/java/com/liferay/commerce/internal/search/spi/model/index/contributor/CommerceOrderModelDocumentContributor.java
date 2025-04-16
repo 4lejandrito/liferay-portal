@@ -20,7 +20,10 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.Localization;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.spi.model.index.contributor.ModelDocumentContributor;
 
@@ -45,6 +48,15 @@ public class CommerceOrderModelDocumentContributor
 
 	@Override
 	public void contribute(Document document, CommerceOrder commerceOrder) {
+		document.setSortableTextFields(
+			ArrayUtil.append(
+				PropsUtil.getArray(PropsKeys.INDEX_SORTABLE_TEXT_FIELDS),
+				new String[] {
+					Field.NAME, Field.USER_NAME, "accountName",
+					"commerceOrderTypeExternalReferenceCode",
+					"externalReferenceCode", "purchaseOrderNumber"
+				}));
+
 		try {
 			CommerceChannel commerceChannel =
 				_commerceChannelLocalService.getCommerceChannelByOrderGroupId(
@@ -53,15 +65,12 @@ public class CommerceOrderModelDocumentContributor
 			document.addNumberSortable(
 				Field.ENTRY_CLASS_PK, commerceOrder.getCommerceOrderId());
 			document.addKeyword(Field.NAME, commerceOrder.getName());
-			document.addKeywordSortable(Field.NAME, commerceOrder.getName());
 			document.addKeyword(Field.STATUS, commerceOrder.getStatus());
 
 			User user = _userLocalService.fetchUser(commerceOrder.getUserId());
 
 			if (user != null) {
 				document.addKeyword(Field.USER_NAME, user.getFullName());
-				document.addKeywordSortable(
-					Field.USER_NAME, user.getFullName());
 			}
 
 			AccountEntry accountEntry =
@@ -70,8 +79,6 @@ public class CommerceOrderModelDocumentContributor
 
 			if (accountEntry != null) {
 				document.addKeyword("accountName", accountEntry.getName());
-				document.addKeywordSortable(
-					"accountName", accountEntry.getName());
 			}
 
 			document.addKeyword(
@@ -105,9 +112,6 @@ public class CommerceOrderModelDocumentContributor
 			document.addKeyword(
 				"externalReferenceCode",
 				commerceOrder.getExternalReferenceCode());
-			document.addKeywordSortable(
-				"externalReferenceCode",
-				commerceOrder.getExternalReferenceCode());
 			document.addNumber(
 				"itemsQuantity", _getItemsQuantity(commerceOrder));
 
@@ -122,8 +126,6 @@ public class CommerceOrderModelDocumentContributor
 				"orderItemNames", _getCommerceOrderItemNames(commerceOrder));
 			document.addKeyword("orderStatus", commerceOrder.getOrderStatus());
 			document.addKeyword(
-				"purchaseOrderNumber", commerceOrder.getPurchaseOrderNumber());
-			document.addKeywordSortable(
 				"purchaseOrderNumber", commerceOrder.getPurchaseOrderNumber());
 			document.addKeyword(
 				"sku", _getCommerceOrderItemSKUs(commerceOrder));
