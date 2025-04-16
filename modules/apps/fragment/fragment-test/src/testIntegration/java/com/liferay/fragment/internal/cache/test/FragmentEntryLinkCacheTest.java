@@ -64,7 +64,7 @@ public class FragmentEntryLinkCacheTest {
 
 	@Test
 	@TestInfo("LPD-53565")
-	public void testFragmentEntryLinkCache() throws Exception {
+	public void test() throws Exception {
 		Layout layout = LayoutTestUtil.addTypeContentLayout(_group);
 
 		Layout draftLayout = layout.fetchDraftLayout();
