@@ -305,11 +305,8 @@ const Numeric: React.FC<{children?: React.ReactNode | undefined} & IProps> = ({
 	};
 
 	const accessibleProps = {
-		...(otherProps.tip && {
-			'aria-describedby': `${id ?? name}_fieldHelp`,
-		}),
-		...(otherProps.errorMessage && {
-			'aria-errormessage': `${id ?? name}_fieldError`,
+		...((otherProps.errorMessage || otherProps.tip) && {
+			'aria-describedby': `${id ?? name}_fieldFeedback`,
 		}),
 		'aria-invalid': !otherProps.valid,
 		'aria-required': otherProps.required,
