@@ -126,7 +126,7 @@ public class ClientExtensionAllCompaniesPortalInstanceLifecycleListenerTest {
 		String pid = ConfigurationTestUtil.createFactoryConfiguration(
 			CETConfiguration.class.getName(), externalReferenceCode,
 			HashMapDictionaryBuilder.<String, Object>put(
-				"baseURL", "${portalURL}/o/" + externalReferenceCode
+				"baseURL", RandomTestUtil.randomString()
 			).put(
 				"buildTimestamp", System.currentTimeMillis()
 			).put(
@@ -134,12 +134,11 @@ public class ClientExtensionAllCompaniesPortalInstanceLifecycleListenerTest {
 			).put(
 				"dxp.lxc.liferay.com.virtualInstanceId", "default"
 			).put(
-				"name", "Test " + externalReferenceCode
+				"name", RandomTestUtil.randomString()
 			).put(
-				"projectId",
-				StringUtil.removeSubstring(externalReferenceCode, "-")
+				"projectId", RandomTestUtil.randomString()
 			).put(
-				"projectName", externalReferenceCode
+				"projectName", RandomTestUtil.randomString()
 			).put(
 				"properties", new String[] {""}
 			).put(
@@ -152,7 +151,7 @@ public class ClientExtensionAllCompaniesPortalInstanceLifecycleListenerTest {
 			).put(
 				"typeSettings", typeSettings
 			).put(
-				"webContextPath", "/test_" + externalReferenceCode
+				"webContextPath", RandomTestUtil.randomString()
 			).build());
 
 		_autoCloseables.add(
