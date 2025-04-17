@@ -48,7 +48,7 @@ public class GlobalClientExtensionPortalInstanceLifecycleListener
 		}
 
 		List<String> externalReferenceCodes = StringUtil.split(
-			PropsUtil.get("client.extension.external.codes"));
+			PropsUtil.get("client.extension.global.external.reference.codes"));
 
 		if (ListUtil.isEmpty(externalReferenceCodes)) {
 			if (_log.isDebugEnabled()) {

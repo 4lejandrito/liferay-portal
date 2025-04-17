@@ -106,7 +106,7 @@ public class GlobalClientExtensionPortalInstanceLifecycleListenerTest {
 			String.format("url=global.%s.js", RandomTestUtil.randomString()));
 
 		PropsUtil.set(
-			"client.extension.external.codes",
+			"client.extension.global.external.reference.codes",
 			String.format(
 				"%s,%s", includedExternalReferenceCode1,
 				includedExternalReferenceCode2));
