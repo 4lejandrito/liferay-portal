@@ -13,7 +13,6 @@ import com.liferay.portal.configuration.test.util.ConfigurationTestUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Company;
-import com.liferay.portal.kernel.test.randomizerbumpers.NumericStringRandomizerBumper;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.CompanyTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
@@ -71,9 +70,7 @@ public class ClientExtensionAllCompaniesPortalInstanceLifecycleListenerTest {
 	@Test
 	public void testPortalInstanceRegistered() throws Exception {
 		String externalReferenceCode1 = String.format(
-			"included-custom-element-%s",
-			RandomTestUtil.randomString(
-				4, NumericStringRandomizerBumper.INSTANCE));
+			"included-custom-element-%s", RandomTestUtil.randomString(4));
 
 		_addCETConfiguration(
 			externalReferenceCode1,
@@ -86,9 +83,7 @@ public class ClientExtensionAllCompaniesPortalInstanceLifecycleListenerTest {
 			"portletCategoryName=category.client-extensions");
 
 		String externalReferenceCode2 = String.format(
-			"included-global-js-%s",
-			RandomTestUtil.randomString(
-				4, NumericStringRandomizerBumper.INSTANCE));
+			"included-global-js-%s", RandomTestUtil.randomString(4));
 
 		_addCETConfiguration(
 			externalReferenceCode2,
@@ -96,9 +91,7 @@ public class ClientExtensionAllCompaniesPortalInstanceLifecycleListenerTest {
 			String.format("url=global.%s.js", RandomTestUtil.randomString()));
 
 		String externalReferenceCode3 = String.format(
-			"excluded-global-js-%s",
-			RandomTestUtil.randomString(
-				4, NumericStringRandomizerBumper.INSTANCE));
+			"excluded-global-js-%s", RandomTestUtil.randomString(4));
 
 		_addCETConfiguration(
 			externalReferenceCode3,
