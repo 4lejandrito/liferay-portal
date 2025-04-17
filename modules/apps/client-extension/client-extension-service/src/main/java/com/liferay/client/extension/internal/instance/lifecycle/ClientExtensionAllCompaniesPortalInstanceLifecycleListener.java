@@ -71,9 +71,9 @@ public class ClientExtensionAllCompaniesPortalInstanceLifecycleListener
 		for (String externalReferenceCode : externalReferenceCodes) {
 			Configuration[] configurations =
 				_configurationAdmin.listConfigurations(
-					String.format(
-						"(service.pid=%s~%s)", CETConfiguration.class.getName(),
-						externalReferenceCode));
+					StringBundler.concat(
+						"(service.pid=", CETConfiguration.class.getName(), "~",
+						externalReferenceCode, ")"));
 
 			if (configurations == null) {
 				if (_log.isWarnEnabled()) {

@@ -9,6 +9,7 @@ import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.client.extension.constants.ClientExtensionEntryConstants;
 import com.liferay.client.extension.type.configuration.CETConfiguration;
 import com.liferay.client.extension.type.manager.CETManager;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.configuration.test.util.ConfigurationTestUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -69,39 +70,41 @@ public class ClientExtensionAllCompaniesPortalInstanceLifecycleListenerTest {
 
 	@Test
 	public void testPortalInstanceRegistered() throws Exception {
-		String externalReferenceCode1 = String.format(
-			"included-custom-element-%s", RandomTestUtil.randomString(4));
+		String externalReferenceCode1 =
+			"included-custom-element-" + StringUtil.randomString(4);
 
 		_addCETConfiguration(
 			externalReferenceCode1,
 			ClientExtensionEntryConstants.TYPE_CUSTOM_ELEMENT,
 			"friendlyURLMapping=vanilla-counter", "instanceable=false",
-			String.format("urls=index.%s.js", RandomTestUtil.randomString()),
+			StringBundler.concat(
+				"urls=index.", RandomTestUtil.randomString(), ".js"),
 			"useESM=false", "htmlElementName=vanilla-counter",
-			String.format(
-				"cssURLs=style.%s.css", RandomTestUtil.randomString()),
+			StringBundler.concat(
+				"cssURLs=style.", RandomTestUtil.randomString(), ".css"),
 			"portletCategoryName=category.client-extensions");
 
-		String externalReferenceCode2 = String.format(
-			"included-global-js-%s", RandomTestUtil.randomString(4));
+		String externalReferenceCode2 =
+			"included-global-js-" + RandomTestUtil.randomString(4);
 
 		_addCETConfiguration(
 			externalReferenceCode2,
 			ClientExtensionEntryConstants.TYPE_GLOBAL_JS,
-			String.format("url=global.%s.js", RandomTestUtil.randomString()));
+			StringBundler.concat(
+				"url=global.", RandomTestUtil.randomString(), ".js"));
 
-		String externalReferenceCode3 = String.format(
-			"excluded-global-js-%s", RandomTestUtil.randomString(4));
+		String externalReferenceCode3 =
+			"excluded-global-js-" + RandomTestUtil.randomString(4);
 
 		_addCETConfiguration(
 			externalReferenceCode3,
 			ClientExtensionEntryConstants.TYPE_GLOBAL_JS,
-			String.format("url=global.%s.js", RandomTestUtil.randomString()));
+			StringBundler.concat(
+				"url=global.", RandomTestUtil.randomString(), ".js"));
 
 		PropsUtil.set(
 			"client.extension.all.companies.external.reference.codes",
-			String.format(
-				"%s,%s", externalReferenceCode1, externalReferenceCode2));
+			externalReferenceCode1 + "," + externalReferenceCode2);
 
 		Company company = CompanyTestUtil.addCompany(
 			RandomTestUtil.randomString());
@@ -141,9 +144,7 @@ public class ClientExtensionAllCompaniesPortalInstanceLifecycleListenerTest {
 				"properties", new String[] {""}
 			).put(
 				"service.pid",
-				String.format(
-					"%s~%s", CETConfiguration.class.getName(),
-					externalReferenceCode)
+				CETConfiguration.class.getName() + "~" + externalReferenceCode
 			).put(
 				"sourceCodeURL", ""
 			).put(
