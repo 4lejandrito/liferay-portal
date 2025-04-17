@@ -199,9 +199,8 @@ public class RoleStagedModelDataHandlerTest
 		initExport();
 
 		UserGroup userGroup = _userGroupLocalService.addUserGroup(
-			StringPool.BLANK, TestPropsValues.getUserId(),
-			stagingGroup.getCompanyId(), RandomTestUtil.randomString(),
-			RandomTestUtil.randomString(),
+			TestPropsValues.getUserId(), stagingGroup.getCompanyId(),
+			RandomTestUtil.randomString(), RandomTestUtil.randomString(),
 			ServiceContextTestUtil.getServiceContext(
 				stagingGroup.getGroupId()));
 
