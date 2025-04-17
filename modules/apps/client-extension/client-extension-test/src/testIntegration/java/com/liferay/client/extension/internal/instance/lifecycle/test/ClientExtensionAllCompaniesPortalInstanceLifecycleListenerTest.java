@@ -76,13 +76,14 @@ public class ClientExtensionAllCompaniesPortalInstanceLifecycleListenerTest {
 		_addCETConfiguration(
 			externalReferenceCode1,
 			ClientExtensionEntryConstants.TYPE_CUSTOM_ELEMENT,
-			"friendlyURLMapping=vanilla-counter", "instanceable=false",
-			StringBundler.concat(
-				"urls=index.", RandomTestUtil.randomString(), ".js"),
-			"useESM=false", "htmlElementName=vanilla-counter",
 			StringBundler.concat(
 				"cssURLs=style.", RandomTestUtil.randomString(), ".css"),
-			"portletCategoryName=category.client-extensions");
+			"friendlyURLMapping=vanilla-counter",
+			"htmlElementName=vanilla-counter", "instanceable=false",
+			"portletCategoryName=category.client-extensions",
+			StringBundler.concat(
+				"urls=index.", RandomTestUtil.randomString(), ".js"),
+			"useESM=false");
 
 		String externalReferenceCode2 =
 			"included-global-js-" + RandomTestUtil.randomString(4);
