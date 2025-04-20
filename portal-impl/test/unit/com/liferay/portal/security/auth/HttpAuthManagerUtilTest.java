@@ -191,7 +191,7 @@ public class HttpAuthManagerUtilTest {
 	}
 
 	private void _testParseBasic(
-		String authorizationHeader, String expectedPassword,
+		String authorization, String expectedPassword,
 		String expectedUserName) {
 
 		MockHttpServletRequest mockHttpServletRequest =
@@ -199,20 +199,10 @@ public class HttpAuthManagerUtilTest {
 
 		mockHttpServletRequest.addHeader(
 			HttpHeaders.AUTHORIZATION,
-			"Basic " + Base64.encode(authorizationHeader.getBytes()));
+			"Basic " + Base64.encode(authorization.getBytes()));
 
 		HttpAuthorizationHeader httpAuthorizationHeader =
 			HttpAuthManagerUtil.parse(mockHttpServletRequest);
-
-		Assert.assertEquals(
-			HttpAuthorizationHeader.SCHEME_BASIC,
-			httpAuthorizationHeader.getScheme());
-
-		Map<String, String> authParameters =
-			httpAuthorizationHeader.getAuthParameters();
-
-		Assert.assertEquals(
-			authParameters.toString(), 2, authParameters.size());
 
 		Assert.assertEquals(
 			expectedPassword,
@@ -222,6 +212,16 @@ public class HttpAuthManagerUtilTest {
 			expectedUserName,
 			httpAuthorizationHeader.getAuthParameter(
 				HttpAuthorizationHeader.AUTH_PARAMETER_NAME_USERNAME));
+
+		Map<String, String> authParameters =
+			httpAuthorizationHeader.getAuthParameters();
+
+		Assert.assertEquals(
+			authParameters.toString(), 2, authParameters.size());
+
+		Assert.assertEquals(
+			HttpAuthorizationHeader.SCHEME_BASIC,
+			httpAuthorizationHeader.getScheme());
 	}
 
 }
