@@ -121,8 +121,8 @@ public class DynamicDataSource implements DataSource {
 				if (httpSession == null) {
 					if (_log.isTraceEnabled()) {
 						_log.trace(
-							"No context HTTP session exists, skipped getting " +
-								"the write data source last used date");
+							"No context HTTP session exists, skip getting " +
+								"the write data source's last used date");
 					}
 				}
 				else {
@@ -157,8 +157,8 @@ public class DynamicDataSource implements DataSource {
 			if (httpSession == null) {
 				if (_log.isTraceEnabled()) {
 					_log.trace(
-						"No context HTTP session exists, skipped setting the " +
-							"write data source last used date");
+						"No context HTTP session exists, skip setting the " +
+							"write data source's last used date");
 				}
 			}
 			else {

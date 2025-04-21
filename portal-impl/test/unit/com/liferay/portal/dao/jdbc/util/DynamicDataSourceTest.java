@@ -130,22 +130,22 @@ public class DynamicDataSourceTest {
 			_testGetDataSource(
 				_dynamicDataSource.getWriteDataSource(),
 				List.of(
-					"No context HTTP session exists, skipped setting the " +
-						"write data source last used date",
+					"No context HTTP session exists, skip setting the " +
+						"write data source's last used date",
 					"Returning write data source"),
 				true, false);
 			_testGetDataSource(
 				_dynamicDataSource.getReadDataSource(),
 				List.of(
-					"No context HTTP session exists, skipped getting the " +
-						"write data source last used date",
+					"No context HTTP session exists, skip getting the " +
+						"write data source's last used date",
 					"Returning read data source"),
 				false, true);
 			_testGetDataSource(
 				_dynamicDataSource.getWriteDataSource(),
 				List.of(
-					"No context HTTP session exists, skipped setting the " +
-						"write data source last used date",
+					"No context HTTP session exists, skip setting the " +
+						"write data source's last used date",
 					"Returning write data source"),
 				false, false);
 		}
