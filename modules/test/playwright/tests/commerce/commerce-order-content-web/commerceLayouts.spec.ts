@@ -2582,7 +2582,6 @@ test(
 		commerceAdminChannelsPage,
 		commerceLayoutsPage,
 		page,
-		site,
 	}) => {
 		const account = await apiHelpers.headlessAdminUser.postAccount({
 			name: getRandomString(),
@@ -2590,6 +2589,12 @@ test(
 		});
 
 		apiHelpers.data.push({id: account.id, type: 'account'});
+
+		const site = await apiHelpers.headlessSite.createSite({
+			name: getRandomString(),
+		});
+
+		apiHelpers.data.push({id: site.id, type: 'site'});
 
 		await apiHelpers.headlessDelivery.createSitePage({
 			pageDefinition: getPageDefinition([
