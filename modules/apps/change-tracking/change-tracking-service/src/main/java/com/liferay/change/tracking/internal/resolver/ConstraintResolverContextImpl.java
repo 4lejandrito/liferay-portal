@@ -84,24 +84,24 @@ public class ConstraintResolverContextImpl<T extends CTModel<T>>
 	public void  mergeSourceCTModelIntoTargetCTModel() {
 		T sourceCTModel = getSourceCTModel();
 
-		T targetCTModel = getTargetCTModel();
-
 		Map<String, Object> sourceModelAttributes =
 			sourceCTModel.getModelAttributes();
+
+		T targetCTModel = getTargetCTModel();
 
 		Map<String, Object> targetModelAttributes =
 			targetCTModel.getModelAttributes();
 
 		_ctService.updateWithUnsafeFunction(
 			ctPersistence -> {
-				Set<String> columnNames = ctPersistence.getCTColumnNames(
+				Set<String> ctColumnNames = ctPersistence.getCTColumnNames(
 					CTColumnResolutionType.MERGE);
 
-				columnNames.add("classPK");
+				ctColumnNames.add("classPK");
 
-				for (String columnName : columnNames) {
+				for (String ctColumnName : ctColumnNames) {
 					targetModelAttributes.put(
-						columnName, sourceModelAttributes.get(columnName));
+						ctColumnName, sourceModelAttributes.get(ctColumnName));
 				}
 
 				targetCTModel.setModelAttributes(targetModelAttributes);
