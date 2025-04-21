@@ -166,6 +166,10 @@ components:
                     readOnly: true
                     type: boolean
             type: object
+        StringTestEntity:
+            enum:
+                -   value
+            type: string
         TestEntity:
             description:
                 "https://www.schema.org/Document"
@@ -201,6 +205,8 @@ components:
                     $ref: "#/components/schemas/NestedTestEntity"
                 self:
                     type: string
+                stringTestEntity:
+                    $ref: "#/components/schemas/StringTestEntity"
                 testEntities:
                     $ref: "#/components/schemas/TestEntity"
                 type:
