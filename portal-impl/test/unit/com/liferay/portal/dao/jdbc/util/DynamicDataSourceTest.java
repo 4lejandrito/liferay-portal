@@ -106,11 +106,11 @@ public class DynamicDataSourceTest {
 				false, _dynamicDataSource.getWriteDataSource(),
 				List.of("Returning write data source"), false);
 			_testGetDataSource(
-				true, _dynamicDataSource.getReadDataSource(),
-				List.of("Returning read data source"), false);
-			_testGetDataSource(
 				false, _dynamicDataSource.getWriteDataSource(),
 				List.of("Returning write data source"), true);
+			_testGetDataSource(
+				true, _dynamicDataSource.getReadDataSource(),
+				List.of("Returning read data source"), false);
 			_testGetDataSource(
 				true, _dynamicDataSource.getWriteDataSource(),
 				List.of("Returning write data source"), true);
@@ -132,19 +132,19 @@ public class DynamicDataSourceTest {
 					"Returning write data source"),
 				false);
 			_testGetDataSource(
-				true, _dynamicDataSource.getReadDataSource(),
-				List.of(
-					"No context HTTP session exists, skip getting the " +
-						"write data source's last used date",
-					"Returning read data source"),
-				false);
-			_testGetDataSource(
 				false, _dynamicDataSource.getWriteDataSource(),
 				List.of(
 					"No context HTTP session exists, skip setting the " +
 						"write data source's last used date",
 					"Returning write data source"),
 				true);
+			_testGetDataSource(
+				true, _dynamicDataSource.getReadDataSource(),
+				List.of(
+					"No context HTTP session exists, skip getting the " +
+						"write data source's last used date",
+					"Returning read data source"),
+				false);
 			_testGetDataSource(
 				true, _dynamicDataSource.getWriteDataSource(),
 				List.of("Returning write data source"), true);
@@ -172,11 +172,11 @@ public class DynamicDataSourceTest {
 				false, _dynamicDataSource.getWriteDataSource(),
 				List.of("Returning write data source"), false);
 			_testGetDataSource(
-				true, _dynamicDataSource.getWriteDataSource(),
-				List.of("Returning write data source"), false);
-			_testGetDataSource(
 				false, _dynamicDataSource.getWriteDataSource(),
 				List.of("Returning write data source"), true);
+			_testGetDataSource(
+				true, _dynamicDataSource.getWriteDataSource(),
+				List.of("Returning write data source"), false);
 			_testGetDataSource(
 				true, _dynamicDataSource.getWriteDataSource(),
 				List.of("Returning write data source"), true);
