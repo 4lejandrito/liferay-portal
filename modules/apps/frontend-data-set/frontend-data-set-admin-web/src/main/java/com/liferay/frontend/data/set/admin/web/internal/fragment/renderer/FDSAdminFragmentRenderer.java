@@ -614,7 +614,17 @@ public class FDSAdminFragmentRenderer implements FragmentRenderer {
 					JSONObject selectionFilterJSONObject = JSONUtil.put(
 						"autocompleteEnabled", true
 					).put(
-						"entityFieldType", FDSEntityFieldTypes.STRING
+						"entityFieldType",
+						() -> {
+							if (_isCollection(
+									String.valueOf(
+										properties.get("fieldName")))) {
+
+								return FDSEntityFieldTypes.COLLECTION;
+							}
+
+							return FDSEntityFieldTypes.STRING;
+						}
 					).put(
 						"id",
 						() -> {
@@ -1095,6 +1105,10 @@ public class FDSAdminFragmentRenderer implements FragmentRenderer {
 		}
 
 		return apiURL;
+	}
+
+	private Boolean _isCollection(String fieldName) {
+		return fieldName.contains(StringPool.OPEN_BRACKET);
 	}
 
 	private String _resolveParameters(
