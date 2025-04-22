@@ -264,7 +264,15 @@ public class PageFragmentInstanceDefinitionMapper {
 						if (excludedFragmentConfigurationFieldNames.contains(
 								key)) {
 
-							put(key, jsonObject.get(key));
+							Object value = jsonObject.get(key);
+
+							if ((value instanceof JSONObject) &&
+								JSONUtil.isEmpty((JSONObject)value)) {
+
+								continue;
+							}
+
+							put(key, value);
 
 							continue;
 						}
