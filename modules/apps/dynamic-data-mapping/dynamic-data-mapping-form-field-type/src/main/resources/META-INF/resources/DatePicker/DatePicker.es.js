@@ -269,8 +269,8 @@ export default function DatePicker({
 						{...(htmlAutocompleteAttribute && {
 							autoComplete: htmlAutocompleteAttribute,
 						})}
-						{...((errorMessage || tip) && {
-							'aria-describedby': `${id ?? name}_fieldFeedback`,
+						{...((validField.errorMessage || otherProps.tip) && {
+							'aria-describedby': `${otherProps.id ?? name}_fieldFeedback`,
 						})}
 						aria-required={otherProps.required}
 						ariaLabels={{

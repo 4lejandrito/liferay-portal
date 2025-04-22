@@ -3,7 +3,7 @@
 exports[`Field Checkbox has a helptext 1`] = `
 <div>
   <div
-    aria-labelledby="undefined_fieldDetails"
+    aria-labelledby="ID_fieldDetails"
     class="form-group hide"
   >
     <label
@@ -16,6 +16,8 @@ exports[`Field Checkbox has a helptext 1`] = `
           class="toggle-switch-check-bar"
         >
           <input
+            aria-describedby="ID_fieldFeedback"
+            aria-required="false"
             class="toggle-switch-check"
             role="switch"
             type="checkbox"
@@ -43,23 +45,20 @@ exports[`Field Checkbox has a helptext 1`] = `
       value="false"
     />
     <div
-      aria-hidden="true"
-      class="form-feedback-group lfr-de__field-feedback"
+      class="form-feedback-group field-feedback"
+      id="ID_fieldFeedback"
     >
       <div
         aria-live="assertive"
         class="form-feedback-item"
-        id="undefined_fieldError"
       />
-      <div
-        id="undefined_fieldHelp"
-      >
+      <div>
         Type something
       </div>
     </div>
     <span
       class="sr-only"
-      id="undefined_fieldDetails"
+      id="ID_fieldDetails"
     >
       Type something
     </span>
@@ -83,6 +82,7 @@ exports[`Field Checkbox has a key 1`] = `
           class="toggle-switch-check-bar"
         >
           <input
+            aria-required="false"
             checked=""
             class="toggle-switch-check"
             role="switch"
@@ -111,13 +111,12 @@ exports[`Field Checkbox has a key 1`] = `
       value="false"
     />
     <div
-      aria-hidden="true"
-      class="form-feedback-group lfr-de__field-feedback"
+      class="form-feedback-group field-feedback"
+      id="undefined_fieldFeedback"
     >
       <div
         aria-live="assertive"
         class="form-feedback-item"
-        id="undefined_fieldError"
       />
     </div>
   </div>
@@ -140,6 +139,7 @@ exports[`Field Checkbox has a label 1`] = `
           class="toggle-switch-check-bar"
         >
           <input
+            aria-required="false"
             class="toggle-switch-check"
             role="switch"
             type="checkbox"
@@ -168,13 +168,12 @@ exports[`Field Checkbox has a label 1`] = `
       value="false"
     />
     <div
-      aria-hidden="true"
-      class="form-feedback-group lfr-de__field-feedback"
+      class="form-feedback-group field-feedback"
+      id="undefined_fieldFeedback"
     >
       <div
         aria-live="assertive"
         class="form-feedback-item"
-        id="undefined_fieldError"
       />
     </div>
   </div>
@@ -197,6 +196,7 @@ exports[`Field Checkbox has a predefined Value 1`] = `
           class="toggle-switch-check-bar"
         >
           <input
+            aria-required="false"
             class="toggle-switch-check"
             role="switch"
             type="checkbox"
@@ -224,13 +224,12 @@ exports[`Field Checkbox has a predefined Value 1`] = `
       value="false"
     />
     <div
-      aria-hidden="true"
-      class="form-feedback-group lfr-de__field-feedback"
+      class="form-feedback-group field-feedback"
+      id="undefined_fieldFeedback"
     >
       <div
         aria-live="assertive"
         class="form-feedback-item"
-        id="undefined_fieldError"
       />
     </div>
   </div>
@@ -253,6 +252,7 @@ exports[`Field Checkbox has a value 1`] = `
           class="toggle-switch-check-bar"
         >
           <input
+            aria-required="false"
             checked=""
             class="toggle-switch-check"
             role="switch"
@@ -281,13 +281,12 @@ exports[`Field Checkbox has a value 1`] = `
       value="false"
     />
     <div
-      aria-hidden="true"
-      class="form-feedback-group lfr-de__field-feedback"
+      class="form-feedback-group field-feedback"
+      id="undefined_fieldFeedback"
     >
       <div
         aria-live="assertive"
         class="form-feedback-item"
-        id="undefined_fieldError"
       />
     </div>
   </div>
@@ -310,6 +309,7 @@ exports[`Field Checkbox has an id 1`] = `
           class="toggle-switch-check-bar"
         >
           <input
+            aria-required="false"
             class="toggle-switch-check"
             role="switch"
             type="checkbox"
@@ -337,13 +337,12 @@ exports[`Field Checkbox has an id 1`] = `
       value="false"
     />
     <div
-      aria-hidden="true"
-      class="form-feedback-group lfr-de__field-feedback"
+      class="form-feedback-group field-feedback"
+      id="ID_fieldFeedback"
     >
       <div
         aria-live="assertive"
         class="form-feedback-item"
-        id="ID_fieldError"
       />
     </div>
   </div>
@@ -366,6 +365,7 @@ exports[`Field Checkbox is not editable 1`] = `
           class="toggle-switch-check-bar"
         >
           <input
+            aria-required="false"
             class="toggle-switch-check"
             disabled=""
             role="switch"
@@ -394,13 +394,12 @@ exports[`Field Checkbox is not editable 1`] = `
       value="false"
     />
     <div
-      aria-hidden="true"
-      class="form-feedback-group lfr-de__field-feedback"
+      class="form-feedback-group field-feedback"
+      id="undefined_fieldFeedback"
     >
       <div
         aria-live="assertive"
         class="form-feedback-item"
-        id="undefined_fieldError"
       />
     </div>
   </div>
@@ -451,13 +450,12 @@ exports[`Field Checkbox is not required 1`] = `
       value="false"
     />
     <div
-      aria-hidden="true"
-      class="form-feedback-group lfr-de__field-feedback"
+      class="form-feedback-group field-feedback"
+      id="undefined_fieldFeedback"
     >
       <div
         aria-live="assertive"
         class="form-feedback-item"
-        id="undefined_fieldError"
       />
     </div>
   </div>
@@ -480,6 +478,7 @@ exports[`Field Checkbox is shown as a switcher 1`] = `
           class="toggle-switch-check-bar"
         >
           <input
+            aria-required="false"
             class="toggle-switch-check"
             role="switch"
             type="checkbox"
@@ -507,13 +506,12 @@ exports[`Field Checkbox is shown as a switcher 1`] = `
       value="false"
     />
     <div
-      aria-hidden="true"
-      class="form-feedback-group lfr-de__field-feedback"
+      class="form-feedback-group field-feedback"
+      id="undefined_fieldFeedback"
     >
       <div
         aria-live="assertive"
         class="form-feedback-item"
-        id="undefined_fieldError"
       />
     </div>
   </div>
@@ -531,6 +529,7 @@ exports[`Field Checkbox is shown as checkbox 1`] = `
     >
       <label>
         <input
+          aria-required="false"
           class="custom-control-input"
           type="checkbox"
         />
@@ -550,13 +549,12 @@ exports[`Field Checkbox is shown as checkbox 1`] = `
       value="false"
     />
     <div
-      aria-hidden="true"
-      class="form-feedback-group lfr-de__field-feedback"
+      class="form-feedback-group field-feedback"
+      id="undefined_fieldFeedback"
     >
       <div
         aria-live="assertive"
         class="form-feedback-item"
-        id="undefined_fieldError"
       />
     </div>
   </div>
@@ -579,6 +577,7 @@ exports[`Field Checkbox renders Label if showLabel is true 1`] = `
           class="toggle-switch-check-bar"
         >
           <input
+            aria-required="false"
             class="toggle-switch-check"
             role="switch"
             type="checkbox"
@@ -606,13 +605,12 @@ exports[`Field Checkbox renders Label if showLabel is true 1`] = `
       value="false"
     />
     <div
-      aria-hidden="true"
-      class="form-feedback-group lfr-de__field-feedback"
+      class="form-feedback-group field-feedback"
+      id="undefined_fieldFeedback"
     >
       <div
         aria-live="assertive"
         class="form-feedback-item"
-        id="undefined_fieldError"
       />
     </div>
   </div>
