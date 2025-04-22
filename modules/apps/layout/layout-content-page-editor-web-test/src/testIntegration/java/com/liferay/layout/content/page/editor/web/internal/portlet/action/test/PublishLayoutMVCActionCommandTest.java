@@ -14,6 +14,7 @@ import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.util.DDMFormValuesToFieldsConverter;
 import com.liferay.fragment.constants.FragmentConstants;
+import com.liferay.fragment.entry.processor.constants.FragmentEntryProcessorConstants;
 import com.liferay.fragment.listener.FragmentEntryLinkListener;
 import com.liferay.fragment.listener.FragmentEntryLinkListenerRegistry;
 import com.liferay.fragment.model.FragmentCollection;
@@ -30,6 +31,7 @@ import com.liferay.layout.content.page.editor.web.internal.portlet.constants.Lay
 import com.liferay.layout.page.template.model.LayoutPageTemplateStructure;
 import com.liferay.layout.page.template.service.LayoutPageTemplateStructureLocalService;
 import com.liferay.layout.provider.LayoutStructureProvider;
+import com.liferay.layout.service.LayoutClassedModelUsageLocalService;
 import com.liferay.layout.test.util.ContentLayoutTestUtil;
 import com.liferay.layout.test.util.LayoutTestUtil;
 import com.liferay.layout.util.BulkLayoutConverter;
@@ -44,6 +46,7 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutConstants;
@@ -70,6 +73,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortletKeys;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -122,9 +126,13 @@ public class PublishLayoutMVCActionCommandTest {
 	}
 
 	@Test
-	@TestInfo("LPD-51205")
+	@TestInfo({"LPD-51205", "LPD-53620"})
 	public void testDeletedFragmentEntryLinksAreRemovedWhenLayoutIsPublished()
 		throws Exception {
+
+		int count =
+			_layoutClassedModelUsageLocalService.
+				getLayoutClassedModelUsagesCount();
 
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(
@@ -136,7 +144,7 @@ public class PublishLayoutMVCActionCommandTest {
 				StringUtil.randomString(), StringPool.BLANK, serviceContext);
 
 		FragmentEntryLink dropzoneFragmentEntryLink = _addFragmentEntryLink(
-			fragmentCollection.getFragmentCollectionId(),
+			"{}", fragmentCollection.getFragmentCollectionId(),
 			"<lfr-drop-zone></lfr-drop-zone>", null, serviceContext);
 
 		LayoutStructure layoutStructure =
@@ -161,7 +169,26 @@ public class PublishLayoutMVCActionCommandTest {
 					layoutStructure.getLayoutStructureItem(
 						childrenItemIds.get(0));
 
+		JournalArticle journalArticle = JournalTestUtil.addArticle(
+			_group.getGroupId(), 0);
+
 		FragmentEntryLink fragmentEntryLink = _addFragmentEntryLink(
+			JSONUtil.put(
+				FragmentEntryProcessorConstants.
+					KEY_EDITABLE_FRAGMENT_ENTRY_PROCESSOR,
+				JSONUtil.put(
+					"element-text",
+					JSONUtil.put(
+						"className", JournalArticle.class.getName()
+					).put(
+						"classNameId",
+						_portal.getClassNameId(JournalArticle.class)
+					).put(
+						"classPK", journalArticle.getResourcePrimKey()
+					).put(
+						"fieldId", "JournalArticle_title"
+					))
+			).toString(),
 			fragmentCollection.getFragmentCollectionId(),
 			"<h1 data-lfr-editable-id=\"element-text\" " +
 				"data-lfr-editable-type=\"text\">Heading Example</h1>",
@@ -196,6 +223,11 @@ public class PublishLayoutMVCActionCommandTest {
 
 		Assert.assertNotNull(publishedLayoutFragmentEntryLink);
 
+		Assert.assertEquals(
+			count + 2,
+			_layoutClassedModelUsageLocalService.
+				getLayoutClassedModelUsagesCount());
+
 		ContentLayoutTestUtil.markItemForDeletionFromLayout(
 			dropZoneFragmentStyledLayoutStructureItem.getItemId(), _draftLayout,
 			StringPool.BLANK);
@@ -226,6 +258,11 @@ public class PublishLayoutMVCActionCommandTest {
 		Assert.assertNull(
 			_fragmentEntryLinkLocalService.fetchFragmentEntryLink(
 				publishedLayoutFragmentEntryLink.getFragmentEntryLinkId()));
+
+		Assert.assertEquals(
+			count,
+			_layoutClassedModelUsageLocalService.
+				getLayoutClassedModelUsagesCount());
 	}
 
 	@Test
@@ -641,8 +678,8 @@ public class PublishLayoutMVCActionCommandTest {
 	}
 
 	private FragmentEntryLink _addFragmentEntryLink(
-			long fragmentCollectionId, String html, String parentItemId,
-			ServiceContext serviceContext)
+			String editableValues, long fragmentCollectionId, String html,
+			String parentItemId, ServiceContext serviceContext)
 		throws Exception {
 
 		FragmentEntry fragmentEntry =
@@ -656,7 +693,8 @@ public class PublishLayoutMVCActionCommandTest {
 
 		FragmentEntryLink fragmentEntryLink =
 			ContentLayoutTestUtil.addFragmentEntryLinkToLayout(
-				"{}", fragmentEntry.getCss(), fragmentEntry.getConfiguration(),
+				editableValues, fragmentEntry.getCss(),
+				fragmentEntry.getConfiguration(),
 				fragmentEntry.getFragmentEntryId(), fragmentEntry.getHtml(),
 				fragmentEntry.getJs(), _draftLayout,
 				fragmentEntry.getFragmentEntryKey(), fragmentEntry.getType(),
@@ -973,6 +1011,10 @@ public class PublishLayoutMVCActionCommandTest {
 	private Layout _layout;
 
 	@Inject
+	private LayoutClassedModelUsageLocalService
+		_layoutClassedModelUsageLocalService;
+
+	@Inject
 	private LayoutLocalService _layoutLocalService;
 
 	@Inject
@@ -984,6 +1026,9 @@ public class PublishLayoutMVCActionCommandTest {
 
 	@Inject
 	private LayoutStructureProvider _layoutStructureProvider;
+
+	@Inject
+	private Portal _portal;
 
 	@Inject
 	private PortletPreferencesFactory _portletPreferencesFactory;
