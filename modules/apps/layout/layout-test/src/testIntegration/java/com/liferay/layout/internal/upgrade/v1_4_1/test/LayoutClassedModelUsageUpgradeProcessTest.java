@@ -64,9 +64,7 @@ public class LayoutClassedModelUsageUpgradeProcessTest {
 	public void setUp() throws Exception {
 		_fragmentEntryLinkClassNameId = _classNameLocalService.getClassNameId(
 			FragmentEntryLink.class.getName());
-
 		_group = GroupTestUtil.addGroup();
-
 		_journalArticleClassNameId = _classNameLocalService.getClassNameId(
 			JournalArticle.class);
 

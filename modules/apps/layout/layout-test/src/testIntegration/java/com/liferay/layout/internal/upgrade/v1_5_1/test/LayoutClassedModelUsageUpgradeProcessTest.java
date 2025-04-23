@@ -66,10 +66,10 @@ public class LayoutClassedModelUsageUpgradeProcessTest
 
 	@Before
 	public void setUp() throws Exception {
-		_group = GroupTestUtil.addGroup();
-
 		_fragmentEntryLinkClassNameId = _classNameLocalService.getClassNameId(
 			FragmentEntryLink.class.getName());
+
+		_group = GroupTestUtil.addGroup();
 
 		_journalArticle = JournalTestUtil.addArticle(
 			_group.getGroupId(),
