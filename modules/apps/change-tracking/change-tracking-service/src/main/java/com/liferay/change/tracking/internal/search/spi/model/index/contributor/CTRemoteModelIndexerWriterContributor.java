@@ -43,7 +43,7 @@ public class CTRemoteModelIndexerWriterContributor
 					StringBundler.concat(
 						"Skip indexing of ", CTRemote.class.getName(),
 						" because this can only be performed in production ",
-						"mode."));
+						"mode"));
 			}
 
 			return;

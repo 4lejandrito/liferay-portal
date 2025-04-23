@@ -43,7 +43,7 @@ public class CTCollectionModelIndexerWriterContributor
 					StringBundler.concat(
 						"Skip indexing of ", CTCollection.class.getName(),
 						" because this can only be performed in production ",
-						"mode."));
+						"mode"));
 			}
 
 			return;

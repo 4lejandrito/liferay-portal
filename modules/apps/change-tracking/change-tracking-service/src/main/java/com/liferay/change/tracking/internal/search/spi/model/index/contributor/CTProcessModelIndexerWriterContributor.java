@@ -43,7 +43,7 @@ public class CTProcessModelIndexerWriterContributor
 					StringBundler.concat(
 						"Skip indexing of ", CTProcess.class.getName(),
 						" because this can only be performed in production ",
-						"mode."));
+						"mode"));
 			}
 
 			return;

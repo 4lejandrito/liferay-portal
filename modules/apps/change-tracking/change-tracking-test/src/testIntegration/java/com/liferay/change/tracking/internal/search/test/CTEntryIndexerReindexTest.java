@@ -61,7 +61,6 @@ public class CTEntryIndexerReindexTest {
 		_ctCollection2 = _ctCollectionLocalService.addCTCollection(
 			null, TestPropsValues.getCompanyId(), TestPropsValues.getUserId(),
 			0, RandomTestUtil.randomString(), null);
-
 		_group = GroupTestUtil.addGroup();
 	}
 
@@ -105,7 +104,7 @@ public class CTEntryIndexerReindexTest {
 				StringBundler.concat(
 					"Skip indexing of ", CTEntry.class.getName(),
 					" because this can only be performed in production ",
-					"mode."),
+					"mode"),
 				logEntry.getMessage());
 		}
 	}
