@@ -269,6 +269,9 @@ export default function DatePicker({
 						{...(htmlAutocompleteAttribute && {
 							autoComplete: htmlAutocompleteAttribute,
 						})}
+						{...((errorMessage || tip) && {
+							'aria-describedby': `${id ?? name}_fieldFeedback`,
+						})}
 						aria-required={otherProps.required}
 						ariaLabels={{
 							buttonChooseDate: `${Liferay.Language.get(
