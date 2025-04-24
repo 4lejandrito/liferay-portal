@@ -85,7 +85,9 @@ public class CTEntryIndexerReindexTest {
 		}
 
 		try (LogCapture logCapture = LoggerTestUtil.configureLog4JLogger(
-				_LOG_NAME, LoggerTestUtil.DEBUG)) {
+				"com.liferay.change.tracking.internal.search.spi.model.index." +
+					"contributor.CTEntryModelIndexerWriterContributor",
+				LoggerTestUtil.DEBUG)) {
 
 			_indexWriterHelper.reindex(
 				TestPropsValues.getUserId(), "reindex",
@@ -106,10 +108,6 @@ public class CTEntryIndexerReindexTest {
 				logEntry.getMessage());
 		}
 	}
-
-	private static final String _LOG_NAME =
-		"com.liferay.change.tracking.internal.search.spi.model.index." +
-			"contributor.CTEntryModelIndexerWriterContributor";
 
 	@Inject
 	private BlogsEntryLocalService _blogsEntryLocalService;
