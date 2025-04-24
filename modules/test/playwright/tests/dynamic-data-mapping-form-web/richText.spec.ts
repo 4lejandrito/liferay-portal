@@ -52,6 +52,8 @@ const assertRichTextContent = async (
 
 	await formBuilderSidePanelPage.addFieldByDoubleClick('Rich Text');
 
+	await formBuilderPage.helpText.fill('help text');
+
 	const newTabPagePromise = new Promise<Page>((resolve) =>
 		formBuilderPage.page.once('popup', resolve)
 	);
@@ -73,9 +75,7 @@ const assertRichTextContent = async (
 	await codeMirror.click();
 
 	const textArea = newTabPage
-		.getByLabel(
-			'Rich Text Editor'
-		)
+		.getByLabel('Rich Text, help text')
 		.getByRole('textbox');
 
 	await textArea.fill(content);
