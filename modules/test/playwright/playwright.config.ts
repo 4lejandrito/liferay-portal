@@ -95,6 +95,7 @@ import {config as productNavigationProductMenuWeb} from './tests/product-navigat
 import {config as productNavigationUserPersonalBarWebConfig} from './tests/product-navigation-user-personal-bar-web/config';
 import {config as questionsWebConfig} from './tests/questions-web/config';
 import {config as rolesAdminWebConfig} from './tests/roles-admin-web/config';
+import {config as rolesSelectorWebConfig} from './tests/roles-selector-web/config';
 import {config as rssWebConfig} from './tests/rss-web/config';
 import {config as samlWebConfig} from './tests/saml-web/config';
 import {config as scimConfiguraitonWebConfig} from './tests/scim-configuration-web/config';
@@ -222,6 +223,7 @@ export default defineConfig({
 		productNavigationUserPersonalBarWebConfig,
 		questionsWebConfig,
 		rolesAdminWebConfig,
+		rolesSelectorWebConfig,
 		rssWebConfig,
 		samlWebConfig,
 		scimConfiguraitonWebConfig,
