@@ -176,6 +176,7 @@ export function EditObjectFieldContent({
 								filterOperators={filterOperators}
 								handleChange={handleChange}
 								isDefaultStorageType={isDefaultStorageType}
+								learnResources={learnResources}
 								modelBuilder={modelBuilder}
 								objectDefinition={objectDefinition}
 								objectFieldBusinessTypes={
@@ -228,6 +229,7 @@ export function EditObjectFieldContent({
 					filterOperators={filterOperators}
 					handleChange={handleChange}
 					isDefaultStorageType={isDefaultStorageType}
+					learnResources={learnResources}
 					modelBuilder={modelBuilder}
 					objectDefinition={objectDefinition}
 					objectFieldBusinessTypes={objectFieldBusinessTypes}
