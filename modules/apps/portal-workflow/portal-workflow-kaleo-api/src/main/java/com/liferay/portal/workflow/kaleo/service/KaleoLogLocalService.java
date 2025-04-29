@@ -71,6 +71,12 @@ public interface KaleoLogLocalService
 			ServiceContext serviceContext)
 		throws PortalException;
 
+	@Indexable(type = IndexableType.REINDEX)
+	public KaleoLog addInstanceFailKaleoLog(
+			KaleoInstanceToken kaleoInstanceToken, String comment,
+			ServiceContext serviceContext)
+		throws PortalException;
+
 	/**
 	 * Adds the kaleo log to the database. Also notifies the appropriate model listeners.
 	 *

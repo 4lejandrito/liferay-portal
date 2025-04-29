@@ -50,6 +50,17 @@ public class KaleoLogLocalServiceUtil {
 			serviceContext);
 	}
 
+	public static KaleoLog addInstanceFailKaleoLog(
+			com.liferay.portal.workflow.kaleo.model.KaleoInstanceToken
+				kaleoInstanceToken,
+			String comment,
+			com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws PortalException {
+
+		return getService().addInstanceFailKaleoLog(
+			kaleoInstanceToken, comment, serviceContext);
+	}
+
 	/**
 	 * Adds the kaleo log to the database. Also notifies the appropriate model listeners.
 	 *
