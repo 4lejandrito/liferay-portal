@@ -86,13 +86,9 @@ public class UploadServletRequestImpl
 			liferayServletRequest.setFinishedReadingOriginalStream(true);
 
 			int contentLength = httpServletRequest.getContentLength();
-
-			// LPD-52625 Added Padding for Metadata Handling
-
 			long uploadServletRequestImplMaxSize =
-				UploadServletRequestConfigurationProviderUtil.getMaxSize() +
-					_UPLOAD_MAX_SIZE_PADDING;
-
+				UploadServletRequestConfigurationProviderUtil.
+					getMaxSizeWithPadding();
 			long uploadServletRequestImplSize = 0;
 
 			if ((uploadServletRequestImplMaxSize > 0) &&
@@ -590,8 +586,6 @@ public class UploadServletRequestImpl
 
 		return sortedFileItems;
 	}
-
-	private static final long _UPLOAD_MAX_SIZE_PADDING = 10000;
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		UploadServletRequestImpl.class);

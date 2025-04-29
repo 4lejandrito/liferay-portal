@@ -20,6 +20,13 @@ public class UploadServletRequestConfigurationProviderUtil {
 		return uploadServletRequestConfigurationProvider.getMaxSize();
 	}
 
+	public static long getMaxSizeWithPadding() {
+
+		// Add padding for metadata. See LPD-52625.
+
+		return getMaxSize() + _UPLOAD_MAX_SIZE_PADDING;
+	}
+
 	public static long getMaxTries() {
 		UploadServletRequestConfigurationProvider
 			uploadServletRequestConfigurationProvider =
@@ -40,5 +47,7 @@ public class UploadServletRequestConfigurationProviderUtil {
 		_uploadServletRequestConfigurationProviderSnapshot = new Snapshot<>(
 			UploadServletRequestConfigurationProviderUtil.class,
 			UploadServletRequestConfigurationProvider.class);
+
+	private static final long _UPLOAD_MAX_SIZE_PADDING = 10000;
 
 }
