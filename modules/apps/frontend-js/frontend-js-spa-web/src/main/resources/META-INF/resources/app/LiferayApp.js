@@ -276,8 +276,7 @@ class LiferayApp extends App {
 		if (
 			this.isInPortletBlacklist(
 				event.target.closest(this.getLinkSelector())
-			) ||
-			event.detail > 1
+			)
 		) {
 			return;
 		}
