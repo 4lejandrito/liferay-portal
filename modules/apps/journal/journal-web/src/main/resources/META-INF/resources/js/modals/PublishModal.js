@@ -41,8 +41,13 @@ export default function PublishModal({
 	const [displayDate, setDisplayDate] = useState(defaultDisplayDate);
 	const [dateError, setDateError] = useState('');
 	const [showErrorAlert, setShowErrorAlert] = useState(false);
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const handleButtonClick = () => {
+		if (isSubmitting) {
+			return;
+		}
+
 		if (!displayDate && actionButton === 'schedule') {
 			setDateError(Liferay.Language.get('please-enter-a-valid-date'));
 			setShowErrorAlert(true);
@@ -56,6 +61,7 @@ export default function PublishModal({
 			return;
 		}
 
+		setIsSubmitting(true);
 		onPublishButtonClick(actionButton);
 	};
 
