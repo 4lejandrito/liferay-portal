@@ -124,6 +124,8 @@ public class UIItemsBuilder {
 					Constants.CANCEL_CHECKOUT)
 			).setParameter(
 				"fileEntryId", _fileEntry.getFileEntryId()
+			).setParameter(
+				"folderId", _fileEntry.getFolderId()
 			).buildString()
 		).setKey(
 			DLUIItemKeys.CANCEL_CHECKOUT
@@ -138,6 +140,8 @@ public class UIItemsBuilder {
 				"/document_library/edit_file_entry", Constants.CHECKIN)
 		).setParameter(
 			"fileEntryId", _fileEntry.getFileEntryId()
+		).setParameter(
+			"folderId", _fileEntry.getFolderId()
 		).buildPortletURL();
 
 		if (!_versioningStrategy.isOverridable()) {
@@ -172,6 +176,8 @@ public class UIItemsBuilder {
 					"/document_library/edit_file_entry", Constants.CHECKOUT)
 			).setParameter(
 				"fileEntryId", _fileEntry.getFileEntryId()
+			).setParameter(
+				"folderId", _fileEntry.getFolderId()
 			).buildString()
 		).setIcon(
 			"lock"
