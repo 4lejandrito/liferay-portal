@@ -273,19 +273,20 @@ public class JournalEditArticleDisplayContextTest {
 	public void testGetTimeZoneMap() {
 		TimeZone timeZone = Mockito.mock(TimeZone.class);
 
-		String timeZoneId = RandomTestUtil.randomString();
 		String timeZoneName = RandomTestUtil.randomString();
-
-		Mockito.when(
-			timeZone.getID()
-		).thenReturn(
-			timeZoneId
-		);
 
 		Mockito.when(
 			timeZone.getDisplayName(false, TimeZone.SHORT)
 		).thenReturn(
 			timeZoneName
+		);
+
+		String timeZoneId = RandomTestUtil.randomString();
+
+		Mockito.when(
+			timeZone.getID()
+		).thenReturn(
+			timeZoneId
 		);
 
 		Mockito.when(
