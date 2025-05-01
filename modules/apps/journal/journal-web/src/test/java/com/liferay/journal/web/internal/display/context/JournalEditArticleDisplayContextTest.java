@@ -270,7 +270,7 @@ public class JournalEditArticleDisplayContextTest {
 	}
 
 	@Test
-	public void testGetTimeZone() {
+	public void testGetTimeZoneMap() {
 		TimeZone timeZone = Mockito.mock(TimeZone.class);
 
 		String timeZoneId = RandomTestUtil.randomString();
@@ -300,7 +300,7 @@ public class JournalEditArticleDisplayContextTest {
 				null);
 
 		Map<String, Object> timeZoneMap =
-			_journalEditArticleDisplayContext.getTimeZone();
+			_journalEditArticleDisplayContext.getTimeZoneMap();
 
 		Assert.assertEquals(timeZoneId, timeZoneMap.get("id"));
 		Assert.assertEquals(timeZoneName, timeZoneMap.get("name"));

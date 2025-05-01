@@ -1156,7 +1156,7 @@ public class JournalEditArticleDisplayContext {
 		).put(
 			"showPublishModal", _isShowPublishModal()
 		).put(
-			"timeZone", getTimeZone()
+			"timeZone", getTimeZoneMap()
 		).put(
 			"workflowEnabled", () -> _isWorkflowEnabled()
 		).build();
@@ -1330,7 +1330,7 @@ public class JournalEditArticleDisplayContext {
 		).build();
 	}
 
-	public Map<String, Object> getTimeZone() {
+	public Map<String, Object> getTimeZoneMap() {
 		TimeZone timeZone = _themeDisplay.getTimeZone();
 
 		return HashMapBuilder.<String, Object>put(
