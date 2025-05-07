@@ -15,7 +15,7 @@ export const test = mergeTests(loginTest(), formsPagesTest);
 
 let formPreviewPage: Page;
 
-test.afterEach(async ({formsPage}) => {
+test.afterEach(async ({formsPage, page}) => {
 	if (formPreviewPage) {
 		await formPreviewPage.close();
 

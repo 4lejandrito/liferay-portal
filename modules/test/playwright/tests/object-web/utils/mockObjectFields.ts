@@ -5,7 +5,7 @@
 
 import {ObjectField} from '@liferay/object-admin-rest-client-js';
 
-import {ApiHelpers} from '../../../helpers/ApiHelpers';
+import {DataApiHelpers} from '../../../helpers/ApiHelpers';
 import {getRandomInt} from '../../../utils/getRandomInt';
 import getRandomString from '../../../utils/getRandomString';
 import {
@@ -215,8 +215,7 @@ export async function mockObjectFields({
 	objectFieldBusinessTypes,
 	titleObjectFieldName,
 }: {
-	
-	apiHelpers: ApiHelpers;
+	apiHelpers: DataApiHelpers;
 	localeToTranslateListTypeItems?: Locale;
 	localizeAllLocalizable?: boolean;
 	objectEntryReturn?: {format: 'API' | 'UI'};
