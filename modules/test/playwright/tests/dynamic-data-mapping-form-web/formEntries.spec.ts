@@ -24,7 +24,7 @@ test.afterEach(async ({formsPage, page}) => {
 
 	await formsPage.goTo();
 
-	await deleteItems(formsPage, page);
+	await deleteItems(formsPage);
 });
 
 test.beforeEach(({page}) => {
