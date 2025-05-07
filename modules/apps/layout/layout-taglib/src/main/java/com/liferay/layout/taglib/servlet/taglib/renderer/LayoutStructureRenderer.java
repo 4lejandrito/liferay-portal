@@ -899,11 +899,15 @@ public class LayoutStructureRenderer {
 		jspWriter.write(StringPool.SPACE);
 		jspWriter.write(
 			formStepContainerStyledLayoutStructureItem.getStyledCssClasses());
-		jspWriter.write("\" style=\"");
 
-		jspWriter.write(
-			_renderLayoutStructureDisplayContext.getStyle(
-				formStepContainerStyledLayoutStructureItem));
+		String style = _renderLayoutStructureDisplayContext.getStyle(
+			formStepContainerStyledLayoutStructureItem);
+
+		if (Validator.isNotNull(style)) {
+			jspWriter.write("\" style=\"");
+			jspWriter.write(style);
+		}
+
 		jspWriter.write("\">");
 
 		List<String> childrenItemIds =
@@ -1012,11 +1016,16 @@ public class LayoutStructureRenderer {
 			}
 		}
 
-		jspWriter.write(
-			"\" enctype=\"multipart/form-data\" method=\"POST\" style=\"");
-		jspWriter.write(
-			_renderLayoutStructureDisplayContext.getStyle(
-				formStyledLayoutStructureItem));
+		jspWriter.write("\" enctype=\"multipart/form-data\" method=\"POST");
+
+		String style = _renderLayoutStructureDisplayContext.getStyle(
+			formStyledLayoutStructureItem);
+
+		if (Validator.isNotNull(style)) {
+			jspWriter.write("\" style=\"");
+			jspWriter.write(style);
+		}
+
 		jspWriter.write("\"><input name=\"redirect\" type=\"hidden\" value=\"");
 		jspWriter.write(
 			_renderLayoutStructureDisplayContext.
