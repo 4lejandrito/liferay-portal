@@ -217,6 +217,11 @@ public class RenderLayoutStructureTagTest {
 				layout.getPlid());
 
 		ContentLayoutTestUtil.addItemToLayout(
+			"{}", LayoutDataItemTypeConstants.TYPE_CONTAINER,
+			layout.fetchDraftLayout(), _layoutStructureProvider,
+			segmentExperienceId);
+
+		ContentLayoutTestUtil.addItemToLayout(
 			JSONUtil.put(
 				"styles",
 				JSONUtil.put(
@@ -239,6 +244,12 @@ public class RenderLayoutStructureTagTest {
 
 		String content = _getRenderLayoutHTML(layout);
 
+		Assert.assertFalse(
+			content,
+			StringUtil.contains(content, "style=\"\"", StringPool.BLANK));
+		Assert.assertTrue(
+			content,
+			StringUtil.contains(content, "style=\"", StringPool.BLANK));
 		Assert.assertTrue(
 			content, StringUtil.contains(content, url, StringPool.BLANK));
 
