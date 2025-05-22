@@ -26,7 +26,9 @@ import com.liferay.object.service.ObjectRelationshipService;
 import com.liferay.object.system.SystemObjectDefinitionManager;
 import com.liferay.object.system.SystemObjectDefinitionManagerRegistry;
 import com.liferay.petra.function.UnsafeFunction;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.model.BaseModel;
+import com.liferay.portal.kernel.model.CompanyConstants;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -326,6 +328,17 @@ public class ObjectEntryResourceImpl extends BaseObjectEntryResourceImpl {
 
 		return defaultObjectEntryManager.getObjectEntryByVersion(
 			_getDTOConverterContext(objectEntryId), objectEntryId, version);
+	}
+
+	@Override
+	public String getPortletId() {
+		if (FeatureFlagManagerUtil.isEnabled(
+				CompanyConstants.SYSTEM, "LPD-35914")) {
+
+			return _objectDefinition.getPortletId();
+		}
+
+		return null;
 	}
 
 	@Override
