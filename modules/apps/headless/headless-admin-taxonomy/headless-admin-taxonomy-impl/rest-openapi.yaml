@@ -193,6 +193,9 @@ components:
                         type: string
                     readOnly: true
                     type: array
+                assetLibraryKey:
+                    readOnly: true
+                    type: string
                 creator:
                     $ref: "#/components/schemas/Creator"
                     description:
