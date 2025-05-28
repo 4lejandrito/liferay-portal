@@ -7,6 +7,7 @@ package com.liferay.batch.engine.internal.exportimport.data.handler.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.exportimport.portlet.data.handler.provider.PortletDataHandlerProvider;
+import com.liferay.exportimport.vulcan.batch.engine.ExportImportVulcanBatchEngineTaskItemDelegate;
 import com.liferay.petra.function.UnsafeBiConsumer;
 import com.liferay.petra.function.UnsafeFunction;
 import com.liferay.petra.lang.SafeCloseable;
@@ -83,7 +84,7 @@ public class BatchEnginePortletDataHandlerRegistryTest {
 				MapUtil.singletonDictionary("jakarta.portlet.name", portletId));
 			SafeCloseable safeCloseable2 = _registerServiceWithSafeCloseable(
 				VulcanBatchEngineTaskItemDelegate.class,
-				new VulcanBatchEngineTaskItemDelegate<>() {
+				new ExportImportVulcanBatchEngineTaskItemDelegate<>() {
 
 					@Override
 					public void create(
@@ -152,21 +153,21 @@ public class BatchEnginePortletDataHandlerRegistryTest {
 						Map<String, Serializable> parameters) {
 					}
 
-					},
-					HashMapDictionaryBuilder.put(
-						"batch.engine.scope", "company"
-					).put(
-						"batch.engine.task.item.delegate", "true"
-					).put(
-						"batch.engine.task.item.delegate.class.name",
-						RandomTestUtil.randomString()
-					).put(
-						"batch.engine.task.item.delegate.item.class.name",
-						RandomTestUtil.randomString()
-					).put(
-						"batch.engine.task.item.delegate.name",
-						RandomTestUtil.randomString()
-					).build());)
+				},
+				HashMapDictionaryBuilder.put(
+					"batch.engine.scope", "company"
+				).put(
+					"batch.engine.task.item.delegate", "true"
+				).put(
+					"batch.engine.task.item.delegate.class.name",
+					RandomTestUtil.randomString()
+				).put(
+					"batch.engine.task.item.delegate.item.class.name",
+					RandomTestUtil.randomString()
+				).put(
+					"batch.engine.task.item.delegate.name",
+					RandomTestUtil.randomString()
+				).build());)
 
 		{
 

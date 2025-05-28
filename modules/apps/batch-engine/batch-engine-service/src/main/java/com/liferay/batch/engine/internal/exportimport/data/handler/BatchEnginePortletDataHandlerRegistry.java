@@ -10,6 +10,7 @@ import com.liferay.batch.engine.BatchEngineImportTaskExecutor;
 import com.liferay.batch.engine.service.BatchEngineExportTaskService;
 import com.liferay.batch.engine.service.BatchEngineImportTaskService;
 import com.liferay.exportimport.kernel.lar.PortletDataHandler;
+import com.liferay.exportimport.vulcan.batch.engine.ExportImportVulcanBatchEngineTaskItemDelegate;
 import com.liferay.osgi.util.ServiceTrackerFactory;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagListener;
 import com.liferay.portal.kernel.util.HashMapDictionaryBuilder;
@@ -96,7 +97,16 @@ public class BatchEnginePortletDataHandlerRegistry {
 				vulcanBatchEngineTaskItemDelegate = _bundleContext.getService(
 					serviceReference);
 
-			String portletId = vulcanBatchEngineTaskItemDelegate.getPortletId();
+			String portletId = null;
+
+			if (vulcanBatchEngineTaskItemDelegate instanceof
+					ExportImportVulcanBatchEngineTaskItemDelegate
+						exportImportVulcanBatchEngineTaskItemDelegate) {
+
+				portletId =
+					exportImportVulcanBatchEngineTaskItemDelegate.
+						getPortletId();
+			}
 
 			if (Validator.isNull(portletId)) {
 				return null;

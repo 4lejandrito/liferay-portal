@@ -5,6 +5,7 @@
 
 package com.liferay.object.rest.internal.resource.v1_0;
 
+import com.liferay.exportimport.vulcan.batch.engine.ExportImportVulcanBatchEngineTaskItemDelegate;
 import com.liferay.object.exception.ObjectEntryValidationException;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectRelationship;
@@ -55,7 +56,9 @@ import java.util.Map;
 /**
  * @author Javier Gamarra
  */
-public class ObjectEntryResourceImpl extends BaseObjectEntryResourceImpl {
+public class ObjectEntryResourceImpl
+	extends BaseObjectEntryResourceImpl
+	implements ExportImportVulcanBatchEngineTaskItemDelegate<ObjectEntry> {
 
 	public ObjectEntryResourceImpl(
 		DTOConverterRegistry dtoConverterRegistry,

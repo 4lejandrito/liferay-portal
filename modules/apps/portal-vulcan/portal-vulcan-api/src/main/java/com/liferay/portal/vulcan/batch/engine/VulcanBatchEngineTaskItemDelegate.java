@@ -52,10 +52,6 @@ public interface VulcanBatchEngineTaskItemDelegate<T> {
 	public EntityModel getEntityModel(Map<String, List<String>> multivaluedMap)
 		throws Exception;
 
-	public default String getPortletId() {
-		return null;
-	}
-
 	public default Class<?> getResourceClass() {
 		return getClass();
 	}
