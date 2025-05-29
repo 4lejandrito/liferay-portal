@@ -1178,6 +1178,11 @@ public abstract class BaseCollaboratorResourceTestCase {
 			"This method needs to be implemented");
 	}
 
+	@Test
+	public void testBatchEngineDeleteImportTask() throws Exception {
+		Assert.assertTrue(true);
+	}
+
 	protected Collaborator testGraphQLCollaborator_addCollaborator()
 		throws Exception {
 
