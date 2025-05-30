@@ -532,8 +532,7 @@ public class ObjectEntryFolderResourceTest
 		ObjectEntryFolder putObjectEntryFolder =
 			objectEntryFolderResource.
 				putScopeScopeKeyObjectEntryFolderByExternalReferenceCode(
-					testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCode_getScopeKey(
-						postObjectEntryFolder),
+					postObjectEntryFolder.getScopeKey(),
 					postObjectEntryFolder.getExternalReferenceCode(),
 					randomObjectEntryFolder);
 
@@ -563,8 +562,7 @@ public class ObjectEntryFolderResourceTest
 		ObjectEntryFolder putObjectEntryFolder =
 			objectEntryFolderResource.
 				putScopeScopeKeyObjectEntryFolderByExternalReferenceCode(
-					testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCode_getScopeKey(
-						postObjectEntryFolder),
+					postObjectEntryFolder.getScopeKey(),
 					postObjectEntryFolder.getExternalReferenceCode(),
 					randomObjectEntryFolder);
 
@@ -597,8 +595,7 @@ public class ObjectEntryFolderResourceTest
 		try {
 			objectEntryFolderResource.
 				putScopeScopeKeyObjectEntryFolderByExternalReferenceCode(
-					testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCode_getScopeKey(
-						postObjectEntryFolder),
+					postObjectEntryFolder.getScopeKey(),
 					postObjectEntryFolder.getExternalReferenceCode(),
 					randomObjectEntryFolder);
 
@@ -629,8 +626,7 @@ public class ObjectEntryFolderResourceTest
 		ObjectEntryFolder putObjectEntryFolder =
 			objectEntryFolderResource.
 				putScopeScopeKeyObjectEntryFolderByExternalReferenceCode(
-					testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCode_getScopeKey(
-						postObjectEntryFolder),
+					postObjectEntryFolder.getScopeKey(),
 					postObjectEntryFolder.getExternalReferenceCode(),
 					randomObjectEntryFolder);
 
@@ -668,8 +664,7 @@ public class ObjectEntryFolderResourceTest
 		try {
 			objectEntryFolderResource.
 				putScopeScopeKeyObjectEntryFolderByExternalReferenceCode(
-					testPutScopeScopeKeyObjectEntryFolderByExternalReferenceCode_getScopeKey(
-						postObjectEntryFolder),
+					postObjectEntryFolder.getScopeKey(),
 					postObjectEntryFolder.getExternalReferenceCode(),
 					randomObjectEntryFolder);
 

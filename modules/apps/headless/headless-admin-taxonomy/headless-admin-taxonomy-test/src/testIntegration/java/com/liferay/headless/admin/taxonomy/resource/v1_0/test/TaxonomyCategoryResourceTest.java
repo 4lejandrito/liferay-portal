@@ -191,8 +191,7 @@ public class TaxonomyCategoryResourceTest
 		try {
 			taxonomyCategoryResource.
 				getTaxonomyVocabularyTaxonomyCategoryByExternalReferenceCode(
-					testGetTaxonomyVocabularyTaxonomyCategoryByExternalReferenceCode_getTaxonomyVocabularyId(
-						taxonomyCategory),
+					taxonomyCategory.getTaxonomyVocabularyId(),
 					externalReferenceCode);
 
 			Assert.fail();
