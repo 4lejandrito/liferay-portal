@@ -457,8 +457,8 @@ public abstract class BaseMessageBoardMessageResourceTestCase {
 			testDeleteSiteMessageBoardMessageByExternalReferenceCode_addMessageBoardMessage()
 		throws Exception {
 
-		return testPostMessageBoardMessageMessageBoardMessage_addMessageBoardMessage(
-			randomMessageBoardMessage());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -1819,8 +1819,8 @@ public abstract class BaseMessageBoardMessageResourceTestCase {
 			testGetSiteMessageBoardMessageByExternalReferenceCode_addMessageBoardMessage()
 		throws Exception {
 
-		return testPostMessageBoardThreadMessageBoardMessage_addMessageBoardMessage(
-			randomMessageBoardMessage());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -1974,8 +1974,8 @@ public abstract class BaseMessageBoardMessageResourceTestCase {
 			testGetSiteMessageBoardMessageByFriendlyUrlPath_addMessageBoardMessage()
 		throws Exception {
 
-		return testPostMessageBoardThreadMessageBoardMessage_addMessageBoardMessage(
-			randomMessageBoardMessage());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -2128,8 +2128,8 @@ public abstract class BaseMessageBoardMessageResourceTestCase {
 			testGetSiteMessageBoardMessagePermissionsPage_addMessageBoardMessage()
 		throws Exception {
 
-		return testPostMessageBoardThreadMessageBoardMessage_addMessageBoardMessage(
-			randomMessageBoardMessage());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -3239,8 +3239,8 @@ public abstract class BaseMessageBoardMessageResourceTestCase {
 			testPutSiteMessageBoardMessageByExternalReferenceCode_addMessageBoardMessage()
 		throws Exception {
 
-		return testPostMessageBoardMessageMessageBoardMessage_addMessageBoardMessage(
-			randomMessageBoardMessage());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	protected MessageBoardMessage
@@ -3295,8 +3295,8 @@ public abstract class BaseMessageBoardMessageResourceTestCase {
 			testPutSiteMessageBoardMessagePermissionsPage_addMessageBoardMessage()
 		throws Exception {
 
-		return testPostMessageBoardMessageMessageBoardMessage_addMessageBoardMessage(
-			randomMessageBoardMessage());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test

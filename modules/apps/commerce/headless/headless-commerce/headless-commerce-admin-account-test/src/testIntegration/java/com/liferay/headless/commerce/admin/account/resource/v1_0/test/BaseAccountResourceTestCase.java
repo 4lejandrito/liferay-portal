@@ -419,7 +419,8 @@ public abstract class BaseAccountResourceTestCase {
 			accountResource.
 				deleteAccountGroupByExternalReferenceCodeAccountHttpResponse(
 					account.getExternalReferenceCode(),
-					testDeleteAccountGroupByExternalReferenceCodeAccount_getExternalReferenceCode()));
+					testDeleteAccountGroupByExternalReferenceCodeAccount_getExternalReferenceCode(
+						account)));
 	}
 
 	protected Account
@@ -431,7 +432,8 @@ public abstract class BaseAccountResourceTestCase {
 	}
 
 	protected String
-			testDeleteAccountGroupByExternalReferenceCodeAccount_getExternalReferenceCode()
+			testDeleteAccountGroupByExternalReferenceCodeAccount_getExternalReferenceCode(
+				Account account)
 		throws Exception {
 
 		throw new UnsupportedOperationException(

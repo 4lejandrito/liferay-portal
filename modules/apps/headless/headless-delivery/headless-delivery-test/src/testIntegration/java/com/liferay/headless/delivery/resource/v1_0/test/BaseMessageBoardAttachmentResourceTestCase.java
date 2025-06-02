@@ -1031,8 +1031,8 @@ public abstract class BaseMessageBoardAttachmentResourceTestCase {
 			testGetSiteMessageBoardMessageByExternalReferenceCodeMessageBoardMessageExternalReferenceCodeMessageBoardAttachmentByExternalReferenceCode_addMessageBoardAttachment()
 		throws Exception {
 
-		return testPostMessageBoardThreadMessageBoardAttachment_addMessageBoardAttachment(
-			randomMessageBoardAttachment(), getMultipartFiles());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	protected Long

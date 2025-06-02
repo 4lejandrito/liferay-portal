@@ -1425,8 +1425,8 @@ public abstract class BaseObjectActionResourceTestCase {
 	protected ObjectAction testPatchObjectAction_addObjectAction()
 		throws Exception {
 
-		return testPostObjectDefinitionObjectAction_addObjectAction(
-			randomObjectAction());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -1495,8 +1495,8 @@ public abstract class BaseObjectActionResourceTestCase {
 	protected ObjectAction testPutObjectAction_addObjectAction()
 		throws Exception {
 
-		return testPostObjectDefinitionObjectAction_addObjectAction(
-			randomObjectAction());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test

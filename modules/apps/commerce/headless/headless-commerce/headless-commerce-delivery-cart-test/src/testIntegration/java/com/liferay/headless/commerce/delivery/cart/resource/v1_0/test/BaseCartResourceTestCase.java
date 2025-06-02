@@ -2181,7 +2181,8 @@ public abstract class BaseCartResourceTestCase {
 	}
 
 	protected Cart testPatchCart_addCart() throws Exception {
-		return testPostChannelCart_addCart(randomCart());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -2208,7 +2209,8 @@ public abstract class BaseCartResourceTestCase {
 	protected Cart testPatchCartByExternalReferenceCode_addCart()
 		throws Exception {
 
-		return testPostChannelCart_addCart(randomCart());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -2332,7 +2334,8 @@ public abstract class BaseCartResourceTestCase {
 	}
 
 	protected Cart testPutCart_addCart() throws Exception {
-		return testPostChannelCart_addCart(randomCart());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -2374,7 +2377,8 @@ public abstract class BaseCartResourceTestCase {
 	protected Cart testPutCartByExternalReferenceCode_addCart()
 		throws Exception {
 
-		return testPostChannelCart_addCart(randomCart());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	protected Cart testPutCartByExternalReferenceCode_createCart()

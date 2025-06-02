@@ -221,7 +221,8 @@ public abstract class BaseAttachmentResourceTestCase {
 			attachmentResource.
 				deletePlacedOrderByExternalReferenceCodeAttachmentByExternalReferenceCodeAttachmentExternalReferenceCodeHttpResponse(
 					attachment.getExternalReferenceCode(),
-					testDeletePlacedOrderByExternalReferenceCodeAttachmentByExternalReferenceCodeAttachmentExternalReferenceCode_getExternalReferenceCode()));
+					testDeletePlacedOrderByExternalReferenceCodeAttachmentByExternalReferenceCodeAttachmentExternalReferenceCode_getExternalReferenceCode(
+						attachment)));
 	}
 
 	protected Attachment
@@ -233,7 +234,8 @@ public abstract class BaseAttachmentResourceTestCase {
 	}
 
 	protected String
-			testDeletePlacedOrderByExternalReferenceCodeAttachmentByExternalReferenceCodeAttachmentExternalReferenceCode_getExternalReferenceCode()
+			testDeletePlacedOrderByExternalReferenceCodeAttachmentByExternalReferenceCodeAttachmentExternalReferenceCode_getExternalReferenceCode(
+				Attachment attachment)
 		throws Exception {
 
 		throw new UnsupportedOperationException(

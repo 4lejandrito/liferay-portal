@@ -1496,8 +1496,8 @@ public abstract class BaseObjectFieldResourceTestCase {
 	}
 
 	protected ObjectField testGetObjectField_addObjectField() throws Exception {
-		return testPostObjectDefinitionObjectField_addObjectField(
-			randomObjectField());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -1622,8 +1622,8 @@ public abstract class BaseObjectFieldResourceTestCase {
 	protected ObjectField testPatchObjectField_addObjectField()
 		throws Exception {
 
-		return testPostObjectDefinitionObjectField_addObjectField(
-			randomObjectField());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -1690,8 +1690,8 @@ public abstract class BaseObjectFieldResourceTestCase {
 	}
 
 	protected ObjectField testPutObjectField_addObjectField() throws Exception {
-		return testPostObjectDefinitionObjectField_addObjectField(
-			randomObjectField());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test

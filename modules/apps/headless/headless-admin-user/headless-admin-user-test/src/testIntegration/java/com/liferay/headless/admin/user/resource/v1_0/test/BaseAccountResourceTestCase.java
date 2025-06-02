@@ -427,7 +427,7 @@ public abstract class BaseAccountResourceTestCase {
 		assertHttpResponseStatusCode(
 			204,
 			accountResource.deleteOrganizationAccountsHttpResponse(
-				testDeleteOrganizationAccounts_getOrganizationId()));
+				testDeleteOrganizationAccounts_getOrganizationId(), null));
 	}
 
 	protected Account testDeleteOrganizationAccounts_addAccount()
@@ -456,7 +456,8 @@ public abstract class BaseAccountResourceTestCase {
 			204,
 			accountResource.
 				deleteOrganizationAccountsByExternalReferenceCodeHttpResponse(
-					testDeleteOrganizationAccountsByExternalReferenceCode_getOrganizationId()));
+					testDeleteOrganizationAccountsByExternalReferenceCode_getOrganizationId(),
+					null));
 	}
 
 	protected Account
@@ -487,7 +488,9 @@ public abstract class BaseAccountResourceTestCase {
 			204,
 			accountResource.
 				deleteOrganizationByExternalReferenceCodeAccountsHttpResponse(
-					testDeleteOrganizationByExternalReferenceCodeAccounts_getExternalReferenceCode()));
+					testDeleteOrganizationByExternalReferenceCodeAccounts_getExternalReferenceCode(
+						account),
+					null));
 	}
 
 	protected Account
@@ -499,7 +502,8 @@ public abstract class BaseAccountResourceTestCase {
 	}
 
 	protected String
-			testDeleteOrganizationByExternalReferenceCodeAccounts_getExternalReferenceCode()
+			testDeleteOrganizationByExternalReferenceCodeAccounts_getExternalReferenceCode(
+				Account account)
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -518,7 +522,8 @@ public abstract class BaseAccountResourceTestCase {
 			204,
 			accountResource.
 				deleteOrganizationByExternalReferenceCodeOrganizationExternalReferenceCodeAccountByExternalReferenceCodeHttpResponse(
-					testDeleteOrganizationByExternalReferenceCodeOrganizationExternalReferenceCodeAccountByExternalReferenceCode_getOrganizationExternalReferenceCode()));
+					testDeleteOrganizationByExternalReferenceCodeOrganizationExternalReferenceCodeAccountByExternalReferenceCode_getOrganizationExternalReferenceCode(),
+					null));
 	}
 
 	protected Account
@@ -3740,19 +3745,22 @@ public abstract class BaseAccountResourceTestCase {
 			204,
 			accountResource.
 				postOrganizationByExternalReferenceCodeAccountsHttpResponse(
-					testPostOrganizationByExternalReferenceCodeAccounts_getExternalReferenceCode(),
+					testPostOrganizationByExternalReferenceCodeAccounts_getExternalReferenceCode(
+						account),
 					null));
 
 		assertHttpResponseStatusCode(
 			404,
 			accountResource.
 				postOrganizationByExternalReferenceCodeAccountsHttpResponse(
-					testPostOrganizationByExternalReferenceCodeAccounts_getExternalReferenceCode(),
+					testPostOrganizationByExternalReferenceCodeAccounts_getExternalReferenceCode(
+						account),
 					null));
 	}
 
 	protected String
-			testPostOrganizationByExternalReferenceCodeAccounts_getExternalReferenceCode()
+			testPostOrganizationByExternalReferenceCodeAccounts_getExternalReferenceCode(
+				Account account)
 		throws Exception {
 
 		throw new UnsupportedOperationException(

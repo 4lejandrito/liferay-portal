@@ -385,7 +385,8 @@ public abstract class BaseCommentResourceTestCase {
 			testDeleteSiteBlogPostingByExternalReferenceCodeBlogPostingExternalReferenceCodeCommentByExternalReferenceCode_addComment()
 		throws Exception {
 
-		return testPostCommentComment_addComment(randomComment());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	protected Long
@@ -440,7 +441,8 @@ public abstract class BaseCommentResourceTestCase {
 			testDeleteSiteCommentByExternalReferenceCodeParentCommentExternalReferenceCodeCommentByExternalReferenceCode_addComment()
 		throws Exception {
 
-		return testPostCommentComment_addComment(randomComment());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	protected Long
@@ -495,7 +497,8 @@ public abstract class BaseCommentResourceTestCase {
 			testDeleteSiteDocumentByExternalReferenceCodeDocumentExternalReferenceCodeCommentByExternalReferenceCode_addComment()
 		throws Exception {
 
-		return testPostCommentComment_addComment(randomComment());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	protected Long
@@ -550,7 +553,8 @@ public abstract class BaseCommentResourceTestCase {
 			testDeleteSiteStructuredContentByExternalReferenceCodeStructuredContentExternalReferenceCodeCommentByExternalReferenceCode_addComment()
 		throws Exception {
 
-		return testPostCommentComment_addComment(randomComment());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	protected Long
@@ -2055,7 +2059,8 @@ public abstract class BaseCommentResourceTestCase {
 			testGetSiteBlogPostingByExternalReferenceCodeBlogPostingExternalReferenceCodeCommentByExternalReferenceCode_addComment()
 		throws Exception {
 
-		return testPostDocumentComment_addComment(randomComment());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	protected Long
@@ -2262,7 +2267,8 @@ public abstract class BaseCommentResourceTestCase {
 			testGetSiteCommentByExternalReferenceCodeParentCommentExternalReferenceCodeCommentByExternalReferenceCode_addComment()
 		throws Exception {
 
-		return testPostDocumentComment_addComment(randomComment());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	protected Long
@@ -2469,7 +2475,8 @@ public abstract class BaseCommentResourceTestCase {
 			testGetSiteDocumentByExternalReferenceCodeDocumentExternalReferenceCodeCommentByExternalReferenceCode_addComment()
 		throws Exception {
 
-		return testPostDocumentComment_addComment(randomComment());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	protected Long
@@ -2676,7 +2683,8 @@ public abstract class BaseCommentResourceTestCase {
 			testGetSiteStructuredContentByExternalReferenceCodeStructuredContentExternalReferenceCodeCommentByExternalReferenceCode_addComment()
 		throws Exception {
 
-		return testPostDocumentComment_addComment(randomComment());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	protected Long
@@ -3442,7 +3450,8 @@ public abstract class BaseCommentResourceTestCase {
 			testPutSiteBlogPostingByExternalReferenceCodeBlogPostingExternalReferenceCodeCommentByExternalReferenceCode_addComment()
 		throws Exception {
 
-		return testPostCommentComment_addComment(randomComment());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	protected Long
@@ -3528,7 +3537,8 @@ public abstract class BaseCommentResourceTestCase {
 			testPutSiteCommentByExternalReferenceCodeParentCommentExternalReferenceCodeCommentByExternalReferenceCode_addComment()
 		throws Exception {
 
-		return testPostCommentComment_addComment(randomComment());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	protected Long
@@ -3614,7 +3624,8 @@ public abstract class BaseCommentResourceTestCase {
 			testPutSiteDocumentByExternalReferenceCodeDocumentExternalReferenceCodeCommentByExternalReferenceCode_addComment()
 		throws Exception {
 
-		return testPostCommentComment_addComment(randomComment());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	protected Long
@@ -3700,7 +3711,8 @@ public abstract class BaseCommentResourceTestCase {
 			testPutSiteStructuredContentByExternalReferenceCodeStructuredContentExternalReferenceCodeCommentByExternalReferenceCode_addComment()
 		throws Exception {
 
-		return testPostCommentComment_addComment(randomComment());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	protected Long

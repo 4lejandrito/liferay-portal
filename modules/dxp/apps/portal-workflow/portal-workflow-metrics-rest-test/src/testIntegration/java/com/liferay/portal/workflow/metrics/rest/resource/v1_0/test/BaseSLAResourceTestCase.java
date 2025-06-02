@@ -698,7 +698,8 @@ public abstract class BaseSLAResourceTestCase {
 	}
 
 	protected SLA testGetSLA_addSLA() throws Exception {
-		return testPostProcessSLA_addSLA(randomSLA());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -824,7 +825,8 @@ public abstract class BaseSLAResourceTestCase {
 	}
 
 	protected SLA testPutSLA_addSLA() throws Exception {
-		return testPostProcessSLA_addSLA(randomSLA());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test

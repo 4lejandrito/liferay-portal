@@ -1521,8 +1521,8 @@ public abstract class BaseListTypeEntryResourceTestCase {
 	protected ListTypeEntry testGetListTypeEntry_addListTypeEntry()
 		throws Exception {
 
-		return testPostListTypeDefinitionListTypeEntry_addListTypeEntry(
-			randomListTypeEntry());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -1694,8 +1694,8 @@ public abstract class BaseListTypeEntryResourceTestCase {
 	protected ListTypeEntry testPutListTypeEntry_addListTypeEntry()
 		throws Exception {
 
-		return testPostListTypeDefinitionListTypeEntry_addListTypeEntry(
-			randomListTypeEntry());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test

@@ -228,7 +228,8 @@ public abstract class BaseDataListViewResourceTestCase {
 		assertHttpResponseStatusCode(
 			204,
 			dataListViewResource.deleteDataDefinitionDataListViewHttpResponse(
-				testDeleteDataDefinitionDataListView_getDataDefinitionId()));
+				testDeleteDataDefinitionDataListView_getDataDefinitionId(
+					dataListView)));
 	}
 
 	protected DataListView
@@ -239,7 +240,8 @@ public abstract class BaseDataListViewResourceTestCase {
 			randomDataListView());
 	}
 
-	protected Long testDeleteDataDefinitionDataListView_getDataDefinitionId()
+	protected Long testDeleteDataDefinitionDataListView_getDataDefinitionId(
+			DataListView dataListView)
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -267,8 +269,8 @@ public abstract class BaseDataListViewResourceTestCase {
 	protected DataListView testDeleteDataListView_addDataListView()
 		throws Exception {
 
-		return testPostDataDefinitionDataListView_addDataListView(
-			randomDataListView());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -946,8 +948,8 @@ public abstract class BaseDataListViewResourceTestCase {
 	protected DataListView testGetDataListView_addDataListView()
 		throws Exception {
 
-		return testPostDataDefinitionDataListView_addDataListView(
-			randomDataListView());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -1091,8 +1093,8 @@ public abstract class BaseDataListViewResourceTestCase {
 	protected DataListView testPutDataListView_addDataListView()
 		throws Exception {
 
-		return testPostDataDefinitionDataListView_addDataListView(
-			randomDataListView());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test

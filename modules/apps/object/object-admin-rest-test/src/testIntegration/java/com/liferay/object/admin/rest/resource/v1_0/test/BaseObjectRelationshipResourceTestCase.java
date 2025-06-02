@@ -1605,8 +1605,8 @@ public abstract class BaseObjectRelationshipResourceTestCase {
 			testGetObjectRelationship_addObjectRelationship()
 		throws Exception {
 
-		return testPostObjectDefinitionObjectRelationship_addObjectRelationship(
-			randomObjectRelationship());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -1785,8 +1785,8 @@ public abstract class BaseObjectRelationshipResourceTestCase {
 			testPutObjectRelationship_addObjectRelationship()
 		throws Exception {
 
-		return testPostObjectDefinitionObjectRelationship_addObjectRelationship(
-			randomObjectRelationship());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -1850,8 +1850,8 @@ public abstract class BaseObjectRelationshipResourceTestCase {
 			testPutObjectRelationshipByExternalReferenceCode_addObjectRelationship()
 		throws Exception {
 
-		return testPostObjectDefinitionObjectRelationship_addObjectRelationship(
-			randomObjectRelationship());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	protected ObjectRelationship

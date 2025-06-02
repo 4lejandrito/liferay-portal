@@ -409,7 +409,8 @@ public abstract class BaseWikiPageResourceTestCase {
 	protected WikiPage testGetSiteWikiPageByExternalReferenceCode_addWikiPage()
 		throws Exception {
 
-		return testPostWikiPageWikiPage_addWikiPage(randomWikiPage());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -1405,7 +1406,8 @@ public abstract class BaseWikiPageResourceTestCase {
 	protected WikiPage testPutSiteWikiPageByExternalReferenceCode_addWikiPage()
 		throws Exception {
 
-		return testPostWikiPageWikiPage_addWikiPage(randomWikiPage());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	protected WikiPage

@@ -751,8 +751,8 @@ public abstract class BaseWorkflowDefinitionLinkResourceTestCase {
 			testPutWorkflowDefinitionLinkByExternalReferenceCode_addWorkflowDefinitionLink()
 		throws Exception {
 
-		return testPostWorkflowDefinitionWorkflowDefinitionLink_addWorkflowDefinitionLink(
-			randomWorkflowDefinitionLink());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	protected WorkflowDefinitionLink

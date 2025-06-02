@@ -1394,8 +1394,8 @@ public abstract class BaseObjectValidationRuleResourceTestCase {
 			testGetObjectValidationRule_addObjectValidationRule()
 		throws Exception {
 
-		return testPostObjectDefinitionObjectValidationRule_addObjectValidationRule(
-			randomObjectValidationRule());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -1532,8 +1532,8 @@ public abstract class BaseObjectValidationRuleResourceTestCase {
 			testPatchObjectValidationRule_addObjectValidationRule()
 		throws Exception {
 
-		return testPostObjectDefinitionObjectValidationRule_addObjectValidationRule(
-			randomObjectValidationRule());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -1613,8 +1613,8 @@ public abstract class BaseObjectValidationRuleResourceTestCase {
 			testPutObjectValidationRule_addObjectValidationRule()
 		throws Exception {
 
-		return testPostObjectDefinitionObjectValidationRule_addObjectValidationRule(
-			randomObjectValidationRule());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test

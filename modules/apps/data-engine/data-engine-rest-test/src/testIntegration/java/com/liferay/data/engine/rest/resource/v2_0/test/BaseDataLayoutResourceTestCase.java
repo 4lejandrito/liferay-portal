@@ -232,7 +232,8 @@ public abstract class BaseDataLayoutResourceTestCase {
 		assertHttpResponseStatusCode(
 			204,
 			dataLayoutResource.deleteDataDefinitionDataLayoutHttpResponse(
-				testDeleteDataDefinitionDataLayout_getDataDefinitionId()));
+				testDeleteDataDefinitionDataLayout_getDataDefinitionId(
+					dataLayout)));
 	}
 
 	protected DataLayout testDeleteDataDefinitionDataLayout_addDataLayout()
@@ -242,7 +243,8 @@ public abstract class BaseDataLayoutResourceTestCase {
 			randomDataLayout());
 	}
 
-	protected Long testDeleteDataDefinitionDataLayout_getDataDefinitionId()
+	protected Long testDeleteDataDefinitionDataLayout_getDataDefinitionId(
+			DataLayout dataLayout)
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -267,8 +269,8 @@ public abstract class BaseDataLayoutResourceTestCase {
 	}
 
 	protected DataLayout testDeleteDataLayout_addDataLayout() throws Exception {
-		return testPostDataDefinitionDataLayout_addDataLayout(
-			randomDataLayout());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -924,8 +926,8 @@ public abstract class BaseDataLayoutResourceTestCase {
 	}
 
 	protected DataLayout testGetDataLayout_addDataLayout() throws Exception {
-		return testPostDataDefinitionDataLayout_addDataLayout(
-			randomDataLayout());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -1041,8 +1043,8 @@ public abstract class BaseDataLayoutResourceTestCase {
 			testGetSiteDataLayoutByContentTypeByDataLayoutKey_addDataLayout()
 		throws Exception {
 
-		return testPostDataDefinitionDataLayout_addDataLayout(
-			randomDataLayout());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -1229,8 +1231,8 @@ public abstract class BaseDataLayoutResourceTestCase {
 	}
 
 	protected DataLayout testPutDataLayout_addDataLayout() throws Exception {
-		return testPostDataDefinitionDataLayout_addDataLayout(
-			randomDataLayout());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test

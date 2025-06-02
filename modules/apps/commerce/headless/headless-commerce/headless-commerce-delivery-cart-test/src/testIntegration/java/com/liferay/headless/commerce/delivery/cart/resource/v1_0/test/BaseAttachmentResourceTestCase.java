@@ -218,7 +218,8 @@ public abstract class BaseAttachmentResourceTestCase {
 			attachmentResource.
 				deleteCartByExternalReferenceCodeAttachmentByExternalReferenceCodeAttachmentExternalReferenceCodeHttpResponse(
 					attachment.getExternalReferenceCode(),
-					testDeleteCartByExternalReferenceCodeAttachmentByExternalReferenceCodeAttachmentExternalReferenceCode_getExternalReferenceCode()));
+					testDeleteCartByExternalReferenceCodeAttachmentByExternalReferenceCodeAttachmentExternalReferenceCode_getExternalReferenceCode(
+						attachment)));
 	}
 
 	protected Attachment
@@ -230,7 +231,8 @@ public abstract class BaseAttachmentResourceTestCase {
 	}
 
 	protected String
-			testDeleteCartByExternalReferenceCodeAttachmentByExternalReferenceCodeAttachmentExternalReferenceCode_getExternalReferenceCode()
+			testDeleteCartByExternalReferenceCodeAttachmentByExternalReferenceCodeAttachmentExternalReferenceCode_getExternalReferenceCode(
+				Attachment attachment)
 		throws Exception {
 
 		throw new UnsupportedOperationException(

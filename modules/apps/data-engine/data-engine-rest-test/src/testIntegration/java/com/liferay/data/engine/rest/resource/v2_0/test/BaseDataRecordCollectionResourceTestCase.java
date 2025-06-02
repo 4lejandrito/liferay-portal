@@ -956,8 +956,8 @@ public abstract class BaseDataRecordCollectionResourceTestCase {
 			testGetDataRecordCollection_addDataRecordCollection()
 		throws Exception {
 
-		return testPostDataDefinitionDataRecordCollection_addDataRecordCollection(
-			randomDataRecordCollection());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -1085,8 +1085,8 @@ public abstract class BaseDataRecordCollectionResourceTestCase {
 			testGetDataRecordCollectionPermissionsPage_addDataRecordCollection()
 		throws Exception {
 
-		return testPostDataDefinitionDataRecordCollection_addDataRecordCollection(
-			randomDataRecordCollection());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -1110,8 +1110,8 @@ public abstract class BaseDataRecordCollectionResourceTestCase {
 			testGetSiteDataRecordCollectionByDataRecordCollectionKey_addDataRecordCollection()
 		throws Exception {
 
-		return testPostDataDefinitionDataRecordCollection_addDataRecordCollection(
-			randomDataRecordCollection());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -1295,8 +1295,8 @@ public abstract class BaseDataRecordCollectionResourceTestCase {
 			testPutDataRecordCollection_addDataRecordCollection()
 		throws Exception {
 
-		return testPostDataDefinitionDataRecordCollection_addDataRecordCollection(
-			randomDataRecordCollection());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -1342,8 +1342,8 @@ public abstract class BaseDataRecordCollectionResourceTestCase {
 			testPutDataRecordCollectionPermissionsPage_addDataRecordCollection()
 		throws Exception {
 
-		return testPostDataDefinitionDataRecordCollection_addDataRecordCollection(
-			randomDataRecordCollection());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test

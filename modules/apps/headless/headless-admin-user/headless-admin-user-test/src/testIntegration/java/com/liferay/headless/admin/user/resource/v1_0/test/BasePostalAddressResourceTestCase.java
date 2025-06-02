@@ -1033,8 +1033,8 @@ public abstract class BasePostalAddressResourceTestCase {
 	protected PostalAddress testGetPostalAddress_addPostalAddress()
 		throws Exception {
 
-		return testPostAccountPostalAddress_addPostalAddress(
-			randomPostalAddress());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -1154,8 +1154,8 @@ public abstract class BasePostalAddressResourceTestCase {
 			testGetPostalAddressByExternalReferenceCode_addPostalAddress()
 		throws Exception {
 
-		return testPostAccountPostalAddress_addPostalAddress(
-			randomPostalAddress());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -1485,8 +1485,8 @@ public abstract class BasePostalAddressResourceTestCase {
 	protected PostalAddress testPatchPostalAddress_addPostalAddress()
 		throws Exception {
 
-		return testPostAccountPostalAddress_addPostalAddress(
-			randomPostalAddress());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -1521,8 +1521,8 @@ public abstract class BasePostalAddressResourceTestCase {
 			testPatchPostalAddressByExternalReferenceCode_addPostalAddress()
 		throws Exception {
 
-		return testPostAccountPostalAddress_addPostalAddress(
-			randomPostalAddress());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -1567,8 +1567,8 @@ public abstract class BasePostalAddressResourceTestCase {
 	protected PostalAddress testPutPostalAddress_addPostalAddress()
 		throws Exception {
 
-		return testPostAccountPostalAddress_addPostalAddress(
-			randomPostalAddress());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -1618,8 +1618,8 @@ public abstract class BasePostalAddressResourceTestCase {
 			testPutPostalAddressByExternalReferenceCode_addPostalAddress()
 		throws Exception {
 
-		return testPostAccountPostalAddress_addPostalAddress(
-			randomPostalAddress());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	protected PostalAddress

@@ -374,7 +374,8 @@ public abstract class BaseUserAccountResourceTestCase {
 			204,
 			userAccountResource.
 				deleteAccountUserAccountByExternalReferenceCodeByEmailAddressHttpResponse(
-					testDeleteAccountUserAccountByExternalReferenceCodeByEmailAddress_getExternalReferenceCode(),
+					testDeleteAccountUserAccountByExternalReferenceCodeByEmailAddress_getExternalReferenceCode(
+						userAccount),
 					userAccount.getEmailAddress()));
 	}
 
@@ -382,11 +383,13 @@ public abstract class BaseUserAccountResourceTestCase {
 			testDeleteAccountUserAccountByExternalReferenceCodeByEmailAddress_addUserAccount()
 		throws Exception {
 
-		return testPostAccountUserAccount_addUserAccount(randomUserAccount());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	protected String
-			testDeleteAccountUserAccountByExternalReferenceCodeByEmailAddress_getExternalReferenceCode()
+			testDeleteAccountUserAccountByExternalReferenceCodeByEmailAddress_getExternalReferenceCode(
+				UserAccount userAccount)
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -403,7 +406,8 @@ public abstract class BaseUserAccountResourceTestCase {
 			204,
 			userAccountResource.
 				deleteAccountUserAccountsByEmailAddressHttpResponse(
-					testDeleteAccountUserAccountsByEmailAddress_getAccountId()));
+					testDeleteAccountUserAccountsByEmailAddress_getAccountId(),
+					null));
 	}
 
 	protected UserAccount
@@ -432,18 +436,22 @@ public abstract class BaseUserAccountResourceTestCase {
 			204,
 			userAccountResource.
 				deleteAccountUserAccountsByExternalReferenceCodeByEmailAddressHttpResponse(
-					testDeleteAccountUserAccountsByExternalReferenceCodeByEmailAddress_getExternalReferenceCode()));
+					testDeleteAccountUserAccountsByExternalReferenceCodeByEmailAddress_getExternalReferenceCode(
+						userAccount),
+					null));
 	}
 
 	protected UserAccount
 			testDeleteAccountUserAccountsByExternalReferenceCodeByEmailAddress_addUserAccount()
 		throws Exception {
 
-		return testPostAccountUserAccount_addUserAccount(randomUserAccount());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	protected String
-			testDeleteAccountUserAccountsByExternalReferenceCodeByEmailAddress_getExternalReferenceCode()
+			testDeleteAccountUserAccountsByExternalReferenceCodeByEmailAddress_getExternalReferenceCode(
+				UserAccount userAccount)
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -471,7 +479,8 @@ public abstract class BaseUserAccountResourceTestCase {
 	protected UserAccount testDeleteUserAccount_addUserAccount()
 		throws Exception {
 
-		return testPostAccountUserAccount_addUserAccount(randomUserAccount());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -653,7 +662,8 @@ public abstract class BaseUserAccountResourceTestCase {
 			testDeleteUserAccountByExternalReferenceCode_addUserAccount()
 		throws Exception {
 
-		return testPostAccountUserAccount_addUserAccount(randomUserAccount());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -677,7 +687,8 @@ public abstract class BaseUserAccountResourceTestCase {
 			testGetAccountByExternalReferenceCodeUserAccountByExternalReferenceCode_addUserAccount()
 		throws Exception {
 
-		return testPostAccountUserAccount_addUserAccount(randomUserAccount());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	protected String
@@ -1874,6 +1885,9 @@ public abstract class BaseUserAccountResourceTestCase {
 
 	protected UserAccount testGetMyUserAccount_addUserAccount()
 		throws Exception {
+
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -3444,7 +3458,8 @@ public abstract class BaseUserAccountResourceTestCase {
 	}
 
 	protected UserAccount testGetUserAccount_addUserAccount() throws Exception {
-		return testPostAccountUserAccount_addUserAccount(randomUserAccount());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -3560,7 +3575,8 @@ public abstract class BaseUserAccountResourceTestCase {
 	protected UserAccount testGetUserAccountByEmailAddress_addUserAccount()
 		throws Exception {
 
-		return testPostAccountUserAccount_addUserAccount(randomUserAccount());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -3686,7 +3702,8 @@ public abstract class BaseUserAccountResourceTestCase {
 			testGetUserAccountByExternalReferenceCode_addUserAccount()
 		throws Exception {
 
-		return testPostAccountUserAccount_addUserAccount(randomUserAccount());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -5530,7 +5547,8 @@ public abstract class BaseUserAccountResourceTestCase {
 			testPatchSiteAccountUserAccountSelected_addUserAccount()
 		throws Exception {
 
-		return testPostAccountUserAccount_addUserAccount(randomUserAccount());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -5578,7 +5596,8 @@ public abstract class BaseUserAccountResourceTestCase {
 			testPatchSiteByFriendlyUrlPathAccountByExternalReferenceCodeAccountExternalReferenceCodeUserAccountByExternalReferenceCodeUserAccountExternalReferenceCodeSelected_addUserAccount()
 		throws Exception {
 
-		return testPostAccountUserAccount_addUserAccount(randomUserAccount());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -5606,7 +5625,8 @@ public abstract class BaseUserAccountResourceTestCase {
 	protected UserAccount testPatchUserAccount_addUserAccount()
 		throws Exception {
 
-		return testPostAccountUserAccount_addUserAccount(randomUserAccount());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -5639,7 +5659,8 @@ public abstract class BaseUserAccountResourceTestCase {
 			testPatchUserAccountByExternalReferenceCode_addUserAccount()
 		throws Exception {
 
-		return testPostAccountUserAccount_addUserAccount(randomUserAccount());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -5677,7 +5698,8 @@ public abstract class BaseUserAccountResourceTestCase {
 			testPostAccountByExternalReferenceCodeUserAccountByExternalReferenceCode_addUserAccount()
 		throws Exception {
 
-		return testPostAccountUserAccount_addUserAccount(randomUserAccount());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -5822,7 +5844,8 @@ public abstract class BaseUserAccountResourceTestCase {
 	}
 
 	protected UserAccount testPutUserAccount_addUserAccount() throws Exception {
-		return testPostAccountUserAccount_addUserAccount(randomUserAccount());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -5871,7 +5894,8 @@ public abstract class BaseUserAccountResourceTestCase {
 			testPutUserAccountByExternalReferenceCode_addUserAccount()
 		throws Exception {
 
-		return testPostAccountUserAccount_addUserAccount(randomUserAccount());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	protected UserAccount

@@ -428,7 +428,7 @@ public abstract class BaseUserGroupResourceTestCase {
 			204,
 			userGroupResource.
 				deleteUserGroupByExternalReferenceCodeUsersHttpResponse(
-					userGroup.getExternalReferenceCode()));
+					userGroup.getExternalReferenceCode(), null));
 	}
 
 	protected UserGroup
@@ -447,7 +447,7 @@ public abstract class BaseUserGroupResourceTestCase {
 		assertHttpResponseStatusCode(
 			204,
 			userGroupResource.deleteUserGroupUsersHttpResponse(
-				userGroup.getId()));
+				userGroup.getId(), null));
 	}
 
 	protected UserGroup testDeleteUserGroupUsers_addUserGroup()
