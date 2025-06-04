@@ -232,20 +232,20 @@ public abstract class BaseSiteTestEntityResourceTestCase {
 			204,
 			siteTestEntityResource.
 				deleteSiteSiteTestEntityByExternalReferenceCodeHttpResponse(
-					siteTestEntity.getExternalReferenceCode(),
-					siteTestEntity.getSiteId()));
+					siteTestEntity.getSiteId(),
+					siteTestEntity.getExternalReferenceCode()));
 
 		assertHttpResponseStatusCode(
 			404,
 			siteTestEntityResource.
 				getSiteSiteTestEntityByExternalReferenceCodeHttpResponse(
-					siteTestEntity.getExternalReferenceCode(),
-					siteTestEntity.getSiteId()));
+					siteTestEntity.getSiteId(),
+					siteTestEntity.getExternalReferenceCode()));
 		assertHttpResponseStatusCode(
 			404,
 			siteTestEntityResource.
 				getSiteSiteTestEntityByExternalReferenceCodeHttpResponse(
-					"-", siteTestEntity.getSiteId()));
+					siteTestEntity.getSiteId(), "-"));
 	}
 
 	protected SiteTestEntity
@@ -362,8 +362,8 @@ public abstract class BaseSiteTestEntityResourceTestCase {
 
 		SiteTestEntity getSiteTestEntity =
 			siteTestEntityResource.getSiteSiteTestEntityByExternalReferenceCode(
-				postSiteTestEntity.getExternalReferenceCode(),
-				postSiteTestEntity.getSiteId());
+				postSiteTestEntity.getSiteId(),
+				postSiteTestEntity.getExternalReferenceCode());
 
 		assertEquals(postSiteTestEntity, getSiteTestEntity);
 		assertValid(getSiteTestEntity);
@@ -373,8 +373,8 @@ public abstract class BaseSiteTestEntityResourceTestCase {
 		getSiteTestEntity =
 			permissionsSiteTestEntityResource.
 				getSiteSiteTestEntityByExternalReferenceCode(
-					postSiteTestEntity.getExternalReferenceCode(),
-					postSiteTestEntity.getSiteId());
+					postSiteTestEntity.getSiteId(),
+					postSiteTestEntity.getExternalReferenceCode());
 
 		Assert.assertNotNull(getSiteTestEntity.getPermissions());
 	}
@@ -716,8 +716,9 @@ public abstract class BaseSiteTestEntityResourceTestCase {
 
 		SiteTestEntity putSiteTestEntity =
 			siteTestEntityResource.putSiteSiteTestEntityByExternalReferenceCode(
+				postSiteTestEntity.getSiteId(),
 				postSiteTestEntity.getExternalReferenceCode(),
-				postSiteTestEntity.getSiteId(), randomSiteTestEntity);
+				randomSiteTestEntity);
 
 		assertEquals(randomSiteTestEntity, putSiteTestEntity);
 		assertValid(putSiteTestEntity);
@@ -726,8 +727,8 @@ public abstract class BaseSiteTestEntityResourceTestCase {
 
 		SiteTestEntity getSiteTestEntity =
 			siteTestEntityResource.getSiteSiteTestEntityByExternalReferenceCode(
-				putSiteTestEntity.getExternalReferenceCode(),
-				putSiteTestEntity.getSiteId());
+				putSiteTestEntity.getSiteId(),
+				putSiteTestEntity.getExternalReferenceCode());
 
 		assertEquals(randomSiteTestEntity, getSiteTestEntity);
 		assertValid(getSiteTestEntity);
@@ -737,8 +738,8 @@ public abstract class BaseSiteTestEntityResourceTestCase {
 
 		putSiteTestEntity =
 			siteTestEntityResource.putSiteSiteTestEntityByExternalReferenceCode(
-				postSiteTestEntity.getExternalReferenceCode(),
 				postSiteTestEntity.getSiteId(),
+				postSiteTestEntity.getExternalReferenceCode(),
 				randomPermissionsSiteTestEntity);
 
 		assertEquals(randomPermissionsSiteTestEntity, putSiteTestEntity);
@@ -749,8 +750,8 @@ public abstract class BaseSiteTestEntityResourceTestCase {
 		putSiteTestEntity =
 			permissionsSiteTestEntityResource.
 				putSiteSiteTestEntityByExternalReferenceCode(
-					postSiteTestEntity.getExternalReferenceCode(),
 					postSiteTestEntity.getSiteId(),
+					postSiteTestEntity.getExternalReferenceCode(),
 					randomPermissionsSiteTestEntity);
 
 		Assert.assertNotNull(putSiteTestEntity.getPermissions());
@@ -760,16 +761,17 @@ public abstract class BaseSiteTestEntityResourceTestCase {
 
 		putSiteTestEntity =
 			siteTestEntityResource.putSiteSiteTestEntityByExternalReferenceCode(
+				newSiteTestEntity.getSiteId(),
 				newSiteTestEntity.getExternalReferenceCode(),
-				newSiteTestEntity.getSiteId(), newSiteTestEntity);
+				newSiteTestEntity);
 
 		assertEquals(newSiteTestEntity, putSiteTestEntity);
 		assertValid(putSiteTestEntity);
 
 		getSiteTestEntity =
 			siteTestEntityResource.getSiteSiteTestEntityByExternalReferenceCode(
-				putSiteTestEntity.getExternalReferenceCode(),
-				putSiteTestEntity.getSiteId());
+				putSiteTestEntity.getSiteId(),
+				putSiteTestEntity.getExternalReferenceCode());
 
 		assertEquals(newSiteTestEntity, getSiteTestEntity);
 

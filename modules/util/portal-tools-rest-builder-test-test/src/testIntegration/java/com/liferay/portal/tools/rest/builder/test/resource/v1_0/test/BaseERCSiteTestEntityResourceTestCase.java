@@ -207,18 +207,18 @@ public abstract class BaseERCSiteTestEntityResourceTestCase {
 		assertHttpResponseStatusCode(
 			204,
 			ercSiteTestEntityResource.deleteSiteERCSiteTestEntityHttpResponse(
-				ercSiteTestEntity.getExternalReferenceCode(),
-				ercSiteTestEntity.getSiteExternalReferenceCode()));
+				ercSiteTestEntity.getSiteExternalReferenceCode(),
+				ercSiteTestEntity.getExternalReferenceCode()));
 
 		assertHttpResponseStatusCode(
 			404,
 			ercSiteTestEntityResource.getSiteERCSiteTestEntityHttpResponse(
-				ercSiteTestEntity.getExternalReferenceCode(),
-				ercSiteTestEntity.getSiteExternalReferenceCode()));
+				ercSiteTestEntity.getSiteExternalReferenceCode(),
+				ercSiteTestEntity.getExternalReferenceCode()));
 		assertHttpResponseStatusCode(
 			404,
 			ercSiteTestEntityResource.getSiteERCSiteTestEntityHttpResponse(
-				"-", ercSiteTestEntity.getSiteExternalReferenceCode()));
+				ercSiteTestEntity.getSiteExternalReferenceCode(), "-"));
 	}
 
 	protected ERCSiteTestEntity
@@ -337,8 +337,8 @@ public abstract class BaseERCSiteTestEntityResourceTestCase {
 
 		ERCSiteTestEntity getERCSiteTestEntity =
 			ercSiteTestEntityResource.getSiteERCSiteTestEntity(
-				postERCSiteTestEntity.getExternalReferenceCode(),
-				postERCSiteTestEntity.getSiteExternalReferenceCode());
+				postERCSiteTestEntity.getSiteExternalReferenceCode(),
+				postERCSiteTestEntity.getExternalReferenceCode());
 
 		assertEquals(postERCSiteTestEntity, getERCSiteTestEntity);
 		assertValid(getERCSiteTestEntity);
@@ -382,8 +382,8 @@ public abstract class BaseERCSiteTestEntityResourceTestCase {
 
 		ERCSiteTestEntity putERCSiteTestEntity =
 			ercSiteTestEntityResource.putSiteERCSiteTestEntity(
-				postERCSiteTestEntity.getExternalReferenceCode(),
 				postERCSiteTestEntity.getSiteExternalReferenceCode(),
+				postERCSiteTestEntity.getExternalReferenceCode(),
 				randomERCSiteTestEntity);
 
 		assertEquals(randomERCSiteTestEntity, putERCSiteTestEntity);
@@ -391,8 +391,8 @@ public abstract class BaseERCSiteTestEntityResourceTestCase {
 
 		ERCSiteTestEntity getERCSiteTestEntity =
 			ercSiteTestEntityResource.getSiteERCSiteTestEntity(
-				putERCSiteTestEntity.getExternalReferenceCode(),
-				putERCSiteTestEntity.getSiteExternalReferenceCode());
+				putERCSiteTestEntity.getSiteExternalReferenceCode(),
+				putERCSiteTestEntity.getExternalReferenceCode());
 
 		assertEquals(randomERCSiteTestEntity, getERCSiteTestEntity);
 		assertValid(getERCSiteTestEntity);
@@ -418,8 +418,8 @@ public abstract class BaseERCSiteTestEntityResourceTestCase {
 		assertHttpResponseStatusCode(
 			404,
 			ercSiteTestEntityResource.getSiteERCSiteTestEntityHttpResponse(
-				ercSiteTestEntity1.getExternalReferenceCode(),
-				ercSiteTestEntity1.getSiteExternalReferenceCode()));
+				ercSiteTestEntity1.getSiteExternalReferenceCode(),
+				ercSiteTestEntity1.getExternalReferenceCode()));
 	}
 
 	protected ERCSiteTestEntity
