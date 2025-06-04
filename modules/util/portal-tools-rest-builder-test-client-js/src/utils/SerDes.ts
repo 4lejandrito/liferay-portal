@@ -19,6 +19,7 @@
 	import {Filter} from '../models/Filter';
 	import {JSONMapAttributeTestEntity} from '../models/JSONMapAttributeTestEntity';
 	import {MultipartTestEntity} from '../models/MultipartTestEntity';
+	import {MultipleScopedTestEntity} from '../models/MultipleScopedTestEntity';
 	import {NestedArrayItemsTestEntity} from '../models/NestedArrayItemsTestEntity';
 	import {NestedTestEntity} from '../models/NestedTestEntity';
 	import {PageAssetLibraryTestEntity} from '../models/PageAssetLibraryTestEntity';
@@ -28,6 +29,7 @@
 	import {PageERCScopedTestEntity} from '../models/PageERCScopedTestEntity';
 	import {PageERCSiteTestEntity} from '../models/PageERCSiteTestEntity';
 	import {PageFilter} from '../models/PageFilter';
+	import {PageMultipleScopedTestEntity} from '../models/PageMultipleScopedTestEntity';
 	import {PagePermission} from '../models/PagePermission';
 	import {PageSchema} from '../models/PageSchema';
 	import {PageSiteTestEntity} from '../models/PageSiteTestEntity';
@@ -91,6 +93,7 @@ const typeMap: {[index: string]: any} = {
 	Filter,
 	JSONMapAttributeTestEntity,
 	MultipartTestEntity,
+	MultipleScopedTestEntity,
 	NestedArrayItemsTestEntity,
 	NestedTestEntity,
 	PageAssetLibraryTestEntity,
@@ -100,6 +103,7 @@ const typeMap: {[index: string]: any} = {
 	PageERCScopedTestEntity,
 	PageERCSiteTestEntity,
 	PageFilter,
+	PageMultipleScopedTestEntity,
 	PagePermission,
 	PageSchema,
 	PageSiteTestEntity,

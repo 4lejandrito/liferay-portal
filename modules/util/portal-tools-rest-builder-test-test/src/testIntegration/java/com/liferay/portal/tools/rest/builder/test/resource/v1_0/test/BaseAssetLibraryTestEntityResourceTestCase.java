@@ -201,6 +201,7 @@ public abstract class BaseAssetLibraryTestEntityResourceTestCase {
 		AssetLibraryTestEntity assetLibraryTestEntity =
 			randomAssetLibraryTestEntity();
 
+		assetLibraryTestEntity.setAssetLibraryKey(regex);
 		assetLibraryTestEntity.setDescription(regex);
 		assetLibraryTestEntity.setExternalReferenceCode(regex);
 
@@ -211,6 +212,7 @@ public abstract class BaseAssetLibraryTestEntityResourceTestCase {
 
 		assetLibraryTestEntity = AssetLibraryTestEntitySerDes.toDTO(json);
 
+		Assert.assertEquals(regex, assetLibraryTestEntity.getAssetLibraryKey());
 		Assert.assertEquals(regex, assetLibraryTestEntity.getDescription());
 		Assert.assertEquals(
 			regex, assetLibraryTestEntity.getExternalReferenceCode());
@@ -228,12 +230,20 @@ public abstract class BaseAssetLibraryTestEntityResourceTestCase {
 			204,
 			assetLibraryTestEntityResource.
 				deleteAssetLibraryAssetLibraryTestEntityByExternalReferenceCodeHttpResponse(
-					assetLibraryTestEntity.getAssetLibraryId(),
+					testDeleteAssetLibraryAssetLibraryTestEntityByExternalReferenceCode_getAssetLibraryId(),
 					assetLibraryTestEntity.getExternalReferenceCode()));
 	}
 
 	protected AssetLibraryTestEntity
 			testDeleteAssetLibraryAssetLibraryTestEntityByExternalReferenceCode_addAssetLibraryTestEntity()
+		throws Exception {
+
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
+	}
+
+	protected Long
+			testDeleteAssetLibraryAssetLibraryTestEntityByExternalReferenceCode_getAssetLibraryId()
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -442,8 +452,8 @@ public abstract class BaseAssetLibraryTestEntityResourceTestCase {
 		for (String additionalAssertFieldName :
 				getAdditionalAssertFieldNames()) {
 
-			if (Objects.equals("assetLibraryId", additionalAssertFieldName)) {
-				if (assetLibraryTestEntity.getAssetLibraryId() == null) {
+			if (Objects.equals("assetLibraryKey", additionalAssertFieldName)) {
+				if (assetLibraryTestEntity.getAssetLibraryKey() == null) {
 					valid = false;
 				}
 
@@ -596,17 +606,6 @@ public abstract class BaseAssetLibraryTestEntityResourceTestCase {
 
 		for (String additionalAssertFieldName :
 				getAdditionalAssertFieldNames()) {
-
-			if (Objects.equals("assetLibraryId", additionalAssertFieldName)) {
-				if (!Objects.deepEquals(
-						assetLibraryTestEntity1.getAssetLibraryId(),
-						assetLibraryTestEntity2.getAssetLibraryId())) {
-
-					return false;
-				}
-
-				continue;
-			}
 
 			if (Objects.equals("dateCreated", additionalAssertFieldName)) {
 				if (!Objects.deepEquals(
@@ -773,9 +772,50 @@ public abstract class BaseAssetLibraryTestEntityResourceTestCase {
 		sb.append(operator);
 		sb.append(" ");
 
-		if (entityFieldName.equals("assetLibraryId")) {
-			throw new IllegalArgumentException(
-				"Invalid entity field " + entityFieldName);
+		if (entityFieldName.equals("assetLibraryKey")) {
+			Object object = assetLibraryTestEntity.getAssetLibraryKey();
+
+			String value = String.valueOf(object);
+
+			if (operator.equals("contains")) {
+				sb = new StringBundler();
+
+				sb.append("contains(");
+				sb.append(entityFieldName);
+				sb.append(",'");
+
+				if ((object != null) && (value.length() > 2)) {
+					sb.append(value.substring(1, value.length() - 1));
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append("')");
+			}
+			else if (operator.equals("startswith")) {
+				sb = new StringBundler();
+
+				sb.append("startswith(");
+				sb.append(entityFieldName);
+				sb.append(",'");
+
+				if ((object != null) && (value.length() > 1)) {
+					sb.append(value.substring(0, value.length() - 1));
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append("')");
+			}
+			else {
+				sb.append("'");
+				sb.append(value);
+				sb.append("'");
+			}
+
+			return sb.toString();
 		}
 
 		if (entityFieldName.equals("dateCreated")) {
@@ -982,7 +1022,8 @@ public abstract class BaseAssetLibraryTestEntityResourceTestCase {
 
 		return new AssetLibraryTestEntity() {
 			{
-				assetLibraryId = testDepotEntry.getDepotEntryId();
+				assetLibraryKey = String.valueOf(
+					testDepotEntry.getDepotEntryId());
 				dateCreated = RandomTestUtil.nextDate();
 				dateModified = RandomTestUtil.nextDate();
 				description = StringUtil.toLowerCase(
@@ -998,9 +1039,6 @@ public abstract class BaseAssetLibraryTestEntityResourceTestCase {
 
 		AssetLibraryTestEntity randomIrrelevantAssetLibraryTestEntity =
 			randomAssetLibraryTestEntity();
-
-		randomIrrelevantAssetLibraryTestEntity.setAssetLibraryId(
-			irrelevantDepotEntry.getGroupId());
 
 		return randomIrrelevantAssetLibraryTestEntity;
 	}
