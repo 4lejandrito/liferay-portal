@@ -123,8 +123,9 @@ import org.osgi.service.component.annotations.ServiceScope;
 	property = "nested.field.support=true", scope = ServiceScope.PROTOTYPE,
 	service = AccountResource.class
 )
-public class AccountResourceImpl extends BaseAccountResourceImpl implements
-	ExportImportVulcanBatchEngineTaskItemDelegate<Account> {
+public class AccountResourceImpl
+	extends BaseAccountResourceImpl
+	implements ExportImportVulcanBatchEngineTaskItemDelegate<Account> {
 
 	@Override
 	public void deleteAccount(Long accountId) throws Exception {
@@ -370,6 +371,16 @@ public class AccountResourceImpl extends BaseAccountResourceImpl implements
 		return getOrganizationAccountsPage(
 			String.valueOf(organization.getOrganizationId()), search, filter,
 			pagination, sorts);
+	}
+
+	@Override
+	public String getPortletId() {
+		return AccountPortletKeys.ACCOUNT_ENTRIES_ADMIN;
+	}
+
+	@Override
+	public Scope getScope() {
+		return Scope.COMPANY;
 	}
 
 	@Override
@@ -1433,15 +1444,5 @@ public class AccountResourceImpl extends BaseAccountResourceImpl implements
 
 	@Reference
 	private RoleTypeContributorProvider _roleTypeContributorProvider;
-
-	@Override
-	public String getPortletId() {
-		return AccountPortletKeys.ACCOUNT_ENTRIES_ADMIN;
-	}
-
-	@Override
-	public Scope getScope() {
-		return Scope.COMPANY;
-	}
 
 }
