@@ -60,6 +60,20 @@ public class BatchEnginePortletDataHandlerRegistry {
 		_serviceTracker.close();
 	}
 
+	private String _getClassName(
+		ServiceReference<VulcanBatchEngineTaskItemDelegate> serviceReference) {
+
+		String className = (String)serviceReference.getProperty(
+			"batch.engine.task.item.delegate.class.name");
+
+		if (Validator.isNull(className)) {
+			className = (String)serviceReference.getProperty(
+				"batch.engine.entity.class.name");
+		}
+
+		return className;
+	}
+
 	@Reference
 	private BatchEngineExportTaskExecutor _batchEngineExportTaskExecutor;
 
@@ -117,8 +131,7 @@ public class BatchEnginePortletDataHandlerRegistry {
 					_batchEngineExportTaskService,
 					_batchEngineImportTaskExecutor,
 					_batchEngineImportTaskService,
-					(String)serviceReference.getProperty(
-						"batch.engine.task.item.delegate.class.name"),
+					_getClassName(serviceReference),
 					(String)serviceReference.getProperty(
 						"batch.engine.task.item.delegate.item.class.name"),
 					exportImportVulcanBatchEngineTaskItemDelegate.getScope(),
