@@ -1439,5 +1439,9 @@ public class AccountResourceImpl extends BaseAccountResourceImpl implements
 		return AccountPortletKeys.ACCOUNT_ENTRIES_ADMIN;
 	}
 
+	@Override
+	public Scope getScope() {
+		return Scope.COMPANY;
+	}
 
 }
