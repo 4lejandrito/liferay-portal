@@ -10,6 +10,7 @@ dependencies {
 	compileOnly group: "org.osgi", name: "org.osgi.service.component", version: "1.4.0"
 	compileOnly group: "org.osgi", name: "org.osgi.service.component.annotations", version: "1.4.0"
 	compileOnly group: "org.osgi", name: "osgi.core", version: "6.0.0"
+	compileOnly project(":apps:asset:asset-categories-admin-web-api")
 	compileOnly project(":apps:asset:asset-category-property-api")
 	compileOnly project(":apps:asset:asset-tags-api")
 	compileOnly project(":apps:batch-engine:batch-engine-api")

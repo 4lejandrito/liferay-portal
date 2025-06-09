@@ -5,7 +5,6 @@
 
 package com.liferay.asset.categories.admin.web.internal.exportimport.data.handler;
 
-import com.liferay.asset.categories.admin.web.constants.AssetCategoriesAdminPortletKeys;
 import com.liferay.asset.kernel.model.AssetCategory;
 import com.liferay.asset.kernel.model.AssetVocabulary;
 import com.liferay.asset.kernel.service.AssetCategoryLocalService;
@@ -33,10 +32,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Máté Thurzó
  */
-@Component(
-	property = "jakarta.portlet.name=" + AssetCategoriesAdminPortletKeys.ASSET_CATEGORIES_ADMIN,
-	service = PortletDataHandler.class
-)
+@Component(service = PortletDataHandler.class)
 public class AssetCategoryPortletDataHandler extends BasePortletDataHandler {
 
 	public static final String NAMESPACE = "asset_category";

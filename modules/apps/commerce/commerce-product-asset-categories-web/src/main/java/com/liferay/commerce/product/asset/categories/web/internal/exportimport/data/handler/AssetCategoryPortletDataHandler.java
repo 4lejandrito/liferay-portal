@@ -7,7 +7,6 @@ package com.liferay.commerce.product.asset.categories.web.internal.exportimport.
 
 import com.liferay.asset.kernel.model.AssetCategory;
 import com.liferay.asset.kernel.service.AssetCategoryLocalService;
-import com.liferay.commerce.product.asset.categories.web.internal.constants.CommerceProductAssetCategoriesPortletKeys;
 import com.liferay.commerce.product.constants.CPAttachmentFileEntryConstants;
 import com.liferay.commerce.product.model.CPAttachmentFileEntry;
 import com.liferay.commerce.product.service.CPAttachmentFileEntryLocalService;
@@ -39,11 +38,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Danny Situ
  */
 @Component(
-	property = {
-		"jakarta.portlet.name=" + CommerceProductAssetCategoriesPortletKeys.ASSET_CATEGORIES_ADMIN,
-		"service.ranking:Integer=100"
-	},
-	service = PortletDataHandler.class
+	property = "service.ranking:Integer=100", service = PortletDataHandler.class
 )
 public class AssetCategoryPortletDataHandler extends BasePortletDataHandler {
 
