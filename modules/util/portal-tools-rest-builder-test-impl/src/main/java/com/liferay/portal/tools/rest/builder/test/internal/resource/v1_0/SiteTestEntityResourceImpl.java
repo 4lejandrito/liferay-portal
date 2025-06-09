@@ -63,7 +63,7 @@ public class SiteTestEntityResourceImpl extends BaseSiteTestEntityResourceImpl {
 
 	@Override
 	public SiteTestEntity doGetSiteSiteTestEntityByExternalReferenceCode(
-			String externalReferenceCode, Long siteId)
+			Long siteId, String externalReferenceCode)
 		throws Exception {
 
 		SiteTestEntity siteTestEntity =
@@ -113,7 +113,7 @@ public class SiteTestEntityResourceImpl extends BaseSiteTestEntityResourceImpl {
 
 	@Override
 	public SiteTestEntity doPutSiteSiteTestEntityByExternalReferenceCode(
-			String externalReferenceCode, Long siteId,
+			Long siteId, String externalReferenceCode,
 			SiteTestEntity siteTestEntity)
 		throws Exception {
 
