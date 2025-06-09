@@ -7,7 +7,6 @@ package com.liferay.asset.tags.internal.exportimport.data.handler;
 
 import com.liferay.asset.kernel.model.AssetTag;
 import com.liferay.asset.kernel.service.AssetTagLocalService;
-import com.liferay.asset.tags.constants.AssetTagsAdminPortletKeys;
 import com.liferay.asset.tags.internal.configuration.AssetTagsServiceConfigurationValues;
 import com.liferay.exportimport.kernel.lar.BasePortletDataHandler;
 import com.liferay.exportimport.kernel.lar.ExportImportDateUtil;
@@ -32,10 +31,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Daniel Kocsis
  */
-@Component(
-	property = "jakarta.portlet.name=" + AssetTagsAdminPortletKeys.ASSET_TAGS_ADMIN,
-	service = PortletDataHandler.class
-)
+@Component(service = PortletDataHandler.class)
 public class AssetTagsPortletDataHandler extends BasePortletDataHandler {
 
 	public static final String NAMESPACE = "asset_tag";
