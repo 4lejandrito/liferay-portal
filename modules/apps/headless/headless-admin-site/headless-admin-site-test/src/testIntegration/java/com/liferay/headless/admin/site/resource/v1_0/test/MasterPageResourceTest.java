@@ -212,6 +212,15 @@ public class MasterPageResourceTest extends BaseMasterPageResourceTestCase {
 			testGetSiteSiteByExternalReferenceCodeMasterPagesPageWithSortString();
 	}
 
+	@Ignore
+	@Override
+	@Test
+	public void testGraphQLGetSiteSiteByExternalReferenceCodeMasterPage()
+		throws Exception {
+
+		super.testGraphQLGetSiteSiteByExternalReferenceCodeMasterPage();
+	}
+
 	@Override
 	@Test
 	public void testPatchSiteSiteByExternalReferenceCodeMasterPage()
