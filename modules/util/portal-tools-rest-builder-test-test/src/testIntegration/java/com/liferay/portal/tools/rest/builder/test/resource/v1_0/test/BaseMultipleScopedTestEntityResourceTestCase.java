@@ -684,7 +684,8 @@ public abstract class BaseMultipleScopedTestEntityResourceTestCase {
 		MultipleScopedTestEntity patchMultipleScopedTestEntity =
 			multipleScopedTestEntityResource.
 				patchAssetLibraryMultipleScopedTestEntityByExternalReferenceCode(
-					null,
+					Long.valueOf(
+						postMultipleScopedTestEntity.getAssetLibraryKey()),
 					postMultipleScopedTestEntity.getExternalReferenceCode(),
 					randomPatchMultipleScopedTestEntity);
 
@@ -698,7 +699,8 @@ public abstract class BaseMultipleScopedTestEntityResourceTestCase {
 		MultipleScopedTestEntity getMultipleScopedTestEntity =
 			multipleScopedTestEntityResource.
 				getAssetLibraryMultipleScopedTestEntityByExternalReferenceCode(
-					null,
+					Long.valueOf(
+						patchMultipleScopedTestEntity.getAssetLibraryKey()),
 					patchMultipleScopedTestEntity.getExternalReferenceCode());
 
 		assertEquals(
