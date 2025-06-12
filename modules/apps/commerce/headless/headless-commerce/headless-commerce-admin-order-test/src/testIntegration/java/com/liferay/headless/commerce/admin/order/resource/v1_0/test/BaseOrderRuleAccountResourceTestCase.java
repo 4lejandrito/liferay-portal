@@ -30,6 +30,7 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
@@ -1032,19 +1033,18 @@ public abstract class BaseOrderRuleAccountResourceTestCase {
 			String... parameters)
 		throws Exception {
 
-		ImportTaskResource scopedImportTaskResource =
-			ImportTaskResource.builder(
-			).authentication(
-				_testCompanyAdminUser.getEmailAddress(),
-				PropsValues.DEFAULT_ADMIN_PASSWORD
-			).endpoint(
-				testCompany.getVirtualHostname(), 8080, "http"
-			).parameters(
-				parameters
-			).build();
+		ImportTaskResource importTaskResource = ImportTaskResource.builder(
+		).authentication(
+			_testCompanyAdminUser.getEmailAddress(),
+			PropsValues.DEFAULT_ADMIN_PASSWORD
+		).endpoint(
+			testCompany.getVirtualHostname(), 8080, "http"
+		).parameters(
+			parameters
+		).build();
 
 		HttpResponse httpResponse =
-			scopedImportTaskResource.deleteImportTaskHttpResponse(
+			importTaskResource.deleteImportTaskHttpResponse(
 				"com.liferay.headless.commerce.admin.order.dto.v1_0.OrderRuleAccount",
 				null, null, null, null,
 				JSONUtil.putAll(
@@ -1754,9 +1754,9 @@ public abstract class BaseOrderRuleAccountResourceTestCase {
 
 	protected OrderRuleAccountResource orderRuleAccountResource;
 	protected ImportTaskResource importTaskResource;
-	protected com.liferay.portal.kernel.model.Group irrelevantGroup;
+	protected Group irrelevantGroup;
 	protected com.liferay.portal.kernel.model.Company testCompany;
-	protected com.liferay.portal.kernel.model.Group testGroup;
+	protected Group testGroup;
 
 	protected static class BeanTestUtil {
 

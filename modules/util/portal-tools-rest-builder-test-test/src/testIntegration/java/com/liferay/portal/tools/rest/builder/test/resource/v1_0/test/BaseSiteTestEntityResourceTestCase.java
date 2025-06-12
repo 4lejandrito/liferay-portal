@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.RoleConstants;
 import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.kernel.service.GroupLocalService;
@@ -1566,10 +1567,10 @@ public abstract class BaseSiteTestEntityResourceTestCase {
 	}
 
 	protected SiteTestEntityResource siteTestEntityResource;
-	protected com.liferay.portal.kernel.model.Group irrelevantGroup;
+	protected Group irrelevantGroup;
 	protected SiteTestEntityResource permissionsSiteTestEntityResource;
 	protected com.liferay.portal.kernel.model.Company testCompany;
-	protected com.liferay.portal.kernel.model.Group testGroup;
+	protected Group testGroup;
 
 	protected static class BeanTestUtil {
 

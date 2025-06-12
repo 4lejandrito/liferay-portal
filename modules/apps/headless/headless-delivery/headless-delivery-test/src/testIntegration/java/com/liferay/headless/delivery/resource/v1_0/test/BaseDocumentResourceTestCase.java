@@ -38,6 +38,7 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.RoleConstants;
 import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.kernel.service.GroupLocalService;
@@ -139,26 +140,29 @@ public abstract class BaseDocumentResourceTestCase {
 		testCompany = CompanyLocalServiceUtil.getCompany(
 			testGroup.getCompanyId());
 
-		irrelevantTestDepotEntry = DepotEntryLocalServiceUtil.addDepotEntry(
+		irrelevantDepotEntry = DepotEntryLocalServiceUtil.addDepotEntry(
 			Collections.singletonMap(
 				LocaleUtil.getDefault(), RandomTestUtil.randomString()),
 			null,
 			new ServiceContext() {
 				{
-					setCompanyId(irrelevantGroup.getCompanyId());
+					setCompanyId(testCompany.getCompanyId());
 					setUserId(TestPropsValues.getUserId());
 				}
 			});
+		irrelevantDepotEntryGroup = irrelevantDepotEntry.getGroup();
+
 		testDepotEntry = DepotEntryLocalServiceUtil.addDepotEntry(
 			Collections.singletonMap(
 				LocaleUtil.getDefault(), RandomTestUtil.randomString()),
 			null,
 			new ServiceContext() {
 				{
-					setCompanyId(testGroup.getCompanyId());
+					setCompanyId(testCompany.getCompanyId());
 					setUserId(TestPropsValues.getUserId());
 				}
 			});
+		testDepotEntryGroup = testDepotEntry.getGroup();
 
 		_documentResource.setContextCompany(testCompany);
 
@@ -634,8 +638,8 @@ public abstract class BaseDocumentResourceTestCase {
 								put(
 									"assetLibraryId",
 									"\"" +
-										irrelevantTestDepotEntry.
-											getDepotEntryId() + "\"");
+										irrelevantDepotEntry.getDepotEntryId() +
+											"\"");
 								put(
 									"externalReferenceCode",
 									irrelevantExternalReferenceCode);
@@ -660,7 +664,7 @@ public abstract class BaseDocumentResourceTestCase {
 									put(
 										"assetLibraryId",
 										"\"" +
-											irrelevantTestDepotEntry.
+											irrelevantDepotEntry.
 												getDepotEntryId() + "\"");
 									put(
 										"externalReferenceCode",
@@ -1119,7 +1123,7 @@ public abstract class BaseDocumentResourceTestCase {
 			testGetAssetLibraryDocumentsPage_getIrrelevantAssetLibraryId()
 		throws Exception {
 
-		return irrelevantTestDepotEntry.getDepotEntryId();
+		return irrelevantDepotEntry.getDepotEntryId();
 	}
 
 	@Test
@@ -1295,7 +1299,7 @@ public abstract class BaseDocumentResourceTestCase {
 			testGetAssetLibraryDocumentsRatedByMePage_getIrrelevantAssetLibraryId()
 		throws Exception {
 
-		return irrelevantTestDepotEntry.getDepotEntryId();
+		return irrelevantDepotEntry.getDepotEntryId();
 	}
 
 	@Test
@@ -3247,19 +3251,18 @@ public abstract class BaseDocumentResourceTestCase {
 			String... parameters)
 		throws Exception {
 
-		ImportTaskResource scopedImportTaskResource =
-			ImportTaskResource.builder(
-			).authentication(
-				_testCompanyAdminUser.getEmailAddress(),
-				PropsValues.DEFAULT_ADMIN_PASSWORD
-			).endpoint(
-				testCompany.getVirtualHostname(), 8080, "http"
-			).parameters(
-				parameters
-			).build();
+		ImportTaskResource importTaskResource = ImportTaskResource.builder(
+		).authentication(
+			_testCompanyAdminUser.getEmailAddress(),
+			PropsValues.DEFAULT_ADMIN_PASSWORD
+		).endpoint(
+			testCompany.getVirtualHostname(), 8080, "http"
+		).parameters(
+			parameters
+		).build();
 
 		HttpResponse httpResponse =
-			scopedImportTaskResource.deleteImportTaskHttpResponse(
+			importTaskResource.deleteImportTaskHttpResponse(
 				"com.liferay.headless.delivery.dto.v1_0.Document", null, null,
 				null, null,
 				JSONUtil.putAll(
@@ -3514,10 +3517,9 @@ public abstract class BaseDocumentResourceTestCase {
 			valid = false;
 		}
 
-		com.liferay.portal.kernel.model.Group group = testDepotEntry.getGroup();
-
 		if (!Objects.equals(
-				document.getAssetLibraryKey(), group.getGroupKey()) &&
+				document.getAssetLibraryKey(),
+				testDepotEntryGroup.getGroupKey()) &&
 			!Objects.equals(document.getSiteId(), testGroup.getGroupId())) {
 
 			valid = false;
@@ -5326,11 +5328,13 @@ public abstract class BaseDocumentResourceTestCase {
 
 	protected DocumentResource documentResource;
 	protected ImportTaskResource importTaskResource;
-	protected com.liferay.portal.kernel.model.Group irrelevantGroup;
-	protected DepotEntry irrelevantTestDepotEntry;
+	protected Group irrelevantGroup;
 	protected com.liferay.portal.kernel.model.Company testCompany;
+	protected DepotEntry irrelevantDepotEntry;
+	protected Group irrelevantDepotEntryGroup;
 	protected DepotEntry testDepotEntry;
-	protected com.liferay.portal.kernel.model.Group testGroup;
+	protected Group testDepotEntryGroup;
+	protected Group testGroup;
 
 	protected static class BeanTestUtil {
 

@@ -28,6 +28,7 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
@@ -98,26 +99,29 @@ public abstract class BaseLanguageResourceTestCase {
 		testCompany = CompanyLocalServiceUtil.getCompany(
 			testGroup.getCompanyId());
 
-		irrelevantTestDepotEntry = DepotEntryLocalServiceUtil.addDepotEntry(
+		irrelevantDepotEntry = DepotEntryLocalServiceUtil.addDepotEntry(
 			Collections.singletonMap(
 				LocaleUtil.getDefault(), RandomTestUtil.randomString()),
 			null,
 			new ServiceContext() {
 				{
-					setCompanyId(irrelevantGroup.getCompanyId());
+					setCompanyId(testCompany.getCompanyId());
 					setUserId(TestPropsValues.getUserId());
 				}
 			});
+		irrelevantDepotEntryGroup = irrelevantDepotEntry.getGroup();
+
 		testDepotEntry = DepotEntryLocalServiceUtil.addDepotEntry(
 			Collections.singletonMap(
 				LocaleUtil.getDefault(), RandomTestUtil.randomString()),
 			null,
 			new ServiceContext() {
 				{
-					setCompanyId(testGroup.getCompanyId());
+					setCompanyId(testCompany.getCompanyId());
 					setUserId(TestPropsValues.getUserId());
 				}
 			});
+		testDepotEntryGroup = testDepotEntry.getGroup();
 
 		_languageResource.setContextCompany(testCompany);
 
@@ -281,7 +285,7 @@ public abstract class BaseLanguageResourceTestCase {
 			testGetAssetLibraryLanguagesPage_getIrrelevantAssetLibraryId()
 		throws Exception {
 
-		return irrelevantTestDepotEntry.getDepotEntryId();
+		return irrelevantDepotEntry.getDepotEntryId();
 	}
 
 	@Test
@@ -1042,11 +1046,13 @@ public abstract class BaseLanguageResourceTestCase {
 	}
 
 	protected LanguageResource languageResource;
-	protected com.liferay.portal.kernel.model.Group irrelevantGroup;
-	protected DepotEntry irrelevantTestDepotEntry;
+	protected Group irrelevantGroup;
 	protected com.liferay.portal.kernel.model.Company testCompany;
+	protected DepotEntry irrelevantDepotEntry;
+	protected Group irrelevantDepotEntryGroup;
 	protected DepotEntry testDepotEntry;
-	protected com.liferay.portal.kernel.model.Group testGroup;
+	protected Group testDepotEntryGroup;
+	protected Group testGroup;
 
 	protected static class BeanTestUtil {
 

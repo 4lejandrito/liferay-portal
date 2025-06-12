@@ -32,6 +32,7 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ResourceActionLocalService;
@@ -1452,19 +1453,18 @@ public abstract class BaseDataRecordResourceTestCase {
 			String... parameters)
 		throws Exception {
 
-		ImportTaskResource scopedImportTaskResource =
-			ImportTaskResource.builder(
-			).authentication(
-				_testCompanyAdminUser.getEmailAddress(),
-				PropsValues.DEFAULT_ADMIN_PASSWORD
-			).endpoint(
-				testCompany.getVirtualHostname(), 8080, "http"
-			).parameters(
-				parameters
-			).build();
+		ImportTaskResource importTaskResource = ImportTaskResource.builder(
+		).authentication(
+			_testCompanyAdminUser.getEmailAddress(),
+			PropsValues.DEFAULT_ADMIN_PASSWORD
+		).endpoint(
+			testCompany.getVirtualHostname(), 8080, "http"
+		).parameters(
+			parameters
+		).build();
 
 		HttpResponse httpResponse =
-			scopedImportTaskResource.deleteImportTaskHttpResponse(
+			importTaskResource.deleteImportTaskHttpResponse(
 				"com.liferay.data.engine.rest.dto.v2_0.DataRecord", null, null,
 				null, null,
 				JSONUtil.putAll(
@@ -1967,9 +1967,9 @@ public abstract class BaseDataRecordResourceTestCase {
 
 	protected DataRecordResource dataRecordResource;
 	protected ImportTaskResource importTaskResource;
-	protected com.liferay.portal.kernel.model.Group irrelevantGroup;
+	protected Group irrelevantGroup;
 	protected com.liferay.portal.kernel.model.Company testCompany;
-	protected com.liferay.portal.kernel.model.Group testGroup;
+	protected Group testGroup;
 
 	protected static class BeanTestUtil {
 
