@@ -15,6 +15,8 @@ import com.liferay.blogs.test.util.BlogsTestUtil;
 import com.liferay.data.engine.rest.dto.v2_0.DataDefinition;
 import com.liferay.data.engine.rest.resource.v2_0.DataDefinitionResource;
 import com.liferay.data.engine.rest.test.util.DataDefinitionTestUtil;
+import com.liferay.depot.model.DepotEntry;
+import com.liferay.depot.service.DepotEntryLocalServiceUtil;
 import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.model.DLFolder;
 import com.liferay.document.library.kernel.service.DLFileEntryLocalServiceUtil;
@@ -170,7 +172,7 @@ public class StructuredContentResourceTest
 			"CUSTOM_FIELDS");
 
 		_irrelevantDDMStructure = _addDDMStructure(
-			irrelevantGroup, "test-ddm-structure.json");
+			irrelevantTestDepotEntry.getGroup(), "test-ddm-structure.json");
 
 		_addDDMTemplate(_irrelevantDDMStructure);
 
@@ -844,8 +846,16 @@ public class StructuredContentResourceTest
 				Long assetLibraryId, StructuredContent structuredContent)
 		throws Exception {
 
+		DepotEntry depotEntry = DepotEntryLocalServiceUtil.getDepotEntry(
+			assetLibraryId);
+
+		List<DDMStructure> ddmStructures =
+			DDMStructureLocalServiceUtil.getStructures(depotEntry.getGroupId());
+
 		structuredContent.setContentStructureId(
-			_depotDDMStructure.getStructureId());
+			ddmStructures.get(
+				0
+			).getStructureId());
 
 		return structuredContentResource.postAssetLibraryStructuredContent(
 			assetLibraryId, structuredContent);
