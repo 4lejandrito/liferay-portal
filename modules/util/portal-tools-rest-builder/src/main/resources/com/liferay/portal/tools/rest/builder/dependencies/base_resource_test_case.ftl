@@ -81,6 +81,7 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.RoleConstants;
 import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.kernel.service.GroupLocalService;
@@ -3813,7 +3814,7 @@ public abstract class Base${schemaName}ResourceTestCase {
 		protected ImportTaskResource importTaskResource;
 	</#if>
 
-	protected com.liferay.portal.kernel.model.Group irrelevantGroup;
+	protected Group irrelevantGroup;
 
 	<#if (generatePermissionsJavaMethodSignatures?size > 0)>
 		protected ${schemaName}Resource permissions${schemaName}Resource;
@@ -3828,7 +3829,7 @@ public abstract class Base${schemaName}ResourceTestCase {
 		protected Group testDepotEntryGroup;
 	</#if>
 
-	protected com.liferay.portal.kernel.model.Group testGroup;
+	protected Group testGroup;
 
 	protected static class BeanTestUtil {
 
