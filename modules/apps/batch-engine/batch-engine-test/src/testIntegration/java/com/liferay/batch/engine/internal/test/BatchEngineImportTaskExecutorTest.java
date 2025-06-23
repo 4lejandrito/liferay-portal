@@ -8,47 +8,28 @@ package com.liferay.batch.engine.internal.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.batch.engine.BatchEngineImportTaskExecutor;
 import com.liferay.batch.engine.BatchEngineTaskExecuteStatus;
-import com.liferay.batch.engine.BatchEngineTaskItemDelegate;
 import com.liferay.batch.engine.BatchEngineTaskOperation;
 import com.liferay.batch.engine.constants.BatchEngineImportTaskConstants;
 import com.liferay.batch.engine.exception.BatchEngineImportTaskParametersException;
-import com.liferay.batch.engine.exception.handler.BatchEngineImportTaskExceptionHandler;
 import com.liferay.batch.engine.model.BatchEngineImportTask;
 import com.liferay.batch.engine.model.BatchEngineImportTaskError;
 import com.liferay.batch.engine.service.BatchEngineImportTaskErrorLocalService;
 import com.liferay.batch.engine.service.BatchEngineImportTaskLocalService;
 import com.liferay.blogs.model.BlogsEntry;
-import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
-import com.liferay.exportimport.report.constants.ExportImportReportEntryConstants;
-import com.liferay.exportimport.report.model.ExportImportReportEntry;
-import com.liferay.exportimport.report.service.ExportImportReportEntryLocalService;
-import com.liferay.headless.admin.user.client.dto.v1_0.Account;
-import com.liferay.headless.admin.user.client.http.HttpInvoker;
-import com.liferay.headless.admin.user.client.resource.v1_0.AccountResource;
-import com.liferay.object.model.ObjectDefinition;
-import com.liferay.object.service.ObjectDefinitionLocalService;
-import com.liferay.object.service.ObjectFieldLocalService;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
-import com.liferay.portal.kernel.json.JSONUtil;
-import com.liferay.portal.kernel.test.TestInfo;
 import com.liferay.portal.kernel.test.rule.DataGuard;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
-import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.HashMapBuilder;
-import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.test.log.LogCapture;
 import com.liferay.portal.test.log.LogEntry;
 import com.liferay.portal.test.log.LoggerTestUtil;
-import com.liferay.portal.test.rule.FeatureFlag;
 import com.liferay.portal.test.rule.Inject;
-import com.liferay.portal.util.PropsValues;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
@@ -76,14 +57,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceRegistration;
-
-import org.skyscreamer.jsonassert.JSONAssert;
-import org.skyscreamer.jsonassert.JSONCompareMode;
-
 /**
  * @author Ivica Cardic
  */
@@ -105,181 +78,6 @@ public class BatchEngineImportTaskExecutorTest
 		).put(
 			"siteId1", "siteId"
 		).build();
-	}
-
-	@FeatureFlag("LPD-47858")
-	@Test
-	@TestInfo("LPD-49899")
-	public void testCreateAccountGroupWithIncompleteAccountEntry()
-		throws Exception {
-
-		String accountEntryExternalReferenceCode =
-			RandomTestUtil.randomString();
-
-		long exportImportConfigurationId = RandomTestUtil.randomLong();
-
-		ExportImportThreadLocal.setExportImportConfigurationId(
-			exportImportConfigurationId);
-
-		ExportImportThreadLocal.setLayoutImportInProcess(true);
-
-		TestBatchEngineImportTaskExceptionHandler
-			testBatchEngineImportTaskExceptionHandler =
-				new TestBatchEngineImportTaskExceptionHandler();
-
-		try (AutoCloseable autoCloseable = _register(
-				testBatchEngineImportTaskExceptionHandler)) {
-
-			String json = JSONUtil.putAll(
-				JSONUtil.put(
-					"accountBriefs",
-					JSONFactoryUtil.createJSONArray(
-					).put(
-						JSONUtil.put(
-							"externalReferenceCode",
-							accountEntryExternalReferenceCode
-						).put(
-							"name", RandomTestUtil.randomString()
-						).put(
-							"type", Account.Type.BUSINESS.getValue()
-						)
-					)
-				).put(
-					"description", RandomTestUtil.randomString()
-				).put(
-					"externalReferenceCode", RandomTestUtil.randomString()
-				).put(
-					"name", RandomTestUtil.randomString()
-				)
-			).toString();
-
-			_batchEngineImportTask =
-				_batchEngineImportTaskLocalService.addBatchEngineImportTask(
-					null, TestPropsValues.getCompanyId(), user.getUserId(),
-					_BATCH_SIZE, null,
-					"com.liferay.headless.admin.user.dto.v1_0.AccountGroup",
-					_compressContent(
-						json.getBytes(StandardCharsets.UTF_8), "JSON"),
-					"JSON", BatchEngineTaskExecuteStatus.INITIAL.name(), null,
-					BatchEngineImportTaskConstants.
-						IMPORT_STRATEGY_ON_ERROR_CONTINUE,
-					BatchEngineTaskOperation.CREATE.name(),
-					HashMapBuilder.<String, Serializable>put(
-						"siteId", String.valueOf(TestPropsValues.getGroupId())
-					).build(),
-					null);
-
-			_batchEngineImportTaskExecutor.execute(_batchEngineImportTask);
-		}
-		finally {
-			ExportImportThreadLocal.setExportImportConfigurationId(0);
-			ExportImportThreadLocal.setLayoutImportInProcess(false);
-		}
-
-		List<ExportImportReportEntry> exportImportReportEntries =
-			_exportImportReportEntryLocalService.getExportImportReportEntries(
-				TestPropsValues.getCompanyId(), exportImportConfigurationId);
-
-		Assert.assertEquals(
-			exportImportReportEntries.toString(), 1,
-			exportImportReportEntries.size());
-
-		ExportImportReportEntry exportImportReportEntry =
-			exportImportReportEntries.get(0);
-
-		Assert.assertEquals(
-			accountEntryExternalReferenceCode,
-			exportImportReportEntry.getClassExternalReferenceCode());
-		Assert.assertEquals(
-			ExportImportReportEntryConstants.TYPE_INCOMPLETE,
-			exportImportReportEntry.getType());
-
-		Assert.assertNull(
-			testBatchEngineImportTaskExceptionHandler._batchEngineImportTask);
-
-		Assert.assertNull(testBatchEngineImportTaskExceptionHandler._exception);
-		Assert.assertNull(testBatchEngineImportTaskExceptionHandler._item);
-	}
-
-	@FeatureFlag("LPD-47858")
-	@Test
-	@TestInfo("LPD-49899")
-	public void testCreateAccountGroupWithInvalidJSON() throws Exception {
-		String externalReferenceCode = RandomTestUtil.randomString();
-
-		long exportImportConfigurationId = RandomTestUtil.randomLong();
-
-		ExportImportThreadLocal.setExportImportConfigurationId(
-			exportImportConfigurationId);
-
-		ExportImportThreadLocal.setLayoutImportInProcess(true);
-
-		TestBatchEngineImportTaskExceptionHandler
-			testBatchEngineImportTaskExceptionHandler =
-				new TestBatchEngineImportTaskExceptionHandler();
-
-		try (AutoCloseable autoCloseable = _register(
-				testBatchEngineImportTaskExceptionHandler);
-			LogCapture logCapture = LoggerTestUtil.configureLog4JLogger(
-				"com.liferay.batch.engine.internal.strategy." +
-					"OnErrorContinueBatchEngineImportStrategy",
-				LoggerTestUtil.ERROR)) {
-
-			String json = JSONUtil.putAll(
-				JSONUtil.put(
-					"description", RandomTestUtil.randomString()
-				).put(
-					"externalReferenceCode", externalReferenceCode
-				)
-			).toString();
-
-			_batchEngineImportTask =
-				_batchEngineImportTaskLocalService.addBatchEngineImportTask(
-					null, TestPropsValues.getCompanyId(), user.getUserId(),
-					_BATCH_SIZE, null,
-					"com.liferay.headless.admin.user.dto.v1_0.AccountGroup",
-					_compressContent(
-						json.getBytes(StandardCharsets.UTF_8), "JSON"),
-					"JSON", BatchEngineTaskExecuteStatus.INITIAL.name(), null,
-					BatchEngineImportTaskConstants.
-						IMPORT_STRATEGY_ON_ERROR_CONTINUE,
-					BatchEngineTaskOperation.CREATE.name(),
-					HashMapBuilder.<String, Serializable>put(
-						"siteId", String.valueOf(TestPropsValues.getGroupId())
-					).build(),
-					null);
-
-			_batchEngineImportTaskExecutor.execute(_batchEngineImportTask);
-		}
-		finally {
-			ExportImportThreadLocal.setExportImportConfigurationId(0);
-			ExportImportThreadLocal.setLayoutImportInProcess(false);
-		}
-
-		List<ExportImportReportEntry> exportImportReportEntries =
-			_exportImportReportEntryLocalService.getExportImportReportEntries(
-				TestPropsValues.getCompanyId(), exportImportConfigurationId);
-
-		Assert.assertEquals(
-			exportImportReportEntries.toString(), 1,
-			exportImportReportEntries.size());
-
-		ExportImportReportEntry exportImportReportEntry =
-			exportImportReportEntries.get(0);
-
-		Assert.assertEquals(
-			externalReferenceCode,
-			exportImportReportEntry.getClassExternalReferenceCode());
-		Assert.assertEquals(
-			ExportImportReportEntryConstants.TYPE_ERROR,
-			exportImportReportEntry.getType());
-
-		Assert.assertNotNull(
-			testBatchEngineImportTaskExceptionHandler._batchEngineImportTask);
-
-		Assert.assertNotNull(
-			testBatchEngineImportTaskExceptionHandler._exception);
-		Assert.assertNotNull(testBatchEngineImportTaskExceptionHandler._item);
 	}
 
 	@Test
@@ -673,174 +471,6 @@ public class BatchEngineImportTaskExecutorTest
 			blogsEntryLocalService.getGroupEntriesCount(
 				TestPropsValues.getGroupId(),
 				new QueryDefinition<>(WorkflowConstants.STATUS_ANY)));
-	}
-
-	@Test
-	public void testImportAccountSystemObjectDefinitionsJSON()
-		throws Exception {
-
-		// Successful import
-
-		AccountResource accountResource = AccountResource.builder(
-		).authentication(
-			"test@liferay.com", PropsValues.DEFAULT_ADMIN_PASSWORD
-		).locale(
-			LocaleUtil.getDefault()
-		).build();
-
-		ObjectDefinition objectDefinition =
-			_objectDefinitionLocalService.fetchObjectDefinition(
-				TestPropsValues.getCompanyId(), "AccountEntry");
-
-		String integerFieldName = "a" + RandomTestUtil.randomString();
-
-		_objectFieldLocalService.addCustomObjectField(
-			null, user.getUserId(), 0, objectDefinition.getObjectDefinitionId(),
-			"Integer", "Integer", true, false, null,
-			HashMapBuilder.put(
-				LocaleUtil.fromLanguageId("en_US"), integerFieldName
-			).build(),
-			false, integerFieldName, null, null, true, false,
-			Collections.emptyList());
-
-		String textFieldName = "a" + RandomTestUtil.randomString();
-
-		_objectFieldLocalService.addCustomObjectField(
-			null, user.getUserId(), 0, objectDefinition.getObjectDefinitionId(),
-			"Text", "String", true, false, "en_US",
-			HashMapBuilder.put(
-				LocaleUtil.fromLanguageId("en_US"), textFieldName
-			).build(),
-			false, textFieldName, null, null, false, false,
-			Collections.emptyList());
-
-		Account account1 = new Account() {
-			{
-				externalReferenceCode = RandomTestUtil.randomString();
-				name = RandomTestUtil.randomString();
-				type = Account.Type.PERSON;
-			}
-		};
-		Account account2 = new Account() {
-			{
-				externalReferenceCode = RandomTestUtil.randomString();
-				name = RandomTestUtil.randomString();
-				type = Account.Type.PERSON;
-			}
-		};
-		int integerFieldValue1 = RandomTestUtil.randomInt();
-		int integerFieldValue2 = RandomTestUtil.randomInt();
-		String textFieldValue1 = RandomTestUtil.randomString();
-		String textFieldValue2 = RandomTestUtil.randomString();
-
-		String json = JSONUtil.putAll(
-			JSONFactoryUtil.createJSONObject(
-				account1.toString()
-			).put(
-				integerFieldName, integerFieldValue1
-			).put(
-				textFieldName, textFieldValue1
-			),
-			JSONFactoryUtil.createJSONObject(
-				account2.toString()
-			).put(
-				integerFieldName, integerFieldValue2
-			).put(
-				textFieldName, textFieldValue2
-			)
-		).toString();
-
-		_batchEngineImportTask =
-			_batchEngineImportTaskLocalService.addBatchEngineImportTask(
-				null, TestPropsValues.getCompanyId(), user.getUserId(),
-				_BATCH_SIZE, null,
-				"com.liferay.headless.admin.user.dto.v1_0.Account",
-				_compressContent(json.getBytes(), "JSON"), "JSON",
-				BatchEngineTaskExecuteStatus.INITIAL.name(), null,
-				BatchEngineImportTaskConstants.IMPORT_STRATEGY_ON_ERROR_FAIL,
-				BatchEngineTaskOperation.CREATE.toString(), new HashMap<>(),
-				null);
-
-		_batchEngineImportTaskExecutor.execute(_batchEngineImportTask);
-
-		Assert.assertEquals(
-			BatchEngineTaskExecuteStatus.COMPLETED.toString(),
-			_batchEngineImportTask.getExecuteStatus());
-
-		HttpInvoker.HttpResponse httpResponse =
-			accountResource.getAccountByExternalReferenceCodeHttpResponse(
-				account1.getExternalReferenceCode());
-
-		JSONAssert.assertEquals(
-			JSONUtil.put(
-				integerFieldName, integerFieldValue1
-			).put(
-				textFieldName, textFieldValue1
-			).put(
-				"externalReferenceCode", account1.getExternalReferenceCode()
-			).toString(),
-			httpResponse.getContent(), JSONCompareMode.LENIENT);
-
-		httpResponse =
-			accountResource.getAccountByExternalReferenceCodeHttpResponse(
-				account2.getExternalReferenceCode());
-
-		JSONAssert.assertEquals(
-			JSONUtil.put(
-				integerFieldName, integerFieldValue2
-			).put(
-				textFieldName, textFieldValue2
-			).put(
-				"externalReferenceCode", account2.getExternalReferenceCode()
-			).toString(),
-			httpResponse.getContent(), JSONCompareMode.LENIENT);
-
-		// Unsuccessful import
-
-		account1 = new Account() {
-			{
-				externalReferenceCode = RandomTestUtil.randomString();
-				name = RandomTestUtil.randomString();
-				type = Account.Type.PERSON;
-			}
-		};
-
-		json = JSONUtil.put(
-			JSONFactoryUtil.createJSONObject(
-				account1.toString()
-			).put(
-				textFieldName, RandomTestUtil.randomString()
-			)
-		).toString();
-
-		try (LogCapture logCapture = LoggerTestUtil.configureLog4JLogger(
-				_CLASS_NAME_BATCH_ENGINE_IMPORT_TASK_EXECUTOR_IMPL,
-				LoggerTestUtil.ERROR)) {
-
-			_batchEngineImportTask =
-				_batchEngineImportTaskLocalService.addBatchEngineImportTask(
-					null, TestPropsValues.getCompanyId(), user.getUserId(),
-					_BATCH_SIZE, null,
-					"com.liferay.headless.admin.user.dto.v1_0.Account",
-					_compressContent(json.getBytes(), "JSON"), "JSON",
-					BatchEngineTaskExecuteStatus.INITIAL.name(), null,
-					BatchEngineImportTaskConstants.
-						IMPORT_STRATEGY_ON_ERROR_FAIL,
-					BatchEngineTaskOperation.CREATE.toString(), new HashMap<>(),
-					null);
-
-			_batchEngineImportTaskExecutor.execute(_batchEngineImportTask);
-		}
-
-		Assert.assertEquals(
-			BatchEngineTaskExecuteStatus.FAILED.toString(),
-			_batchEngineImportTask.getExecuteStatus());
-
-		httpResponse =
-			accountResource.getAccountByExternalReferenceCodeHttpResponse(
-				account1.getExternalReferenceCode());
-
-		Assert.assertEquals(404, httpResponse.getStatusCode());
 	}
 
 	@Test
@@ -1497,23 +1127,6 @@ public class BatchEngineImportTaskExecutorTest
 			importStrategy);
 	}
 
-	private AutoCloseable _register(
-		BatchEngineImportTaskExceptionHandler
-			batchEngineImportTaskExceptionHandler) {
-
-		Bundle bundle = FrameworkUtil.getBundle(
-			BatchEngineImportTaskExecutorTest.class);
-
-		BundleContext bundleContext = bundle.getBundleContext();
-
-		ServiceRegistration<BatchEngineImportTaskExceptionHandler>
-			serviceRegistration = bundleContext.registerService(
-				BatchEngineImportTaskExceptionHandler.class,
-				batchEngineImportTaskExceptionHandler, null);
-
-		return serviceRegistration::unregister;
-	}
-
 	private byte[] _toContent(String contentType, StringBundler sb)
 		throws Exception {
 
@@ -1570,35 +1183,5 @@ public class BatchEngineImportTaskExecutorTest
 	@Inject
 	private BatchEngineImportTaskLocalService
 		_batchEngineImportTaskLocalService;
-
-	@Inject
-	private ExportImportReportEntryLocalService
-		_exportImportReportEntryLocalService;
-
-	@Inject
-	private ObjectDefinitionLocalService _objectDefinitionLocalService;
-
-	@Inject
-	private ObjectFieldLocalService _objectFieldLocalService;
-
-	private static class TestBatchEngineImportTaskExceptionHandler
-		implements BatchEngineImportTaskExceptionHandler {
-
-		@Override
-		public void handle(
-			BatchEngineImportTask batchEngineImportTask,
-			BatchEngineTaskItemDelegate<?> batchEngineTaskItemDelegate,
-			Exception exception, Object item) {
-
-			_batchEngineImportTask = batchEngineImportTask;
-			_exception = exception;
-			_item = item;
-		}
-
-		private BatchEngineImportTask _batchEngineImportTask;
-		private Exception _exception;
-		private Object _item;
-
-	}
 
 }
