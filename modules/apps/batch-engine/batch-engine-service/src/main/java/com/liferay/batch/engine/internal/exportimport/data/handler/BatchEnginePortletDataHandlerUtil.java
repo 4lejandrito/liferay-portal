@@ -40,10 +40,10 @@ public class BatchEnginePortletDataHandlerUtil {
 						portletDataContext.getParameterMap(),
 						PortletDataHandlerKeys.PERMISSIONS)) {
 
-					return "permissions";
+					return "permissions,accountBriefs";
 				}
 
-				return null;
+				return "accountBriefs";
 			}
 		).put(
 			"filter",
