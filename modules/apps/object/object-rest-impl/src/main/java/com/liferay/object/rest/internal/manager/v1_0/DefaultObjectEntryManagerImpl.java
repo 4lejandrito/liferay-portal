@@ -180,7 +180,9 @@ public class DefaultObjectEntryManagerImpl
 			String scopeKey)
 		throws Exception {
 
-		validateReadOnlyObjectFields(null, objectDefinition, objectEntry);
+		validateReadOnlyObjectFields(
+			null, getGroupId(objectDefinition, scopeKey), objectDefinition,
+			objectEntry);
 
 		ServiceContext serviceContext = _createServiceContext(
 			dtoConverterContext, objectDefinition, objectEntry, scopeKey);
@@ -1094,8 +1096,10 @@ public class DefaultObjectEntryManagerImpl
 			ObjectEntry objectEntry, String scopeKey)
 		throws Exception {
 
+		long groupId = getGroupId(objectDefinition, scopeKey);
+
 		validateReadOnlyObjectFields(
-			externalReferenceCode, objectDefinition, objectEntry);
+			externalReferenceCode, groupId, objectDefinition, objectEntry);
 
 		ServiceContext serviceContext = _createServiceContext(
 			dtoConverterContext, objectDefinition, objectEntry, scopeKey);
@@ -1104,7 +1108,7 @@ public class DefaultObjectEntryManagerImpl
 
 		com.liferay.object.model.ObjectEntry serviceBuilderObjectEntry =
 			_objectEntryService.addOrUpdateObjectEntry(
-				externalReferenceCode, getGroupId(objectDefinition, scopeKey),
+				externalReferenceCode, groupId,
 				objectDefinition.getObjectDefinitionId(),
 				ObjectEntryFolderConstants.
 					PARENT_OBJECT_ENTRY_FOLDER_ID_DEFAULT,
@@ -2737,7 +2741,8 @@ public class DefaultObjectEntryManagerImpl
 
 		validateReadOnlyObjectFields(
 			serviceBuilderObjectEntry.getExternalReferenceCode(),
-			objectDefinition, objectEntry);
+			serviceBuilderObjectEntry.getGroupId(), objectDefinition,
+			objectEntry);
 
 		String scopeKey = String.valueOf(
 			serviceBuilderObjectEntry.getGroupId());
