@@ -33,52 +33,76 @@ public class MCPServletFilter extends BasePortalFilter {
 			HttpServletResponse httpServletResponse, FilterChain filterChain)
 		throws Exception {
 
-		if (!httpServletRequest.getRequestURI(
-			).contains(
-				".well-known"
+		if (httpServletRequest.getRequestURI(
+			).endsWith(
+				"/.well-known/oauth-authorization-server"
 			)) {
 
-			processFilter(
-				MCPServletFilter.class.getName(), httpServletRequest,
-				httpServletResponse, filterChain);
+			httpServletResponse.setHeader("Content-Type", "application/json");
+			httpServletResponse.setHeader("Cache-Control", "no-cache");
+
+			httpServletResponse.getWriter(
+			).write(
+				JSONUtil.put(
+					"authorization_endpoint",
+					"http://localhost:8080/o/oauth2/authorize"
+				).put(
+					"code_challenge_methods_supported",
+					JSONUtil.putAll("plain", "S256")
+				).put(
+					"grant_types_supported",
+					JSONUtil.putAll("authorization_code", "refresh_token")
+				).put(
+					"issuer", "http://localhost:8080"
+				).put(
+					"registration_endpoint",
+					"http://localhost:8080/o/oauth2/register"
+				).put(
+					"response_modes_supported", JSONUtil.putAll("query")
+				).put(
+					"response_types_supported", JSONUtil.putAll("code")
+				).put(
+					"revocation_endpoint",
+					"http://localhost:8080/o/oauth2/token"
+				).put(
+					"token_endpoint",
+					"http://localhost:8080/o/oauth2/token?client_id=id-63495d1f-9d1a-a931-52e3-4f5cb7694e&client_secret=secret-6d3cc48e-b564-e8da-2df7-5b187cc62c5b"
+				).put(
+					"token_endpoint_auth_methods_supported",
+					JSONUtil.putAll(
+						"client_secret_basic", "client_secret_post", "none")
+				).toString()
+			);
 
 			return;
 		}
 
-		httpServletResponse.setHeader("Content-Type", "application/json");
+		if (httpServletRequest.getRequestURI(
+			).endsWith(
+				"/o/oauth2/register"
+			)) {
 
-		httpServletResponse.getWriter(
-		).write(
-			JSONUtil.put(
-				"authorization_endpoint",
-				"https://supreme-goblin-steady.ngrok-free.app/o/oauth2/authorize?response_type=code&client_id=id-5595fec0-58ae-e1c9-b53b-b49a891e377a"
-			).put(
-				"code_challenge_methods_supported",
-				JSONUtil.putAll("plain", "S256")
-			).put(
-				"grant_types_supported",
-				JSONUtil.putAll("authorization_code", "refresh_token")
-			).put(
-				"issuer", "https://supreme-goblin-steady.ngrok-free.app"
-			).put(
-				"registration_endpoint",
-				"https://supreme-goblin-steady.ngrok-free.app/o/oauth2/register"
-			).put(
-				"response_modes_supported", JSONUtil.putAll("query")
-			).put(
-				"response_types_supported", JSONUtil.putAll("code")
-			).put(
-				"revocation_endpoint",
-				"https://supreme-goblin-steady.ngrok-free.app/o/oauth2/token"
-			).put(
-				"token_endpoint",
-				"https://supreme-goblin-steady.ngrok-free.app/o/oauth2/token?client_id=id-5595fec0-58ae-e1c9-b53b-b49a891e377a&client_secret=secret-daf1231e-e967-2978-d524-646cb3c2883"
-			).put(
-				"token_endpoint_auth_methods_supported",
-				JSONUtil.putAll(
-					"client_secret_basic", "client_secret_post", "none")
-			).toString()
-		);
+			httpServletResponse.setHeader("Content-Type", "application/json");
+			httpServletResponse.setHeader("Cache-Control", "no-cache");
+
+			httpServletResponse.getWriter(
+			).write(
+				JSONUtil.put(
+					"client_id", "id-63495d1f-9d1a-a931-52e3-4f5cb7694e"
+				).put(
+					"client_secret",
+					"secret-6d3cc48e-b564-e8da-2df7-5b187cc62c5b"
+				).put(
+					"client_secret_expires_at", 0
+				).toString()
+			);
+
+			return;
+		}
+
+		processFilter(
+			MCPServletFilter.class.getName(), httpServletRequest,
+			httpServletResponse, filterChain);
 	}
 
 }
