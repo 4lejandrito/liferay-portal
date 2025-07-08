@@ -5,9 +5,10 @@
 
 package com.liferay.mcp.server;
 
-import com.liferay.osgi.util.ServiceTrackerFactory;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.util.Portal;
@@ -183,7 +184,9 @@ public class MCPServlet extends GenericServlet {
 
 					return new McpSchema.CallToolResult(mcpCompany.callEndpoint(method, path, payload, session.getAccessToken()), false);
 				} catch (Throwable t) {
-					throw new RuntimeException(t);
+					_log.error(t);
+
+					return new McpSchema.CallToolResult(t.getMessage(), true);
 				}
 			}
 		).build();
@@ -198,5 +201,7 @@ public class MCPServlet extends GenericServlet {
 	private Portal _portal;
 
 	private final Map<Long, MCPCompany> _mcpCompanies = new ConcurrentHashMap<>();
+
+	private static final Log _log = LogFactoryUtil.getLog(MCPServlet.class);
 
 }
