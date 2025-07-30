@@ -1051,7 +1051,7 @@ public class DefaultObjectEntryManagerImpl
 
 		com.liferay.object.model.ObjectEntry serviceBuilderObjectEntry =
 			_objectEntryService.getObjectEntry(
-				externalReferenceCode,
+				externalReferenceCode, getGroupId(objectDefinition, scopeKey),
 				objectDefinition.getObjectDefinitionId());
 
 		_objectEntryService.subscribeObjectEntry(
@@ -1069,7 +1069,7 @@ public class DefaultObjectEntryManagerImpl
 
 		com.liferay.object.model.ObjectEntry serviceBuilderObjectEntry =
 			_objectEntryService.getObjectEntry(
-				externalReferenceCode,
+				externalReferenceCode, getGroupId(objectDefinition, scopeKey),
 				objectDefinition.getObjectDefinitionId());
 
 		_objectEntryService.unsubscribeObjectEntry(
@@ -1188,7 +1188,9 @@ public class DefaultObjectEntryManagerImpl
 			Map<String, Serializable> values)
 		throws Exception {
 
-		validateReadOnlyObjectFields(null, objectDefinition, objectEntry);
+		validateReadOnlyObjectFields(
+			null, getGroupId(objectDefinition, scopeKey), objectDefinition,
+			objectEntry);
 
 		long groupId = getGroupId(objectDefinition, scopeKey);
 
