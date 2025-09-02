@@ -1352,7 +1352,7 @@ public class PortletImpl extends PortletBaseImpl {
 			throw new IllegalStateException("No portlet bag for " + toString());
 		}
 
-		return portletBag.getPortletDataHandlerInstance();
+		return portletBag.getPortletDataHandlerInstance(getCompanyId());
 	}
 
 	/**
