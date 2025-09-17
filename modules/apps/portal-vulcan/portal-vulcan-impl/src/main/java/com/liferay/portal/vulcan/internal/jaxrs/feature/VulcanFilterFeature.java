@@ -6,10 +6,8 @@
 package com.liferay.portal.vulcan.internal.jaxrs.feature;
 
 import com.liferay.portal.kernel.language.Language;
-import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.util.Portal;
-import com.liferay.portal.odata.filter.ExpressionConvert;
-import com.liferay.portal.odata.filter.FilterParserProvider;
+import com.liferay.portal.vulcan.filter.provider.FilterProvider;
 import com.liferay.portal.vulcan.internal.jaxrs.context.provider.FilterContextProvider;
 
 import jakarta.ws.rs.core.Feature;
@@ -36,19 +34,13 @@ public class VulcanFilterFeature implements Feature {
 	@Override
 	public boolean configure(FeatureContext featureContext) {
 		featureContext.register(
-			new FilterContextProvider(
-				_expressionConvert, _filterParserProvider, _language, _portal));
+			new FilterContextProvider(_filterProvider, _language, _portal));
 
 		return false;
 	}
 
-	@Reference(
-		target = "(result.class.name=com.liferay.portal.kernel.search.filter.Filter)"
-	)
-	private ExpressionConvert<Filter> _expressionConvert;
-
 	@Reference
-	private FilterParserProvider _filterParserProvider;
+	private FilterProvider _filterProvider;
 
 	@Reference
 	private Language _language;

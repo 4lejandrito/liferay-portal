@@ -25,7 +25,6 @@ import com.liferay.portal.kernel.exception.NoSuchModelException;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.GroupLocalService;
@@ -43,11 +42,10 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.TextFormatter;
-import com.liferay.portal.odata.filter.ExpressionConvert;
-import com.liferay.portal.odata.filter.FilterParserProvider;
 import com.liferay.portal.odata.sort.SortParserProvider;
 import com.liferay.portal.vulcan.batch.engine.resource.VulcanBatchEngineImportTaskResourceFactory;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterRegistry;
+import com.liferay.portal.vulcan.filter.provider.FilterProvider;
 import com.liferay.portal.vulcan.graphql.annotation.GraphQLField;
 import com.liferay.portal.vulcan.graphql.annotation.GraphQLName;
 import com.liferay.portal.vulcan.graphql.annotation.GraphQLTypeExtension;
@@ -552,9 +550,8 @@ public class GraphQLServletExtender {
 
 		_graphQLDTOContributorDataFetchingProcessor =
 			new GraphQLDTOContributorDataFetchingProcessor(
-				_dtoConverterRegistry, _expressionConvert,
-				_filterParserProvider, _language, _paginationProvider, _portal,
-				_sortParserProvider);
+				_dtoConverterRegistry, _filterProvider, _language,
+				_paginationProvider, _portal, _sortParserProvider);
 
 		_serviceTrackerMap = ServiceTrackerMapFactory.openSingleValueMap(
 			bundleContext, GraphQLDTOContributor.class, "dto.name",
@@ -591,9 +588,8 @@ public class GraphQLServletExtender {
 		_liferayMethodDataFetchingProcessor =
 			new LiferayMethodDataFetchingProcessor(
 				_bundleContext, _companyLocalService, _depotEntryLocalService,
-				_expressionConvert, _filterParserProvider,
-				_graphQLContributorServiceTrackerList, _groupLocalService,
-				_language, _paginationProvider, _portal,
+				_filterProvider, _graphQLContributorServiceTrackerList,
+				_groupLocalService, _language, _paginationProvider, _portal,
 				_resourceActionLocalService, _resourcePermissionLocalService,
 				_roleLocalService, _sortParserProvider,
 				_vulcanBatchEngineImportTaskResourceFactory);
@@ -2074,13 +2070,8 @@ public class GraphQLServletExtender {
 	@Reference
 	private DTOConverterRegistry _dtoConverterRegistry;
 
-	@Reference(
-		target = "(result.class.name=com.liferay.portal.kernel.search.filter.Filter)"
-	)
-	private ExpressionConvert<Filter> _expressionConvert;
-
 	@Reference
-	private FilterParserProvider _filterParserProvider;
+	private FilterProvider _filterProvider;
 
 	private ServiceTrackerList<GraphQLContributor>
 		_graphQLContributorServiceTrackerList;

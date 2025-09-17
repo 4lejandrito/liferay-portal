@@ -28,13 +28,12 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.odata.entity.EntityModel;
-import com.liferay.portal.odata.filter.ExpressionConvert;
-import com.liferay.portal.odata.filter.FilterParserProvider;
 import com.liferay.portal.odata.sort.SortParserProvider;
 import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
 import com.liferay.portal.vulcan.aggregation.Aggregation;
 import com.liferay.portal.vulcan.batch.engine.resource.VulcanBatchEngineImportTaskResource;
 import com.liferay.portal.vulcan.batch.engine.resource.VulcanBatchEngineImportTaskResourceFactory;
+import com.liferay.portal.vulcan.filter.provider.FilterProvider;
 import com.liferay.portal.vulcan.graphql.contributor.GraphQLContributor;
 import com.liferay.portal.vulcan.internal.accept.language.AcceptLanguageImpl;
 import com.liferay.portal.vulcan.internal.graphql.util.GraphQLUtil;
@@ -95,8 +94,7 @@ public class LiferayMethodDataFetchingProcessor {
 	public LiferayMethodDataFetchingProcessor(
 		BundleContext bundleContext, CompanyLocalService companyLocalService,
 		DepotEntryLocalService depotEntryLocalService,
-		ExpressionConvert<Filter> expressionConvert,
-		FilterParserProvider filterParserProvider,
+		FilterProvider filterProvider,
 		ServiceTrackerList<GraphQLContributor>
 			graphQLContributorServiceTrackerList,
 		GroupLocalService groupLocalService, Language language,
@@ -111,8 +109,7 @@ public class LiferayMethodDataFetchingProcessor {
 		_bundleContext = bundleContext;
 		_companyLocalService = companyLocalService;
 		_depotEntryLocalService = depotEntryLocalService;
-		_expressionConvert = expressionConvert;
-		_filterParserProvider = filterParserProvider;
+		_filterProvider = filterProvider;
 		_graphQLContributorServiceTrackerList =
 			graphQLContributorServiceTrackerList;
 		_groupLocalService = groupLocalService;
@@ -637,7 +634,7 @@ public class LiferayMethodDataFetchingProcessor {
 		throws Exception {
 
 		FilterContextProvider filterContextProvider = new FilterContextProvider(
-			_expressionConvert, _filterParserProvider, _language, _portal);
+			_filterProvider, _language, _portal);
 
 		return filterContextProvider.createContext(
 			acceptLanguage, entityModel, filterString);
@@ -696,8 +693,7 @@ public class LiferayMethodDataFetchingProcessor {
 	private final BundleContext _bundleContext;
 	private final CompanyLocalService _companyLocalService;
 	private final DepotEntryLocalService _depotEntryLocalService;
-	private final ExpressionConvert<Filter> _expressionConvert;
-	private final FilterParserProvider _filterParserProvider;
+	private final FilterProvider _filterProvider;
 	private final ServiceTrackerList<GraphQLContributor>
 		_graphQLContributorServiceTrackerList;
 	private final GroupLocalService _groupLocalService;

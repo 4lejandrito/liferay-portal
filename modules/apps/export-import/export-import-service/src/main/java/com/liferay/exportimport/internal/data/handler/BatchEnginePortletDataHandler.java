@@ -52,9 +52,7 @@ import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.odata.entity.EntityModel;
-import com.liferay.portal.odata.filter.ExpressionConvert;
-import com.liferay.portal.odata.filter.FilterParser;
-import com.liferay.portal.odata.filter.FilterParserProvider;
+import com.liferay.portal.vulcan.filter.provider.FilterProvider;
 
 import jakarta.portlet.PortletPreferences;
 
@@ -88,8 +86,7 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 		String className, CompanyLocalService companyLocalService,
 		ExportImportVulcanBatchEngineTaskItemDelegate
 			exportImportVulcanBatchEngineTaskItemDelegate,
-		ExpressionConvert<Filter> expressionConvert,
-		FilterParserProvider filterParserProvider, String itemClassName,
+		FilterProvider filterProvider, String itemClassName,
 		String taskItemDelegateName, UserLocalService userLocalService) {
 
 		_batchEngineExportTaskExecutor = batchEngineExportTaskExecutor;
@@ -102,8 +99,7 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 		_companyLocalService = companyLocalService;
 		_exportImportVulcanBatchEngineTaskItemDelegate =
 			exportImportVulcanBatchEngineTaskItemDelegate;
-		_expressionConvert = expressionConvert;
-		_filterParserProvider = filterParserProvider;
+		_filterProvider = filterProvider;
 		_itemClassName = itemClassName;
 		_taskItemDelegateName = taskItemDelegateName;
 		_userLocalService = userLocalService;
@@ -454,15 +450,9 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 			return null;
 		}
 
-		FilterParser filterParser = _filterParserProvider.provide(entityModel);
-
-		com.liferay.portal.odata.filter.Filter oDataFilter =
-			new com.liferay.portal.odata.filter.Filter(
-				filterParser.parse(filterString));
-
-		return _expressionConvert.convert(
-			oDataFilter.getExpression(),
-			LocaleUtil.fromLanguageId(user.getLanguageId()), entityModel);
+		return _filterProvider.getFilter(
+			entityModel, filterString,
+			LocaleUtil.fromLanguageId(user.getLanguageId()));
 	}
 
 	private long _getUserId() {
@@ -502,9 +492,8 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 	private final String _deletionsFileName;
 	private final ExportImportVulcanBatchEngineTaskItemDelegate<?>
 		_exportImportVulcanBatchEngineTaskItemDelegate;
-	private final ExpressionConvert<Filter> _expressionConvert;
 	private final String _fileName;
-	private final FilterParserProvider _filterParserProvider;
+	private final FilterProvider _filterProvider;
 	private final String _itemClassName;
 	private final String _taskItemDelegateName;
 	private final UserLocalService _userLocalService;

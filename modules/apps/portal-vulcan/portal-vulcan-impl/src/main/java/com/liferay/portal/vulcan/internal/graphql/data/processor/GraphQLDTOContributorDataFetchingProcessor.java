@@ -11,14 +11,13 @@ import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.odata.entity.EntityModel;
-import com.liferay.portal.odata.filter.ExpressionConvert;
-import com.liferay.portal.odata.filter.FilterParserProvider;
 import com.liferay.portal.odata.sort.SortParserProvider;
 import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
 import com.liferay.portal.vulcan.aggregation.Aggregation;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterContext;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterRegistry;
 import com.liferay.portal.vulcan.dto.converter.DefaultDTOConverterContext;
+import com.liferay.portal.vulcan.filter.provider.FilterProvider;
 import com.liferay.portal.vulcan.graphql.dto.GraphQLDTOContributor;
 import com.liferay.portal.vulcan.graphql.dto.GraphQLDTOProperty;
 import com.liferay.portal.vulcan.internal.accept.language.AcceptLanguageImpl;
@@ -42,14 +41,12 @@ public class GraphQLDTOContributorDataFetchingProcessor {
 
 	public GraphQLDTOContributorDataFetchingProcessor(
 		DTOConverterRegistry dtoConverterRegistry,
-		ExpressionConvert<Filter> expressionConvert,
-		FilterParserProvider filterParserProvider, Language language,
+		FilterProvider filterProvider, Language language,
 		PaginationProvider paginationProvider, Portal portal,
 		SortParserProvider sortParserProvider) {
 
 		_dtoConverterRegistry = dtoConverterRegistry;
-		_expressionConvert = expressionConvert;
-		_filterParserProvider = filterParserProvider;
+		_filterProvider = filterProvider;
 		_language = language;
 		_paginationProvider = paginationProvider;
 		_portal = portal;
@@ -194,15 +191,14 @@ public class GraphQLDTOContributorDataFetchingProcessor {
 		throws Exception {
 
 		FilterContextProvider filterContextProvider = new FilterContextProvider(
-			_expressionConvert, _filterParserProvider, _language, _portal);
+			_filterProvider, _language, _portal);
 
 		return filterContextProvider.createContext(
 			acceptLanguage, entityModel, filterString);
 	}
 
 	private final DTOConverterRegistry _dtoConverterRegistry;
-	private final ExpressionConvert<Filter> _expressionConvert;
-	private final FilterParserProvider _filterParserProvider;
+	private final FilterProvider _filterProvider;
 	private final Language _language;
 	private final PaginationProvider _paginationProvider;
 	private final Portal _portal;

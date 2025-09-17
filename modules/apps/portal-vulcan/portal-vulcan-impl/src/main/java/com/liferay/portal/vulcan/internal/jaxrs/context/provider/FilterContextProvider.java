@@ -5,6 +5,7 @@
 
 package com.liferay.portal.vulcan.internal.jaxrs.context.provider;
 
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -13,12 +14,9 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.odata.entity.EntityModel;
-import com.liferay.portal.odata.filter.ExpressionConvert;
-import com.liferay.portal.odata.filter.FilterParser;
-import com.liferay.portal.odata.filter.FilterParserProvider;
 import com.liferay.portal.odata.filter.InvalidFilterException;
-import com.liferay.portal.odata.filter.expression.ExpressionVisitException;
 import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
+import com.liferay.portal.vulcan.filter.provider.FilterProvider;
 import com.liferay.portal.vulcan.internal.accept.language.AcceptLanguageImpl;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,12 +35,9 @@ import org.apache.cxf.message.Message;
 public class FilterContextProvider implements ContextProvider<Filter> {
 
 	public FilterContextProvider(
-		ExpressionConvert<Filter> expressionConvert,
-		FilterParserProvider filterParserProvider, Language language,
-		Portal portal) {
+		FilterProvider filterProvider, Language language, Portal portal) {
 
-		_expressionConvert = expressionConvert;
-		_filterParserProvider = filterParserProvider;
+		_filterProvider = filterProvider;
 		_language = language;
 		_portal = portal;
 	}
@@ -64,23 +59,8 @@ public class FilterContextProvider implements ContextProvider<Filter> {
 			_log.debug("OData entity model: " + entityModel);
 		}
 
-		FilterParser filterParser = _filterParserProvider.provide(entityModel);
-
-		if (_log.isDebugEnabled()) {
-			_log.debug("OData filter parser: " + filterParser);
-		}
-
-		com.liferay.portal.odata.filter.Filter oDataFilter =
-			new com.liferay.portal.odata.filter.Filter(
-				filterParser.parse(filterString));
-
-		if (_log.isDebugEnabled()) {
-			_log.debug("OData filter: " + oDataFilter);
-		}
-
-		Filter filter = _expressionConvert.convert(
-			oDataFilter.getExpression(), acceptLanguage.getPreferredLocale(),
-			entityModel);
+		Filter filter = _filterProvider.getFilter(
+			entityModel, filterString, acceptLanguage.getPreferredLocale());
 
 		if (_log.isDebugEnabled()) {
 			_log.debug("Search filter: " + filter);
@@ -100,10 +80,9 @@ public class FilterContextProvider implements ContextProvider<Filter> {
 				ContextProviderUtil.getEntityModel(message),
 				ParamUtil.getString(httpServletRequest, "filter"));
 		}
-		catch (ExpressionVisitException expressionVisitException) {
+		catch (PortalException portalException) {
 			throw new InvalidFilterException(
-				expressionVisitException.getMessage(),
-				expressionVisitException);
+				portalException.getMessage(), portalException.getCause());
 		}
 		catch (WebApplicationException webApplicationException) {
 			throw webApplicationException;
@@ -116,8 +95,7 @@ public class FilterContextProvider implements ContextProvider<Filter> {
 	private static final Log _log = LogFactoryUtil.getLog(
 		FilterContextProvider.class);
 
-	private final ExpressionConvert<Filter> _expressionConvert;
-	private final FilterParserProvider _filterParserProvider;
+	private final FilterProvider _filterProvider;
 	private final Language _language;
 	private final Portal _portal;
 
