@@ -39,6 +39,7 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.CompanyLocalService;
@@ -48,6 +49,12 @@ import com.liferay.portal.kernel.transaction.TransactionConfig;
 import com.liferay.portal.kernel.transaction.TransactionInvokerUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.odata.entity.EntityModel;
+import com.liferay.portal.odata.filter.ExpressionConvert;
+import com.liferay.portal.odata.filter.FilterParser;
+import com.liferay.portal.odata.filter.FilterParserProvider;
 
 import jakarta.portlet.PortletPreferences;
 
@@ -55,6 +62,8 @@ import java.io.InputStream;
 import java.io.Serializable;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -79,8 +88,9 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 		String className, CompanyLocalService companyLocalService,
 		ExportImportVulcanBatchEngineTaskItemDelegate
 			exportImportVulcanBatchEngineTaskItemDelegate,
-		String itemClassName, String taskItemDelegateName,
-		UserLocalService userLocalService) {
+		ExpressionConvert<Filter> expressionConvert,
+		FilterParserProvider filterParserProvider, String itemClassName,
+		String taskItemDelegateName, UserLocalService userLocalService) {
 
 		_batchEngineExportTaskExecutor = batchEngineExportTaskExecutor;
 		_batchEngineExportTaskService = batchEngineExportTaskService;
@@ -92,6 +102,8 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 		_companyLocalService = companyLocalService;
 		_exportImportVulcanBatchEngineTaskItemDelegate =
 			exportImportVulcanBatchEngineTaskItemDelegate;
+		_expressionConvert = expressionConvert;
+		_filterParserProvider = filterParserProvider;
 		_itemClassName = itemClassName;
 		_taskItemDelegateName = taskItemDelegateName;
 		_userLocalService = userLocalService;
@@ -382,7 +394,8 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 		batchEngineTaskItemDelegate.setLanguageId(user.getLanguageId());
 
 		Page<?> page = batchEngineTaskItemDelegate.read(
-			null, Pagination.of(1, 1), null, parameters, null);
+			_getFilter(batchEngineTaskItemDelegate, parameters, user),
+			Pagination.of(1, 1), null, parameters, null);
 
 		ManifestSummary manifestSummary =
 			portletDataContext.getManifestSummary();
@@ -423,6 +436,35 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 		return unsyncByteArrayOutputStream.toByteArray();
 	}
 
+	private Filter _getFilter(
+			BatchEngineTaskItemDelegate<?> batchEngineTaskItemDelegate,
+			Map<String, Serializable> parameters, User user)
+		throws Exception {
+
+		String filterString = (String)parameters.get("filter");
+
+		if (Validator.isNull(filterString)) {
+			return null;
+		}
+
+		EntityModel entityModel = batchEngineTaskItemDelegate.getEntityModel(
+			_toMultivaluedMap(parameters));
+
+		if (entityModel == null) {
+			return null;
+		}
+
+		FilterParser filterParser = _filterParserProvider.provide(entityModel);
+
+		com.liferay.portal.odata.filter.Filter oDataFilter =
+			new com.liferay.portal.odata.filter.Filter(
+				filterParser.parse(filterString));
+
+		return _expressionConvert.convert(
+			oDataFilter.getExpression(),
+			LocaleUtil.fromLanguageId(user.getLanguageId()), entityModel);
+	}
+
 	private long _getUserId() {
 		PermissionChecker permissionChecker =
 			PermissionThreadLocal.getPermissionChecker();
@@ -437,6 +479,18 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 			fileName);
 	}
 
+	private Map<String, List<String>> _toMultivaluedMap(
+		Map<String, Serializable> parameterMap) {
+
+		Map<String, List<String>> multivaluedMap = new HashMap<>();
+
+		parameterMap.forEach(
+			(key, value) -> multivaluedMap.put(
+				key, Collections.singletonList(String.valueOf(value))));
+
+		return multivaluedMap;
+	}
+
 	private final BatchEngineExportTaskExecutor _batchEngineExportTaskExecutor;
 	private final BatchEngineExportTaskService _batchEngineExportTaskService;
 	private final BatchEngineImportTaskExecutor _batchEngineImportTaskExecutor;
@@ -448,7 +502,9 @@ public class BatchEnginePortletDataHandler extends BasePortletDataHandler {
 	private final String _deletionsFileName;
 	private final ExportImportVulcanBatchEngineTaskItemDelegate<?>
 		_exportImportVulcanBatchEngineTaskItemDelegate;
+	private final ExpressionConvert<Filter> _expressionConvert;
 	private final String _fileName;
+	private final FilterParserProvider _filterParserProvider;
 	private final String _itemClassName;
 	private final String _taskItemDelegateName;
 	private final UserLocalService _userLocalService;

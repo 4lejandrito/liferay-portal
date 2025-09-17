@@ -14,12 +14,15 @@ import com.liferay.exportimport.kernel.lar.PortletDataHandler;
 import com.liferay.exportimport.vulcan.batch.engine.ExportImportVulcanBatchEngineTaskItemDelegate;
 import com.liferay.osgi.util.ServiceTrackerFactory;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagListener;
+import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapDictionaryBuilder;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.odata.filter.ExpressionConvert;
+import com.liferay.portal.odata.filter.FilterParserProvider;
 import com.liferay.portal.vulcan.batch.engine.VulcanBatchEngineTaskItemDelegate;
 
 import org.osgi.framework.BundleContext;
@@ -83,6 +86,14 @@ public class BatchEnginePortletDataHandlerRegistry {
 	@Reference
 	private CompanyLocalService _companyLocalService;
 
+	@Reference(
+		target = "(result.class.name=com.liferay.portal.kernel.search.filter.Filter)"
+	)
+	private ExpressionConvert<Filter> _expressionConvert;
+
+	@Reference
+	private FilterParserProvider _filterParserProvider;
+
 	private ServiceRegistration<FeatureFlagListener> _serviceRegistration;
 	private ServiceTracker
 		<VulcanBatchEngineTaskItemDelegate,
@@ -143,6 +154,7 @@ public class BatchEnginePortletDataHandlerRegistry {
 							"batch.engine.entity.class.name")),
 					_companyLocalService,
 					exportImportVulcanBatchEngineTaskItemDelegate,
+					_expressionConvert, _filterParserProvider,
 					exportImportDescriptor.getItemClassName(),
 					(String)serviceReference.getProperty(
 						"batch.engine.task.item.delegate.name"),
