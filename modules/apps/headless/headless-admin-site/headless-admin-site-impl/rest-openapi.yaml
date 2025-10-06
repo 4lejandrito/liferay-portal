@@ -560,7 +560,7 @@ components:
                         type: permission
                     type: array
                 thumbnail:
-                    $ref: "#/components/schemas/ItemExternalReference"
+                    type: string
                     # @review
                     description:
                         The display page template's thumbnail.
