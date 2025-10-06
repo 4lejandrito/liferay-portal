@@ -560,10 +560,10 @@ components:
                         type: permission
                     type: array
                 thumbnail:
-                    type: string
                     # @review
                     description:
                         The display page template's thumbnail.
+                    type: string
                 uuid:
                     # @review
                     description:

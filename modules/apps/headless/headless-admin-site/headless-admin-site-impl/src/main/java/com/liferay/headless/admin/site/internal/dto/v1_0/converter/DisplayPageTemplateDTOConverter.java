@@ -5,6 +5,8 @@
 
 package com.liferay.headless.admin.site.internal.dto.v1_0.converter;
 
+import com.liferay.document.library.kernel.service.DLFileEntryLocalServiceUtil;
+import com.liferay.exportimport.attachment.ExportImportAttachmentManager;
 import com.liferay.headless.admin.site.dto.v1_0.ClassSubtypeReference;
 import com.liferay.headless.admin.site.dto.v1_0.DisplayPageTemplate;
 import com.liferay.headless.admin.site.dto.v1_0.DisplayPageTemplateFolder;
@@ -13,7 +15,6 @@ import com.liferay.headless.admin.site.dto.v1_0.DisplayPageTemplateSEOSettings;
 import com.liferay.headless.admin.site.dto.v1_0.DisplayPageTemplateSettings;
 import com.liferay.headless.admin.site.dto.v1_0.ItemExternalReference;
 import com.liferay.headless.admin.site.dto.v1_0.SitemapSettings;
-import com.liferay.headless.admin.site.internal.dto.v1_0.util.ThumbnailUtil;
 import com.liferay.headless.admin.user.dto.v1_0.Creator;
 import com.liferay.info.item.InfoItemFormVariation;
 import com.liferay.info.item.InfoItemServiceRegistry;
@@ -130,9 +131,9 @@ public class DisplayPageTemplateDTOConverter
 							layoutPageTemplateCollection);
 					});
 				setThumbnail(
-					() ->
-						ThumbnailUtil.getPortletFileEntryItemExternalReference(
-							layoutPageTemplateEntry.getPreviewFileEntryId()));
+					() -> _exportImportAttachmentManager.getFileURL(
+						DLFileEntryLocalServiceUtil.getDLFileEntry(
+							layoutPageTemplateEntry.getPreviewFileEntryId())));
 				setUuid(layoutPageTemplateEntry::getUuid);
 			}
 		};
@@ -256,6 +257,9 @@ public class DisplayPageTemplateDTOConverter
 	private DTOConverter
 		<LayoutPageTemplateCollection, DisplayPageTemplateFolder>
 			_displayPageTemplateFolderDTOConverter;
+
+	@Reference
+	private ExportImportAttachmentManager _exportImportAttachmentManager;
 
 	@Reference
 	private InfoItemServiceRegistry _infoItemServiceRegistry;
