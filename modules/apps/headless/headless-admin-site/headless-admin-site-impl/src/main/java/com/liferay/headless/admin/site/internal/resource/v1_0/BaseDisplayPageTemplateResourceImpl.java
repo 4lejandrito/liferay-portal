@@ -594,6 +594,11 @@ public abstract class BaseDisplayPageTemplateResourceImpl
 				displayPageTemplate.getPermissions());
 		}
 
+		if (displayPageTemplate.getThumbnail() != null) {
+			existingDisplayPageTemplate.setThumbnail(
+				displayPageTemplate.getThumbnail());
+		}
+
 		if (displayPageTemplate.getUuid() != null) {
 			existingDisplayPageTemplate.setUuid(displayPageTemplate.getUuid());
 		}

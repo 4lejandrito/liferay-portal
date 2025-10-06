@@ -272,7 +272,11 @@ public class DisplayPageTemplateSerDes {
 
 			sb.append("\"thumbnail\": ");
 
-			sb.append(String.valueOf(displayPageTemplate.getThumbnail()));
+			sb.append("\"");
+
+			sb.append(_escape(displayPageTemplate.getThumbnail()));
+
+			sb.append("\"");
 		}
 
 		if (displayPageTemplate.getUuid() != null) {
@@ -682,8 +686,7 @@ public class DisplayPageTemplateSerDes {
 			else if (Objects.equals(jsonParserFieldName, "thumbnail")) {
 				if (jsonParserFieldValue != null) {
 					displayPageTemplate.setThumbnail(
-						ItemExternalReferenceSerDes.toDTO(
-							(String)jsonParserFieldValue));
+						(String)jsonParserFieldValue);
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "uuid")) {

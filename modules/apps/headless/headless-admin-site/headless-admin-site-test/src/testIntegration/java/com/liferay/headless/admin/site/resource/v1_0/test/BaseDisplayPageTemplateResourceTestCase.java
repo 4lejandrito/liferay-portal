@@ -204,6 +204,7 @@ public abstract class BaseDisplayPageTemplateResourceTestCase {
 		displayPageTemplate.setExternalReferenceCode(regex);
 		displayPageTemplate.setKey(regex);
 		displayPageTemplate.setName(regex);
+		displayPageTemplate.setThumbnail(regex);
 		displayPageTemplate.setUuid(regex);
 
 		String json = DisplayPageTemplateSerDes.toJSON(displayPageTemplate);
@@ -216,6 +217,7 @@ public abstract class BaseDisplayPageTemplateResourceTestCase {
 			regex, displayPageTemplate.getExternalReferenceCode());
 		Assert.assertEquals(regex, displayPageTemplate.getKey());
 		Assert.assertEquals(regex, displayPageTemplate.getName());
+		Assert.assertEquals(regex, displayPageTemplate.getThumbnail());
 		Assert.assertEquals(regex, displayPageTemplate.getUuid());
 	}
 
@@ -2280,8 +2282,49 @@ public abstract class BaseDisplayPageTemplateResourceTestCase {
 		}
 
 		if (entityFieldName.equals("thumbnail")) {
-			throw new IllegalArgumentException(
-				"Invalid entity field " + entityFieldName);
+			Object object = displayPageTemplate.getThumbnail();
+
+			String value = String.valueOf(object);
+
+			if (operator.equals("contains")) {
+				sb = new StringBundler();
+
+				sb.append("contains(");
+				sb.append(entityFieldName);
+				sb.append(",'");
+
+				if ((object != null) && (value.length() > 2)) {
+					sb.append(value.substring(1, value.length() - 1));
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append("')");
+			}
+			else if (operator.equals("startswith")) {
+				sb = new StringBundler();
+
+				sb.append("startswith(");
+				sb.append(entityFieldName);
+				sb.append(",'");
+
+				if ((object != null) && (value.length() > 1)) {
+					sb.append(value.substring(0, value.length() - 1));
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append("')");
+			}
+			else {
+				sb.append("'");
+				sb.append(value);
+				sb.append("'");
+			}
+
+			return sb.toString();
 		}
 
 		if (entityFieldName.equals("uuid")) {
@@ -2383,6 +2426,8 @@ public abstract class BaseDisplayPageTemplateResourceTestCase {
 				key = StringUtil.toLowerCase(RandomTestUtil.randomString());
 				markedAsDefault = RandomTestUtil.randomBoolean();
 				name = StringUtil.toLowerCase(RandomTestUtil.randomString());
+				thumbnail = StringUtil.toLowerCase(
+					RandomTestUtil.randomString());
 				uuid = StringUtil.toLowerCase(RandomTestUtil.randomString());
 			}
 		};

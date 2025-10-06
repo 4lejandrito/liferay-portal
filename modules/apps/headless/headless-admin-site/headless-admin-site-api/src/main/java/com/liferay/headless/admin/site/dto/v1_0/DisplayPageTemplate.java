@@ -745,8 +745,7 @@ public class DisplayPageTemplate implements Serializable {
 	@io.swagger.v3.oas.annotations.media.Schema(
 		description = "The display page template's thumbnail."
 	)
-	@Valid
-	public ItemExternalReference getThumbnail() {
+	public String getThumbnail() {
 		if (_thumbnailSupplier != null) {
 			thumbnail = _thumbnailSupplier.get();
 
@@ -756,7 +755,7 @@ public class DisplayPageTemplate implements Serializable {
 		return thumbnail;
 	}
 
-	public void setThumbnail(ItemExternalReference thumbnail) {
+	public void setThumbnail(String thumbnail) {
 		this.thumbnail = thumbnail;
 
 		_thumbnailSupplier = null;
@@ -764,8 +763,7 @@ public class DisplayPageTemplate implements Serializable {
 
 	@JsonIgnore
 	public void setThumbnail(
-		UnsafeSupplier<ItemExternalReference, Exception>
-			thumbnailUnsafeSupplier) {
+		UnsafeSupplier<String, Exception> thumbnailUnsafeSupplier) {
 
 		_thumbnailSupplier = () -> {
 			try {
@@ -782,10 +780,10 @@ public class DisplayPageTemplate implements Serializable {
 
 	@GraphQLField(description = "The display page template's thumbnail.")
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected ItemExternalReference thumbnail;
+	protected String thumbnail;
 
 	@JsonIgnore
-	private Supplier<ItemExternalReference> _thumbnailSupplier;
+	private Supplier<String> _thumbnailSupplier;
 
 	@io.swagger.v3.oas.annotations.media.Schema(
 		description = "A valid external identifier to reference this display page template."
@@ -1086,7 +1084,7 @@ public class DisplayPageTemplate implements Serializable {
 			sb.append("]");
 		}
 
-		ItemExternalReference thumbnail = getThumbnail();
+		String thumbnail = getThumbnail();
 
 		if (thumbnail != null) {
 			if (sb.length() > 1) {
@@ -1095,7 +1093,11 @@ public class DisplayPageTemplate implements Serializable {
 
 			sb.append("\"thumbnail\": ");
 
-			sb.append(String.valueOf(thumbnail));
+			sb.append("\"");
+
+			sb.append(_escape(thumbnail));
+
+			sb.append("\"");
 		}
 
 		String uuid = getUuid();

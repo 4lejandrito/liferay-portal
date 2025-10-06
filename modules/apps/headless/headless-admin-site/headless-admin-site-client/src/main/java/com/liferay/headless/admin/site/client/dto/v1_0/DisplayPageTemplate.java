@@ -359,17 +359,16 @@ public class DisplayPageTemplate implements Cloneable, Serializable {
 	protected com.liferay.headless.admin.site.client.permission.Permission[]
 		permissions;
 
-	public ItemExternalReference getThumbnail() {
+	public String getThumbnail() {
 		return thumbnail;
 	}
 
-	public void setThumbnail(ItemExternalReference thumbnail) {
+	public void setThumbnail(String thumbnail) {
 		this.thumbnail = thumbnail;
 	}
 
 	public void setThumbnail(
-		UnsafeSupplier<ItemExternalReference, Exception>
-			thumbnailUnsafeSupplier) {
+		UnsafeSupplier<String, Exception> thumbnailUnsafeSupplier) {
 
 		try {
 			thumbnail = thumbnailUnsafeSupplier.get();
@@ -379,7 +378,7 @@ public class DisplayPageTemplate implements Cloneable, Serializable {
 		}
 	}
 
-	protected ItemExternalReference thumbnail;
+	protected String thumbnail;
 
 	public String getUuid() {
 		return uuid;
