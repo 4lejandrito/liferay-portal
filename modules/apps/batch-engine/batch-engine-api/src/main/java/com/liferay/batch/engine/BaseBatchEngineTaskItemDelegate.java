@@ -5,9 +5,18 @@
 
 package com.liferay.batch.engine;
 
-import com.liferay.batch.engine.strategy.BatchEngineImportStrategy;
+import com.liferay.batch.engine.action.ImportTaskPostAction;
+import com.liferay.batch.engine.action.ImportTaskPreAction;
+import com.liferay.batch.engine.context.ImportTaskContext;
+import com.liferay.batch.engine.model.BatchEngineImportTask;
+import com.liferay.batch.engine.service.BatchEngineImportTaskErrorLocalServiceUtil;
+import com.liferay.batch.engine.strategy.BatchEngineErrorHandler;
+import com.liferay.petra.function.UnsafeFunction;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.transaction.Propagation;
+import com.liferay.portal.kernel.transaction.TransactionConfig;
+import com.liferay.portal.kernel.transaction.TransactionInvokerUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.odata.entity.EntityModel;
 
@@ -33,9 +42,96 @@ public abstract class BaseBatchEngineTaskItemDelegate<T>
 			Collection<T> items, Map<String, Serializable> parameters)
 		throws Exception {
 
-		batchEngineImportStrategy.apply(
-			this, items, item -> createItem(item, parameters));
+		_importItems(
+			this, items, _batchEngineErrorHandler,
+			item -> createItem(item, parameters));
 	}
+
+	private void _importItems(
+		BatchEngineTaskItemDelegate<T> batchEngineTaskItemDelegate,
+		Collection<T> items,
+		BatchEngineErrorHandler batchEngineErrorHandler, UnsafeFunction<T, T, Exception> unsafeFunction) throws Exception {
+
+		for (T item : items) {
+			// hook transactionality
+			try {
+				ImportTaskContext importTaskContext =
+					new ImportTaskContext();
+
+				for (ImportTaskPreAction importTaskPreAction :
+					importTaskPreActions) {
+
+					importTaskPreAction.run(
+						batchEngineImportTask, batchEngineTaskItemDelegate,
+						importTaskContext, item);
+				}
+
+				T persistedItem = unsafeFunction.apply(item);
+
+				if (persistedItem == null) {
+					continue;
+				}
+
+				for (ImportTaskPostAction importTaskPostAction :
+					importTaskPostActions) {
+
+					importTaskPostAction.run(
+						batchEngineImportTask, batchEngineTaskItemDelegate,
+						importTaskContext, item, persistedItem);
+				}
+			} catch (Exception exception) {
+				_log.error(exception);
+
+				addBatchEngineImportTaskError(
+					batchEngineImportTask, batchEngineTaskItemDelegate, item,
+					ItemIndexThreadLocal.get(), exception);
+
+				// hook error handling
+
+				batchEngineErrorHandler.handleError(exception);
+			} finally {
+				ItemIndexThreadLocal.remove();
+			}
+		}
+
+	}
+
+	private static final TransactionConfig _transactionConfig =
+		TransactionConfig.Factory.create(
+			Propagation.REQUIRES_NEW, new Class<?>[] {Exception.class});
+
+	protected <T> void addBatchEngineImportTaskError(
+		BatchEngineImportTask batchEngineImportTask,
+		BatchEngineTaskItemDelegate<T> batchEngineTaskItemDelegate, T item,
+		int itemIndex, Exception exception) {
+
+		try {
+			TransactionInvokerUtil.invoke(
+				_transactionConfig,
+				() -> {
+					BatchEngineImportTaskErrorLocalServiceUtil.
+						addBatchEngineImportTaskError(
+							batchEngineImportTask.getCompanyId(),
+							batchEngineImportTask.getUserId(),
+							batchEngineImportTask.getBatchEngineImportTaskId(),
+							item.toString(), itemIndex,
+							ErrorMessageUtil.getErrorMessage(
+								exception, batchEngineImportTask.getUserId()));
+
+					batchEngineImportTaskExceptionHandlers.forEach(
+						batchEngineImportTaskExceptionHandler ->
+							batchEngineImportTaskExceptionHandler.handle(
+								batchEngineImportTask,
+								batchEngineTaskItemDelegate, exception, item));
+
+					return null;
+				});
+		}
+		catch (Throwable throwable) {
+			throw new RuntimeException(throwable);
+		}
+	}
+
 
 	public T createItem(T item, Map<String, Serializable> parameters)
 		throws Exception {
@@ -48,8 +144,8 @@ public abstract class BaseBatchEngineTaskItemDelegate<T>
 			Collection<T> items, Map<String, Serializable> parameters)
 		throws Exception {
 
-		batchEngineImportStrategy.apply(
-			this, items,
+		_importItems(
+			this, items, _batchEngineErrorHandler,
 			item -> {
 				deleteItem(item, parameters);
 
@@ -90,9 +186,9 @@ public abstract class BaseBatchEngineTaskItemDelegate<T>
 
 	@Override
 	public void setBatchEngineImportStrategy(
-		BatchEngineImportStrategy batchEngineImportStrategy) {
+		BatchEngineErrorHandler batchEngineErrorHandler) {
 
-		this.batchEngineImportStrategy = batchEngineImportStrategy;
+		this._batchEngineErrorHandler = batchEngineErrorHandler;
 	}
 
 	@Override
@@ -129,7 +225,7 @@ public abstract class BaseBatchEngineTaskItemDelegate<T>
 		throws Exception {
 	}
 
-	protected BatchEngineImportStrategy batchEngineImportStrategy;
+	protected BatchEngineErrorHandler _batchEngineErrorHandler;
 	protected Company contextCompany;
 	protected User contextUser;
 	protected String languageId;

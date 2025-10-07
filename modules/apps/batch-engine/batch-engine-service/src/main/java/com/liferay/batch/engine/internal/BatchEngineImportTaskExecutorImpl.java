@@ -23,8 +23,8 @@ import com.liferay.batch.engine.internal.item.BatchEngineTaskItemDelegateExecuto
 import com.liferay.batch.engine.internal.reader.BatchEngineImportTaskItemReader;
 import com.liferay.batch.engine.internal.reader.BatchEngineImportTaskItemReaderBuilder;
 import com.liferay.batch.engine.internal.reader.BatchEngineImportTaskItemReaderUtil;
-import com.liferay.batch.engine.internal.strategy.OnErrorContinueBatchEngineImportStrategy;
-import com.liferay.batch.engine.internal.strategy.OnErrorFailBatchEngineImportStrategy;
+import com.liferay.batch.engine.internal.strategy.OnErrorContinueBatchEngineErrorHandler;
+import com.liferay.batch.engine.internal.strategy.OnErrorFailBatchEngineErrorHandler;
 import com.liferay.batch.engine.internal.task.progress.BatchEngineTaskProgress;
 import com.liferay.batch.engine.internal.task.progress.BatchEngineTaskProgressFactory;
 import com.liferay.batch.engine.internal.util.ErrorMessageUtil;
@@ -32,7 +32,7 @@ import com.liferay.batch.engine.internal.util.ItemIndexThreadLocal;
 import com.liferay.batch.engine.model.BatchEngineImportTask;
 import com.liferay.batch.engine.service.BatchEngineImportTaskErrorLocalService;
 import com.liferay.batch.engine.service.BatchEngineImportTaskLocalService;
-import com.liferay.batch.engine.strategy.BatchEngineImportStrategy;
+import com.liferay.batch.engine.strategy.BatchEngineErrorHandler;
 import com.liferay.batch.engine.thread.local.BatchEngineThreadLocal;
 import com.liferay.osgi.service.tracker.collections.list.ServiceTrackerList;
 import com.liferay.osgi.service.tracker.collections.list.ServiceTrackerListFactory;
@@ -232,21 +232,21 @@ public class BatchEngineImportTaskExecutorImpl
 			batchEngineImportTask);
 	}
 
-	private BatchEngineImportStrategy _createBatchEngineImportStrategy(
+	private BatchEngineErrorHandler _createBatchEngineImportStrategy(
 		BatchEngineImportTask batchEngineImportTask) {
 
 		if (batchEngineImportTask.getImportStrategy() ==
 				BatchEngineImportTaskConstants.
 					IMPORT_STRATEGY_ON_ERROR_CONTINUE) {
 
-			return new OnErrorContinueBatchEngineImportStrategy(
+			return new OnErrorContinueBatchEngineErrorHandler(
 				batchEngineImportTask,
 				_batchEngineImportTaskExceptionHandlers.toList(),
 				_importTaskPostActions.toList(),
 				_importTaskPreActions.toList());
 		}
 
-		return new OnErrorFailBatchEngineImportStrategy(
+		return new OnErrorFailBatchEngineErrorHandler(
 			batchEngineImportTask,
 			_batchEngineImportTaskExceptionHandlers.toList(),
 			_importTaskPostActions.toList(), _importTaskPreActions.toList());
