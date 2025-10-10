@@ -5,6 +5,8 @@
 
 package com.liferay.portal.tools.rest.builder.test.internal.resource.v1_0;
 
+import com.liferay.exportimport.vulcan.batch.engine.ExportImportVulcanBatchEngineTaskItemDelegate;
+import com.liferay.petra.function.UnsafeFunction;
 import com.liferay.portal.kernel.exception.NoSuchModelException;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -28,7 +30,8 @@ import org.osgi.service.component.annotations.ServiceScope;
 	scope = ServiceScope.PROTOTYPE, service = BatchTestEntity2Resource.class
 )
 public class BatchTestEntity2ResourceImpl
-	extends BaseBatchTestEntity2ResourceImpl {
+	extends BaseBatchTestEntity2ResourceImpl
+	implements ExportImportVulcanBatchEngineTaskItemDelegate<BatchTestEntity2> {
 
 	@Override
 	public void deleteBatchTestEntity2ByExternalReferenceCode(
@@ -61,6 +64,52 @@ public class BatchTestEntity2ResourceImpl
 		}
 
 		return batchTestEntity2;
+	}
+
+	@Override
+	public ExportImportDescriptor getExportImportDescriptor() {
+		return new ExportImportVulcanBatchEngineTaskItemDelegate.
+			ExportImportDescriptor() {
+
+			@Override
+			public UnsafeFunction<String, String, Exception>
+				filterApplicableExternalReferenceCode() {
+
+				return externalReferenceCode -> {
+					BatchTestEntity2 batchTestEntity2 = _fetchBatchTestEntity2(
+						externalReferenceCode);
+
+					if (batchTestEntity2 == null) {
+						return null;
+					}
+
+					return batchTestEntity2.getExternalReferenceCode();
+				};
+			}
+
+			@Override
+			public String getDeletionSystemEventClassName() {
+				return "com_liferay_portal_tools_rest_builder_test_portlet_" +
+					"BatchTestEntityPortlet";
+			}
+
+			@Override
+			public String getLabel() {
+				return "Batch Test Entity 2";
+			}
+
+			@Override
+			public String getPortletId() {
+				return "com_liferay_portal_tools_rest_builder_test_portlet_" +
+					"BatchTestEntityPortlet";
+			}
+
+			@Override
+			public Scope getScope() {
+				return Scope.COMPANY;
+			}
+
+		};
 	}
 
 	@Override

@@ -50,10 +50,12 @@ import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 import com.liferay.portal.tools.rest.builder.test.client.custom.field.CustomField;
 import com.liferay.portal.tools.rest.builder.test.client.custom.field.CustomValue;
 import com.liferay.portal.tools.rest.builder.test.client.dto.v1_0.BatchTestEntity1;
+import com.liferay.portal.tools.rest.builder.test.client.dto.v1_0.BatchTestEntity2;
 import com.liferay.portal.tools.rest.builder.test.client.dto.v1_0.CompanyTestEntity;
 import com.liferay.portal.tools.rest.builder.test.client.http.HttpInvoker;
 import com.liferay.portal.tools.rest.builder.test.client.pagination.Page;
 import com.liferay.portal.tools.rest.builder.test.client.resource.v1_0.BatchTestEntity1Resource;
+import com.liferay.portal.tools.rest.builder.test.client.resource.v1_0.BatchTestEntity2Resource;
 import com.liferay.portal.tools.rest.builder.test.client.resource.v1_0.CompanyTestEntityResource;
 import com.liferay.portal.vulcan.extension.ExtensionProvider;
 import com.liferay.portal.vulcan.extension.PropertyDefinition;
@@ -133,6 +135,17 @@ public class BatchTestEntityExportImportTest {
 			"nestedFields",
 			"customFields.attributeType,nestedField,relatedCompanyTestEntity"
 		).build();
+
+		_batchTestEntity2Resource = BatchTestEntity2Resource.builder(
+		).authentication(
+			testCompanyAdminUser.getEmailAddress(),
+			PropsValues.DEFAULT_ADMIN_PASSWORD
+		).endpoint(
+			testCompany.getVirtualHostname(), 8080, "http"
+		).locale(
+			LocaleUtil.getDefault()
+		).build();
+
 		_companyTestEntityResource = CompanyTestEntityResource.builder(
 		).authentication(
 			testCompanyAdminUser.getEmailAddress(),
@@ -149,12 +162,23 @@ public class BatchTestEntityExportImportTest {
 		Page<BatchTestEntity1> batchTestEntities1Page =
 			_batchTestEntity1Resource.getBatchTestEntities1Page();
 
-		for (BatchTestEntity1 batchTestEntity :
+		for (BatchTestEntity1 batchTestEntity1 :
 				batchTestEntities1Page.getItems()) {
 
 			_batchTestEntity1Resource.
 				deleteBatchTestEntity1ByExternalReferenceCode(
-					batchTestEntity.getExternalReferenceCode());
+					batchTestEntity1.getExternalReferenceCode());
+		}
+
+		Page<BatchTestEntity2> batchTestEntities2Page =
+			_batchTestEntity2Resource.getBatchTestEntities2Page();
+
+		for (BatchTestEntity2 batchTestEntity2 :
+				batchTestEntities2Page.getItems()) {
+
+			_batchTestEntity2Resource.
+				deleteBatchTestEntity2ByExternalReferenceCode(
+					batchTestEntity2.getExternalReferenceCode());
 		}
 	}
 
@@ -615,98 +639,134 @@ public class BatchTestEntityExportImportTest {
 		Page<BatchTestEntity1> batchTestEntities1Page =
 			_batchTestEntity1Resource.getBatchTestEntities1Page();
 
-		long totalCount = batchTestEntities1Page.getTotalCount();
+		long batchTestEntity1TotalCount =
+			batchTestEntities1Page.getTotalCount();
 
-		String externalReferenceCode1 =
-			StringUtil.toLowerCase(RandomTestUtil.randomString()) +
-				"_FROM_DIFFERENT_DTO";
+		Page<BatchTestEntity2> batchTestEntities2Page =
+			_batchTestEntity2Resource.getBatchTestEntities2Page();
 
-		BatchTestEntity1 batchTestEntity1 =
-			_batchTestEntity1Resource.postBatchTestEntity1(
-				new BatchTestEntity1() {
-					{
-						externalReferenceCode = externalReferenceCode1;
-						id = RandomTestUtil.randomLong();
-						name = StringUtil.toLowerCase(
-							RandomTestUtil.randomString());
-						nestedField = StringUtil.toLowerCase(
-							RandomTestUtil.randomString());
-					}
-				});
+		long batchTestEntity2TotalCount =
+			batchTestEntities2Page.getTotalCount();
 
-		BatchTestEntity1 batchTestEntity2 =
+		BatchTestEntity1[] batchTestEntities1 = {
 			_batchTestEntity1Resource.postBatchTestEntity1(
 				new BatchTestEntity1() {
 					{
 						externalReferenceCode = StringUtil.toLowerCase(
 							RandomTestUtil.randomString());
-						id = RandomTestUtil.randomLong();
 						name = StringUtil.toLowerCase(
 							RandomTestUtil.randomString());
-						nestedField = StringUtil.toLowerCase(
+					}
+				}),
+			_batchTestEntity1Resource.postBatchTestEntity1(
+				new BatchTestEntity1() {
+					{
+						externalReferenceCode = StringUtil.toLowerCase(
+							RandomTestUtil.randomString());
+						name = StringUtil.toLowerCase(
 							RandomTestUtil.randomString());
 					}
-				});
+				})
+		};
+
+		BatchTestEntity2[] batchTestEntities2 = {
+			_batchTestEntity2Resource.postBatchTestEntity2(
+				new BatchTestEntity2() {
+					{
+						externalReferenceCode = StringUtil.toLowerCase(
+							RandomTestUtil.randomString());
+						name = StringUtil.toLowerCase(
+							RandomTestUtil.randomString());
+					}
+				}),
+			_batchTestEntity2Resource.postBatchTestEntity2(
+				new BatchTestEntity2() {
+					{
+						externalReferenceCode = StringUtil.toLowerCase(
+							RandomTestUtil.randomString());
+						name = StringUtil.toLowerCase(
+							RandomTestUtil.randomString());
+					}
+				})
+		};
 
 		batchTestEntities1Page =
 			_batchTestEntity1Resource.getBatchTestEntities1Page();
 
 		Assert.assertEquals(
-			totalCount + 2, batchTestEntities1Page.getTotalCount());
+			batchTestEntity1TotalCount + 2,
+			batchTestEntities1Page.getTotalCount());
 
-		_batchTestEntity1Resource.deleteBatchTestEntity1ByExternalReferenceCode(
-			batchTestEntity1.getExternalReferenceCode());
+		batchTestEntities2Page =
+			_batchTestEntity2Resource.getBatchTestEntities2Page();
+
+		Assert.assertEquals(
+			batchTestEntity2TotalCount + 2,
+			batchTestEntities2Page.getTotalCount());
 
 		_systemEventLocalService.addSystemEvent(
 			TestPropsValues.getUserId(), _companyGroup.getGroupId(),
-			batchTestEntity1.getExternalReferenceCode(),
-			com.liferay.portal.tools.rest.builder.test.dto.v1_0.
-				BatchTestEntity1.class.getName(),
+			batchTestEntities1[0].getExternalReferenceCode(), _PORTLET_KEY,
 			RandomTestUtil.nextLong(), PortalUUIDUtil.generate(),
 			StringPool.BLANK, SystemEventConstants.TYPE_DELETE,
 			StringPool.BLANK);
 
-		_batchTestEntity1Resource.deleteBatchTestEntity1ByExternalReferenceCode(
-			batchTestEntity2.getExternalReferenceCode());
-
 		_systemEventLocalService.addSystemEvent(
 			TestPropsValues.getUserId(), _companyGroup.getGroupId(),
-			batchTestEntity2.getExternalReferenceCode(),
-			com.liferay.portal.tools.rest.builder.test.dto.v1_0.
-				BatchTestEntity1.class.getName(),
+			batchTestEntities2[0].getExternalReferenceCode(), _PORTLET_KEY,
 			RandomTestUtil.nextLong(), PortalUUIDUtil.generate(),
 			StringPool.BLANK, SystemEventConstants.TYPE_DELETE,
 			StringPool.BLANK);
-
-		batchTestEntities1Page =
-			_batchTestEntity1Resource.getBatchTestEntities1Page();
-
-		Assert.assertEquals(totalCount, batchTestEntities1Page.getTotalCount());
 
 		File larFile = _exportLayout(true);
 
-		_batchTestEntity1Resource.postBatchTestEntity1(batchTestEntity1);
-		_batchTestEntity1Resource.postBatchTestEntity1(batchTestEntity2);
+		_exportImportLocalService.importLayoutsDataDeletions(
+			_exportImportConfigurationLocalService.
+				addDraftExportImportConfiguration(
+					TestPropsValues.getUserId(),
+					ExportImportConfigurationConstants.TYPE_IMPORT_LAYOUT,
+					ExportImportConfigurationSettingsMapFactoryUtil.
+						buildImportLayoutSettingsMap(
+							TestPropsValues.getUser(),
+							_companyGroup.getGroupId(), false, new long[0],
+							HashMapBuilder.put(
+								PortletDataHandlerKeys.DELETIONS,
+								new String[] {Boolean.TRUE.toString()}
+							).put(
+								PortletDataHandlerKeys.PORTLET_DATA,
+								new String[] {Boolean.TRUE.toString()}
+							).put(
+								PortletDataHandlerKeys.PORTLET_DATA + "_" +
+									_PORTLET_KEY,
+								new String[] {Boolean.TRUE.toString()}
+							).build())),
+			larFile);
 
 		batchTestEntities1Page =
 			_batchTestEntity1Resource.getBatchTestEntities1Page();
 
 		Assert.assertEquals(
-			totalCount + 2, batchTestEntities1Page.getTotalCount());
-
-		_importLayout(true, larFile);
-
-		batchTestEntities1Page =
-			_batchTestEntity1Resource.getBatchTestEntities1Page();
-
-		Assert.assertEquals(
-			totalCount + 1, batchTestEntities1Page.getTotalCount());
+			batchTestEntity1TotalCount + 1,
+			batchTestEntities1Page.getTotalCount());
 
 		_assertEquals(
-			batchTestEntity1,
+			batchTestEntities1[1],
 			_batchTestEntity1Resource.
 				getBatchTestEntity1ByExternalReferenceCode(
-					batchTestEntity1.getExternalReferenceCode()));
+					batchTestEntities1[1].getExternalReferenceCode()));
+
+		batchTestEntities2Page =
+			_batchTestEntity2Resource.getBatchTestEntities2Page();
+
+		Assert.assertEquals(
+			batchTestEntity2TotalCount + 1,
+			batchTestEntities2Page.getTotalCount());
+
+		Assert.assertEquals(
+			batchTestEntities2[1],
+			_batchTestEntity2Resource.
+				getBatchTestEntity2ByExternalReferenceCode(
+					batchTestEntities2[1].getExternalReferenceCode()));
 	}
 
 	@Test
@@ -847,13 +907,14 @@ public class BatchTestEntityExportImportTest {
 							TestPropsValues.getUser(),
 							_companyGroup.getGroupId(), false, new long[0],
 							HashMapBuilder.put(
-								_PORTLET_DATA_KEY,
-								new String[] {Boolean.TRUE.toString()}
-							).put(
 								PortletDataHandlerKeys.DELETIONS,
 								new String[] {Boolean.toString(deletions)}
 							).put(
 								PortletDataHandlerKeys.PORTLET_DATA,
+								new String[] {Boolean.TRUE.toString()}
+							).put(
+								PortletDataHandlerKeys.PORTLET_DATA + "_" +
+									_PORTLET_KEY,
 								new String[] {Boolean.TRUE.toString()}
 							).build())));
 	}
@@ -878,13 +939,14 @@ public class BatchTestEntityExportImportTest {
 								TestPropsValues.getUser(),
 								_companyGroup.getGroupId(), false, new long[0],
 								HashMapBuilder.put(
-									_PORTLET_DATA_KEY,
-									new String[] {Boolean.TRUE.toString()}
-								).put(
 									PortletDataHandlerKeys.DELETIONS,
 									new String[] {Boolean.toString(deletions)}
 								).put(
 									PortletDataHandlerKeys.PORTLET_DATA,
+									new String[] {Boolean.TRUE.toString()}
+								).put(
+									PortletDataHandlerKeys.PORTLET_DATA + "_" +
+										_PORTLET_KEY,
 									new String[] {Boolean.TRUE.toString()}
 								).build()));
 
@@ -907,12 +969,12 @@ public class BatchTestEntityExportImportTest {
 		}
 	}
 
-	private static final String _PORTLET_DATA_KEY =
-		PortletDataHandlerKeys.PORTLET_DATA +
-			"_com_liferay_portal_tools_rest_builder_test_portlet_" +
-				"BatchTestEntityPortlet";
+	private static final String _PORTLET_KEY =
+		"com_liferay_portal_tools_rest_builder_test_portlet_" +
+			"BatchTestEntityPortlet";
 
 	private BatchTestEntity1Resource _batchTestEntity1Resource;
+	private BatchTestEntity2Resource _batchTestEntity2Resource;
 	private Group _companyGroup;
 	private CompanyTestEntityResource _companyTestEntityResource;
 
@@ -953,12 +1015,12 @@ public class BatchTestEntityExportImportTest {
 			ImportTaskContext importTaskContext, Object item) {
 
 			com.liferay.portal.tools.rest.builder.test.dto.v1_0.BatchTestEntity1
-				batchTestEntity =
+				batchTestEntity1 =
 					(com.liferay.portal.tools.rest.builder.test.dto.v1_0.
 						BatchTestEntity1)item;
 
 			if (StringUtil.equals(
-					batchTestEntity.getExternalReferenceCode(),
+					batchTestEntity1.getExternalReferenceCode(),
 					_externalReferenceCode)) {
 
 				throw new UnsupportedOperationException(_errorMessage);
