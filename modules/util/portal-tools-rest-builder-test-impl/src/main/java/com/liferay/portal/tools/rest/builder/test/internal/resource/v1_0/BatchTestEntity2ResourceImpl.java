@@ -8,11 +8,16 @@ package com.liferay.portal.tools.rest.builder.test.internal.resource.v1_0;
 import com.liferay.exportimport.vulcan.batch.engine.ExportImportVulcanBatchEngineTaskItemDelegate;
 import com.liferay.petra.function.UnsafeFunction;
 import com.liferay.portal.kernel.exception.NoSuchModelException;
+import com.liferay.portal.kernel.search.Sort;
+import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.tools.rest.builder.test.dto.v1_0.BatchTestEntity2;
 import com.liferay.portal.tools.rest.builder.test.resource.v1_0.BatchTestEntity2Resource;
 import com.liferay.portal.vulcan.pagination.Page;
+import com.liferay.portal.vulcan.pagination.Pagination;
+
+import java.io.Serializable;
 
 import java.util.Map;
 import java.util.Objects;
@@ -145,6 +150,15 @@ public class BatchTestEntity2ResourceImpl
 			batchTestEntity2.getExternalReferenceCode(), batchTestEntity2);
 
 		return batchTestEntity2;
+	}
+
+	@Override
+	public Page<BatchTestEntity2> read(
+			Filter filter, Pagination pagination, Sort[] sorts,
+			Map<String, Serializable> parameters, String search)
+		throws Exception {
+
+		return getBatchTestEntities2Page();
 	}
 
 	private BatchTestEntity2 _fetchBatchTestEntity2(

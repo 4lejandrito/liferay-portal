@@ -10,6 +10,8 @@ import com.liferay.exportimport.vulcan.batch.engine.ExportImportVulcanBatchEngin
 import com.liferay.petra.function.UnsafeFunction;
 import com.liferay.portal.kernel.exception.NoSuchModelException;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.search.Sort;
+import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.util.LongWrapper;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -20,6 +22,9 @@ import com.liferay.portal.tools.rest.builder.test.resource.v1_0.CompanyTestEntit
 import com.liferay.portal.vulcan.custom.field.CustomField;
 import com.liferay.portal.vulcan.fields.NestedFieldsSupplier;
 import com.liferay.portal.vulcan.pagination.Page;
+import com.liferay.portal.vulcan.pagination.Pagination;
+
+import java.io.Serializable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -290,6 +295,15 @@ public class BatchTestEntity1ResourceImpl
 		_batchTestEntities1.put(batchTestEntity1.getId(), batchTestEntity1);
 
 		return _toBatchTestEntity1(batchTestEntity1);
+	}
+
+	@Override
+	public Page<BatchTestEntity1> read(
+			Filter filter, Pagination pagination, Sort[] sorts,
+			Map<String, Serializable> parameters, String search)
+		throws Exception {
+
+		return getBatchTestEntities1Page();
 	}
 
 	private BatchTestEntity1 _fetchBatchTestEntity1(long id) {
