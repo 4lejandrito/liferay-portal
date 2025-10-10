@@ -89,6 +89,8 @@ public class OpenAPIResourceImpl {
 
 			add(BatchTestEntity1ResourceImpl.class);
 
+			add(BatchTestEntity2ResourceImpl.class);
+
 			add(CompanyTestEntityResourceImpl.class);
 
 			add(ERCAssetLibraryTestEntityResourceImpl.class);

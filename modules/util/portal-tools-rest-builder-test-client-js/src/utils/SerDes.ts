@@ -5,6 +5,7 @@
 
 	import {AssetLibraryTestEntity} from '../models/AssetLibraryTestEntity';
 	import {BatchTestEntity1} from '../models/BatchTestEntity1';
+	import {BatchTestEntity2} from '../models/BatchTestEntity2';
 	import {ChildTestEntity1} from '../models/ChildTestEntity1';
 	import {ChildTestEntity2} from '../models/ChildTestEntity2';
 	import {ChildTestEntity3} from '../models/ChildTestEntity3';
@@ -24,6 +25,7 @@
 	import {NestedTestEntity} from '../models/NestedTestEntity';
 	import {PageAssetLibraryTestEntity} from '../models/PageAssetLibraryTestEntity';
 	import {PageBatchTestEntity1} from '../models/PageBatchTestEntity1';
+	import {PageBatchTestEntity2} from '../models/PageBatchTestEntity2';
 	import {PageCompanyTestEntity} from '../models/PageCompanyTestEntity';
 	import {PageEntityModelResourceTestEntity1} from '../models/PageEntityModelResourceTestEntity1';
 	import {PageERCAssetLibraryTestEntity} from '../models/PageERCAssetLibraryTestEntity';
@@ -81,6 +83,7 @@ const primitives = new Set([
 const typeMap: {[index: string]: any} = {
 	AssetLibraryTestEntity,
 	BatchTestEntity1,
+	BatchTestEntity2,
 	ChildTestEntity1,
 	ChildTestEntity2,
 	ChildTestEntity3,
@@ -100,6 +103,7 @@ const typeMap: {[index: string]: any} = {
 	NestedTestEntity,
 	PageAssetLibraryTestEntity,
 	PageBatchTestEntity1,
+	PageBatchTestEntity2,
 	PageCompanyTestEntity,
 	PageEntityModelResourceTestEntity1,
 	PageERCAssetLibraryTestEntity,

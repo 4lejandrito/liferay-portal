@@ -10,6 +10,7 @@ import com.liferay.petra.function.UnsafeFunction;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.tools.rest.builder.test.dto.v1_0.BatchTestEntity1;
+import com.liferay.portal.tools.rest.builder.test.dto.v1_0.BatchTestEntity2;
 import com.liferay.portal.tools.rest.builder.test.dto.v1_0.CompanyTestEntity;
 import com.liferay.portal.tools.rest.builder.test.dto.v1_0.ERCAssetLibraryTestEntity;
 import com.liferay.portal.tools.rest.builder.test.dto.v1_0.ERCScopedTestEntity;
@@ -22,6 +23,7 @@ import com.liferay.portal.tools.rest.builder.test.dto.v1_0.Sort;
 import com.liferay.portal.tools.rest.builder.test.dto.v1_0.TestEntity;
 import com.liferay.portal.tools.rest.builder.test.resource.v1_0.AssetLibraryTestEntityResource;
 import com.liferay.portal.tools.rest.builder.test.resource.v1_0.BatchTestEntity1Resource;
+import com.liferay.portal.tools.rest.builder.test.resource.v1_0.BatchTestEntity2Resource;
 import com.liferay.portal.tools.rest.builder.test.resource.v1_0.CompanyTestEntityResource;
 import com.liferay.portal.tools.rest.builder.test.resource.v1_0.ERCAssetLibraryTestEntityResource;
 import com.liferay.portal.tools.rest.builder.test.resource.v1_0.ERCScopedTestEntityResource;
@@ -76,6 +78,14 @@ public class Mutation {
 
 		_batchTestEntity1ResourceComponentServiceObjects =
 			batchTestEntity1ResourceComponentServiceObjects;
+	}
+
+	public static void setBatchTestEntity2ResourceComponentServiceObjects(
+		ComponentServiceObjects<BatchTestEntity2Resource>
+			batchTestEntity2ResourceComponentServiceObjects) {
+
+		_batchTestEntity2ResourceComponentServiceObjects =
+			batchTestEntity2ResourceComponentServiceObjects;
 	}
 
 	public static void setCompanyTestEntityResourceComponentServiceObjects(
@@ -260,6 +270,64 @@ public class Mutation {
 				batchTestEntity1Resource.
 					putBatchTestEntity1ByExternalReferenceCode(
 						externalReferenceCode, batchTestEntity1));
+	}
+
+	@GraphQLField
+	public boolean deleteBatchTestEntity2ByExternalReferenceCode(
+			@GraphQLName("externalReferenceCode") String externalReferenceCode)
+		throws Exception {
+
+		_applyVoidComponentServiceObjects(
+			_batchTestEntity2ResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			batchTestEntity2Resource ->
+				batchTestEntity2Resource.
+					deleteBatchTestEntity2ByExternalReferenceCode(
+						externalReferenceCode));
+
+		return true;
+	}
+
+	@GraphQLField
+	public BatchTestEntity2 createBatchTestEntity2(
+			@GraphQLName("batchTestEntity2") BatchTestEntity2 batchTestEntity2)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_batchTestEntity2ResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			batchTestEntity2Resource ->
+				batchTestEntity2Resource.postBatchTestEntity2(
+					batchTestEntity2));
+	}
+
+	@GraphQLField
+	public Response createBatchTestEntity2Batch(
+			@GraphQLName("callbackURL") String callbackURL,
+			@GraphQLName("object") Object object)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_batchTestEntity2ResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			batchTestEntity2Resource ->
+				batchTestEntity2Resource.postBatchTestEntity2Batch(
+					callbackURL, object));
+	}
+
+	@GraphQLField
+	public BatchTestEntity2 updateBatchTestEntity2ByExternalReferenceCode(
+			@GraphQLName("externalReferenceCode") String externalReferenceCode,
+			@GraphQLName("batchTestEntity2") BatchTestEntity2 batchTestEntity2)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_batchTestEntity2ResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			batchTestEntity2Resource ->
+				batchTestEntity2Resource.
+					putBatchTestEntity2ByExternalReferenceCode(
+						externalReferenceCode, batchTestEntity2));
 	}
 
 	@GraphQLField
@@ -1655,6 +1723,28 @@ public class Mutation {
 	}
 
 	private void _populateResourceContext(
+			BatchTestEntity2Resource batchTestEntity2Resource)
+		throws Exception {
+
+		batchTestEntity2Resource.setContextAcceptLanguage(_acceptLanguage);
+		batchTestEntity2Resource.setContextCompany(_company);
+		batchTestEntity2Resource.setContextHttpServletRequest(
+			_httpServletRequest);
+		batchTestEntity2Resource.setContextHttpServletResponse(
+			_httpServletResponse);
+		batchTestEntity2Resource.setContextUriInfo(_uriInfo);
+		batchTestEntity2Resource.setContextUser(_user);
+		batchTestEntity2Resource.setGroupLocalService(_groupLocalService);
+		batchTestEntity2Resource.setRoleLocalService(_roleLocalService);
+
+		batchTestEntity2Resource.setVulcanBatchEngineExportTaskResource(
+			_vulcanBatchEngineExportTaskResource);
+
+		batchTestEntity2Resource.setVulcanBatchEngineImportTaskResource(
+			_vulcanBatchEngineImportTaskResource);
+	}
+
+	private void _populateResourceContext(
 			CompanyTestEntityResource companyTestEntityResource)
 		throws Exception {
 
@@ -1893,6 +1983,8 @@ public class Mutation {
 		_assetLibraryTestEntityResourceComponentServiceObjects;
 	private static ComponentServiceObjects<BatchTestEntity1Resource>
 		_batchTestEntity1ResourceComponentServiceObjects;
+	private static ComponentServiceObjects<BatchTestEntity2Resource>
+		_batchTestEntity2ResourceComponentServiceObjects;
 	private static ComponentServiceObjects<CompanyTestEntityResource>
 		_companyTestEntityResourceComponentServiceObjects;
 	private static ComponentServiceObjects<ERCAssetLibraryTestEntityResource>

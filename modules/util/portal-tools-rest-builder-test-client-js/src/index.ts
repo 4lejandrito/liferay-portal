@@ -10,6 +10,7 @@
 
 	export {AssetLibraryTestEntityAPI} from './apis/AssetLibraryTestEntityAPI';
 	export {BatchTestEntity1API} from './apis/BatchTestEntity1API';
+	export {BatchTestEntity2API} from './apis/BatchTestEntity2API';
 	export {CompanyTestEntityAPI} from './apis/CompanyTestEntityAPI';
 	export {EntityModelResourceTestEntity1API} from './apis/EntityModelResourceTestEntity1API';
 	export {EntityModelResourceTestEntity2API} from './apis/EntityModelResourceTestEntity2API';
@@ -27,6 +28,7 @@
 
 	export {AssetLibraryTestEntity} from './models/AssetLibraryTestEntity';
 	export {BatchTestEntity1} from './models/BatchTestEntity1';
+	export {BatchTestEntity2} from './models/BatchTestEntity2';
 	export {ChildTestEntity1} from './models/ChildTestEntity1';
 	export {ChildTestEntity2} from './models/ChildTestEntity2';
 	export {ChildTestEntity3} from './models/ChildTestEntity3';
@@ -46,6 +48,7 @@
 	export {NestedTestEntity} from './models/NestedTestEntity';
 	export {PageAssetLibraryTestEntity} from './models/PageAssetLibraryTestEntity';
 	export {PageBatchTestEntity1} from './models/PageBatchTestEntity1';
+	export {PageBatchTestEntity2} from './models/PageBatchTestEntity2';
 	export {PageCompanyTestEntity} from './models/PageCompanyTestEntity';
 	export {PageEntityModelResourceTestEntity1} from './models/PageEntityModelResourceTestEntity1';
 	export {PageERCAssetLibraryTestEntity} from './models/PageERCAssetLibraryTestEntity';
