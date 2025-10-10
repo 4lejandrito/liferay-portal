@@ -6,7 +6,7 @@
 package com.liferay.portal.tools.rest.builder.test.client.dto.v1_0;
 
 import com.liferay.portal.tools.rest.builder.test.client.function.UnsafeSupplier;
-import com.liferay.portal.tools.rest.builder.test.client.serdes.v1_0.BatchTestEntitySerDes;
+import com.liferay.portal.tools.rest.builder.test.client.serdes.v1_0.BatchTestEntity1SerDes;
 
 import jakarta.annotation.Generated;
 
@@ -19,10 +19,10 @@ import java.util.Objects;
  * @generated
  */
 @Generated("")
-public class BatchTestEntity implements Cloneable, Serializable {
+public class BatchTestEntity1 implements Cloneable, Serializable {
 
-	public static BatchTestEntity toDTO(String json) {
-		return BatchTestEntitySerDes.toDTO(json);
+	public static BatchTestEntity1 toDTO(String json) {
+		return BatchTestEntity1SerDes.toDTO(json);
 	}
 
 	public
@@ -163,8 +163,8 @@ public class BatchTestEntity implements Cloneable, Serializable {
 	protected CompanyTestEntity relatedCompanyTestEntity;
 
 	@Override
-	public BatchTestEntity clone() throws CloneNotSupportedException {
-		return (BatchTestEntity)super.clone();
+	public BatchTestEntity1 clone() throws CloneNotSupportedException {
+		return (BatchTestEntity1)super.clone();
 	}
 
 	@Override
@@ -173,13 +173,13 @@ public class BatchTestEntity implements Cloneable, Serializable {
 			return true;
 		}
 
-		if (!(object instanceof BatchTestEntity)) {
+		if (!(object instanceof BatchTestEntity1)) {
 			return false;
 		}
 
-		BatchTestEntity batchTestEntity = (BatchTestEntity)object;
+		BatchTestEntity1 batchTestEntity1 = (BatchTestEntity1)object;
 
-		return Objects.equals(toString(), batchTestEntity.toString());
+		return Objects.equals(toString(), batchTestEntity1.toString());
 	}
 
 	@Override
@@ -190,7 +190,7 @@ public class BatchTestEntity implements Cloneable, Serializable {
 	}
 
 	public String toString() {
-		return BatchTestEntitySerDes.toJSON(this);
+		return BatchTestEntity1SerDes.toJSON(this);
 	}
 
 }

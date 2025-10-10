@@ -35,19 +35,17 @@ import java.util.function.Supplier;
  * @generated
  */
 @Generated("")
-@GraphQLName(
-	description = "https://www.schema.org/Document", value = "BatchTestEntity"
-)
+@GraphQLName("BatchTestEntity1")
 @JsonFilter("Liferay.Vulcan")
-@XmlRootElement(name = "BatchTestEntity")
-public class BatchTestEntity implements Serializable {
+@XmlRootElement(name = "BatchTestEntity1")
+public class BatchTestEntity1 implements Serializable {
 
-	public static BatchTestEntity toDTO(String json) {
-		return ObjectMapperUtil.readValue(BatchTestEntity.class, json);
+	public static BatchTestEntity1 toDTO(String json) {
+		return ObjectMapperUtil.readValue(BatchTestEntity1.class, json);
 	}
 
-	public static BatchTestEntity unsafeToDTO(String json) {
-		return ObjectMapperUtil.unsafeReadValue(BatchTestEntity.class, json);
+	public static BatchTestEntity1 unsafeToDTO(String json) {
+		return ObjectMapperUtil.unsafeReadValue(BatchTestEntity1.class, json);
 	}
 
 	@io.swagger.v3.oas.annotations.media.Schema
@@ -310,13 +308,13 @@ public class BatchTestEntity implements Serializable {
 			return true;
 		}
 
-		if (!(object instanceof BatchTestEntity)) {
+		if (!(object instanceof BatchTestEntity1)) {
 			return false;
 		}
 
-		BatchTestEntity batchTestEntity = (BatchTestEntity)object;
+		BatchTestEntity1 batchTestEntity1 = (BatchTestEntity1)object;
 
-		return Objects.equals(toString(), batchTestEntity.toString());
+		return Objects.equals(toString(), batchTestEntity1.toString());
 	}
 
 	@Override
@@ -434,7 +432,7 @@ public class BatchTestEntity implements Serializable {
 
 	@io.swagger.v3.oas.annotations.media.Schema(
 		accessMode = io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY,
-		defaultValue = "com.liferay.portal.tools.rest.builder.test.dto.v1_0.BatchTestEntity",
+		defaultValue = "com.liferay.portal.tools.rest.builder.test.dto.v1_0.BatchTestEntity1",
 		name = "x-class-name"
 	)
 	public String xClassName;

@@ -9,7 +9,7 @@ import com.liferay.portal.kernel.util.ObjectValuePair;
 import com.liferay.portal.tools.rest.builder.test.internal.graphql.mutation.v1_0.Mutation;
 import com.liferay.portal.tools.rest.builder.test.internal.graphql.query.v1_0.Query;
 import com.liferay.portal.tools.rest.builder.test.internal.resource.v1_0.AssetLibraryTestEntityResourceImpl;
-import com.liferay.portal.tools.rest.builder.test.internal.resource.v1_0.BatchTestEntityResourceImpl;
+import com.liferay.portal.tools.rest.builder.test.internal.resource.v1_0.BatchTestEntity1ResourceImpl;
 import com.liferay.portal.tools.rest.builder.test.internal.resource.v1_0.CompanyTestEntityResourceImpl;
 import com.liferay.portal.tools.rest.builder.test.internal.resource.v1_0.ERCAssetLibraryTestEntityResourceImpl;
 import com.liferay.portal.tools.rest.builder.test.internal.resource.v1_0.ERCScopedTestEntityResourceImpl;
@@ -25,7 +25,7 @@ import com.liferay.portal.tools.rest.builder.test.internal.resource.v1_0.SortRes
 import com.liferay.portal.tools.rest.builder.test.internal.resource.v1_0.TestEntityAddressResourceImpl;
 import com.liferay.portal.tools.rest.builder.test.internal.resource.v1_0.TestEntityResourceImpl;
 import com.liferay.portal.tools.rest.builder.test.resource.v1_0.AssetLibraryTestEntityResource;
-import com.liferay.portal.tools.rest.builder.test.resource.v1_0.BatchTestEntityResource;
+import com.liferay.portal.tools.rest.builder.test.resource.v1_0.BatchTestEntity1Resource;
 import com.liferay.portal.tools.rest.builder.test.resource.v1_0.CompanyTestEntityResource;
 import com.liferay.portal.tools.rest.builder.test.resource.v1_0.ERCAssetLibraryTestEntityResource;
 import com.liferay.portal.tools.rest.builder.test.resource.v1_0.ERCScopedTestEntityResource;
@@ -66,8 +66,8 @@ public class ServletDataImpl implements ServletData {
 	public void activate(BundleContext bundleContext) {
 		Mutation.setAssetLibraryTestEntityResourceComponentServiceObjects(
 			_assetLibraryTestEntityResourceComponentServiceObjects);
-		Mutation.setBatchTestEntityResourceComponentServiceObjects(
-			_batchTestEntityResourceComponentServiceObjects);
+		Mutation.setBatchTestEntity1ResourceComponentServiceObjects(
+			_batchTestEntity1ResourceComponentServiceObjects);
 		Mutation.setCompanyTestEntityResourceComponentServiceObjects(
 			_companyTestEntityResourceComponentServiceObjects);
 		Mutation.setERCAssetLibraryTestEntityResourceComponentServiceObjects(
@@ -93,8 +93,8 @@ public class ServletDataImpl implements ServletData {
 
 		Query.setAssetLibraryTestEntityResourceComponentServiceObjects(
 			_assetLibraryTestEntityResourceComponentServiceObjects);
-		Query.setBatchTestEntityResourceComponentServiceObjects(
-			_batchTestEntityResourceComponentServiceObjects);
+		Query.setBatchTestEntity1ResourceComponentServiceObjects(
+			_batchTestEntity1ResourceComponentServiceObjects);
 		Query.setCompanyTestEntityResourceComponentServiceObjects(
 			_companyTestEntityResourceComponentServiceObjects);
 		Query.setERCAssetLibraryTestEntityResourceComponentServiceObjects(
@@ -170,30 +170,25 @@ public class ServletDataImpl implements ServletData {
 							AssetLibraryTestEntityResourceImpl.class,
 							"postAssetLibraryAssetLibraryTestEntitiesPageExportBatch"));
 					put(
-						"mutation#deleteBatchTestEntityByExternalReferenceCode",
+						"mutation#deleteBatchTestEntity1ByExternalReferenceCode",
 						new ObjectValuePair<>(
-							BatchTestEntityResourceImpl.class,
-							"deleteBatchTestEntityByExternalReferenceCode"));
+							BatchTestEntity1ResourceImpl.class,
+							"deleteBatchTestEntity1ByExternalReferenceCode"));
 					put(
-						"mutation#createBatchTestEntitiesPageExportBatch",
+						"mutation#createBatchTestEntity1",
 						new ObjectValuePair<>(
-							BatchTestEntityResourceImpl.class,
-							"postBatchTestEntitiesPageExportBatch"));
+							BatchTestEntity1ResourceImpl.class,
+							"postBatchTestEntity1"));
 					put(
-						"mutation#createBatchTestEntity",
+						"mutation#createBatchTestEntity1Batch",
 						new ObjectValuePair<>(
-							BatchTestEntityResourceImpl.class,
-							"postBatchTestEntity"));
+							BatchTestEntity1ResourceImpl.class,
+							"postBatchTestEntity1Batch"));
 					put(
-						"mutation#createBatchTestEntityBatch",
+						"mutation#updateBatchTestEntity1ByExternalReferenceCode",
 						new ObjectValuePair<>(
-							BatchTestEntityResourceImpl.class,
-							"postBatchTestEntityBatch"));
-					put(
-						"mutation#updateBatchTestEntityByExternalReferenceCode",
-						new ObjectValuePair<>(
-							BatchTestEntityResourceImpl.class,
-							"putBatchTestEntityByExternalReferenceCode"));
+							BatchTestEntity1ResourceImpl.class,
+							"putBatchTestEntity1ByExternalReferenceCode"));
 					put(
 						"mutation#deleteCompanyTestEntityByExternalReferenceCode",
 						new ObjectValuePair<>(
@@ -581,20 +576,20 @@ public class ServletDataImpl implements ServletData {
 							AssetLibraryTestEntityResourceImpl.class,
 							"getAssetLibraryAssetLibraryTestEntitiesPage"));
 					put(
-						"query#batchTestEntities",
+						"query#batchTestEntities1",
 						new ObjectValuePair<>(
-							BatchTestEntityResourceImpl.class,
-							"getBatchTestEntitiesPage"));
+							BatchTestEntity1ResourceImpl.class,
+							"getBatchTestEntities1Page"));
 					put(
-						"query#batchTestEntity",
+						"query#batchTestEntity1",
 						new ObjectValuePair<>(
-							BatchTestEntityResourceImpl.class,
-							"getBatchTestEntity"));
+							BatchTestEntity1ResourceImpl.class,
+							"getBatchTestEntity1"));
 					put(
-						"query#batchTestEntityByExternalReferenceCode",
+						"query#batchTestEntity1ByExternalReferenceCode",
 						new ObjectValuePair<>(
-							BatchTestEntityResourceImpl.class,
-							"getBatchTestEntityByExternalReferenceCode"));
+							BatchTestEntity1ResourceImpl.class,
+							"getBatchTestEntity1ByExternalReferenceCode"));
 					put(
 						"query#companyTestEntities",
 						new ObjectValuePair<>(
@@ -783,12 +778,12 @@ public class ServletDataImpl implements ServletData {
 							TestEntityAddressResourceImpl.class,
 							"getTestEntityTestEntityAddress"));
 					put(
-						"query#CompanyTestEntity.batchTestEntityByExternalReferenceCode",
+						"query#CompanyTestEntity.batchTestEntity1ByExternalReferenceCode",
 						new ObjectValuePair<>(
-							BatchTestEntityResourceImpl.class,
-							"getBatchTestEntityByExternalReferenceCode"));
+							BatchTestEntity1ResourceImpl.class,
+							"getBatchTestEntity1ByExternalReferenceCode"));
 					put(
-						"query#BatchTestEntity.companyTestEntityByExternalReferenceCode",
+						"query#BatchTestEntity1.companyTestEntityByExternalReferenceCode",
 						new ObjectValuePair<>(
 							CompanyTestEntityResourceImpl.class,
 							"getCompanyTestEntityByExternalReferenceCode"));
@@ -800,8 +795,8 @@ public class ServletDataImpl implements ServletData {
 		_assetLibraryTestEntityResourceComponentServiceObjects;
 
 	@Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
-	private ComponentServiceObjects<BatchTestEntityResource>
-		_batchTestEntityResourceComponentServiceObjects;
+	private ComponentServiceObjects<BatchTestEntity1Resource>
+		_batchTestEntity1ResourceComponentServiceObjects;
 
 	@Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
 	private ComponentServiceObjects<CompanyTestEntityResource>

@@ -13,7 +13,7 @@ import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.odata.filter.ExpressionConvert;
 import com.liferay.portal.odata.filter.FilterParserProvider;
 import com.liferay.portal.odata.sort.SortParserProvider;
-import com.liferay.portal.tools.rest.builder.test.dto.v1_0.BatchTestEntity;
+import com.liferay.portal.tools.rest.builder.test.dto.v1_0.BatchTestEntity1;
 import com.liferay.portal.tools.rest.builder.test.dto.v1_0.Filter;
 import com.liferay.portal.tools.rest.builder.test.dto.v1_0.Sort;
 import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
@@ -47,33 +47,30 @@ import org.osgi.annotation.versioning.ProviderType;
 @CTAware
 @Generated("")
 @ProviderType
-public interface BatchTestEntityResource {
+public interface BatchTestEntity1Resource {
 
-	public void deleteBatchTestEntityByExternalReferenceCode(
+	public void deleteBatchTestEntity1ByExternalReferenceCode(
 			String externalReferenceCode)
 		throws Exception;
 
-	public Page<BatchTestEntity> getBatchTestEntitiesPage() throws Exception;
+	public Page<BatchTestEntity1> getBatchTestEntities1Page() throws Exception;
 
-	public BatchTestEntity getBatchTestEntity(Long batchTestEntityId)
+	public BatchTestEntity1 getBatchTestEntity1(Long batchTestEntityId)
 		throws Exception;
 
-	public BatchTestEntity getBatchTestEntityByExternalReferenceCode(
+	public BatchTestEntity1 getBatchTestEntity1ByExternalReferenceCode(
 			String externalReferenceCode)
 		throws Exception;
 
-	public Response postBatchTestEntitiesPageExportBatch(
-			String callbackURL, String contentType, String fieldNames)
+	public BatchTestEntity1 postBatchTestEntity1(
+			BatchTestEntity1 batchTestEntity1)
 		throws Exception;
 
-	public BatchTestEntity postBatchTestEntity(BatchTestEntity batchTestEntity)
+	public Response postBatchTestEntity1Batch(String callbackURL, Object object)
 		throws Exception;
 
-	public Response postBatchTestEntityBatch(String callbackURL, Object object)
-		throws Exception;
-
-	public BatchTestEntity putBatchTestEntityByExternalReferenceCode(
-			String externalReferenceCode, BatchTestEntity batchTestEntity)
+	public BatchTestEntity1 putBatchTestEntity1ByExternalReferenceCode(
+			String externalReferenceCode, BatchTestEntity1 batchTestEntity1)
 		throws Exception;
 
 	public default void setContextAcceptLanguage(
@@ -146,7 +143,7 @@ public interface BatchTestEntityResource {
 	@ProviderType
 	public interface Builder {
 
-		public BatchTestEntityResource build();
+		public BatchTestEntity1Resource build();
 
 		public Builder checkPermissions(boolean checkPermissions);
 

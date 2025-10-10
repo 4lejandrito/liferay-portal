@@ -12,7 +12,7 @@ import com.liferay.portal.kernel.service.ResourceActionLocalService;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
 import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.tools.rest.builder.test.dto.v1_0.AssetLibraryTestEntity;
-import com.liferay.portal.tools.rest.builder.test.dto.v1_0.BatchTestEntity;
+import com.liferay.portal.tools.rest.builder.test.dto.v1_0.BatchTestEntity1;
 import com.liferay.portal.tools.rest.builder.test.dto.v1_0.CompanyTestEntity;
 import com.liferay.portal.tools.rest.builder.test.dto.v1_0.ERCAssetLibraryTestEntity;
 import com.liferay.portal.tools.rest.builder.test.dto.v1_0.ERCScopedTestEntity;
@@ -28,7 +28,7 @@ import com.liferay.portal.tools.rest.builder.test.dto.v1_0.Sort;
 import com.liferay.portal.tools.rest.builder.test.dto.v1_0.TestEntity;
 import com.liferay.portal.tools.rest.builder.test.dto.v1_0.TestEntityAddress;
 import com.liferay.portal.tools.rest.builder.test.resource.v1_0.AssetLibraryTestEntityResource;
-import com.liferay.portal.tools.rest.builder.test.resource.v1_0.BatchTestEntityResource;
+import com.liferay.portal.tools.rest.builder.test.resource.v1_0.BatchTestEntity1Resource;
 import com.liferay.portal.tools.rest.builder.test.resource.v1_0.CompanyTestEntityResource;
 import com.liferay.portal.tools.rest.builder.test.resource.v1_0.ERCAssetLibraryTestEntityResource;
 import com.liferay.portal.tools.rest.builder.test.resource.v1_0.ERCScopedTestEntityResource;
@@ -78,12 +78,12 @@ public class Query {
 			assetLibraryTestEntityResourceComponentServiceObjects;
 	}
 
-	public static void setBatchTestEntityResourceComponentServiceObjects(
-		ComponentServiceObjects<BatchTestEntityResource>
-			batchTestEntityResourceComponentServiceObjects) {
+	public static void setBatchTestEntity1ResourceComponentServiceObjects(
+		ComponentServiceObjects<BatchTestEntity1Resource>
+			batchTestEntity1ResourceComponentServiceObjects) {
 
-		_batchTestEntityResourceComponentServiceObjects =
-			batchTestEntityResourceComponentServiceObjects;
+		_batchTestEntity1ResourceComponentServiceObjects =
+			batchTestEntity1ResourceComponentServiceObjects;
 	}
 
 	public static void setCompanyTestEntityResourceComponentServiceObjects(
@@ -223,50 +223,51 @@ public class Query {
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {batchTestEntities{items {__}, page, pageSize, totalCount}}"}' -u 'test@liferay.com:test'
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {batchTestEntities1{items {__}, page, pageSize, totalCount}}"}' -u 'test@liferay.com:test'
 	 */
 	@GraphQLField
-	public BatchTestEntityPage batchTestEntities() throws Exception {
+	public BatchTestEntity1Page batchTestEntities1() throws Exception {
 		return _applyComponentServiceObjects(
-			_batchTestEntityResourceComponentServiceObjects,
+			_batchTestEntity1ResourceComponentServiceObjects,
 			this::_populateResourceContext,
-			batchTestEntityResource -> new BatchTestEntityPage(
-				batchTestEntityResource.getBatchTestEntitiesPage()));
+			batchTestEntity1Resource -> new BatchTestEntity1Page(
+				batchTestEntity1Resource.getBatchTestEntities1Page()));
 	}
 
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {batchTestEntity(batchTestEntityId: ___){customFields, externalReferenceCode, id, name, nestedField, relatedCompanyTestEntity}}"}' -u 'test@liferay.com:test'
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {batchTestEntity1(batchTestEntityId: ___){customFields, externalReferenceCode, id, name, nestedField, relatedCompanyTestEntity}}"}' -u 'test@liferay.com:test'
 	 */
 	@GraphQLField
-	public BatchTestEntity batchTestEntity(
+	public BatchTestEntity1 batchTestEntity1(
 			@GraphQLName("batchTestEntityId") Long batchTestEntityId)
 		throws Exception {
 
 		return _applyComponentServiceObjects(
-			_batchTestEntityResourceComponentServiceObjects,
+			_batchTestEntity1ResourceComponentServiceObjects,
 			this::_populateResourceContext,
-			batchTestEntityResource ->
-				batchTestEntityResource.getBatchTestEntity(batchTestEntityId));
+			batchTestEntity1Resource ->
+				batchTestEntity1Resource.getBatchTestEntity1(
+					batchTestEntityId));
 	}
 
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {batchTestEntityByExternalReferenceCode(externalReferenceCode: ___){customFields, externalReferenceCode, id, name, nestedField, relatedCompanyTestEntity}}"}' -u 'test@liferay.com:test'
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {batchTestEntity1ByExternalReferenceCode(externalReferenceCode: ___){customFields, externalReferenceCode, id, name, nestedField, relatedCompanyTestEntity}}"}' -u 'test@liferay.com:test'
 	 */
 	@GraphQLField
-	public BatchTestEntity batchTestEntityByExternalReferenceCode(
+	public BatchTestEntity1 batchTestEntity1ByExternalReferenceCode(
 			@GraphQLName("externalReferenceCode") String externalReferenceCode)
 		throws Exception {
 
 		return _applyComponentServiceObjects(
-			_batchTestEntityResourceComponentServiceObjects,
+			_batchTestEntity1ResourceComponentServiceObjects,
 			this::_populateResourceContext,
-			batchTestEntityResource ->
-				batchTestEntityResource.
-					getBatchTestEntityByExternalReferenceCode(
+			batchTestEntity1Resource ->
+				batchTestEntity1Resource.
+					getBatchTestEntity1ByExternalReferenceCode(
 						externalReferenceCode));
 	}
 
@@ -1013,24 +1014,24 @@ public class Query {
 	}
 
 	@GraphQLTypeExtension(CompanyTestEntity.class)
-	public class GetBatchTestEntityByExternalReferenceCodeTypeExtension {
+	public class GetBatchTestEntity1ByExternalReferenceCodeTypeExtension {
 
-		public GetBatchTestEntityByExternalReferenceCodeTypeExtension(
+		public GetBatchTestEntity1ByExternalReferenceCodeTypeExtension(
 			CompanyTestEntity companyTestEntity) {
 
 			_companyTestEntity = companyTestEntity;
 		}
 
 		@GraphQLField
-		public BatchTestEntity batchTestEntityByExternalReferenceCode()
+		public BatchTestEntity1 batchTestEntity1ByExternalReferenceCode()
 			throws Exception {
 
 			return _applyComponentServiceObjects(
-				_batchTestEntityResourceComponentServiceObjects,
+				_batchTestEntity1ResourceComponentServiceObjects,
 				Query.this::_populateResourceContext,
-				batchTestEntityResource ->
-					batchTestEntityResource.
-						getBatchTestEntityByExternalReferenceCode(
+				batchTestEntity1Resource ->
+					batchTestEntity1Resource.
+						getBatchTestEntity1ByExternalReferenceCode(
 							_companyTestEntity.getExternalReferenceCode()));
 		}
 
@@ -1038,13 +1039,13 @@ public class Query {
 
 	}
 
-	@GraphQLTypeExtension(BatchTestEntity.class)
+	@GraphQLTypeExtension(BatchTestEntity1.class)
 	public class GetCompanyTestEntityByExternalReferenceCodeTypeExtension {
 
 		public GetCompanyTestEntityByExternalReferenceCodeTypeExtension(
-			BatchTestEntity batchTestEntity) {
+			BatchTestEntity1 batchTestEntity1) {
 
-			_batchTestEntity = batchTestEntity;
+			_batchTestEntity1 = batchTestEntity1;
 		}
 
 		@GraphQLField
@@ -1057,10 +1058,10 @@ public class Query {
 				companyTestEntityResource ->
 					companyTestEntityResource.
 						getCompanyTestEntityByExternalReferenceCode(
-							_batchTestEntity.getExternalReferenceCode()));
+							_batchTestEntity1.getExternalReferenceCode()));
 		}
 
-		private BatchTestEntity _batchTestEntity;
+		private BatchTestEntity1 _batchTestEntity1;
 
 	}
 
@@ -1097,24 +1098,24 @@ public class Query {
 
 	}
 
-	@GraphQLName("BatchTestEntityPage")
-	public class BatchTestEntityPage {
+	@GraphQLName("BatchTestEntity1Page")
+	public class BatchTestEntity1Page {
 
-		public BatchTestEntityPage(Page batchTestEntityPage) {
-			actions = batchTestEntityPage.getActions();
+		public BatchTestEntity1Page(Page batchTestEntity1Page) {
+			actions = batchTestEntity1Page.getActions();
 
-			items = batchTestEntityPage.getItems();
-			lastPage = batchTestEntityPage.getLastPage();
-			page = batchTestEntityPage.getPage();
-			pageSize = batchTestEntityPage.getPageSize();
-			totalCount = batchTestEntityPage.getTotalCount();
+			items = batchTestEntity1Page.getItems();
+			lastPage = batchTestEntity1Page.getLastPage();
+			page = batchTestEntity1Page.getPage();
+			pageSize = batchTestEntity1Page.getPageSize();
+			totalCount = batchTestEntity1Page.getTotalCount();
 		}
 
 		@GraphQLField
 		protected Map<String, Map<String, String>> actions;
 
 		@GraphQLField
-		protected java.util.Collection<BatchTestEntity> items;
+		protected java.util.Collection<BatchTestEntity1> items;
 
 		@GraphQLField
 		protected long lastPage;
@@ -1639,23 +1640,23 @@ public class Query {
 	}
 
 	private void _populateResourceContext(
-			BatchTestEntityResource batchTestEntityResource)
+			BatchTestEntity1Resource batchTestEntity1Resource)
 		throws Exception {
 
-		batchTestEntityResource.setContextAcceptLanguage(_acceptLanguage);
-		batchTestEntityResource.setContextCompany(_company);
-		batchTestEntityResource.setContextHttpServletRequest(
+		batchTestEntity1Resource.setContextAcceptLanguage(_acceptLanguage);
+		batchTestEntity1Resource.setContextCompany(_company);
+		batchTestEntity1Resource.setContextHttpServletRequest(
 			_httpServletRequest);
-		batchTestEntityResource.setContextHttpServletResponse(
+		batchTestEntity1Resource.setContextHttpServletResponse(
 			_httpServletResponse);
-		batchTestEntityResource.setContextUriInfo(_uriInfo);
-		batchTestEntityResource.setContextUser(_user);
-		batchTestEntityResource.setGroupLocalService(_groupLocalService);
-		batchTestEntityResource.setResourceActionLocalService(
+		batchTestEntity1Resource.setContextUriInfo(_uriInfo);
+		batchTestEntity1Resource.setContextUser(_user);
+		batchTestEntity1Resource.setGroupLocalService(_groupLocalService);
+		batchTestEntity1Resource.setResourceActionLocalService(
 			_resourceActionLocalService);
-		batchTestEntityResource.setResourcePermissionLocalService(
+		batchTestEntity1Resource.setResourcePermissionLocalService(
 			_resourcePermissionLocalService);
-		batchTestEntityResource.setRoleLocalService(_roleLocalService);
+		batchTestEntity1Resource.setRoleLocalService(_roleLocalService);
 	}
 
 	private void _populateResourceContext(
@@ -1938,8 +1939,8 @@ public class Query {
 
 	private static ComponentServiceObjects<AssetLibraryTestEntityResource>
 		_assetLibraryTestEntityResourceComponentServiceObjects;
-	private static ComponentServiceObjects<BatchTestEntityResource>
-		_batchTestEntityResourceComponentServiceObjects;
+	private static ComponentServiceObjects<BatchTestEntity1Resource>
+		_batchTestEntity1ResourceComponentServiceObjects;
 	private static ComponentServiceObjects<CompanyTestEntityResource>
 		_companyTestEntityResourceComponentServiceObjects;
 	private static ComponentServiceObjects<ERCAssetLibraryTestEntityResource>

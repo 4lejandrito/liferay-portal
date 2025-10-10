@@ -25,7 +25,7 @@ import com.liferay.portal.odata.filter.ExpressionConvert;
 import com.liferay.portal.odata.filter.FilterParserProvider;
 import com.liferay.portal.odata.sort.SortParserProvider;
 import com.liferay.portal.tools.rest.builder.test.internal.security.permission.LiberalPermissionChecker;
-import com.liferay.portal.tools.rest.builder.test.resource.v1_0.BatchTestEntityResource;
+import com.liferay.portal.tools.rest.builder.test.resource.v1_0.BatchTestEntity1Resource;
 import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
 
 import jakarta.annotation.Generated;
@@ -55,29 +55,29 @@ import org.osgi.service.component.annotations.ReferenceScope;
  * @generated
  */
 @Component(
-	property = "resource.locator.key=/test/v1.0/BatchTestEntity",
-	service = BatchTestEntityResource.Factory.class
+	property = "resource.locator.key=/test/v1.0/BatchTestEntity1",
+	service = BatchTestEntity1Resource.Factory.class
 )
 @Generated("")
-public class BatchTestEntityResourceFactoryImpl
-	implements BatchTestEntityResource.Factory {
+public class BatchTestEntity1ResourceFactoryImpl
+	implements BatchTestEntity1Resource.Factory {
 
 	@Override
-	public BatchTestEntityResource.Builder create() {
-		return new BatchTestEntityResource.Builder() {
+	public BatchTestEntity1Resource.Builder create() {
+		return new BatchTestEntity1Resource.Builder() {
 
 			@Override
-			public BatchTestEntityResource build() {
+			public BatchTestEntity1Resource build() {
 				if (_user == null) {
 					throw new IllegalArgumentException("User is not set");
 				}
 
-				Function<InvocationHandler, BatchTestEntityResource>
-					batchTestEntityResourceProxyProviderFunction =
+				Function<InvocationHandler, BatchTestEntity1Resource>
+					batchTestEntity1ResourceProxyProviderFunction =
 						ResourceProxyProviderFunctionHolder.
-							_batchTestEntityResourceProxyProviderFunction;
+							_batchTestEntity1ResourceProxyProviderFunction;
 
-				return batchTestEntityResourceProxyProviderFunction.apply(
+				return batchTestEntity1ResourceProxyProviderFunction.apply(
 					(proxy, method, arguments) -> _invoke(
 						method, arguments, _checkPermissions,
 						_httpServletRequest, _httpServletResponse,
@@ -85,7 +85,7 @@ public class BatchTestEntityResourceFactoryImpl
 			}
 
 			@Override
-			public BatchTestEntityResource.Builder checkPermissions(
+			public BatchTestEntity1Resource.Builder checkPermissions(
 				boolean checkPermissions) {
 
 				_checkPermissions = checkPermissions;
@@ -94,7 +94,7 @@ public class BatchTestEntityResourceFactoryImpl
 			}
 
 			@Override
-			public BatchTestEntityResource.Builder httpServletRequest(
+			public BatchTestEntity1Resource.Builder httpServletRequest(
 				HttpServletRequest httpServletRequest) {
 
 				_httpServletRequest = httpServletRequest;
@@ -103,7 +103,7 @@ public class BatchTestEntityResourceFactoryImpl
 			}
 
 			@Override
-			public BatchTestEntityResource.Builder httpServletResponse(
+			public BatchTestEntity1Resource.Builder httpServletResponse(
 				HttpServletResponse httpServletResponse) {
 
 				_httpServletResponse = httpServletResponse;
@@ -112,7 +112,7 @@ public class BatchTestEntityResourceFactoryImpl
 			}
 
 			@Override
-			public BatchTestEntityResource.Builder preferredLocale(
+			public BatchTestEntity1Resource.Builder preferredLocale(
 				Locale preferredLocale) {
 
 				_preferredLocale = preferredLocale;
@@ -121,14 +121,14 @@ public class BatchTestEntityResourceFactoryImpl
 			}
 
 			@Override
-			public BatchTestEntityResource.Builder uriInfo(UriInfo uriInfo) {
+			public BatchTestEntity1Resource.Builder uriInfo(UriInfo uriInfo) {
 				_uriInfo = uriInfo;
 
 				return this;
 			}
 
 			@Override
-			public BatchTestEntityResource.Builder user(User user) {
+			public BatchTestEntity1Resource.Builder user(User user) {
 				_user = user;
 
 				return this;
@@ -144,17 +144,17 @@ public class BatchTestEntityResourceFactoryImpl
 		};
 	}
 
-	private static Function<InvocationHandler, BatchTestEntityResource>
+	private static Function<InvocationHandler, BatchTestEntity1Resource>
 		_getProxyProviderFunction() {
 
 		Class<?> proxyClass = ProxyUtil.getProxyClass(
-			BatchTestEntityResource.class.getClassLoader(),
-			BatchTestEntityResource.class);
+			BatchTestEntity1Resource.class.getClassLoader(),
+			BatchTestEntity1Resource.class);
 
 		try {
-			Constructor<BatchTestEntityResource> constructor =
-				(Constructor<BatchTestEntityResource>)proxyClass.getConstructor(
-					InvocationHandler.class);
+			Constructor<BatchTestEntity1Resource> constructor =
+				(Constructor<BatchTestEntity1Resource>)
+					proxyClass.getConstructor(InvocationHandler.class);
 
 			return invocationHandler -> {
 				try {
@@ -195,40 +195,40 @@ public class BatchTestEntityResourceFactoryImpl
 				new LiberalPermissionChecker(user));
 		}
 
-		BatchTestEntityResource batchTestEntityResource =
+		BatchTestEntity1Resource batchTestEntity1Resource =
 			_componentServiceObjects.getService();
 
-		batchTestEntityResource.setContextAcceptLanguage(
+		batchTestEntity1Resource.setContextAcceptLanguage(
 			new AcceptLanguageImpl(httpServletRequest, preferredLocale, user));
 
 		Company company = _companyLocalService.getCompany(user.getCompanyId());
 
-		batchTestEntityResource.setContextCompany(company);
+		batchTestEntity1Resource.setContextCompany(company);
 
-		batchTestEntityResource.setContextHttpServletRequest(
+		batchTestEntity1Resource.setContextHttpServletRequest(
 			httpServletRequest);
-		batchTestEntityResource.setContextHttpServletResponse(
+		batchTestEntity1Resource.setContextHttpServletResponse(
 			httpServletResponse);
-		batchTestEntityResource.setContextUriInfo(uriInfo);
-		batchTestEntityResource.setContextUser(user);
-		batchTestEntityResource.setExpressionConvert(_expressionConvert);
-		batchTestEntityResource.setFilterParserProvider(_filterParserProvider);
-		batchTestEntityResource.setGroupLocalService(_groupLocalService);
-		batchTestEntityResource.setResourceActionLocalService(
+		batchTestEntity1Resource.setContextUriInfo(uriInfo);
+		batchTestEntity1Resource.setContextUser(user);
+		batchTestEntity1Resource.setExpressionConvert(_expressionConvert);
+		batchTestEntity1Resource.setFilterParserProvider(_filterParserProvider);
+		batchTestEntity1Resource.setGroupLocalService(_groupLocalService);
+		batchTestEntity1Resource.setResourceActionLocalService(
 			_resourceActionLocalService);
-		batchTestEntityResource.setResourcePermissionLocalService(
+		batchTestEntity1Resource.setResourcePermissionLocalService(
 			_resourcePermissionLocalService);
-		batchTestEntityResource.setRoleLocalService(_roleLocalService);
-		batchTestEntityResource.setSortParserProvider(_sortParserProvider);
+		batchTestEntity1Resource.setRoleLocalService(_roleLocalService);
+		batchTestEntity1Resource.setSortParserProvider(_sortParserProvider);
 
 		try {
-			return method.invoke(batchTestEntityResource, arguments);
+			return method.invoke(batchTestEntity1Resource, arguments);
 		}
 		catch (InvocationTargetException invocationTargetException) {
 			throw invocationTargetException.getTargetException();
 		}
 		finally {
-			_componentServiceObjects.ungetService(batchTestEntityResource);
+			_componentServiceObjects.ungetService(batchTestEntity1Resource);
 
 			PrincipalThreadLocal.setName(name);
 
@@ -240,7 +240,7 @@ public class BatchTestEntityResourceFactoryImpl
 	private CompanyLocalService _companyLocalService;
 
 	@Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
-	private ComponentServiceObjects<BatchTestEntityResource>
+	private ComponentServiceObjects<BatchTestEntity1Resource>
 		_componentServiceObjects;
 
 	@Reference
@@ -275,8 +275,8 @@ public class BatchTestEntityResourceFactoryImpl
 	private static class ResourceProxyProviderFunctionHolder {
 
 		private static final Function
-			<InvocationHandler, BatchTestEntityResource>
-				_batchTestEntityResourceProxyProviderFunction =
+			<InvocationHandler, BatchTestEntity1Resource>
+				_batchTestEntity1ResourceProxyProviderFunction =
 					_getProxyProviderFunction();
 
 	}

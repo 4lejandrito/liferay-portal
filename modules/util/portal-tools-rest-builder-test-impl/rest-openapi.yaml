@@ -980,6 +980,7 @@ paths:
             tags: ["ScopedTestEntity"]
     "/batch-test-entities1":
         get:
+            operationId: getBatchTestEntities1Page
             responses:
                 200:
                     content:
@@ -998,6 +999,7 @@ paths:
             tags: ["BatchTestEntity1"]
     "/batch-test-entity1":
         post:
+            operationId: postBatchTestEntity1
             requestBody:
                 content:
                     application/json:
@@ -1018,6 +1020,7 @@ paths:
             tags: ["BatchTestEntity1"]
     "/batch-test-entity1/by-external-reference-code/{externalReferenceCode}":
         delete:
+            operationId: deleteBatchTestEntity1ByExternalReferenceCode
             parameters:
                 -   in: path
                     name: externalReferenceCode
@@ -1033,6 +1036,7 @@ paths:
                         "OK"
             tags: ["BatchTestEntity1"]
         get:
+            operationId: getBatchTestEntity1ByExternalReferenceCode
             parameters:
                 -   in: path
                     name: externalReferenceCode
@@ -1052,6 +1056,7 @@ paths:
                         "OK"
             tags: ["BatchTestEntity1"]
         put:
+            operationId: putBatchTestEntity1ByExternalReferenceCode
             parameters:
                 -   in: path
                     name: externalReferenceCode
@@ -1080,6 +1085,7 @@ paths:
             tags: ["BatchTestEntity1"]
     "/batch-test-entity1/{batchTestEntity1Id}":
         get:
+            operationId: getBatchTestEntity1
             parameters:
                 -   in: path
                     name: batchTestEntityId

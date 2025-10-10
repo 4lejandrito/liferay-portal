@@ -10,10 +10,7 @@
  * @generated
  */
 
-	/**
-	* https://www.schema.org/Document
-	*/
-	export class BatchTestEntity {
+	export class BatchTestEntity1 {
 			"customFields"?: Array<any>;
 			"externalReferenceCode"?: string;
 			"id"?: number;
@@ -61,6 +58,6 @@
 		];
 
 		static getAttributeTypeMap() {
-				return BatchTestEntity.attributeTypeMap;
+				return BatchTestEntity1.attributeTypeMap;
 		}
 	}

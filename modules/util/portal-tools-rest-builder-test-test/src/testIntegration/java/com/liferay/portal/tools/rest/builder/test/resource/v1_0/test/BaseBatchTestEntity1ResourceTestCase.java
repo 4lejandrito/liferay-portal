@@ -16,7 +16,6 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.liferay.headless.batch.engine.client.dto.v1_0.ImportTask;
 import com.liferay.headless.batch.engine.client.http.HttpInvoker.HttpResponse;
 import com.liferay.headless.batch.engine.client.resource.v1_0.ImportTaskResource;
-import com.liferay.oauth2.provider.scope.ScopeChecker;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringBundler;
@@ -27,12 +26,6 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
-import com.liferay.portal.kernel.service.GroupLocalService;
-import com.liferay.portal.kernel.service.ResourceActionLocalService;
-import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
-import com.liferay.portal.kernel.service.RoleLocalService;
-import com.liferay.portal.kernel.service.UserLocalService;
-import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
@@ -46,30 +39,18 @@ import com.liferay.portal.odata.entity.EntityField;
 import com.liferay.portal.odata.entity.EntityModel;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
-import com.liferay.portal.tools.rest.builder.test.client.dto.v1_0.BatchTestEntity;
+import com.liferay.portal.tools.rest.builder.test.client.dto.v1_0.BatchTestEntity1;
 import com.liferay.portal.tools.rest.builder.test.client.http.HttpInvoker;
 import com.liferay.portal.tools.rest.builder.test.client.pagination.Page;
-import com.liferay.portal.tools.rest.builder.test.client.resource.v1_0.BatchTestEntityResource;
-import com.liferay.portal.tools.rest.builder.test.client.serdes.v1_0.BatchTestEntitySerDes;
-import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
-import com.liferay.portal.vulcan.crud.VulcanCRUDItemDelegate;
-import com.liferay.portal.vulcan.crud.VulcanCRUDItemDelegateBuilderRegistry;
+import com.liferay.portal.tools.rest.builder.test.client.resource.v1_0.BatchTestEntity1Resource;
+import com.liferay.portal.tools.rest.builder.test.client.serdes.v1_0.BatchTestEntity1SerDes;
 import com.liferay.portal.vulcan.resource.EntityModelResource;
 
 import jakarta.annotation.Generated;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import jakarta.ws.rs.core.MultivaluedHashMap;
-import jakarta.ws.rs.core.MultivaluedMap;
-import jakarta.ws.rs.core.PathSegment;
-import jakarta.ws.rs.core.UriBuilder;
-import jakarta.ws.rs.core.UriInfo;
 
 import java.lang.reflect.Method;
-
-import java.net.URI;
 
 import java.text.Format;
 
@@ -80,7 +61,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -94,22 +74,17 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
-
 /**
  * @author Alejandro Tardín
  * @generated
  */
 @Generated("")
-public abstract class BaseBatchTestEntityResourceTestCase {
+public abstract class BaseBatchTestEntity1ResourceTestCase {
 
 	@ClassRule
 	@Rule
-	public static final AggregateTestRule aggregateTestRule =
-		new AggregateTestRule(
-			new LiferayIntegrationTestRule(),
-			PermissionCheckerMethodTestRule.INSTANCE);
+	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
+		new LiferayIntegrationTestRule();
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
@@ -125,12 +100,12 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 		testCompany = CompanyLocalServiceUtil.getCompany(
 			testGroup.getCompanyId());
 
-		_batchTestEntityResource.setContextCompany(testCompany);
+		_batchTestEntity1Resource.setContextCompany(testCompany);
 
 		_testCompanyAdminUser = UserTestUtil.getAdminUser(
 			testCompany.getCompanyId());
 
-		batchTestEntityResource = BatchTestEntityResource.builder(
+		batchTestEntity1Resource = BatchTestEntity1Resource.builder(
 		).authentication(
 			_testCompanyAdminUser.getEmailAddress(),
 			PropsValues.DEFAULT_ADMIN_PASSWORD
@@ -161,23 +136,23 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 	public void testClientSerDesToDTO() throws Exception {
 		ObjectMapper objectMapper = getClientSerDesObjectMapper();
 
-		BatchTestEntity batchTestEntity1 = randomBatchTestEntity();
+		BatchTestEntity1 batchTestEntity11 = randomBatchTestEntity1();
 
-		String json = objectMapper.writeValueAsString(batchTestEntity1);
+		String json = objectMapper.writeValueAsString(batchTestEntity11);
 
-		BatchTestEntity batchTestEntity2 = BatchTestEntitySerDes.toDTO(json);
+		BatchTestEntity1 batchTestEntity12 = BatchTestEntity1SerDes.toDTO(json);
 
-		Assert.assertTrue(equals(batchTestEntity1, batchTestEntity2));
+		Assert.assertTrue(equals(batchTestEntity11, batchTestEntity12));
 	}
 
 	@Test
 	public void testClientSerDesToJSON() throws Exception {
 		ObjectMapper objectMapper = getClientSerDesObjectMapper();
 
-		BatchTestEntity batchTestEntity = randomBatchTestEntity();
+		BatchTestEntity1 batchTestEntity1 = randomBatchTestEntity1();
 
-		String json1 = objectMapper.writeValueAsString(batchTestEntity);
-		String json2 = BatchTestEntitySerDes.toJSON(batchTestEntity);
+		String json1 = objectMapper.writeValueAsString(batchTestEntity1);
+		String json2 = BatchTestEntity1SerDes.toJSON(batchTestEntity1);
 
 		Assert.assertEquals(
 			objectMapper.readTree(json1), objectMapper.readTree(json2));
@@ -205,50 +180,50 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 	public void testEscapeRegexInStringFields() throws Exception {
 		String regex = "^[0-9]+(\\.[0-9]{1,2})\"?";
 
-		BatchTestEntity batchTestEntity = randomBatchTestEntity();
+		BatchTestEntity1 batchTestEntity1 = randomBatchTestEntity1();
 
-		batchTestEntity.setExternalReferenceCode(regex);
-		batchTestEntity.setName(regex);
-		batchTestEntity.setNestedField(regex);
+		batchTestEntity1.setExternalReferenceCode(regex);
+		batchTestEntity1.setName(regex);
+		batchTestEntity1.setNestedField(regex);
 
-		String json = BatchTestEntitySerDes.toJSON(batchTestEntity);
+		String json = BatchTestEntity1SerDes.toJSON(batchTestEntity1);
 
 		Assert.assertFalse(json.contains(regex));
 
-		batchTestEntity = BatchTestEntitySerDes.toDTO(json);
+		batchTestEntity1 = BatchTestEntity1SerDes.toDTO(json);
 
-		Assert.assertEquals(regex, batchTestEntity.getExternalReferenceCode());
-		Assert.assertEquals(regex, batchTestEntity.getName());
-		Assert.assertEquals(regex, batchTestEntity.getNestedField());
+		Assert.assertEquals(regex, batchTestEntity1.getExternalReferenceCode());
+		Assert.assertEquals(regex, batchTestEntity1.getName());
+		Assert.assertEquals(regex, batchTestEntity1.getNestedField());
 	}
 
 	@Test
-	public void testDeleteBatchTestEntityByExternalReferenceCode()
+	public void testDeleteBatchTestEntity1ByExternalReferenceCode()
 		throws Exception {
 
 		@SuppressWarnings("PMD.UnusedLocalVariable")
-		BatchTestEntity batchTestEntity =
-			testDeleteBatchTestEntityByExternalReferenceCode_addBatchTestEntity();
+		BatchTestEntity1 batchTestEntity1 =
+			testDeleteBatchTestEntity1ByExternalReferenceCode_addBatchTestEntity1();
 
 		assertHttpResponseStatusCode(
 			204,
-			batchTestEntityResource.
-				deleteBatchTestEntityByExternalReferenceCodeHttpResponse(
-					batchTestEntity.getExternalReferenceCode()));
+			batchTestEntity1Resource.
+				deleteBatchTestEntity1ByExternalReferenceCodeHttpResponse(
+					batchTestEntity1.getExternalReferenceCode()));
 
 		assertHttpResponseStatusCode(
 			404,
-			batchTestEntityResource.
-				getBatchTestEntityByExternalReferenceCodeHttpResponse(
-					batchTestEntity.getExternalReferenceCode()));
+			batchTestEntity1Resource.
+				getBatchTestEntity1ByExternalReferenceCodeHttpResponse(
+					batchTestEntity1.getExternalReferenceCode()));
 		assertHttpResponseStatusCode(
 			404,
-			batchTestEntityResource.
-				getBatchTestEntityByExternalReferenceCodeHttpResponse("-"));
+			batchTestEntity1Resource.
+				getBatchTestEntity1ByExternalReferenceCodeHttpResponse("-"));
 	}
 
-	protected BatchTestEntity
-			testDeleteBatchTestEntityByExternalReferenceCode_addBatchTestEntity()
+	protected BatchTestEntity1
+			testDeleteBatchTestEntity1ByExternalReferenceCode_addBatchTestEntity1()
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -256,41 +231,41 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 	}
 
 	@Test
-	public void testGraphQLDeleteBatchTestEntityByExternalReferenceCode()
+	public void testGraphQLDeleteBatchTestEntity1ByExternalReferenceCode()
 		throws Exception {
 
 		// No namespace
 
-		BatchTestEntity batchTestEntity1 =
-			testGraphQLDeleteBatchTestEntityByExternalReferenceCode_addBatchTestEntity();
+		BatchTestEntity1 batchTestEntity11 =
+			testGraphQLDeleteBatchTestEntity1ByExternalReferenceCode_addBatchTestEntity1();
 
 		Assert.assertTrue(
 			JSONUtil.getValueAsBoolean(
 				invokeGraphQLMutation(
 					new GraphQLField(
-						"deleteBatchTestEntityByExternalReferenceCode",
+						"deleteBatchTestEntity1ByExternalReferenceCode",
 						new HashMap<String, Object>() {
 							{
 								put(
 									"externalReferenceCode",
 									"\"" +
-										batchTestEntity1.
+										batchTestEntity11.
 											getExternalReferenceCode() + "\"");
 							}
 						})),
 				"JSONObject/data",
-				"Object/deleteBatchTestEntityByExternalReferenceCode"));
+				"Object/deleteBatchTestEntity1ByExternalReferenceCode"));
 
 		JSONArray errorsJSONArray1 = JSONUtil.getValueAsJSONArray(
 			invokeGraphQLQuery(
 				new GraphQLField(
-					"batchTestEntityByExternalReferenceCode",
+					"batchTestEntity1ByExternalReferenceCode",
 					new HashMap<String, Object>() {
 						{
 							put(
 								"externalReferenceCode",
 								"\"" +
-									batchTestEntity1.
+									batchTestEntity11.
 										getExternalReferenceCode() + "\"");
 						}
 					},
@@ -301,8 +276,8 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 
 		// Using the namespace test_v1_0
 
-		BatchTestEntity batchTestEntity2 =
-			testGraphQLDeleteBatchTestEntityByExternalReferenceCode_addBatchTestEntity();
+		BatchTestEntity1 batchTestEntity12 =
+			testGraphQLDeleteBatchTestEntity1ByExternalReferenceCode_addBatchTestEntity1();
 
 		Assert.assertTrue(
 			JSONUtil.getValueAsBoolean(
@@ -310,32 +285,32 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 					new GraphQLField(
 						"test_v1_0",
 						new GraphQLField(
-							"deleteBatchTestEntityByExternalReferenceCode",
+							"deleteBatchTestEntity1ByExternalReferenceCode",
 							new HashMap<String, Object>() {
 								{
 									put(
 										"externalReferenceCode",
 										"\"" +
-											batchTestEntity2.
+											batchTestEntity12.
 												getExternalReferenceCode() +
 													"\"");
 								}
 							}))),
 				"JSONObject/data", "JSONObject/test_v1_0",
-				"Object/deleteBatchTestEntityByExternalReferenceCode"));
+				"Object/deleteBatchTestEntity1ByExternalReferenceCode"));
 
 		JSONArray errorsJSONArray2 = JSONUtil.getValueAsJSONArray(
 			invokeGraphQLQuery(
 				new GraphQLField(
 					"test_v1_0",
 					new GraphQLField(
-						"batchTestEntityByExternalReferenceCode",
+						"batchTestEntity1ByExternalReferenceCode",
 						new HashMap<String, Object>() {
 							{
 								put(
 									"externalReferenceCode",
 									"\"" +
-										batchTestEntity2.
+										batchTestEntity12.
 											getExternalReferenceCode() + "\"");
 							}
 						},
@@ -345,41 +320,41 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 		Assert.assertTrue(errorsJSONArray2.length() > 0);
 	}
 
-	protected BatchTestEntity
-			testGraphQLDeleteBatchTestEntityByExternalReferenceCode_addBatchTestEntity()
+	protected BatchTestEntity1
+			testGraphQLDeleteBatchTestEntity1ByExternalReferenceCode_addBatchTestEntity1()
 		throws Exception {
 
-		return testGraphQLBatchTestEntity_addBatchTestEntity();
+		return testGraphQLBatchTestEntity1_addBatchTestEntity1();
 	}
 
 	@Test
-	public void testGetBatchTestEntitiesPage() throws Exception {
-		Page<BatchTestEntity> page =
-			batchTestEntityResource.getBatchTestEntitiesPage();
+	public void testGetBatchTestEntities1Page() throws Exception {
+		Page<BatchTestEntity1> page =
+			batchTestEntity1Resource.getBatchTestEntities1Page();
 
 		long totalCount = page.getTotalCount();
 
-		BatchTestEntity batchTestEntity1 =
-			testGetBatchTestEntitiesPage_addBatchTestEntity(
-				randomBatchTestEntity());
+		BatchTestEntity1 batchTestEntity11 =
+			testGetBatchTestEntities1Page_addBatchTestEntity1(
+				randomBatchTestEntity1());
 
-		BatchTestEntity batchTestEntity2 =
-			testGetBatchTestEntitiesPage_addBatchTestEntity(
-				randomBatchTestEntity());
+		BatchTestEntity1 batchTestEntity12 =
+			testGetBatchTestEntities1Page_addBatchTestEntity1(
+				randomBatchTestEntity1());
 
-		page = batchTestEntityResource.getBatchTestEntitiesPage();
+		page = batchTestEntity1Resource.getBatchTestEntities1Page();
 
 		Assert.assertEquals(totalCount + 2, page.getTotalCount());
 
 		assertContains(
-			batchTestEntity1, (List<BatchTestEntity>)page.getItems());
+			batchTestEntity11, (List<BatchTestEntity1>)page.getItems());
 		assertContains(
-			batchTestEntity2, (List<BatchTestEntity>)page.getItems());
-		assertValid(page, testGetBatchTestEntitiesPage_getExpectedActions());
+			batchTestEntity12, (List<BatchTestEntity1>)page.getItems());
+		assertValid(page, testGetBatchTestEntities1Page_getExpectedActions());
 	}
 
 	protected Map<String, Map<String, String>>
-			testGetBatchTestEntitiesPage_getExpectedActions()
+			testGetBatchTestEntities1Page_getExpectedActions()
 		throws Exception {
 
 		Map<String, Map<String, String>> expectedActions = new HashMap<>();
@@ -387,8 +362,9 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 		return expectedActions;
 	}
 
-	protected BatchTestEntity testGetBatchTestEntitiesPage_addBatchTestEntity(
-			BatchTestEntity batchTestEntity)
+	protected BatchTestEntity1
+			testGetBatchTestEntities1Page_addBatchTestEntity1(
+				BatchTestEntity1 batchTestEntity1)
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -396,9 +372,9 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 	}
 
 	@Test
-	public void testGraphQLGetBatchTestEntitiesPage() throws Exception {
+	public void testGraphQLGetBatchTestEntities1Page() throws Exception {
 		GraphQLField graphQLField = new GraphQLField(
-			"batchTestEntities",
+			"batchTestEntities1",
 			new HashMap<String, Object>() {
 				{
 				}
@@ -408,266 +384,81 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 
 		// No namespace
 
-		JSONObject batchTestEntitiesJSONObject = JSONUtil.getValueAsJSONObject(
+		JSONObject batchTestEntities1JSONObject = JSONUtil.getValueAsJSONObject(
 			invokeGraphQLQuery(graphQLField), "JSONObject/data",
-			"JSONObject/batchTestEntities");
+			"JSONObject/batchTestEntities1");
 
-		long totalCount = batchTestEntitiesJSONObject.getLong("totalCount");
+		long totalCount = batchTestEntities1JSONObject.getLong("totalCount");
 
-		BatchTestEntity batchTestEntity1 =
-			testGraphQLBatchTestEntity_addBatchTestEntity(
-				randomBatchTestEntity());
+		BatchTestEntity1 batchTestEntity11 =
+			testGraphQLBatchTestEntity1_addBatchTestEntity1(
+				randomBatchTestEntity1());
 
-		BatchTestEntity batchTestEntity2 =
-			testGraphQLBatchTestEntity_addBatchTestEntity(
-				randomBatchTestEntity());
+		BatchTestEntity1 batchTestEntity12 =
+			testGraphQLBatchTestEntity1_addBatchTestEntity1(
+				randomBatchTestEntity1());
 
-		batchTestEntitiesJSONObject = JSONUtil.getValueAsJSONObject(
+		batchTestEntities1JSONObject = JSONUtil.getValueAsJSONObject(
 			invokeGraphQLQuery(graphQLField), "JSONObject/data",
-			"JSONObject/batchTestEntities");
+			"JSONObject/batchTestEntities1");
 
 		Assert.assertEquals(
-			totalCount + 2, batchTestEntitiesJSONObject.getLong("totalCount"));
+			totalCount + 2, batchTestEntities1JSONObject.getLong("totalCount"));
 
 		assertContains(
-			batchTestEntity1,
+			batchTestEntity11,
 			Arrays.asList(
-				BatchTestEntitySerDes.toDTOs(
-					batchTestEntitiesJSONObject.getString("items"))));
+				BatchTestEntity1SerDes.toDTOs(
+					batchTestEntities1JSONObject.getString("items"))));
 		assertContains(
-			batchTestEntity2,
+			batchTestEntity12,
 			Arrays.asList(
-				BatchTestEntitySerDes.toDTOs(
-					batchTestEntitiesJSONObject.getString("items"))));
+				BatchTestEntity1SerDes.toDTOs(
+					batchTestEntities1JSONObject.getString("items"))));
 
 		// Using the namespace test_v1_0
 
-		batchTestEntitiesJSONObject = JSONUtil.getValueAsJSONObject(
+		batchTestEntities1JSONObject = JSONUtil.getValueAsJSONObject(
 			invokeGraphQLQuery(new GraphQLField("test_v1_0", graphQLField)),
 			"JSONObject/data", "JSONObject/test_v1_0",
-			"JSONObject/batchTestEntities");
+			"JSONObject/batchTestEntities1");
 
 		Assert.assertEquals(
-			totalCount + 2, batchTestEntitiesJSONObject.getLong("totalCount"));
+			totalCount + 2, batchTestEntities1JSONObject.getLong("totalCount"));
 
 		assertContains(
-			batchTestEntity1,
+			batchTestEntity11,
 			Arrays.asList(
-				BatchTestEntitySerDes.toDTOs(
-					batchTestEntitiesJSONObject.getString("items"))));
+				BatchTestEntity1SerDes.toDTOs(
+					batchTestEntities1JSONObject.getString("items"))));
 		assertContains(
-			batchTestEntity2,
+			batchTestEntity12,
 			Arrays.asList(
-				BatchTestEntitySerDes.toDTOs(
-					batchTestEntitiesJSONObject.getString("items"))));
+				BatchTestEntity1SerDes.toDTOs(
+					batchTestEntities1JSONObject.getString("items"))));
 	}
 
 	@Test
-	public void testGetBatchTestEntity() throws Exception {
-		BatchTestEntity postBatchTestEntity =
-			testGetBatchTestEntity_addBatchTestEntity();
+	public void testGetBatchTestEntity1() throws Exception {
+		BatchTestEntity1 postBatchTestEntity1 =
+			testGetBatchTestEntity1_addBatchTestEntity1();
 
-		BatchTestEntity getBatchTestEntity =
-			batchTestEntityResource.getBatchTestEntity(
-				postBatchTestEntity.getId());
+		BatchTestEntity1 getBatchTestEntity1 =
+			batchTestEntity1Resource.getBatchTestEntity1(
+				testGetBatchTestEntity1_getBatchTestEntityId());
 
-		assertEquals(postBatchTestEntity, getBatchTestEntity);
-		assertValid(getBatchTestEntity);
+		assertEquals(postBatchTestEntity1, getBatchTestEntity1);
+		assertValid(getBatchTestEntity1);
 	}
 
-	@Test
-	public void testVulcanCRUDItemDelegateGetItem() throws Exception {
-		BatchTestEntity postBatchTestEntity =
-			testGetBatchTestEntity_addBatchTestEntity();
+	protected BatchTestEntity1 testGetBatchTestEntity1_addBatchTestEntity1()
+		throws Exception {
 
-		BatchTestEntity getBatchTestEntity =
-			batchTestEntityResource.getBatchTestEntity(
-				postBatchTestEntity.getId());
-
-		VulcanCRUDItemDelegate vulcanCRUDItemDelegate =
-			_vulcanCRUDItemDelegateBuilderRegistry.builder(
-				testCompany,
-				"com.liferay.portal.tools.rest.builder.test.dto.v1_0.BatchTestEntity"
-			).acceptLanguage(
-				new AcceptLanguage() {
-
-					@Override
-					public List<Locale> getLocales() {
-						return Arrays.asList(LocaleUtil.getDefault());
-					}
-
-					@Override
-					public String getPreferredLanguageId() {
-						return LocaleUtil.toLanguageId(LocaleUtil.getDefault());
-					}
-
-					@Override
-					public Locale getPreferredLocale() {
-						return LocaleUtil.getDefault();
-					}
-
-				}
-			).groupLocalService(
-				_groupLocalService
-			).httpServletRequest(
-				testVulcanCRUDItemDelegate_getHttpServletRequest()
-			).httpServletResponse(
-				new MockHttpServletResponse()
-			).resourceActionLocalService(
-				_resourceActionLocalService
-			).resourcePermissionLocalService(
-				_resourcePermissionLocalService
-			).roleLocalService(
-				_roleLocalService
-			).scopeChecker(
-				_scopeChecker
-			).uriInfo(
-				testVulcanCRUDItemDelegate_getUriInfo()
-			).user(
-				testVulcanCRUDItemDelegate_getUser()
-			).build();
-
-		Object item = vulcanCRUDItemDelegate.getItem(
-			postBatchTestEntity.getId());
-
-		assertEquals(
-			getBatchTestEntity, BatchTestEntitySerDes.toDTO(item.toString()));
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
-	protected HttpServletRequest
-		testVulcanCRUDItemDelegate_getHttpServletRequest() {
-
-		return new MockHttpServletRequest() {
-
-			@Override
-			public StringBuffer getRequestURL() {
-				return new StringBuffer(
-					StringBundler.concat(
-						"http://localhost:8080/o/v1.0/",
-						RandomTestUtil.randomString(), "/",
-						RandomTestUtil.randomString()));
-			}
-
-		};
-	}
-
-	protected UriInfo testVulcanCRUDItemDelegate_getUriInfo() {
-		String applicationPath = RandomTestUtil.randomString() + "/";
-		String resourcePath = RandomTestUtil.randomString();
-
-		return new UriInfo() {
-
-			@Override
-			public String getPath() {
-				return resourcePath;
-			}
-
-			@Override
-			public String getPath(boolean decode) {
-				return getPath();
-			}
-
-			@Override
-			public List<PathSegment> getPathSegments() {
-				return Collections.emptyList();
-			}
-
-			@Override
-			public List<PathSegment> getPathSegments(boolean decode) {
-				return getPathSegments();
-			}
-
-			@Override
-			public URI getRequestUri() {
-				return URI.create(
-					"http://localhost:8080/o/" + applicationPath +
-						resourcePath);
-			}
-
-			@Override
-			public UriBuilder getRequestUriBuilder() {
-				return UriBuilder.fromUri(getRequestUri());
-			}
-
-			@Override
-			public URI getAbsolutePath() {
-				return getRequestUri();
-			}
-
-			@Override
-			public UriBuilder getAbsolutePathBuilder() {
-				return getRequestUriBuilder();
-			}
-
-			@Override
-			public URI getBaseUri() {
-				return URI.create("http://localhost:8080/o/" + applicationPath);
-			}
-
-			@Override
-			public UriBuilder getBaseUriBuilder() {
-				return UriBuilder.fromUri(getBaseUri());
-			}
-
-			@Override
-			public MultivaluedMap<String, String> getPathParameters() {
-				return new MultivaluedHashMap<>();
-			}
-
-			@Override
-			public MultivaluedMap<String, String> getPathParameters(
-				boolean decode) {
-
-				return getPathParameters();
-			}
-
-			@Override
-			public MultivaluedMap<String, String> getQueryParameters() {
-				return new MultivaluedHashMap<>();
-			}
-
-			@Override
-			public MultivaluedMap<String, String> getQueryParameters(
-				boolean decode) {
-
-				return getQueryParameters();
-			}
-
-			@Override
-			public List<String> getMatchedURIs() {
-				return Collections.emptyList();
-			}
-
-			@Override
-			public List<String> getMatchedURIs(boolean decode) {
-				return getMatchedURIs();
-			}
-
-			@Override
-			public List<Object> getMatchedResources() {
-				return Collections.emptyList();
-			}
-
-			@Override
-			public URI resolve(URI requestUri) {
-				return getBaseUri().resolve(requestUri);
-			}
-
-			@Override
-			public URI relativize(URI uri) {
-				return getBaseUri().relativize(uri);
-			}
-
-		};
-	}
-
-	protected com.liferay.portal.kernel.model.User
-		testVulcanCRUDItemDelegate_getUser() {
-
-		return _testCompanyAdminUser;
-	}
-
-	protected BatchTestEntity testGetBatchTestEntity_addBatchTestEntity()
+	protected Long testGetBatchTestEntity1_getBatchTestEntityId()
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -675,56 +466,63 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 	}
 
 	@Test
-	public void testGraphQLGetBatchTestEntity() throws Exception {
-		BatchTestEntity batchTestEntity =
-			testGraphQLGetBatchTestEntity_addBatchTestEntity();
+	public void testGraphQLGetBatchTestEntity1() throws Exception {
+		BatchTestEntity1 batchTestEntity1 =
+			testGraphQLGetBatchTestEntity1_addBatchTestEntity1();
 
 		// No namespace
 
 		Assert.assertTrue(
 			equals(
-				batchTestEntity,
-				BatchTestEntitySerDes.toDTO(
+				batchTestEntity1,
+				BatchTestEntity1SerDes.toDTO(
 					JSONUtil.getValueAsString(
 						invokeGraphQLQuery(
 							new GraphQLField(
-								"batchTestEntity",
+								"batchTestEntity1",
 								new HashMap<String, Object>() {
 									{
 										put(
 											"batchTestEntityId",
-											batchTestEntity.getId());
+											testGraphQLGetBatchTestEntity1_getBatchTestEntityId());
 									}
 								},
 								getGraphQLFields())),
-						"JSONObject/data", "Object/batchTestEntity"))));
+						"JSONObject/data", "Object/batchTestEntity1"))));
 
 		// Using the namespace test_v1_0
 
 		Assert.assertTrue(
 			equals(
-				batchTestEntity,
-				BatchTestEntitySerDes.toDTO(
+				batchTestEntity1,
+				BatchTestEntity1SerDes.toDTO(
 					JSONUtil.getValueAsString(
 						invokeGraphQLQuery(
 							new GraphQLField(
 								"test_v1_0",
 								new GraphQLField(
-									"batchTestEntity",
+									"batchTestEntity1",
 									new HashMap<String, Object>() {
 										{
 											put(
 												"batchTestEntityId",
-												batchTestEntity.getId());
+												testGraphQLGetBatchTestEntity1_getBatchTestEntityId());
 										}
 									},
 									getGraphQLFields()))),
 						"JSONObject/data", "JSONObject/test_v1_0",
-						"Object/batchTestEntity"))));
+						"Object/batchTestEntity1"))));
+	}
+
+	protected Long testGraphQLGetBatchTestEntity1_getBatchTestEntityId()
+		throws Exception {
+
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
-	public void testGraphQLGetBatchTestEntityNotFound() throws Exception {
+	public void testGraphQLGetBatchTestEntity1NotFound() throws Exception {
 		Long irrelevantBatchTestEntityId = RandomTestUtil.randomLong();
 
 		// No namespace
@@ -734,7 +532,7 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 			JSONUtil.getValueAsString(
 				invokeGraphQLQuery(
 					new GraphQLField(
-						"batchTestEntity",
+						"batchTestEntity1",
 						new HashMap<String, Object>() {
 							{
 								put(
@@ -755,7 +553,7 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 					new GraphQLField(
 						"test_v1_0",
 						new GraphQLField(
-							"batchTestEntity",
+							"batchTestEntity1",
 							new HashMap<String, Object>() {
 								{
 									put(
@@ -768,29 +566,30 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 				"Object/code"));
 	}
 
-	protected BatchTestEntity testGraphQLGetBatchTestEntity_addBatchTestEntity()
+	protected BatchTestEntity1
+			testGraphQLGetBatchTestEntity1_addBatchTestEntity1()
 		throws Exception {
 
-		return testGraphQLBatchTestEntity_addBatchTestEntity();
+		return testGraphQLBatchTestEntity1_addBatchTestEntity1();
 	}
 
 	@Test
-	public void testGetBatchTestEntityByExternalReferenceCode()
+	public void testGetBatchTestEntity1ByExternalReferenceCode()
 		throws Exception {
 
-		BatchTestEntity postBatchTestEntity =
-			testGetBatchTestEntityByExternalReferenceCode_addBatchTestEntity();
+		BatchTestEntity1 postBatchTestEntity1 =
+			testGetBatchTestEntity1ByExternalReferenceCode_addBatchTestEntity1();
 
-		BatchTestEntity getBatchTestEntity =
-			batchTestEntityResource.getBatchTestEntityByExternalReferenceCode(
-				postBatchTestEntity.getExternalReferenceCode());
+		BatchTestEntity1 getBatchTestEntity1 =
+			batchTestEntity1Resource.getBatchTestEntity1ByExternalReferenceCode(
+				postBatchTestEntity1.getExternalReferenceCode());
 
-		assertEquals(postBatchTestEntity, getBatchTestEntity);
-		assertValid(getBatchTestEntity);
+		assertEquals(postBatchTestEntity1, getBatchTestEntity1);
+		assertValid(getBatchTestEntity1);
 	}
 
-	protected BatchTestEntity
-			testGetBatchTestEntityByExternalReferenceCode_addBatchTestEntity()
+	protected BatchTestEntity1
+			testGetBatchTestEntity1ByExternalReferenceCode_addBatchTestEntity1()
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -798,65 +597,65 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 	}
 
 	@Test
-	public void testGraphQLGetBatchTestEntityByExternalReferenceCode()
+	public void testGraphQLGetBatchTestEntity1ByExternalReferenceCode()
 		throws Exception {
 
-		BatchTestEntity batchTestEntity =
-			testGraphQLGetBatchTestEntityByExternalReferenceCode_addBatchTestEntity();
+		BatchTestEntity1 batchTestEntity1 =
+			testGraphQLGetBatchTestEntity1ByExternalReferenceCode_addBatchTestEntity1();
 
 		// No namespace
 
 		Assert.assertTrue(
 			equals(
-				batchTestEntity,
-				BatchTestEntitySerDes.toDTO(
+				batchTestEntity1,
+				BatchTestEntity1SerDes.toDTO(
 					JSONUtil.getValueAsString(
 						invokeGraphQLQuery(
 							new GraphQLField(
-								"batchTestEntityByExternalReferenceCode",
+								"batchTestEntity1ByExternalReferenceCode",
 								new HashMap<String, Object>() {
 									{
 										put(
 											"externalReferenceCode",
 											"\"" +
-												batchTestEntity.
+												batchTestEntity1.
 													getExternalReferenceCode() +
 														"\"");
 									}
 								},
 								getGraphQLFields())),
 						"JSONObject/data",
-						"Object/batchTestEntityByExternalReferenceCode"))));
+						"Object/batchTestEntity1ByExternalReferenceCode"))));
 
 		// Using the namespace test_v1_0
 
 		Assert.assertTrue(
 			equals(
-				batchTestEntity,
-				BatchTestEntitySerDes.toDTO(
+				batchTestEntity1,
+				BatchTestEntity1SerDes.toDTO(
 					JSONUtil.getValueAsString(
 						invokeGraphQLQuery(
 							new GraphQLField(
 								"test_v1_0",
 								new GraphQLField(
-									"batchTestEntityByExternalReferenceCode",
+									"batchTestEntity1ByExternalReferenceCode",
 									new HashMap<String, Object>() {
 										{
 											put(
 												"externalReferenceCode",
 												"\"" +
-													batchTestEntity.
+													batchTestEntity1.
 														getExternalReferenceCode() +
 															"\"");
 										}
 									},
 									getGraphQLFields()))),
 						"JSONObject/data", "JSONObject/test_v1_0",
-						"Object/batchTestEntityByExternalReferenceCode"))));
+						"Object/batchTestEntity1ByExternalReferenceCode"))));
 	}
 
 	@Test
-	public void testGraphQLGetBatchTestEntityByExternalReferenceCodeNotFound()
+	public void testGraphQLGetBatchTestEntity1ByExternalReferenceCodeNotFound()
 		throws Exception {
 
 		String irrelevantExternalReferenceCode =
@@ -869,7 +668,7 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 			JSONUtil.getValueAsString(
 				invokeGraphQLQuery(
 					new GraphQLField(
-						"batchTestEntityByExternalReferenceCode",
+						"batchTestEntity1ByExternalReferenceCode",
 						new HashMap<String, Object>() {
 							{
 								put(
@@ -890,7 +689,7 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 					new GraphQLField(
 						"test_v1_0",
 						new GraphQLField(
-							"batchTestEntityByExternalReferenceCode",
+							"batchTestEntity1ByExternalReferenceCode",
 							new HashMap<String, Object>() {
 								{
 									put(
@@ -903,26 +702,27 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 				"Object/code"));
 	}
 
-	protected BatchTestEntity
-			testGraphQLGetBatchTestEntityByExternalReferenceCode_addBatchTestEntity()
+	protected BatchTestEntity1
+			testGraphQLGetBatchTestEntity1ByExternalReferenceCode_addBatchTestEntity1()
 		throws Exception {
 
-		return testGraphQLBatchTestEntity_addBatchTestEntity();
+		return testGraphQLBatchTestEntity1_addBatchTestEntity1();
 	}
 
 	@Test
-	public void testPostBatchTestEntity() throws Exception {
-		BatchTestEntity randomBatchTestEntity = randomBatchTestEntity();
+	public void testPostBatchTestEntity1() throws Exception {
+		BatchTestEntity1 randomBatchTestEntity1 = randomBatchTestEntity1();
 
-		BatchTestEntity postBatchTestEntity =
-			testPostBatchTestEntity_addBatchTestEntity(randomBatchTestEntity);
+		BatchTestEntity1 postBatchTestEntity1 =
+			testPostBatchTestEntity1_addBatchTestEntity1(
+				randomBatchTestEntity1);
 
-		assertEquals(randomBatchTestEntity, postBatchTestEntity);
-		assertValid(postBatchTestEntity);
+		assertEquals(randomBatchTestEntity1, postBatchTestEntity1);
+		assertValid(postBatchTestEntity1);
 	}
 
-	protected BatchTestEntity testPostBatchTestEntity_addBatchTestEntity(
-			BatchTestEntity batchTestEntity)
+	protected BatchTestEntity1 testPostBatchTestEntity1_addBatchTestEntity1(
+			BatchTestEntity1 batchTestEntity1)
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -930,100 +730,100 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 	}
 
 	@Test
-	public void testGraphQLPostBatchTestEntity() throws Exception {
-		BatchTestEntity randomBatchTestEntity = randomBatchTestEntity();
+	public void testGraphQLPostBatchTestEntity1() throws Exception {
+		BatchTestEntity1 randomBatchTestEntity1 = randomBatchTestEntity1();
 
-		BatchTestEntity batchTestEntity =
-			testGraphQLBatchTestEntity_addBatchTestEntity(
-				randomBatchTestEntity);
+		BatchTestEntity1 batchTestEntity1 =
+			testGraphQLBatchTestEntity1_addBatchTestEntity1(
+				randomBatchTestEntity1);
 
-		Assert.assertTrue(equals(randomBatchTestEntity, batchTestEntity));
+		Assert.assertTrue(equals(randomBatchTestEntity1, batchTestEntity1));
 	}
 
 	@Test
-	public void testPutBatchTestEntityByExternalReferenceCode()
+	public void testPutBatchTestEntity1ByExternalReferenceCode()
 		throws Exception {
 
-		BatchTestEntity postBatchTestEntity =
-			testPutBatchTestEntityByExternalReferenceCode_addBatchTestEntity();
+		BatchTestEntity1 postBatchTestEntity1 =
+			testPutBatchTestEntity1ByExternalReferenceCode_addBatchTestEntity1();
 
-		BatchTestEntity randomBatchTestEntity = randomBatchTestEntity();
+		BatchTestEntity1 randomBatchTestEntity1 = randomBatchTestEntity1();
 
-		BatchTestEntity putBatchTestEntity =
-			batchTestEntityResource.putBatchTestEntityByExternalReferenceCode(
-				postBatchTestEntity.getExternalReferenceCode(),
-				randomBatchTestEntity);
+		BatchTestEntity1 putBatchTestEntity1 =
+			batchTestEntity1Resource.putBatchTestEntity1ByExternalReferenceCode(
+				postBatchTestEntity1.getExternalReferenceCode(),
+				randomBatchTestEntity1);
 
-		assertEquals(randomBatchTestEntity, putBatchTestEntity);
-		assertValid(putBatchTestEntity);
+		assertEquals(randomBatchTestEntity1, putBatchTestEntity1);
+		assertValid(putBatchTestEntity1);
 
-		BatchTestEntity getBatchTestEntity =
-			batchTestEntityResource.getBatchTestEntityByExternalReferenceCode(
-				putBatchTestEntity.getExternalReferenceCode());
+		BatchTestEntity1 getBatchTestEntity1 =
+			batchTestEntity1Resource.getBatchTestEntity1ByExternalReferenceCode(
+				putBatchTestEntity1.getExternalReferenceCode());
 
-		assertEquals(randomBatchTestEntity, getBatchTestEntity);
-		assertValid(getBatchTestEntity);
+		assertEquals(randomBatchTestEntity1, getBatchTestEntity1);
+		assertValid(getBatchTestEntity1);
 
-		BatchTestEntity newBatchTestEntity =
-			testPutBatchTestEntityByExternalReferenceCode_createBatchTestEntity();
+		BatchTestEntity1 newBatchTestEntity1 =
+			testPutBatchTestEntity1ByExternalReferenceCode_createBatchTestEntity1();
 
-		putBatchTestEntity =
-			batchTestEntityResource.putBatchTestEntityByExternalReferenceCode(
-				newBatchTestEntity.getExternalReferenceCode(),
-				newBatchTestEntity);
+		putBatchTestEntity1 =
+			batchTestEntity1Resource.putBatchTestEntity1ByExternalReferenceCode(
+				newBatchTestEntity1.getExternalReferenceCode(),
+				newBatchTestEntity1);
 
-		assertEquals(newBatchTestEntity, putBatchTestEntity);
-		assertValid(putBatchTestEntity);
+		assertEquals(newBatchTestEntity1, putBatchTestEntity1);
+		assertValid(putBatchTestEntity1);
 
-		getBatchTestEntity =
-			batchTestEntityResource.getBatchTestEntityByExternalReferenceCode(
-				putBatchTestEntity.getExternalReferenceCode());
+		getBatchTestEntity1 =
+			batchTestEntity1Resource.getBatchTestEntity1ByExternalReferenceCode(
+				putBatchTestEntity1.getExternalReferenceCode());
 
-		assertEquals(newBatchTestEntity, getBatchTestEntity);
+		assertEquals(newBatchTestEntity1, getBatchTestEntity1);
 
 		Assert.assertEquals(
-			newBatchTestEntity.getExternalReferenceCode(),
-			putBatchTestEntity.getExternalReferenceCode());
+			newBatchTestEntity1.getExternalReferenceCode(),
+			putBatchTestEntity1.getExternalReferenceCode());
 	}
 
-	protected BatchTestEntity
-			testPutBatchTestEntityByExternalReferenceCode_addBatchTestEntity()
+	protected BatchTestEntity1
+			testPutBatchTestEntity1ByExternalReferenceCode_addBatchTestEntity1()
 		throws Exception {
 
 		throw new UnsupportedOperationException(
 			"This method needs to be implemented");
 	}
 
-	protected BatchTestEntity
-			testPutBatchTestEntityByExternalReferenceCode_createBatchTestEntity()
+	protected BatchTestEntity1
+			testPutBatchTestEntity1ByExternalReferenceCode_createBatchTestEntity1()
 		throws Exception {
 
-		return randomBatchTestEntity();
+		return randomBatchTestEntity1();
 	}
 
 	@Test
 	public void testBatchEngineDeleteImportTask() throws Exception {
-		BatchTestEntity batchTestEntity1 =
-			testBatchEngineDeleteImportTask_addBatchTestEntity();
+		BatchTestEntity1 batchTestEntity11 =
+			testBatchEngineDeleteImportTask_addBatchTestEntity1();
 
-		testBatchEngineDeleteImportTask_deleteBatchTestEntity(
-			200, batchTestEntity1.getExternalReferenceCode());
+		testBatchEngineDeleteImportTask_deleteBatchTestEntity1(
+			200, batchTestEntity11.getExternalReferenceCode());
 
 		assertHttpResponseStatusCode(
 			404,
-			batchTestEntityResource.getBatchTestEntityHttpResponse(
-				batchTestEntity1.getId()));
+			batchTestEntity1Resource.getBatchTestEntity1HttpResponse(
+				testBatchEngineDeleteImportTask_getBatchTestEntityId()));
 	}
 
-	protected BatchTestEntity
-			testBatchEngineDeleteImportTask_addBatchTestEntity()
+	protected BatchTestEntity1
+			testBatchEngineDeleteImportTask_addBatchTestEntity1()
 		throws Exception {
 
 		throw new UnsupportedOperationException(
 			"This method needs to be implemented");
 	}
 
-	protected void testBatchEngineDeleteImportTask_deleteBatchTestEntity(
+	protected void testBatchEngineDeleteImportTask_deleteBatchTestEntity1(
 			int expectedStatusCode, String externalReferenceCode,
 			String... parameters)
 		throws Exception {
@@ -1040,7 +840,7 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 
 		HttpResponse httpResponse =
 			importTaskResource.deleteImportTaskHttpResponse(
-				"com.liferay.portal.tools.rest.builder.test.dto.v1_0.BatchTestEntity",
+				"com.liferay.portal.tools.rest.builder.test.dto.v1_0.BatchTestEntity1",
 				null, null, null, null,
 				JSONUtil.putAll(
 					JSONUtil.put(
@@ -1055,33 +855,40 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 		}
 	}
 
-	protected BatchTestEntity testGraphQLBatchTestEntity_addBatchTestEntity()
+	protected Long testBatchEngineDeleteImportTask_getBatchTestEntityId()
 		throws Exception {
 
-		return testGraphQLBatchTestEntity_addBatchTestEntity(
-			randomBatchTestEntity());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
-	protected BatchTestEntity testGraphQLBatchTestEntity_addBatchTestEntity(
-			BatchTestEntity batchTestEntity)
+	protected BatchTestEntity1 testGraphQLBatchTestEntity1_addBatchTestEntity1()
 		throws Exception {
 
-		JSONDeserializer<BatchTestEntity> jsonDeserializer =
+		return testGraphQLBatchTestEntity1_addBatchTestEntity1(
+			randomBatchTestEntity1());
+	}
+
+	protected BatchTestEntity1 testGraphQLBatchTestEntity1_addBatchTestEntity1(
+			BatchTestEntity1 batchTestEntity1)
+		throws Exception {
+
+		JSONDeserializer<BatchTestEntity1> jsonDeserializer =
 			JSONFactoryUtil.createJSONDeserializer();
 
 		StringBuilder sb = new StringBuilder("{");
 
 		for (java.lang.reflect.Field field :
-				getDeclaredFields(BatchTestEntity.class)) {
+				getDeclaredFields(BatchTestEntity1.class)) {
 
-			if (getGraphQLValue(field.get(batchTestEntity)) != null) {
+			if (getGraphQLValue(field.get(batchTestEntity1)) != null) {
 				if (sb.length() > 1) {
 					sb.append(", ");
 				}
 
 				sb.append(field.getName());
 				sb.append(": ");
-				sb.append(getGraphQLValue(field.get(batchTestEntity)));
+				sb.append(getGraphQLValue(field.get(batchTestEntity1)));
 			}
 		}
 
@@ -1093,15 +900,15 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 			JSONUtil.getValueAsString(
 				invokeGraphQLMutation(
 					new GraphQLField(
-						"createBatchTestEntity",
+						"createBatchTestEntity1",
 						new HashMap<String, Object>() {
 							{
-								put("batchTestEntity", sb.toString());
+								put("batchTestEntity1", sb.toString());
 							}
 						},
 						graphQLFields)),
-				"JSONObject/data", "JSONObject/createBatchTestEntity"),
-			BatchTestEntity.class);
+				"JSONObject/data", "JSONObject/createBatchTestEntity1"),
+			BatchTestEntity1.class);
 	}
 
 	protected String getGraphQLValue(Object value) throws Exception {
@@ -1172,13 +979,13 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 	}
 
 	protected void assertContains(
-		BatchTestEntity batchTestEntity,
-		List<BatchTestEntity> batchTestEntities) {
+		BatchTestEntity1 batchTestEntity1,
+		List<BatchTestEntity1> batchTestEntity1s) {
 
 		boolean contains = false;
 
-		for (BatchTestEntity item : batchTestEntities) {
-			if (equals(batchTestEntity, item)) {
+		for (BatchTestEntity1 item : batchTestEntity1s) {
+			if (equals(batchTestEntity1, item)) {
 				contains = true;
 
 				break;
@@ -1186,7 +993,7 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 		}
 
 		Assert.assertTrue(
-			batchTestEntities + " does not contain " + batchTestEntity,
+			batchTestEntity1s + " does not contain " + batchTestEntity1,
 			contains);
 	}
 
@@ -1199,40 +1006,41 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 	}
 
 	protected void assertEquals(
-		BatchTestEntity batchTestEntity1, BatchTestEntity batchTestEntity2) {
+		BatchTestEntity1 batchTestEntity11,
+		BatchTestEntity1 batchTestEntity12) {
 
 		Assert.assertTrue(
-			batchTestEntity1 + " does not equal " + batchTestEntity2,
-			equals(batchTestEntity1, batchTestEntity2));
+			batchTestEntity11 + " does not equal " + batchTestEntity12,
+			equals(batchTestEntity11, batchTestEntity12));
 	}
 
 	protected void assertEquals(
-		List<BatchTestEntity> batchTestEntities1,
-		List<BatchTestEntity> batchTestEntities2) {
+		List<BatchTestEntity1> batchTestEntity1s1,
+		List<BatchTestEntity1> batchTestEntity1s2) {
 
 		Assert.assertEquals(
-			batchTestEntities1.size(), batchTestEntities2.size());
+			batchTestEntity1s1.size(), batchTestEntity1s2.size());
 
-		for (int i = 0; i < batchTestEntities1.size(); i++) {
-			BatchTestEntity batchTestEntity1 = batchTestEntities1.get(i);
-			BatchTestEntity batchTestEntity2 = batchTestEntities2.get(i);
+		for (int i = 0; i < batchTestEntity1s1.size(); i++) {
+			BatchTestEntity1 batchTestEntity11 = batchTestEntity1s1.get(i);
+			BatchTestEntity1 batchTestEntity12 = batchTestEntity1s2.get(i);
 
-			assertEquals(batchTestEntity1, batchTestEntity2);
+			assertEquals(batchTestEntity11, batchTestEntity12);
 		}
 	}
 
 	protected void assertEqualsIgnoringOrder(
-		List<BatchTestEntity> batchTestEntities1,
-		List<BatchTestEntity> batchTestEntities2) {
+		List<BatchTestEntity1> batchTestEntity1s1,
+		List<BatchTestEntity1> batchTestEntity1s2) {
 
 		Assert.assertEquals(
-			batchTestEntities1.size(), batchTestEntities2.size());
+			batchTestEntity1s1.size(), batchTestEntity1s2.size());
 
-		for (BatchTestEntity batchTestEntity1 : batchTestEntities1) {
+		for (BatchTestEntity1 batchTestEntity11 : batchTestEntity1s1) {
 			boolean contains = false;
 
-			for (BatchTestEntity batchTestEntity2 : batchTestEntities2) {
-				if (equals(batchTestEntity1, batchTestEntity2)) {
+			for (BatchTestEntity1 batchTestEntity12 : batchTestEntity1s2) {
+				if (equals(batchTestEntity11, batchTestEntity12)) {
 					contains = true;
 
 					break;
@@ -1240,17 +1048,17 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 			}
 
 			Assert.assertTrue(
-				batchTestEntities2 + " does not contain " + batchTestEntity1,
+				batchTestEntity1s2 + " does not contain " + batchTestEntity11,
 				contains);
 		}
 	}
 
-	protected void assertValid(BatchTestEntity batchTestEntity)
+	protected void assertValid(BatchTestEntity1 batchTestEntity1)
 		throws Exception {
 
 		boolean valid = true;
 
-		if (batchTestEntity.getId() == null) {
+		if (batchTestEntity1.getId() == null) {
 			valid = false;
 		}
 
@@ -1258,7 +1066,7 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 				getAdditionalAssertFieldNames()) {
 
 			if (Objects.equals("customFields", additionalAssertFieldName)) {
-				if (batchTestEntity.getCustomFields() == null) {
+				if (batchTestEntity1.getCustomFields() == null) {
 					valid = false;
 				}
 
@@ -1268,7 +1076,7 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 			if (Objects.equals(
 					"externalReferenceCode", additionalAssertFieldName)) {
 
-				if (batchTestEntity.getExternalReferenceCode() == null) {
+				if (batchTestEntity1.getExternalReferenceCode() == null) {
 					valid = false;
 				}
 
@@ -1276,7 +1084,7 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 			}
 
 			if (Objects.equals("name", additionalAssertFieldName)) {
-				if (batchTestEntity.getName() == null) {
+				if (batchTestEntity1.getName() == null) {
 					valid = false;
 				}
 
@@ -1284,7 +1092,7 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 			}
 
 			if (Objects.equals("nestedField", additionalAssertFieldName)) {
-				if (batchTestEntity.getNestedField() == null) {
+				if (batchTestEntity1.getNestedField() == null) {
 					valid = false;
 				}
 
@@ -1294,7 +1102,7 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 			if (Objects.equals(
 					"relatedCompanyTestEntity", additionalAssertFieldName)) {
 
-				if (batchTestEntity.getRelatedCompanyTestEntity() == null) {
+				if (batchTestEntity1.getRelatedCompanyTestEntity() == null) {
 					valid = false;
 				}
 
@@ -1309,20 +1117,20 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 		Assert.assertTrue(valid);
 	}
 
-	protected void assertValid(Page<BatchTestEntity> page) {
+	protected void assertValid(Page<BatchTestEntity1> page) {
 		assertValid(page, Collections.emptyMap());
 	}
 
 	protected void assertValid(
-		Page<BatchTestEntity> page,
+		Page<BatchTestEntity1> page,
 		Map<String, Map<String, String>> expectedActions) {
 
 		boolean valid = false;
 
-		java.util.Collection<BatchTestEntity> batchTestEntities =
+		java.util.Collection<BatchTestEntity1> batchTestEntity1s =
 			page.getItems();
 
-		int size = batchTestEntities.size();
+		int size = batchTestEntity1s.size();
 
 		if ((page.getLastPage() > 0) && (page.getPage() > 0) &&
 			(page.getPageSize() > 0) && (page.getTotalCount() > 0) &&
@@ -1367,7 +1175,7 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 		for (java.lang.reflect.Field field :
 				getDeclaredFields(
 					com.liferay.portal.tools.rest.builder.test.dto.v1_0.
-						BatchTestEntity.class)) {
+						BatchTestEntity1.class)) {
 
 			if (!ArrayUtil.contains(
 					getAdditionalAssertFieldNames(), field.getName())) {
@@ -1416,9 +1224,10 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 	}
 
 	protected boolean equals(
-		BatchTestEntity batchTestEntity1, BatchTestEntity batchTestEntity2) {
+		BatchTestEntity1 batchTestEntity11,
+		BatchTestEntity1 batchTestEntity12) {
 
-		if (batchTestEntity1 == batchTestEntity2) {
+		if (batchTestEntity11 == batchTestEntity12) {
 			return true;
 		}
 
@@ -1427,8 +1236,8 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 
 			if (Objects.equals("customFields", additionalAssertFieldName)) {
 				if (!Objects.deepEquals(
-						batchTestEntity1.getCustomFields(),
-						batchTestEntity2.getCustomFields())) {
+						batchTestEntity11.getCustomFields(),
+						batchTestEntity12.getCustomFields())) {
 
 					return false;
 				}
@@ -1440,8 +1249,8 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 					"externalReferenceCode", additionalAssertFieldName)) {
 
 				if (!Objects.deepEquals(
-						batchTestEntity1.getExternalReferenceCode(),
-						batchTestEntity2.getExternalReferenceCode())) {
+						batchTestEntity11.getExternalReferenceCode(),
+						batchTestEntity12.getExternalReferenceCode())) {
 
 					return false;
 				}
@@ -1451,7 +1260,7 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 
 			if (Objects.equals("id", additionalAssertFieldName)) {
 				if (!Objects.deepEquals(
-						batchTestEntity1.getId(), batchTestEntity2.getId())) {
+						batchTestEntity11.getId(), batchTestEntity12.getId())) {
 
 					return false;
 				}
@@ -1461,8 +1270,8 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 
 			if (Objects.equals("name", additionalAssertFieldName)) {
 				if (!Objects.deepEquals(
-						batchTestEntity1.getName(),
-						batchTestEntity2.getName())) {
+						batchTestEntity11.getName(),
+						batchTestEntity12.getName())) {
 
 					return false;
 				}
@@ -1472,8 +1281,8 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 
 			if (Objects.equals("nestedField", additionalAssertFieldName)) {
 				if (!Objects.deepEquals(
-						batchTestEntity1.getNestedField(),
-						batchTestEntity2.getNestedField())) {
+						batchTestEntity11.getNestedField(),
+						batchTestEntity12.getNestedField())) {
 
 					return false;
 				}
@@ -1485,8 +1294,8 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 					"relatedCompanyTestEntity", additionalAssertFieldName)) {
 
 				if (!Objects.deepEquals(
-						batchTestEntity1.getRelatedCompanyTestEntity(),
-						batchTestEntity2.getRelatedCompanyTestEntity())) {
+						batchTestEntity11.getRelatedCompanyTestEntity(),
+						batchTestEntity12.getRelatedCompanyTestEntity())) {
 
 					return false;
 				}
@@ -1550,13 +1359,13 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 	protected java.util.Collection<EntityField> getEntityFields()
 		throws Exception {
 
-		if (!(_batchTestEntityResource instanceof EntityModelResource)) {
+		if (!(_batchTestEntity1Resource instanceof EntityModelResource)) {
 			throw new UnsupportedOperationException(
 				"Resource is not an instance of EntityModelResource");
 		}
 
 		EntityModelResource entityModelResource =
-			(EntityModelResource)_batchTestEntityResource;
+			(EntityModelResource)_batchTestEntity1Resource;
 
 		EntityModel entityModel = entityModelResource.getEntityModel(
 			new MultivaluedHashMap());
@@ -1590,7 +1399,7 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 
 	protected String getFilterString(
 		EntityField entityField, String operator,
-		BatchTestEntity batchTestEntity) {
+		BatchTestEntity1 batchTestEntity1) {
 
 		StringBundler sb = new StringBundler();
 
@@ -1608,7 +1417,7 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 		}
 
 		if (entityFieldName.equals("externalReferenceCode")) {
-			Object object = batchTestEntity.getExternalReferenceCode();
+			Object object = batchTestEntity1.getExternalReferenceCode();
 
 			String value = String.valueOf(object);
 
@@ -1659,7 +1468,7 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 		}
 
 		if (entityFieldName.equals("name")) {
-			Object object = batchTestEntity.getName();
+			Object object = batchTestEntity1.getName();
 
 			String value = String.valueOf(object);
 
@@ -1705,7 +1514,7 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 		}
 
 		if (entityFieldName.equals("nestedField")) {
-			Object object = batchTestEntity.getNestedField();
+			Object object = batchTestEntity1.getNestedField();
 
 			String value = String.valueOf(object);
 
@@ -1797,8 +1606,8 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 			invoke(queryGraphQLField.toString()));
 	}
 
-	protected BatchTestEntity randomBatchTestEntity() throws Exception {
-		return new BatchTestEntity() {
+	protected BatchTestEntity1 randomBatchTestEntity1() throws Exception {
+		return new BatchTestEntity1() {
 			{
 				externalReferenceCode = StringUtil.toLowerCase(
 					RandomTestUtil.randomString());
@@ -1810,17 +1619,17 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 		};
 	}
 
-	protected BatchTestEntity randomIrrelevantBatchTestEntity()
+	protected BatchTestEntity1 randomIrrelevantBatchTestEntity1()
 		throws Exception {
 
-		BatchTestEntity randomIrrelevantBatchTestEntity =
-			randomBatchTestEntity();
+		BatchTestEntity1 randomIrrelevantBatchTestEntity1 =
+			randomBatchTestEntity1();
 
-		return randomIrrelevantBatchTestEntity;
+		return randomIrrelevantBatchTestEntity1;
 	}
 
-	protected BatchTestEntity randomPatchBatchTestEntity() throws Exception {
-		return randomBatchTestEntity();
+	protected BatchTestEntity1 randomPatchBatchTestEntity1() throws Exception {
+		return randomBatchTestEntity1();
 	}
 
 	protected final JSONObject waitForFinish(
@@ -1845,7 +1654,7 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 		}
 	}
 
-	protected BatchTestEntityResource batchTestEntityResource;
+	protected BatchTestEntity1Resource batchTestEntity1Resource;
 	protected ImportTaskResource importTaskResource;
 	protected com.liferay.portal.kernel.model.Group irrelevantGroup;
 	protected com.liferay.portal.kernel.model.Company testCompany;
@@ -2045,7 +1854,7 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 	}
 
 	private static final com.liferay.portal.kernel.log.Log _log =
-		LogFactoryUtil.getLog(BaseBatchTestEntityResourceTestCase.class);
+		LogFactoryUtil.getLog(BaseBatchTestEntity1ResourceTestCase.class);
 
 	private static Format _format;
 
@@ -2053,28 +1862,6 @@ public abstract class BaseBatchTestEntityResourceTestCase {
 
 	@Inject
 	private com.liferay.portal.tools.rest.builder.test.resource.v1_0.
-		BatchTestEntityResource _batchTestEntityResource;
-
-	@Inject
-	private GroupLocalService _groupLocalService;
-
-	@Inject
-	private ResourceActionLocalService _resourceActionLocalService;
-
-	@Inject
-	private ResourcePermissionLocalService _resourcePermissionLocalService;
-
-	@Inject
-	private RoleLocalService _roleLocalService;
-
-	@Inject
-	private ScopeChecker _scopeChecker;
-
-	@Inject
-	private UserLocalService _userLocalService;
-
-	@Inject
-	private VulcanCRUDItemDelegateBuilderRegistry
-		_vulcanCRUDItemDelegateBuilderRegistry;
+		BatchTestEntity1Resource _batchTestEntity1Resource;
 
 }

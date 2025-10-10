@@ -26,15 +26,14 @@ import com.liferay.portal.odata.filter.FilterParserProvider;
 import com.liferay.portal.odata.sort.SortField;
 import com.liferay.portal.odata.sort.SortParser;
 import com.liferay.portal.odata.sort.SortParserProvider;
-import com.liferay.portal.tools.rest.builder.test.dto.v1_0.BatchTestEntity;
+import com.liferay.portal.tools.rest.builder.test.dto.v1_0.BatchTestEntity1;
 import com.liferay.portal.tools.rest.builder.test.dto.v1_0.Filter;
 import com.liferay.portal.tools.rest.builder.test.dto.v1_0.Sort;
-import com.liferay.portal.tools.rest.builder.test.resource.v1_0.BatchTestEntityResource;
+import com.liferay.portal.tools.rest.builder.test.resource.v1_0.BatchTestEntity1Resource;
 import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
 import com.liferay.portal.vulcan.batch.engine.VulcanBatchEngineTaskItemDelegate;
 import com.liferay.portal.vulcan.batch.engine.resource.VulcanBatchEngineExportTaskResource;
 import com.liferay.portal.vulcan.batch.engine.resource.VulcanBatchEngineImportTaskResource;
-import com.liferay.portal.vulcan.crud.VulcanCRUDItemDelegate;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
 import com.liferay.portal.vulcan.resource.EntityModelResource;
@@ -67,15 +66,14 @@ import java.util.Set;
  */
 @Generated("")
 @jakarta.ws.rs.Path("/v1.0")
-public abstract class BaseBatchTestEntityResourceImpl
-	implements BatchTestEntityResource, EntityModelResource,
-			   VulcanBatchEngineTaskItemDelegate<BatchTestEntity>,
-			   VulcanCRUDItemDelegate<BatchTestEntity> {
+public abstract class BaseBatchTestEntity1ResourceImpl
+	implements BatchTestEntity1Resource, EntityModelResource,
+			   VulcanBatchEngineTaskItemDelegate<BatchTestEntity1> {
 
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -X 'DELETE' 'http://localhost:8080/o/test/v1.0/batch-test-entities/by-external-reference-code/{externalReferenceCode}'  -u 'test@liferay.com:test'
+	 * curl -X 'DELETE' 'http://localhost:8080/o/test/v1.0/batch-test-entity1/by-external-reference-code/{externalReferenceCode}'  -u 'test@liferay.com:test'
 	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
@@ -87,16 +85,16 @@ public abstract class BaseBatchTestEntityResourceImpl
 	)
 	@io.swagger.v3.oas.annotations.tags.Tags(
 		value = {
-			@io.swagger.v3.oas.annotations.tags.Tag(name = "BatchTestEntity")
+			@io.swagger.v3.oas.annotations.tags.Tag(name = "BatchTestEntity1")
 		}
 	)
 	@jakarta.ws.rs.DELETE
 	@jakarta.ws.rs.Path(
-		"/batch-test-entities/by-external-reference-code/{externalReferenceCode}"
+		"/batch-test-entity1/by-external-reference-code/{externalReferenceCode}"
 	)
 	@jakarta.ws.rs.Produces({"application/json", "application/xml"})
 	@Override
-	public void deleteBatchTestEntityByExternalReferenceCode(
+	public void deleteBatchTestEntity1ByExternalReferenceCode(
 			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 			@jakarta.validation.constraints.NotNull
 			@jakarta.ws.rs.PathParam("externalReferenceCode")
@@ -107,25 +105,25 @@ public abstract class BaseBatchTestEntityResourceImpl
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -X 'GET' 'http://localhost:8080/o/test/v1.0/batch-test-entities'  -u 'test@liferay.com:test'
+	 * curl -X 'GET' 'http://localhost:8080/o/test/v1.0/batch-test-entities1'  -u 'test@liferay.com:test'
 	 */
 	@io.swagger.v3.oas.annotations.tags.Tags(
 		value = {
-			@io.swagger.v3.oas.annotations.tags.Tag(name = "BatchTestEntity")
+			@io.swagger.v3.oas.annotations.tags.Tag(name = "BatchTestEntity1")
 		}
 	)
 	@jakarta.ws.rs.GET
-	@jakarta.ws.rs.Path("/batch-test-entities")
+	@jakarta.ws.rs.Path("/batch-test-entities1")
 	@jakarta.ws.rs.Produces({"application/json", "application/xml"})
 	@Override
-	public Page<BatchTestEntity> getBatchTestEntitiesPage() throws Exception {
+	public Page<BatchTestEntity1> getBatchTestEntities1Page() throws Exception {
 		return Page.of(Collections.emptyList());
 	}
 
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -X 'GET' 'http://localhost:8080/o/test/v1.0/batch-test-entities/{batchTestEntityId}'  -u 'test@liferay.com:test'
+	 * curl -X 'GET' 'http://localhost:8080/o/test/v1.0/batch-test-entity1/{batchTestEntity1Id}'  -u 'test@liferay.com:test'
 	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
@@ -137,27 +135,27 @@ public abstract class BaseBatchTestEntityResourceImpl
 	)
 	@io.swagger.v3.oas.annotations.tags.Tags(
 		value = {
-			@io.swagger.v3.oas.annotations.tags.Tag(name = "BatchTestEntity")
+			@io.swagger.v3.oas.annotations.tags.Tag(name = "BatchTestEntity1")
 		}
 	)
 	@jakarta.ws.rs.GET
-	@jakarta.ws.rs.Path("/batch-test-entities/{batchTestEntityId}")
+	@jakarta.ws.rs.Path("/batch-test-entity1/{batchTestEntity1Id}")
 	@jakarta.ws.rs.Produces({"application/json", "application/xml"})
 	@Override
-	public BatchTestEntity getBatchTestEntity(
+	public BatchTestEntity1 getBatchTestEntity1(
 			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 			@jakarta.validation.constraints.NotNull
 			@jakarta.ws.rs.PathParam("batchTestEntityId")
 			Long batchTestEntityId)
 		throws Exception {
 
-		return new BatchTestEntity();
+		return new BatchTestEntity1();
 	}
 
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -X 'GET' 'http://localhost:8080/o/test/v1.0/batch-test-entities/by-external-reference-code/{externalReferenceCode}'  -u 'test@liferay.com:test'
+	 * curl -X 'GET' 'http://localhost:8080/o/test/v1.0/batch-test-entity1/by-external-reference-code/{externalReferenceCode}'  -u 'test@liferay.com:test'
 	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
@@ -169,113 +167,51 @@ public abstract class BaseBatchTestEntityResourceImpl
 	)
 	@io.swagger.v3.oas.annotations.tags.Tags(
 		value = {
-			@io.swagger.v3.oas.annotations.tags.Tag(name = "BatchTestEntity")
+			@io.swagger.v3.oas.annotations.tags.Tag(name = "BatchTestEntity1")
 		}
 	)
 	@jakarta.ws.rs.GET
 	@jakarta.ws.rs.Path(
-		"/batch-test-entities/by-external-reference-code/{externalReferenceCode}"
+		"/batch-test-entity1/by-external-reference-code/{externalReferenceCode}"
 	)
 	@jakarta.ws.rs.Produces({"application/json", "application/xml"})
 	@Override
-	public BatchTestEntity getBatchTestEntityByExternalReferenceCode(
+	public BatchTestEntity1 getBatchTestEntity1ByExternalReferenceCode(
 			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 			@jakarta.validation.constraints.NotNull
 			@jakarta.ws.rs.PathParam("externalReferenceCode")
 			String externalReferenceCode)
 		throws Exception {
 
-		return new BatchTestEntity();
+		return new BatchTestEntity1();
 	}
 
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -X 'POST' 'http://localhost:8080/o/test/v1.0/batch-test-entities/export-batch'  -u 'test@liferay.com:test'
-	 */
-	@io.swagger.v3.oas.annotations.Parameters(
-		value = {
-			@io.swagger.v3.oas.annotations.Parameter(
-				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
-				name = "callbackURL"
-			),
-			@io.swagger.v3.oas.annotations.Parameter(
-				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
-				name = "contentType"
-			),
-			@io.swagger.v3.oas.annotations.Parameter(
-				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
-				name = "fieldNames"
-			)
-		}
-	)
-	@io.swagger.v3.oas.annotations.tags.Tags(
-		value = {
-			@io.swagger.v3.oas.annotations.tags.Tag(name = "BatchTestEntity")
-		}
-	)
-	@jakarta.ws.rs.Consumes("application/json")
-	@jakarta.ws.rs.Path("/batch-test-entities/export-batch")
-	@jakarta.ws.rs.POST
-	@jakarta.ws.rs.Produces("application/json")
-	@Override
-	public Response postBatchTestEntitiesPageExportBatch(
-			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
-			@jakarta.ws.rs.QueryParam("callbackURL")
-			String callbackURL,
-			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
-			@jakarta.ws.rs.DefaultValue("JSON")
-			@jakarta.ws.rs.QueryParam("contentType")
-			String contentType,
-			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
-			@jakarta.ws.rs.QueryParam("fieldNames")
-			String fieldNames)
-		throws Exception {
-
-		vulcanBatchEngineExportTaskResource.setContextAcceptLanguage(
-			contextAcceptLanguage);
-		vulcanBatchEngineExportTaskResource.setContextCompany(contextCompany);
-		vulcanBatchEngineExportTaskResource.setContextHttpServletRequest(
-			contextHttpServletRequest);
-		vulcanBatchEngineExportTaskResource.setContextUriInfo(contextUriInfo);
-		vulcanBatchEngineExportTaskResource.setContextUser(contextUser);
-		vulcanBatchEngineExportTaskResource.setGroupLocalService(
-			groupLocalService);
-
-		Response.ResponseBuilder responseBuilder = Response.accepted();
-
-		return responseBuilder.entity(
-			vulcanBatchEngineExportTaskResource.postExportTask(
-				BatchTestEntity.class.getName(), callbackURL, contentType,
-				fieldNames)
-		).build();
-	}
-
-	/**
-	 * Invoke this method with the command line:
-	 *
-	 * curl -X 'POST' 'http://localhost:8080/o/test/v1.0/batch-test-entities' -d $'{"customFields": ___, "externalReferenceCode": ___, "name": ___, "nestedField": ___, "relatedCompanyTestEntity": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
+	 * curl -X 'POST' 'http://localhost:8080/o/test/v1.0/batch-test-entity1' -d $'{"customFields": ___, "externalReferenceCode": ___, "name": ___, "nestedField": ___, "relatedCompanyTestEntity": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
 	 */
 	@io.swagger.v3.oas.annotations.tags.Tags(
 		value = {
-			@io.swagger.v3.oas.annotations.tags.Tag(name = "BatchTestEntity")
+			@io.swagger.v3.oas.annotations.tags.Tag(name = "BatchTestEntity1")
 		}
 	)
 	@jakarta.ws.rs.Consumes({"application/json", "application/xml"})
-	@jakarta.ws.rs.Path("/batch-test-entities")
+	@jakarta.ws.rs.Path("/batch-test-entity1")
 	@jakarta.ws.rs.POST
 	@jakarta.ws.rs.Produces({"application/json", "application/xml"})
 	@Override
-	public BatchTestEntity postBatchTestEntity(BatchTestEntity batchTestEntity)
+	public BatchTestEntity1 postBatchTestEntity1(
+			BatchTestEntity1 batchTestEntity1)
 		throws Exception {
 
-		return new BatchTestEntity();
+		return new BatchTestEntity1();
 	}
 
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -X 'POST' 'http://localhost:8080/o/test/v1.0/batch-test-entities/batch'  -u 'test@liferay.com:test'
+	 * curl -X 'POST' 'http://localhost:8080/o/test/v1.0/batch-test-entity1/batch'  -u 'test@liferay.com:test'
 	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
@@ -287,15 +223,15 @@ public abstract class BaseBatchTestEntityResourceImpl
 	)
 	@io.swagger.v3.oas.annotations.tags.Tags(
 		value = {
-			@io.swagger.v3.oas.annotations.tags.Tag(name = "BatchTestEntity")
+			@io.swagger.v3.oas.annotations.tags.Tag(name = "BatchTestEntity1")
 		}
 	)
 	@jakarta.ws.rs.Consumes("application/json")
-	@jakarta.ws.rs.Path("/batch-test-entities/batch")
+	@jakarta.ws.rs.Path("/batch-test-entity1/batch")
 	@jakarta.ws.rs.POST
 	@jakarta.ws.rs.Produces("application/json")
 	@Override
-	public Response postBatchTestEntityBatch(
+	public Response postBatchTestEntity1Batch(
 			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 			@jakarta.ws.rs.QueryParam("callbackURL")
 			String callbackURL,
@@ -314,14 +250,14 @@ public abstract class BaseBatchTestEntityResourceImpl
 
 		return responseBuilder.entity(
 			vulcanBatchEngineImportTaskResource.postImportTask(
-				BatchTestEntity.class.getName(), callbackURL, null, object)
+				BatchTestEntity1.class.getName(), callbackURL, null, object)
 		).build();
 	}
 
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -X 'PUT' 'http://localhost:8080/o/test/v1.0/batch-test-entities/by-external-reference-code/{externalReferenceCode}' -d $'{"customFields": ___, "externalReferenceCode": ___, "name": ___, "nestedField": ___, "relatedCompanyTestEntity": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
+	 * curl -X 'PUT' 'http://localhost:8080/o/test/v1.0/batch-test-entity1/by-external-reference-code/{externalReferenceCode}' -d $'{"customFields": ___, "externalReferenceCode": ___, "name": ___, "nestedField": ___, "relatedCompanyTestEntity": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
 	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
@@ -333,43 +269,43 @@ public abstract class BaseBatchTestEntityResourceImpl
 	)
 	@io.swagger.v3.oas.annotations.tags.Tags(
 		value = {
-			@io.swagger.v3.oas.annotations.tags.Tag(name = "BatchTestEntity")
+			@io.swagger.v3.oas.annotations.tags.Tag(name = "BatchTestEntity1")
 		}
 	)
 	@jakarta.ws.rs.Consumes({"application/json", "application/xml"})
 	@jakarta.ws.rs.Path(
-		"/batch-test-entities/by-external-reference-code/{externalReferenceCode}"
+		"/batch-test-entity1/by-external-reference-code/{externalReferenceCode}"
 	)
 	@jakarta.ws.rs.Produces({"application/json", "application/xml"})
 	@jakarta.ws.rs.PUT
 	@Override
-	public BatchTestEntity putBatchTestEntityByExternalReferenceCode(
+	public BatchTestEntity1 putBatchTestEntity1ByExternalReferenceCode(
 			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 			@jakarta.validation.constraints.NotNull
 			@jakarta.ws.rs.PathParam("externalReferenceCode")
 			String externalReferenceCode,
-			BatchTestEntity batchTestEntity)
+			BatchTestEntity1 batchTestEntity1)
 		throws Exception {
 
-		return new BatchTestEntity();
+		return new BatchTestEntity1();
 	}
 
 	@Override
 	@SuppressWarnings("PMD.UnusedLocalVariable")
 	public void create(
-			Collection<BatchTestEntity> batchTestEntities,
+			Collection<BatchTestEntity1> batchTestEntity1s,
 			Map<String, Serializable> parameters)
 		throws Exception {
 
-		UnsafeFunction<BatchTestEntity, BatchTestEntity, Exception>
-			batchTestEntityUnsafeFunction = null;
+		UnsafeFunction<BatchTestEntity1, BatchTestEntity1, Exception>
+			batchTestEntity1UnsafeFunction = null;
 
 		String createStrategy = (String)parameters.getOrDefault(
 			"createStrategy", "INSERT");
 
 		if (StringUtil.equalsIgnoreCase(createStrategy, "INSERT")) {
-			batchTestEntityUnsafeFunction =
-				batchTestEntity -> postBatchTestEntity(batchTestEntity);
+			batchTestEntity1UnsafeFunction =
+				batchTestEntity1 -> postBatchTestEntity1(batchTestEntity1);
 		}
 
 		if (StringUtil.equalsIgnoreCase(createStrategy, "UPSERT")) {
@@ -377,53 +313,53 @@ public abstract class BaseBatchTestEntityResourceImpl
 				"updateStrategy", "UPDATE");
 
 			if (StringUtil.equalsIgnoreCase(updateStrategy, "UPDATE")) {
-				batchTestEntityUnsafeFunction = batchTestEntity -> {
-					BatchTestEntity persistedBatchTestEntity = null;
+				batchTestEntity1UnsafeFunction = batchTestEntity1 -> {
+					BatchTestEntity1 persistedBatchTestEntity1 = null;
 
-					persistedBatchTestEntity =
-						putBatchTestEntityByExternalReferenceCode(
-							batchTestEntity.getExternalReferenceCode(),
-							batchTestEntity);
+					persistedBatchTestEntity1 =
+						putBatchTestEntity1ByExternalReferenceCode(
+							batchTestEntity1.getExternalReferenceCode(),
+							batchTestEntity1);
 
-					return persistedBatchTestEntity;
+					return persistedBatchTestEntity1;
 				};
 			}
 		}
 
-		if (batchTestEntityUnsafeFunction == null) {
+		if (batchTestEntity1UnsafeFunction == null) {
 			throw new NotSupportedException(
 				"Create strategy \"" + createStrategy +
-					"\" is not supported for BatchTestEntity");
+					"\" is not supported for BatchTestEntity1");
 		}
 
 		if (contextBatchUnsafeBiConsumer != null) {
 			contextBatchUnsafeBiConsumer.accept(
-				batchTestEntities, batchTestEntityUnsafeFunction);
+				batchTestEntity1s, batchTestEntity1UnsafeFunction);
 		}
 		else if (contextBatchUnsafeConsumer != null) {
 			contextBatchUnsafeConsumer.accept(
-				batchTestEntities, batchTestEntityUnsafeFunction::apply);
+				batchTestEntity1s, batchTestEntity1UnsafeFunction::apply);
 		}
 		else {
-			for (BatchTestEntity batchTestEntity : batchTestEntities) {
-				batchTestEntityUnsafeFunction.apply(batchTestEntity);
+			for (BatchTestEntity1 batchTestEntity1 : batchTestEntity1s) {
+				batchTestEntity1UnsafeFunction.apply(batchTestEntity1);
 			}
 		}
 	}
 
 	@Override
 	public void delete(
-			Collection<BatchTestEntity> batchTestEntities,
+			Collection<BatchTestEntity1> batchTestEntity1s,
 			Map<String, Serializable> parameters)
 		throws Exception {
 
-		UnsafeFunction<BatchTestEntity, BatchTestEntity, Exception>
-			batchTestEntityUnsafeFunction = batchTestEntity -> {
-				if (batchTestEntity.getExternalReferenceCode() != null) {
-					deleteBatchTestEntityByExternalReferenceCode(
-						batchTestEntity.getExternalReferenceCode());
+		UnsafeFunction<BatchTestEntity1, BatchTestEntity1, Exception>
+			batchTestEntity1UnsafeFunction = batchTestEntity1 -> {
+				if (batchTestEntity1.getExternalReferenceCode() != null) {
+					deleteBatchTestEntity1ByExternalReferenceCode(
+						batchTestEntity1.getExternalReferenceCode());
 
-					return batchTestEntity;
+					return batchTestEntity1;
 				}
 
 				throw new UnsupportedOperationException(
@@ -432,15 +368,15 @@ public abstract class BaseBatchTestEntityResourceImpl
 
 		if (contextBatchUnsafeBiConsumer != null) {
 			contextBatchUnsafeBiConsumer.accept(
-				batchTestEntities, batchTestEntityUnsafeFunction);
+				batchTestEntity1s, batchTestEntity1UnsafeFunction);
 		}
 		else if (contextBatchUnsafeConsumer != null) {
 			contextBatchUnsafeConsumer.accept(
-				batchTestEntities, batchTestEntityUnsafeFunction::apply);
+				batchTestEntity1s, batchTestEntity1UnsafeFunction::apply);
 		}
 		else {
-			for (BatchTestEntity batchTestEntity : batchTestEntities) {
-				batchTestEntityUnsafeFunction.apply(batchTestEntity);
+			for (BatchTestEntity1 batchTestEntity1 : batchTestEntity1s) {
+				batchTestEntity1UnsafeFunction.apply(batchTestEntity1);
 			}
 		}
 	}
@@ -462,7 +398,7 @@ public abstract class BaseBatchTestEntityResourceImpl
 	}
 
 	public String getResourceName() {
-		return "BatchTestEntity";
+		return "BatchTestEntity1";
 	}
 
 	public String getVersion() {
@@ -470,14 +406,15 @@ public abstract class BaseBatchTestEntityResourceImpl
 	}
 
 	@Override
-	public Page<BatchTestEntity> read(
+	public Page<BatchTestEntity1> read(
 			com.liferay.portal.kernel.search.filter.Filter filter,
 			Pagination pagination,
 			com.liferay.portal.kernel.search.Sort[] sorts,
 			Map<String, Serializable> parameters, String search)
 		throws Exception {
 
-		return getBatchTestEntitiesPage();
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Override
@@ -504,7 +441,7 @@ public abstract class BaseBatchTestEntityResourceImpl
 
 	@Override
 	public void update(
-			Collection<BatchTestEntity> batchTestEntities,
+			Collection<BatchTestEntity1> batchTestEntity1s,
 			Map<String, Serializable> parameters)
 		throws Exception {
 
@@ -519,19 +456,14 @@ public abstract class BaseBatchTestEntityResourceImpl
 		return null;
 	}
 
-	@Override
-	public BatchTestEntity getItem(Long id) throws Exception {
-		return getBatchTestEntity(id);
-	}
-
 	public void setContextAcceptLanguage(AcceptLanguage contextAcceptLanguage) {
 		this.contextAcceptLanguage = contextAcceptLanguage;
 	}
 
 	public void setContextBatchUnsafeBiConsumer(
 		UnsafeBiConsumer
-			<Collection<BatchTestEntity>,
-			 UnsafeFunction<BatchTestEntity, BatchTestEntity, Exception>,
+			<Collection<BatchTestEntity1>,
+			 UnsafeFunction<BatchTestEntity1, BatchTestEntity1, Exception>,
 			 Exception> contextBatchUnsafeBiConsumer) {
 
 		this.contextBatchUnsafeBiConsumer = contextBatchUnsafeBiConsumer;
@@ -539,8 +471,8 @@ public abstract class BaseBatchTestEntityResourceImpl
 
 	public void setContextBatchUnsafeConsumer(
 		UnsafeBiConsumer
-			<Collection<BatchTestEntity>,
-			 UnsafeConsumer<BatchTestEntity, Exception>, Exception>
+			<Collection<BatchTestEntity1>,
+			 UnsafeConsumer<BatchTestEntity1, Exception>, Exception>
 				contextBatchUnsafeConsumer) {
 
 		this.contextBatchUnsafeConsumer = contextBatchUnsafeConsumer;
@@ -1050,12 +982,12 @@ public abstract class BaseBatchTestEntityResourceImpl
 
 	protected AcceptLanguage contextAcceptLanguage;
 	protected UnsafeBiConsumer
-		<Collection<BatchTestEntity>,
-		 UnsafeFunction<BatchTestEntity, BatchTestEntity, Exception>, Exception>
-			contextBatchUnsafeBiConsumer;
+		<Collection<BatchTestEntity1>,
+		 UnsafeFunction<BatchTestEntity1, BatchTestEntity1, Exception>,
+		 Exception> contextBatchUnsafeBiConsumer;
 	protected UnsafeBiConsumer
-		<Collection<BatchTestEntity>,
-		 UnsafeConsumer<BatchTestEntity, Exception>, Exception>
+		<Collection<BatchTestEntity1>,
+		 UnsafeConsumer<BatchTestEntity1, Exception>, Exception>
 			contextBatchUnsafeConsumer;
 	protected com.liferay.portal.kernel.model.Company contextCompany;
 	protected HttpServletRequest contextHttpServletRequest;
@@ -1077,6 +1009,6 @@ public abstract class BaseBatchTestEntityResourceImpl
 		vulcanBatchEngineImportTaskResource;
 
 	private static final com.liferay.portal.kernel.log.Log _log =
-		LogFactoryUtil.getLog(BaseBatchTestEntityResourceImpl.class);
+		LogFactoryUtil.getLog(BaseBatchTestEntity1ResourceImpl.class);
 
 }

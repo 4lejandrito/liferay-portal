@@ -5,11 +5,11 @@
 
 package com.liferay.portal.tools.rest.builder.test.client.resource.v1_0;
 
-import com.liferay.portal.tools.rest.builder.test.client.dto.v1_0.BatchTestEntity;
+import com.liferay.portal.tools.rest.builder.test.client.dto.v1_0.BatchTestEntity1;
 import com.liferay.portal.tools.rest.builder.test.client.http.HttpInvoker;
 import com.liferay.portal.tools.rest.builder.test.client.pagination.Page;
 import com.liferay.portal.tools.rest.builder.test.client.problem.Problem;
-import com.liferay.portal.tools.rest.builder.test.client.serdes.v1_0.BatchTestEntitySerDes;
+import com.liferay.portal.tools.rest.builder.test.client.serdes.v1_0.BatchTestEntity1SerDes;
 
 import jakarta.annotation.Generated;
 
@@ -27,72 +27,64 @@ import java.util.logging.Logger;
  * @generated
  */
 @Generated("")
-public interface BatchTestEntityResource {
+public interface BatchTestEntity1Resource {
 
 	public static Builder builder() {
 		return new Builder();
 	}
 
-	public void deleteBatchTestEntityByExternalReferenceCode(
+	public void deleteBatchTestEntity1ByExternalReferenceCode(
 			String externalReferenceCode)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse
-			deleteBatchTestEntityByExternalReferenceCodeHttpResponse(
+			deleteBatchTestEntity1ByExternalReferenceCodeHttpResponse(
 				String externalReferenceCode)
 		throws Exception;
 
-	public Page<BatchTestEntity> getBatchTestEntitiesPage() throws Exception;
+	public Page<BatchTestEntity1> getBatchTestEntities1Page() throws Exception;
 
-	public HttpInvoker.HttpResponse getBatchTestEntitiesPageHttpResponse()
+	public HttpInvoker.HttpResponse getBatchTestEntities1PageHttpResponse()
 		throws Exception;
 
-	public BatchTestEntity getBatchTestEntity(Long batchTestEntityId)
+	public BatchTestEntity1 getBatchTestEntity1(Long batchTestEntityId)
 		throws Exception;
 
-	public HttpInvoker.HttpResponse getBatchTestEntityHttpResponse(
+	public HttpInvoker.HttpResponse getBatchTestEntity1HttpResponse(
 			Long batchTestEntityId)
 		throws Exception;
 
-	public BatchTestEntity getBatchTestEntityByExternalReferenceCode(
+	public BatchTestEntity1 getBatchTestEntity1ByExternalReferenceCode(
 			String externalReferenceCode)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse
-			getBatchTestEntityByExternalReferenceCodeHttpResponse(
+			getBatchTestEntity1ByExternalReferenceCodeHttpResponse(
 				String externalReferenceCode)
 		throws Exception;
 
-	public void postBatchTestEntitiesPageExportBatch(
-			String callbackURL, String contentType, String fieldNames)
+	public BatchTestEntity1 postBatchTestEntity1(
+			BatchTestEntity1 batchTestEntity1)
 		throws Exception;
 
-	public HttpInvoker.HttpResponse
-			postBatchTestEntitiesPageExportBatchHttpResponse(
-				String callbackURL, String contentType, String fieldNames)
+	public HttpInvoker.HttpResponse postBatchTestEntity1HttpResponse(
+			BatchTestEntity1 batchTestEntity1)
 		throws Exception;
 
-	public BatchTestEntity postBatchTestEntity(BatchTestEntity batchTestEntity)
+	public void postBatchTestEntity1Batch(String callbackURL, Object object)
 		throws Exception;
 
-	public HttpInvoker.HttpResponse postBatchTestEntityHttpResponse(
-			BatchTestEntity batchTestEntity)
-		throws Exception;
-
-	public void postBatchTestEntityBatch(String callbackURL, Object object)
-		throws Exception;
-
-	public HttpInvoker.HttpResponse postBatchTestEntityBatchHttpResponse(
+	public HttpInvoker.HttpResponse postBatchTestEntity1BatchHttpResponse(
 			String callbackURL, Object object)
 		throws Exception;
 
-	public BatchTestEntity putBatchTestEntityByExternalReferenceCode(
-			String externalReferenceCode, BatchTestEntity batchTestEntity)
+	public BatchTestEntity1 putBatchTestEntity1ByExternalReferenceCode(
+			String externalReferenceCode, BatchTestEntity1 batchTestEntity1)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse
-			putBatchTestEntityByExternalReferenceCodeHttpResponse(
-				String externalReferenceCode, BatchTestEntity batchTestEntity)
+			putBatchTestEntity1ByExternalReferenceCodeHttpResponse(
+				String externalReferenceCode, BatchTestEntity1 batchTestEntity1)
 		throws Exception;
 
 	public static class Builder {
@@ -108,8 +100,8 @@ public interface BatchTestEntityResource {
 			return header("Authorization", "Bearer " + token);
 		}
 
-		public BatchTestEntityResource build() {
-			return new BatchTestEntityResourceImpl(this);
+		public BatchTestEntity1Resource build() {
+			return new BatchTestEntity1ResourceImpl(this);
 		}
 
 		public Builder contextPath(String contextPath) {
@@ -201,15 +193,15 @@ public interface BatchTestEntityResource {
 
 	}
 
-	public static class BatchTestEntityResourceImpl
-		implements BatchTestEntityResource {
+	public static class BatchTestEntity1ResourceImpl
+		implements BatchTestEntity1Resource {
 
-		public void deleteBatchTestEntityByExternalReferenceCode(
+		public void deleteBatchTestEntity1ByExternalReferenceCode(
 				String externalReferenceCode)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				deleteBatchTestEntityByExternalReferenceCodeHttpResponse(
+				deleteBatchTestEntity1ByExternalReferenceCodeHttpResponse(
 					externalReferenceCode);
 
 			String content = httpResponse.getContent();
@@ -272,7 +264,7 @@ public interface BatchTestEntityResource {
 		}
 
 		public HttpInvoker.HttpResponse
-				deleteBatchTestEntityByExternalReferenceCodeHttpResponse(
+				deleteBatchTestEntity1ByExternalReferenceCodeHttpResponse(
 					String externalReferenceCode)
 			throws Exception {
 
@@ -300,7 +292,7 @@ public interface BatchTestEntityResource {
 			httpInvoker.path(
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
-						"/o/test/v1.0/batch-test-entities/by-external-reference-code/{externalReferenceCode}");
+						"/o/test/v1.0/batch-test-entity1/by-external-reference-code/{externalReferenceCode}");
 
 			httpInvoker.path("externalReferenceCode", externalReferenceCode);
 
@@ -312,11 +304,11 @@ public interface BatchTestEntityResource {
 			return httpInvoker.invoke();
 		}
 
-		public Page<BatchTestEntity> getBatchTestEntitiesPage()
+		public Page<BatchTestEntity1> getBatchTestEntities1Page()
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				getBatchTestEntitiesPageHttpResponse();
+				getBatchTestEntities1PageHttpResponse();
 
 			String content = httpResponse.getContent();
 
@@ -366,7 +358,7 @@ public interface BatchTestEntityResource {
 			}
 
 			try {
-				return Page.of(content, BatchTestEntitySerDes::toDTO);
+				return Page.of(content, BatchTestEntity1SerDes::toDTO);
 			}
 			catch (Exception e) {
 				_logger.log(
@@ -377,7 +369,7 @@ public interface BatchTestEntityResource {
 			}
 		}
 
-		public HttpInvoker.HttpResponse getBatchTestEntitiesPageHttpResponse()
+		public HttpInvoker.HttpResponse getBatchTestEntities1PageHttpResponse()
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -404,7 +396,7 @@ public interface BatchTestEntityResource {
 			httpInvoker.path(
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
-						"/o/test/v1.0/batch-test-entities");
+						"/o/test/v1.0/batch-test-entities1");
 
 			if ((_builder._login != null) && (_builder._password != null)) {
 				httpInvoker.userNameAndPassword(
@@ -414,11 +406,11 @@ public interface BatchTestEntityResource {
 			return httpInvoker.invoke();
 		}
 
-		public BatchTestEntity getBatchTestEntity(Long batchTestEntityId)
+		public BatchTestEntity1 getBatchTestEntity1(Long batchTestEntityId)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				getBatchTestEntityHttpResponse(batchTestEntityId);
+				getBatchTestEntity1HttpResponse(batchTestEntityId);
 
 			String content = httpResponse.getContent();
 
@@ -468,7 +460,7 @@ public interface BatchTestEntityResource {
 			}
 
 			try {
-				return BatchTestEntitySerDes.toDTO(content);
+				return BatchTestEntity1SerDes.toDTO(content);
 			}
 			catch (Exception e) {
 				_logger.log(
@@ -479,7 +471,7 @@ public interface BatchTestEntityResource {
 			}
 		}
 
-		public HttpInvoker.HttpResponse getBatchTestEntityHttpResponse(
+		public HttpInvoker.HttpResponse getBatchTestEntity1HttpResponse(
 				Long batchTestEntityId)
 			throws Exception {
 
@@ -507,7 +499,7 @@ public interface BatchTestEntityResource {
 			httpInvoker.path(
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
-						"/o/test/v1.0/batch-test-entities/{batchTestEntityId}");
+						"/o/test/v1.0/batch-test-entity1/{batchTestEntity1Id}");
 
 			httpInvoker.path("batchTestEntityId", batchTestEntityId);
 
@@ -519,12 +511,12 @@ public interface BatchTestEntityResource {
 			return httpInvoker.invoke();
 		}
 
-		public BatchTestEntity getBatchTestEntityByExternalReferenceCode(
+		public BatchTestEntity1 getBatchTestEntity1ByExternalReferenceCode(
 				String externalReferenceCode)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				getBatchTestEntityByExternalReferenceCodeHttpResponse(
+				getBatchTestEntity1ByExternalReferenceCodeHttpResponse(
 					externalReferenceCode);
 
 			String content = httpResponse.getContent();
@@ -575,7 +567,7 @@ public interface BatchTestEntityResource {
 			}
 
 			try {
-				return BatchTestEntitySerDes.toDTO(content);
+				return BatchTestEntity1SerDes.toDTO(content);
 			}
 			catch (Exception e) {
 				_logger.log(
@@ -587,7 +579,7 @@ public interface BatchTestEntityResource {
 		}
 
 		public HttpInvoker.HttpResponse
-				getBatchTestEntityByExternalReferenceCodeHttpResponse(
+				getBatchTestEntity1ByExternalReferenceCodeHttpResponse(
 					String externalReferenceCode)
 			throws Exception {
 
@@ -615,7 +607,7 @@ public interface BatchTestEntityResource {
 			httpInvoker.path(
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
-						"/o/test/v1.0/batch-test-entities/by-external-reference-code/{externalReferenceCode}");
+						"/o/test/v1.0/batch-test-entity1/by-external-reference-code/{externalReferenceCode}");
 
 			httpInvoker.path("externalReferenceCode", externalReferenceCode);
 
@@ -627,123 +619,12 @@ public interface BatchTestEntityResource {
 			return httpInvoker.invoke();
 		}
 
-		public void postBatchTestEntitiesPageExportBatch(
-				String callbackURL, String contentType, String fieldNames)
+		public BatchTestEntity1 postBatchTestEntity1(
+				BatchTestEntity1 batchTestEntity1)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				postBatchTestEntitiesPageExportBatchHttpResponse(
-					callbackURL, contentType, fieldNames);
-
-			String content = httpResponse.getContent();
-
-			if ((httpResponse.getStatusCode() / 100) != 2) {
-				_logger.log(
-					Level.WARNING,
-					"Unable to process HTTP response content: " + content);
-				_logger.log(
-					Level.WARNING,
-					"HTTP response message: " + httpResponse.getMessage());
-				_logger.log(
-					Level.WARNING,
-					"HTTP response status code: " +
-						httpResponse.getStatusCode());
-
-				Problem.ProblemException problemException = null;
-
-				if (Objects.equals(
-						httpResponse.getContentType(), "application/json")) {
-
-					problemException = new Problem.ProblemException(
-						Problem.toDTO(content));
-				}
-				else {
-					_logger.log(
-						Level.WARNING,
-						"Unable to process content type: " +
-							httpResponse.getContentType());
-
-					Problem problem = new Problem();
-
-					problem.setStatus(
-						String.valueOf(httpResponse.getStatusCode()));
-
-					problemException = new Problem.ProblemException(problem);
-				}
-
-				throw problemException;
-			}
-			else {
-				_logger.fine("HTTP response content: " + content);
-				_logger.fine(
-					"HTTP response message: " + httpResponse.getMessage());
-				_logger.fine(
-					"HTTP response status code: " +
-						httpResponse.getStatusCode());
-			}
-		}
-
-		public HttpInvoker.HttpResponse
-				postBatchTestEntitiesPageExportBatchHttpResponse(
-					String callbackURL, String contentType, String fieldNames)
-			throws Exception {
-
-			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
-
-			httpInvoker.body("[]", "application/json");
-
-			if (_builder._locale != null) {
-				httpInvoker.header(
-					"Accept-Language", _builder._locale.toLanguageTag());
-			}
-
-			for (Map.Entry<String, String> entry :
-					_builder._headers.entrySet()) {
-
-				httpInvoker.header(entry.getKey(), entry.getValue());
-			}
-
-			for (Map.Entry<String, String> entry :
-					_builder._parameters.entrySet()) {
-
-				httpInvoker.parameter(entry.getKey(), entry.getValue());
-			}
-
-			httpInvoker.httpMethod(HttpInvoker.HttpMethod.POST);
-
-			if (callbackURL != null) {
-				httpInvoker.parameter(
-					"callbackURL", String.valueOf(callbackURL));
-			}
-
-			if (contentType != null) {
-				httpInvoker.parameter(
-					"contentType", String.valueOf(contentType));
-			}
-
-			if (fieldNames != null) {
-				httpInvoker.parameter("fieldNames", String.valueOf(fieldNames));
-			}
-
-			httpInvoker.path(
-				_builder._scheme + "://" + _builder._host + ":" +
-					_builder._port + _builder._contextPath +
-						"/o/test/v1.0/batch-test-entities/export-batch");
-
-			if ((_builder._login != null) && (_builder._password != null)) {
-				httpInvoker.userNameAndPassword(
-					_builder._login + ":" + _builder._password);
-			}
-
-			return httpInvoker.invoke();
-		}
-
-		public BatchTestEntity postBatchTestEntity(
-				BatchTestEntity batchTestEntity)
-			throws Exception {
-
-			HttpInvoker.HttpResponse httpResponse =
-				postBatchTestEntityHttpResponse(batchTestEntity);
+				postBatchTestEntity1HttpResponse(batchTestEntity1);
 
 			String content = httpResponse.getContent();
 
@@ -793,7 +674,7 @@ public interface BatchTestEntityResource {
 			}
 
 			try {
-				return BatchTestEntitySerDes.toDTO(content);
+				return BatchTestEntity1SerDes.toDTO(content);
 			}
 			catch (Exception e) {
 				_logger.log(
@@ -804,13 +685,13 @@ public interface BatchTestEntityResource {
 			}
 		}
 
-		public HttpInvoker.HttpResponse postBatchTestEntityHttpResponse(
-				BatchTestEntity batchTestEntity)
+		public HttpInvoker.HttpResponse postBatchTestEntity1HttpResponse(
+				BatchTestEntity1 batchTestEntity1)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
 
-			httpInvoker.body(batchTestEntity.toString(), "application/json");
+			httpInvoker.body(batchTestEntity1.toString(), "application/json");
 
 			if (_builder._locale != null) {
 				httpInvoker.header(
@@ -834,7 +715,7 @@ public interface BatchTestEntityResource {
 			httpInvoker.path(
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
-						"/o/test/v1.0/batch-test-entities");
+						"/o/test/v1.0/batch-test-entity1");
 
 			if ((_builder._login != null) && (_builder._password != null)) {
 				httpInvoker.userNameAndPassword(
@@ -844,11 +725,11 @@ public interface BatchTestEntityResource {
 			return httpInvoker.invoke();
 		}
 
-		public void postBatchTestEntityBatch(String callbackURL, Object object)
+		public void postBatchTestEntity1Batch(String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				postBatchTestEntityBatchHttpResponse(callbackURL, object);
+				postBatchTestEntity1BatchHttpResponse(callbackURL, object);
 
 			String content = httpResponse.getContent();
 
@@ -898,7 +779,7 @@ public interface BatchTestEntityResource {
 			}
 		}
 
-		public HttpInvoker.HttpResponse postBatchTestEntityBatchHttpResponse(
+		public HttpInvoker.HttpResponse postBatchTestEntity1BatchHttpResponse(
 				String callbackURL, Object object)
 			throws Exception {
 
@@ -933,7 +814,7 @@ public interface BatchTestEntityResource {
 			httpInvoker.path(
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
-						"/o/test/v1.0/batch-test-entities/batch");
+						"/o/test/v1.0/batch-test-entity1/batch");
 
 			if ((_builder._login != null) && (_builder._password != null)) {
 				httpInvoker.userNameAndPassword(
@@ -943,13 +824,13 @@ public interface BatchTestEntityResource {
 			return httpInvoker.invoke();
 		}
 
-		public BatchTestEntity putBatchTestEntityByExternalReferenceCode(
-				String externalReferenceCode, BatchTestEntity batchTestEntity)
+		public BatchTestEntity1 putBatchTestEntity1ByExternalReferenceCode(
+				String externalReferenceCode, BatchTestEntity1 batchTestEntity1)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
-				putBatchTestEntityByExternalReferenceCodeHttpResponse(
-					externalReferenceCode, batchTestEntity);
+				putBatchTestEntity1ByExternalReferenceCodeHttpResponse(
+					externalReferenceCode, batchTestEntity1);
 
 			String content = httpResponse.getContent();
 
@@ -999,7 +880,7 @@ public interface BatchTestEntityResource {
 			}
 
 			try {
-				return BatchTestEntitySerDes.toDTO(content);
+				return BatchTestEntity1SerDes.toDTO(content);
 			}
 			catch (Exception e) {
 				_logger.log(
@@ -1011,14 +892,14 @@ public interface BatchTestEntityResource {
 		}
 
 		public HttpInvoker.HttpResponse
-				putBatchTestEntityByExternalReferenceCodeHttpResponse(
+				putBatchTestEntity1ByExternalReferenceCodeHttpResponse(
 					String externalReferenceCode,
-					BatchTestEntity batchTestEntity)
+					BatchTestEntity1 batchTestEntity1)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
 
-			httpInvoker.body(batchTestEntity.toString(), "application/json");
+			httpInvoker.body(batchTestEntity1.toString(), "application/json");
 
 			if (_builder._locale != null) {
 				httpInvoker.header(
@@ -1042,7 +923,7 @@ public interface BatchTestEntityResource {
 			httpInvoker.path(
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
-						"/o/test/v1.0/batch-test-entities/by-external-reference-code/{externalReferenceCode}");
+						"/o/test/v1.0/batch-test-entity1/by-external-reference-code/{externalReferenceCode}");
 
 			httpInvoker.path("externalReferenceCode", externalReferenceCode);
 
@@ -1054,12 +935,12 @@ public interface BatchTestEntityResource {
 			return httpInvoker.invoke();
 		}
 
-		private BatchTestEntityResourceImpl(Builder builder) {
+		private BatchTestEntity1ResourceImpl(Builder builder) {
 			_builder = builder;
 		}
 
 		private static final Logger _logger = Logger.getLogger(
-			BatchTestEntityResource.class.getName());
+			BatchTestEntity1Resource.class.getName());
 
 		private Builder _builder;
 

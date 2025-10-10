@@ -5,7 +5,7 @@
 
 package com.liferay.portal.tools.rest.builder.test.client.serdes.v1_0;
 
-import com.liferay.portal.tools.rest.builder.test.client.dto.v1_0.BatchTestEntity;
+import com.liferay.portal.tools.rest.builder.test.client.dto.v1_0.BatchTestEntity1;
 import com.liferay.portal.tools.rest.builder.test.client.json.BaseJSONParser;
 
 import jakarta.annotation.Generated;
@@ -21,24 +21,24 @@ import java.util.TreeMap;
  * @generated
  */
 @Generated("")
-public class BatchTestEntitySerDes {
+public class BatchTestEntity1SerDes {
 
-	public static BatchTestEntity toDTO(String json) {
-		BatchTestEntityJSONParser batchTestEntityJSONParser =
-			new BatchTestEntityJSONParser();
+	public static BatchTestEntity1 toDTO(String json) {
+		BatchTestEntity1JSONParser batchTestEntity1JSONParser =
+			new BatchTestEntity1JSONParser();
 
-		return batchTestEntityJSONParser.parseToDTO(json);
+		return batchTestEntity1JSONParser.parseToDTO(json);
 	}
 
-	public static BatchTestEntity[] toDTOs(String json) {
-		BatchTestEntityJSONParser batchTestEntityJSONParser =
-			new BatchTestEntityJSONParser();
+	public static BatchTestEntity1[] toDTOs(String json) {
+		BatchTestEntity1JSONParser batchTestEntity1JSONParser =
+			new BatchTestEntity1JSONParser();
 
-		return batchTestEntityJSONParser.parseToDTOs(json);
+		return batchTestEntity1JSONParser.parseToDTOs(json);
 	}
 
-	public static String toJSON(BatchTestEntity batchTestEntity) {
-		if (batchTestEntity == null) {
+	public static String toJSON(BatchTestEntity1 batchTestEntity1) {
+		if (batchTestEntity1 == null) {
 			return "null";
 		}
 
@@ -46,7 +46,7 @@ public class BatchTestEntitySerDes {
 
 		sb.append("{");
 
-		if (batchTestEntity.getCustomFields() != null) {
+		if (batchTestEntity1.getCustomFields() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
@@ -55,10 +55,12 @@ public class BatchTestEntitySerDes {
 
 			sb.append("[");
 
-			for (int i = 0; i < batchTestEntity.getCustomFields().length; i++) {
-				sb.append(batchTestEntity.getCustomFields()[i]);
+			for (int i = 0; i < batchTestEntity1.getCustomFields().length;
+				 i++) {
 
-				if ((i + 1) < batchTestEntity.getCustomFields().length) {
+				sb.append(batchTestEntity1.getCustomFields()[i]);
+
+				if ((i + 1) < batchTestEntity1.getCustomFields().length) {
 					sb.append(", ");
 				}
 			}
@@ -66,7 +68,7 @@ public class BatchTestEntitySerDes {
 			sb.append("]");
 		}
 
-		if (batchTestEntity.getExternalReferenceCode() != null) {
+		if (batchTestEntity1.getExternalReferenceCode() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
@@ -75,22 +77,22 @@ public class BatchTestEntitySerDes {
 
 			sb.append("\"");
 
-			sb.append(_escape(batchTestEntity.getExternalReferenceCode()));
+			sb.append(_escape(batchTestEntity1.getExternalReferenceCode()));
 
 			sb.append("\"");
 		}
 
-		if (batchTestEntity.getId() != null) {
+		if (batchTestEntity1.getId() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
 			sb.append("\"id\": ");
 
-			sb.append(batchTestEntity.getId());
+			sb.append(batchTestEntity1.getId());
 		}
 
-		if (batchTestEntity.getName() != null) {
+		if (batchTestEntity1.getName() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
@@ -99,12 +101,12 @@ public class BatchTestEntitySerDes {
 
 			sb.append("\"");
 
-			sb.append(_escape(batchTestEntity.getName()));
+			sb.append(_escape(batchTestEntity1.getName()));
 
 			sb.append("\"");
 		}
 
-		if (batchTestEntity.getNestedField() != null) {
+		if (batchTestEntity1.getNestedField() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
@@ -113,12 +115,12 @@ public class BatchTestEntitySerDes {
 
 			sb.append("\"");
 
-			sb.append(_escape(batchTestEntity.getNestedField()));
+			sb.append(_escape(batchTestEntity1.getNestedField()));
 
 			sb.append("\"");
 		}
 
-		if (batchTestEntity.getRelatedCompanyTestEntity() != null) {
+		if (batchTestEntity1.getRelatedCompanyTestEntity() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
@@ -126,7 +128,7 @@ public class BatchTestEntitySerDes {
 			sb.append("\"relatedCompanyTestEntity\": ");
 
 			sb.append(
-				String.valueOf(batchTestEntity.getRelatedCompanyTestEntity()));
+				String.valueOf(batchTestEntity1.getRelatedCompanyTestEntity()));
 		}
 
 		sb.append("}");
@@ -135,83 +137,83 @@ public class BatchTestEntitySerDes {
 	}
 
 	public static Map<String, Object> toMap(String json) {
-		BatchTestEntityJSONParser batchTestEntityJSONParser =
-			new BatchTestEntityJSONParser();
+		BatchTestEntity1JSONParser batchTestEntity1JSONParser =
+			new BatchTestEntity1JSONParser();
 
-		return batchTestEntityJSONParser.parseToMap(json);
+		return batchTestEntity1JSONParser.parseToMap(json);
 	}
 
-	public static Map<String, String> toMap(BatchTestEntity batchTestEntity) {
-		if (batchTestEntity == null) {
+	public static Map<String, String> toMap(BatchTestEntity1 batchTestEntity1) {
+		if (batchTestEntity1 == null) {
 			return null;
 		}
 
 		Map<String, String> map = new TreeMap<>();
 
-		if (batchTestEntity.getCustomFields() == null) {
+		if (batchTestEntity1.getCustomFields() == null) {
 			map.put("customFields", null);
 		}
 		else {
 			map.put(
 				"customFields",
-				String.valueOf(batchTestEntity.getCustomFields()));
+				String.valueOf(batchTestEntity1.getCustomFields()));
 		}
 
-		if (batchTestEntity.getExternalReferenceCode() == null) {
+		if (batchTestEntity1.getExternalReferenceCode() == null) {
 			map.put("externalReferenceCode", null);
 		}
 		else {
 			map.put(
 				"externalReferenceCode",
-				String.valueOf(batchTestEntity.getExternalReferenceCode()));
+				String.valueOf(batchTestEntity1.getExternalReferenceCode()));
 		}
 
-		if (batchTestEntity.getId() == null) {
+		if (batchTestEntity1.getId() == null) {
 			map.put("id", null);
 		}
 		else {
-			map.put("id", String.valueOf(batchTestEntity.getId()));
+			map.put("id", String.valueOf(batchTestEntity1.getId()));
 		}
 
-		if (batchTestEntity.getName() == null) {
+		if (batchTestEntity1.getName() == null) {
 			map.put("name", null);
 		}
 		else {
-			map.put("name", String.valueOf(batchTestEntity.getName()));
+			map.put("name", String.valueOf(batchTestEntity1.getName()));
 		}
 
-		if (batchTestEntity.getNestedField() == null) {
+		if (batchTestEntity1.getNestedField() == null) {
 			map.put("nestedField", null);
 		}
 		else {
 			map.put(
 				"nestedField",
-				String.valueOf(batchTestEntity.getNestedField()));
+				String.valueOf(batchTestEntity1.getNestedField()));
 		}
 
-		if (batchTestEntity.getRelatedCompanyTestEntity() == null) {
+		if (batchTestEntity1.getRelatedCompanyTestEntity() == null) {
 			map.put("relatedCompanyTestEntity", null);
 		}
 		else {
 			map.put(
 				"relatedCompanyTestEntity",
-				String.valueOf(batchTestEntity.getRelatedCompanyTestEntity()));
+				String.valueOf(batchTestEntity1.getRelatedCompanyTestEntity()));
 		}
 
 		return map;
 	}
 
-	public static class BatchTestEntityJSONParser
-		extends BaseJSONParser<BatchTestEntity> {
+	public static class BatchTestEntity1JSONParser
+		extends BaseJSONParser<BatchTestEntity1> {
 
 		@Override
-		protected BatchTestEntity createDTO() {
-			return new BatchTestEntity();
+		protected BatchTestEntity1 createDTO() {
+			return new BatchTestEntity1();
 		}
 
 		@Override
-		protected BatchTestEntity[] createDTOArray(int size) {
-			return new BatchTestEntity[size];
+		protected BatchTestEntity1[] createDTOArray(int size) {
+			return new BatchTestEntity1[size];
 		}
 
 		@Override
@@ -244,7 +246,7 @@ public class BatchTestEntitySerDes {
 
 		@Override
 		protected void setField(
-			BatchTestEntity batchTestEntity, String jsonParserFieldName,
+			BatchTestEntity1 batchTestEntity1, String jsonParserFieldName,
 			Object jsonParserFieldValue) {
 
 			if (Objects.equals(jsonParserFieldName, "customFields")) {
@@ -265,31 +267,31 @@ public class BatchTestEntitySerDes {
 									(String)jsonParserFieldValues[i]);
 					}
 
-					batchTestEntity.setCustomFields(customFieldsArray);
+					batchTestEntity1.setCustomFields(customFieldsArray);
 				}
 			}
 			else if (Objects.equals(
 						jsonParserFieldName, "externalReferenceCode")) {
 
 				if (jsonParserFieldValue != null) {
-					batchTestEntity.setExternalReferenceCode(
+					batchTestEntity1.setExternalReferenceCode(
 						(String)jsonParserFieldValue);
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "id")) {
 				if (jsonParserFieldValue != null) {
-					batchTestEntity.setId(
+					batchTestEntity1.setId(
 						Long.valueOf((String)jsonParserFieldValue));
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "name")) {
 				if (jsonParserFieldValue != null) {
-					batchTestEntity.setName((String)jsonParserFieldValue);
+					batchTestEntity1.setName((String)jsonParserFieldValue);
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "nestedField")) {
 				if (jsonParserFieldValue != null) {
-					batchTestEntity.setNestedField(
+					batchTestEntity1.setNestedField(
 						(String)jsonParserFieldValue);
 				}
 			}
@@ -297,7 +299,7 @@ public class BatchTestEntitySerDes {
 						jsonParserFieldName, "relatedCompanyTestEntity")) {
 
 				if (jsonParserFieldValue != null) {
-					batchTestEntity.setRelatedCompanyTestEntity(
+					batchTestEntity1.setRelatedCompanyTestEntity(
 						CompanyTestEntitySerDes.toDTO(
 							(String)jsonParserFieldValue));
 				}

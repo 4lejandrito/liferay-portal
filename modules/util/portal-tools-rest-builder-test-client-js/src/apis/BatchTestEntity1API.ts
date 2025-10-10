@@ -5,15 +5,15 @@
 
 import {ObjectSerializer} from '../utils/SerDes';
 
-		import {BatchTestEntity} from '../models/BatchTestEntity';
-		import {PageBatchTestEntity} from '../models/PageBatchTestEntity';
+		import {BatchTestEntity1} from '../models/BatchTestEntity1';
+		import {PageBatchTestEntity1} from '../models/PageBatchTestEntity1';
 
 /**
  * @author Alejandro Tardín
  * @generated
  */
 
-export class BatchTestEntityAPI {
+export class BatchTestEntity1API {
 	protected _basePath: string;
 	protected _defaultHeaders: any = {};
 
@@ -32,7 +32,7 @@ export class BatchTestEntityAPI {
 				 * @param externalReferenceCode
 		 * @param headers Optional custom request headers
 		 */
-		public async deleteBatchTestEntityByExternalReferenceCode(
+		public async deleteBatchTestEntity1ByExternalReferenceCode(
 						externalReferenceCode: string,
 			headers?: {[name: string]: string},
 		): Promise<{
@@ -40,14 +40,14 @@ export class BatchTestEntityAPI {
 			response: Response;
 		}> {
 
-			const path = this._basePath + "/test/v1.0/batch-test-entities/by-external-reference-code/{externalReferenceCode}"
+			const path = this._basePath + "/test/v1.0/batch-test-entity1/by-external-reference-code/{externalReferenceCode}"
 						.replace("{externalReferenceCode}",encodeURIComponent(externalReferenceCode))
 				;
 
 			const queryParameters: any = {};
 
 						if (externalReferenceCode === null || externalReferenceCode === undefined) {
-							throw new Error("Required parameter externalReferenceCode was null or undefined when calling deleteBatchTestEntityByExternalReferenceCode.");
+							throw new Error("Required parameter externalReferenceCode was null or undefined when calling deleteBatchTestEntity1ByExternalReferenceCode.");
 						}
 
 			const queryString = Object.keys(queryParameters).length ?
@@ -84,14 +84,14 @@ export class BatchTestEntityAPI {
 		 * 
 		 * @param headers Optional custom request headers
 		 */
-		public async getBatchTestEntitiesPage(
+		public async getBatchTestEntities1Page(
 			headers?: {[name: string]: string},
 		): Promise<{
-				body: PageBatchTestEntity;
+				body: PageBatchTestEntity1;
 			response: Response;
 		}> {
 
-			const path = this._basePath + "/test/v1.0/batch-test-entities"
+			const path = this._basePath + "/test/v1.0/batch-test-entities1"
 ;
 
 			const queryParameters: any = {};
@@ -115,7 +115,7 @@ export class BatchTestEntityAPI {
 				const contentType = response.headers.get("content-type") || "";
 
 					if (contentType.includes("application/json")) {
-						return {body: ObjectSerializer.deserialize(await response.json(), "PageBatchTestEntity"), response};
+						return {body: ObjectSerializer.deserialize(await response.json(), "PageBatchTestEntity1"), response};
 					}
 					else {
 						return {body: await response.text() as any, response};
@@ -131,22 +131,22 @@ export class BatchTestEntityAPI {
 				 * @param batchTestEntityId
 		 * @param headers Optional custom request headers
 		 */
-		public async getBatchTestEntity(
+		public async getBatchTestEntity1(
 						batchTestEntityId: number,
 			headers?: {[name: string]: string},
 		): Promise<{
-				body: BatchTestEntity;
+				body: BatchTestEntity1;
 			response: Response;
 		}> {
 
-			const path = this._basePath + "/test/v1.0/batch-test-entities/{batchTestEntityId}"
+			const path = this._basePath + "/test/v1.0/batch-test-entity1/{batchTestEntity1Id}"
 						.replace("{batchTestEntityId}",encodeURIComponent(batchTestEntityId))
 				;
 
 			const queryParameters: any = {};
 
 						if (batchTestEntityId === null || batchTestEntityId === undefined) {
-							throw new Error("Required parameter batchTestEntityId was null or undefined when calling getBatchTestEntity.");
+							throw new Error("Required parameter batchTestEntityId was null or undefined when calling getBatchTestEntity1.");
 						}
 
 			const queryString = Object.keys(queryParameters).length ?
@@ -168,7 +168,7 @@ export class BatchTestEntityAPI {
 				const contentType = response.headers.get("content-type") || "";
 
 					if (contentType.includes("application/json")) {
-						return {body: ObjectSerializer.deserialize(await response.json(), "BatchTestEntity"), response};
+						return {body: ObjectSerializer.deserialize(await response.json(), "BatchTestEntity1"), response};
 					}
 					else {
 						return {body: await response.text() as any, response};
@@ -184,22 +184,22 @@ export class BatchTestEntityAPI {
 				 * @param externalReferenceCode
 		 * @param headers Optional custom request headers
 		 */
-		public async getBatchTestEntityByExternalReferenceCode(
+		public async getBatchTestEntity1ByExternalReferenceCode(
 						externalReferenceCode: string,
 			headers?: {[name: string]: string},
 		): Promise<{
-				body: BatchTestEntity;
+				body: BatchTestEntity1;
 			response: Response;
 		}> {
 
-			const path = this._basePath + "/test/v1.0/batch-test-entities/by-external-reference-code/{externalReferenceCode}"
+			const path = this._basePath + "/test/v1.0/batch-test-entity1/by-external-reference-code/{externalReferenceCode}"
 						.replace("{externalReferenceCode}",encodeURIComponent(externalReferenceCode))
 				;
 
 			const queryParameters: any = {};
 
 						if (externalReferenceCode === null || externalReferenceCode === undefined) {
-							throw new Error("Required parameter externalReferenceCode was null or undefined when calling getBatchTestEntityByExternalReferenceCode.");
+							throw new Error("Required parameter externalReferenceCode was null or undefined when calling getBatchTestEntity1ByExternalReferenceCode.");
 						}
 
 			const queryString = Object.keys(queryParameters).length ?
@@ -221,7 +221,7 @@ export class BatchTestEntityAPI {
 				const contentType = response.headers.get("content-type") || "";
 
 					if (contentType.includes("application/json")) {
-						return {body: ObjectSerializer.deserialize(await response.json(), "BatchTestEntity"), response};
+						return {body: ObjectSerializer.deserialize(await response.json(), "BatchTestEntity1"), response};
 					}
 					else {
 						return {body: await response.text() as any, response};
@@ -237,36 +237,36 @@ export class BatchTestEntityAPI {
 		 		* @param requestBody Request body that can be one of multiple content types
 		 * @param headers Optional custom request headers
 		 */
-		public async postBatchTestEntityWithContentType(
+		public async postBatchTestEntity1WithContentType(
 					requestBody:
 							{
 								parameters: {
-										batchTestEntity?: BatchTestEntity
+										batchTestEntity1?: BatchTestEntity1
 								},
 								type: "application/json"
 							}
 								|
 							{
 								parameters: {
-										batchTestEntity?: BatchTestEntity
+										batchTestEntity1?: BatchTestEntity1
 								},
 								type: "application/xml"
 							}
 								,
 			headers?: {[name: string]: string},
 		): Promise<{
-				body: BatchTestEntity;
+				body: BatchTestEntity1;
 			response: Response;
 		}> {
 				let body;
 						if (requestBody.type === "application/json") {
-								body = JSON.stringify(ObjectSerializer.serialize(requestBody.parameters.batchTestEntity, "BatchTestEntity"));
+								body = JSON.stringify(ObjectSerializer.serialize(requestBody.parameters.batchTestEntity1, "BatchTestEntity1"));
 						}
 						if (requestBody.type === "application/xml") {
-								body = JSON.stringify(ObjectSerializer.serialize(requestBody.parameters.batchTestEntity, "BatchTestEntity"));
+								body = JSON.stringify(ObjectSerializer.serialize(requestBody.parameters.batchTestEntity1, "BatchTestEntity1"));
 						}
 
-			const path = this._basePath + "/test/v1.0/batch-test-entities"
+			const path = this._basePath + "/test/v1.0/batch-test-entity1"
 ;
 
 			const queryParameters: any = {};
@@ -292,7 +292,7 @@ export class BatchTestEntityAPI {
 				const contentType = response.headers.get("content-type") || "";
 
 					if (contentType.includes("application/json")) {
-						return {body: ObjectSerializer.deserialize(await response.json(), "BatchTestEntity"), response};
+						return {body: ObjectSerializer.deserialize(await response.json(), "BatchTestEntity1"), response};
 					}
 					else {
 						return {body: await response.text() as any, response};
@@ -305,19 +305,19 @@ export class BatchTestEntityAPI {
 
 					/**
 					 *  - Default method for JSON body
-						 * @param batchTestEntity
+						 * @param batchTestEntity1
 					 */
-					public async postBatchTestEntity(
-							batchTestEntity?: BatchTestEntity,
+					public async postBatchTestEntity1(
+							batchTestEntity1?: BatchTestEntity1,
 						headers?: {[name: string]: string}
 					): Promise<{
-							body: BatchTestEntity;
+							body: BatchTestEntity1;
 						response: Response;
 					}> {
-						return this.postBatchTestEntityWithContentType(
+						return this.postBatchTestEntity1WithContentType(
 							{
 								parameters: {
-										batchTestEntity: batchTestEntity
+										batchTestEntity1: batchTestEntity1
 								},
 								type: "application/json"
 							},
@@ -330,44 +330,44 @@ export class BatchTestEntityAPI {
 		 		* @param requestBody Request body that can be one of multiple content types
 		 * @param headers Optional custom request headers
 		 */
-		public async putBatchTestEntityByExternalReferenceCodeWithContentType(
+		public async putBatchTestEntity1ByExternalReferenceCodeWithContentType(
 						externalReferenceCode: string,
 					requestBody:
 							{
 								parameters: {
-										batchTestEntity?: BatchTestEntity
+										batchTestEntity1?: BatchTestEntity1
 								},
 								type: "application/json"
 							}
 								|
 							{
 								parameters: {
-										batchTestEntity?: BatchTestEntity
+										batchTestEntity1?: BatchTestEntity1
 								},
 								type: "application/xml"
 							}
 								,
 			headers?: {[name: string]: string},
 		): Promise<{
-				body: BatchTestEntity;
+				body: BatchTestEntity1;
 			response: Response;
 		}> {
 				let body;
 						if (requestBody.type === "application/json") {
-								body = JSON.stringify(ObjectSerializer.serialize(requestBody.parameters.batchTestEntity, "BatchTestEntity"));
+								body = JSON.stringify(ObjectSerializer.serialize(requestBody.parameters.batchTestEntity1, "BatchTestEntity1"));
 						}
 						if (requestBody.type === "application/xml") {
-								body = JSON.stringify(ObjectSerializer.serialize(requestBody.parameters.batchTestEntity, "BatchTestEntity"));
+								body = JSON.stringify(ObjectSerializer.serialize(requestBody.parameters.batchTestEntity1, "BatchTestEntity1"));
 						}
 
-			const path = this._basePath + "/test/v1.0/batch-test-entities/by-external-reference-code/{externalReferenceCode}"
+			const path = this._basePath + "/test/v1.0/batch-test-entity1/by-external-reference-code/{externalReferenceCode}"
 						.replace("{externalReferenceCode}",encodeURIComponent(externalReferenceCode))
 				;
 
 			const queryParameters: any = {};
 
 						if (externalReferenceCode === null || externalReferenceCode === undefined) {
-							throw new Error("Required parameter externalReferenceCode was null or undefined when calling putBatchTestEntityByExternalReferenceCode.");
+							throw new Error("Required parameter externalReferenceCode was null or undefined when calling putBatchTestEntity1ByExternalReferenceCode.");
 						}
 
 			const queryString = Object.keys(queryParameters).length ?
@@ -391,7 +391,7 @@ export class BatchTestEntityAPI {
 				const contentType = response.headers.get("content-type") || "";
 
 					if (contentType.includes("application/json")) {
-						return {body: ObjectSerializer.deserialize(await response.json(), "BatchTestEntity"), response};
+						return {body: ObjectSerializer.deserialize(await response.json(), "BatchTestEntity1"), response};
 					}
 					else {
 						return {body: await response.text() as any, response};
@@ -405,21 +405,21 @@ export class BatchTestEntityAPI {
 					/**
 					 *  - Default method for JSON body
 							 * @param externalReferenceCode
-						 * @param batchTestEntity
+						 * @param batchTestEntity1
 					 */
-					public async putBatchTestEntityByExternalReferenceCode(
+					public async putBatchTestEntity1ByExternalReferenceCode(
 									externalReferenceCode: string,
-							batchTestEntity?: BatchTestEntity,
+							batchTestEntity1?: BatchTestEntity1,
 						headers?: {[name: string]: string}
 					): Promise<{
-							body: BatchTestEntity;
+							body: BatchTestEntity1;
 						response: Response;
 					}> {
-						return this.putBatchTestEntityByExternalReferenceCodeWithContentType(
+						return this.putBatchTestEntity1ByExternalReferenceCodeWithContentType(
 										externalReferenceCode,
 							{
 								parameters: {
-										batchTestEntity: batchTestEntity
+										batchTestEntity1: batchTestEntity1
 								},
 								type: "application/json"
 							},
