@@ -38,6 +38,13 @@ components:
                 relatedCompanyTestEntity:
                     $ref: "#/components/schemas/CompanyTestEntity"
             type: object
+        BatchTestEntity2:
+            properties:
+                externalReferenceCode:
+                    type: string
+                name:
+                    type: string
+            type: object
         ChildTestEntity1:
             allOf:
                 -   $ref: "#/components/schemas/TestEntity"
@@ -1105,6 +1112,111 @@ paths:
                     description:
                         "OK"
             tags: ["BatchTestEntity1"]
+    "/batch-test-entities2":
+        get:
+            operationId: getBatchTestEntities2Page
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/BatchTestEntity2"
+                                type: array
+                        application/xml:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/BatchTestEntity2"
+                                type: array
+                    description:
+                        "OK"
+            tags: ["BatchTestEntity2"]
+    "/batch-test-entity2":
+        post:
+            operationId: postBatchTestEntity2
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/BatchTestEntity2"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/BatchTestEntity2"
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/BatchTestEntity2"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/BatchTestEntity2"
+            tags: ["BatchTestEntity2"]
+    "/batch-test-entity2/by-external-reference-code/{externalReferenceCode}":
+        delete:
+            operationId: deleteBatchTestEntity2ByExternalReferenceCode
+            parameters:
+                -   in: path
+                    name: externalReferenceCode
+                    required: true
+                    schema:
+                        type: string
+            responses:
+                200:
+                    content:
+                        application/json: {}
+                        application/xml: {}
+                    description:
+                        "OK"
+            tags: ["BatchTestEntity2"]
+        get:
+            operationId: getBatchTestEntity2ByExternalReferenceCode
+            parameters:
+                -   in: path
+                    name: externalReferenceCode
+                    required: true
+                    schema:
+                        type: string
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/BatchTestEntity2"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/BatchTestEntity2"
+                    description:
+                        "OK"
+            tags: ["BatchTestEntity2"]
+        put:
+            operationId: putBatchTestEntity2ByExternalReferenceCode
+            parameters:
+                -   in: path
+                    name: externalReferenceCode
+                    required: true
+                    schema:
+                        type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/BatchTestEntity2"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/BatchTestEntity2"
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/BatchTestEntity2"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/BatchTestEntity2"
+                    description:
+                        "OK"
+            tags: ["BatchTestEntity2"]
     "/company-test-entities":
         get:
             operationId: getCompanyTestEntitiesPage
