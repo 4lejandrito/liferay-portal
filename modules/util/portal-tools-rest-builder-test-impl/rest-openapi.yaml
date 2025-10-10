@@ -19,7 +19,7 @@ components:
                     items:
                         type: permission
                     type: array
-        BatchTestEntity:
+        BatchTestEntity1:
             properties:
                 customFields:
                     items:
@@ -978,48 +978,46 @@ paths:
                     description:
                         "OK"
             tags: ["ScopedTestEntity"]
-    "/batch-test-entities":
+    "/batch-test-entities1":
         get:
-            operationId: getBatchTestEntitiesPage
             responses:
                 200:
                     content:
                         application/json:
                             schema:
                                 items:
-                                    $ref: "#/components/schemas/BatchTestEntity"
+                                    $ref: "#/components/schemas/BatchTestEntity1"
                                 type: array
                         application/xml:
                             schema:
                                 items:
-                                    $ref: "#/components/schemas/BatchTestEntity"
+                                    $ref: "#/components/schemas/BatchTestEntity1"
                                 type: array
                     description:
                         "OK"
-            tags: ["BatchTestEntity"]
+            tags: ["BatchTestEntity1"]
+    "/batch-test-entity1":
         post:
-            operationId: postBatchTestEntity
             requestBody:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/BatchTestEntity"
+                            $ref: "#/components/schemas/BatchTestEntity1"
                     application/xml:
                         schema:
-                            $ref: "#/components/schemas/BatchTestEntity"
+                            $ref: "#/components/schemas/BatchTestEntity1"
             responses:
                 "200":
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/BatchTestEntity"
+                                $ref: "#/components/schemas/BatchTestEntity1"
                         application/xml:
                             schema:
-                                $ref: "#/components/schemas/BatchTestEntity"
-            tags: ["BatchTestEntity"]
-    "/batch-test-entities/by-external-reference-code/{externalReferenceCode}":
+                                $ref: "#/components/schemas/BatchTestEntity1"
+            tags: ["BatchTestEntity1"]
+    "/batch-test-entity1/by-external-reference-code/{externalReferenceCode}":
         delete:
-            operationId: deleteBatchTestEntityByExternalReferenceCode
             parameters:
                 -   in: path
                     name: externalReferenceCode
@@ -1033,9 +1031,8 @@ paths:
                         application/xml: {}
                     description:
                         "OK"
-            tags: ["BatchTestEntity"]
+            tags: ["BatchTestEntity1"]
         get:
-            operationId: getBatchTestEntityByExternalReferenceCode
             parameters:
                 -   in: path
                     name: externalReferenceCode
@@ -1047,15 +1044,14 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/BatchTestEntity"
+                                $ref: "#/components/schemas/BatchTestEntity1"
                         application/xml:
                             schema:
-                                $ref: "#/components/schemas/BatchTestEntity"
+                                $ref: "#/components/schemas/BatchTestEntity1"
                     description:
                         "OK"
-            tags: ["BatchTestEntity"]
+            tags: ["BatchTestEntity1"]
         put:
-            operationId: putBatchTestEntityByExternalReferenceCode
             parameters:
                 -   in: path
                     name: externalReferenceCode
@@ -1066,25 +1062,24 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/BatchTestEntity"
+                            $ref: "#/components/schemas/BatchTestEntity1"
                     application/xml:
                         schema:
-                            $ref: "#/components/schemas/BatchTestEntity"
+                            $ref: "#/components/schemas/BatchTestEntity1"
             responses:
                 200:
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/BatchTestEntity"
+                                $ref: "#/components/schemas/BatchTestEntity1"
                         application/xml:
                             schema:
-                                $ref: "#/components/schemas/BatchTestEntity"
+                                $ref: "#/components/schemas/BatchTestEntity1"
                     description:
                         "OK"
-            tags: ["BatchTestEntity"]
-    "/batch-test-entities/{batchTestEntityId}":
+            tags: ["BatchTestEntity1"]
+    "/batch-test-entity1/{batchTestEntity1Id}":
         get:
-            operationId: getBatchTestEntity
             parameters:
                 -   in: path
                     name: batchTestEntityId
@@ -1097,13 +1092,13 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/BatchTestEntity"
+                                $ref: "#/components/schemas/BatchTestEntity1"
                         application/xml:
                             schema:
-                                $ref: "#/components/schemas/BatchTestEntity"
+                                $ref: "#/components/schemas/BatchTestEntity1"
                     description:
                         "OK"
-            tags: ["BatchTestEntity"]
+            tags: ["BatchTestEntity1"]
     "/company-test-entities":
         get:
             operationId: getCompanyTestEntitiesPage
