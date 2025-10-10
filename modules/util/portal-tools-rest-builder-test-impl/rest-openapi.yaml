@@ -1004,6 +1004,25 @@ paths:
                     description:
                         "OK"
             tags: ["BatchTestEntity1"]
+    "/batch-test-entities2":
+        get:
+            operationId: getBatchTestEntities2Page
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/BatchTestEntity2"
+                                type: array
+                        application/xml:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/BatchTestEntity2"
+                                type: array
+                    description:
+                        "OK"
+            tags: ["BatchTestEntity2"]
     "/batch-test-entity1":
         post:
             operationId: postBatchTestEntity1
@@ -1112,25 +1131,6 @@ paths:
                     description:
                         "OK"
             tags: ["BatchTestEntity1"]
-    "/batch-test-entities2":
-        get:
-            operationId: getBatchTestEntities2Page
-            responses:
-                200:
-                    content:
-                        application/json:
-                            schema:
-                                items:
-                                    $ref: "#/components/schemas/BatchTestEntity2"
-                                type: array
-                        application/xml:
-                            schema:
-                                items:
-                                    $ref: "#/components/schemas/BatchTestEntity2"
-                                type: array
-                    description:
-                        "OK"
-            tags: ["BatchTestEntity2"]
     "/batch-test-entity2":
         post:
             operationId: postBatchTestEntity2
