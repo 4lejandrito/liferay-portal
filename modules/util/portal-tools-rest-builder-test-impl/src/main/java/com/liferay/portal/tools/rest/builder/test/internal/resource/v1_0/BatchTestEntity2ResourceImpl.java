@@ -93,14 +93,14 @@ public class BatchTestEntity2ResourceImpl
 			}
 
 			@Override
-			public String getDeletionSystemEventClassName() {
-				return "com_liferay_portal_tools_rest_builder_test_portlet_" +
-					"BatchTestEntityPortlet";
+			public String getLabel() {
+				return "Batch Test Entity 2";
 			}
 
 			@Override
-			public String getLabel() {
-				return "Batch Test Entity 2";
+			public String getModelClassName() {
+				return "com_liferay_portal_tools_rest_builder_test_portlet_" +
+					   "BatchTestEntityPortlet";
 			}
 
 			@Override
