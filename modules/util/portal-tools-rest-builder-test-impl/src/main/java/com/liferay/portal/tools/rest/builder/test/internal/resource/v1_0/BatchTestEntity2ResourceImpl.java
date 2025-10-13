@@ -93,14 +93,14 @@ public class BatchTestEntity2ResourceImpl
 			}
 
 			@Override
-			public String getLabel() {
-				return "Batch Test Entity 2";
+			public String getLabelLanguageKey() {
+				return "batch-test-entity-2";
 			}
 
 			@Override
 			public String getModelClassName() {
 				return "com_liferay_portal_tools_rest_builder_test_portlet_" +
-					   "BatchTestEntityPortlet";
+					"BatchTestEntityPortlet";
 			}
 
 			@Override
