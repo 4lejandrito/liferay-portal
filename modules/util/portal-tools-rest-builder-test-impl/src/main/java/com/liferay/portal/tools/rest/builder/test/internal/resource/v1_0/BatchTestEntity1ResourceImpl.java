@@ -7,7 +7,6 @@ package com.liferay.portal.tools.rest.builder.test.internal.resource.v1_0;
 
 import com.liferay.exportimport.kernel.empty.model.EmptyModelManager;
 import com.liferay.exportimport.vulcan.batch.engine.ExportImportVulcanBatchEngineTaskItemDelegate;
-import com.liferay.petra.function.UnsafeFunction;
 import com.liferay.portal.kernel.exception.NoSuchModelException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.search.Sort;
@@ -102,22 +101,6 @@ public class BatchTestEntity1ResourceImpl
 			ExportImportDescriptor() {
 
 			@Override
-			public UnsafeFunction<String, String, Exception>
-				filterApplicableExternalReferenceCode() {
-
-				return externalReferenceCode -> {
-					BatchTestEntity1 batchTestEntity1 = _fetchBatchTestEntity1(
-						externalReferenceCode);
-
-					if (batchTestEntity1 == null) {
-						return null;
-					}
-
-					return batchTestEntity1.getExternalReferenceCode();
-				};
-			}
-
-			@Override
 			public String getLabelLanguageKey() {
 				return "batch-test-entity-1";
 			}
@@ -142,6 +125,17 @@ public class BatchTestEntity1ResourceImpl
 			@Override
 			public Scope getScope() {
 				return Scope.COMPANY;
+			}
+
+			@Override
+			public boolean isApplicableExternalReferenceCode(
+				String externalReferenceCode) {
+
+				if (_fetchBatchTestEntity1(externalReferenceCode) != null) {
+					return true;
+				}
+
+				return false;
 			}
 
 		};
