@@ -210,7 +210,6 @@ public class BatchTestEntityExportImportTest {
 						};
 						externalReferenceCode = StringUtil.toLowerCase(
 							RandomTestUtil.randomString());
-						id = RandomTestUtil.randomLong();
 						name = StringUtil.toLowerCase(
 							RandomTestUtil.randomString());
 						nestedField = StringUtil.toLowerCase(
@@ -237,7 +236,6 @@ public class BatchTestEntityExportImportTest {
 						};
 						externalReferenceCode = StringUtil.toLowerCase(
 							RandomTestUtil.randomString());
-						id = RandomTestUtil.randomLong();
 						name = StringUtil.toLowerCase(
 							RandomTestUtil.randomString());
 						nestedField = StringUtil.toLowerCase(
@@ -728,13 +726,6 @@ public class BatchTestEntityExportImportTest {
 							HashMapBuilder.put(
 								PortletDataHandlerKeys.DELETIONS,
 								new String[] {Boolean.TRUE.toString()}
-							).put(
-								PortletDataHandlerKeys.PORTLET_DATA,
-								new String[] {Boolean.TRUE.toString()}
-							).put(
-								PortletDataHandlerKeys.PORTLET_DATA + "_" +
-									_CLASS_NAME,
-								new String[] {Boolean.TRUE.toString()}
 							).build())),
 			larFile);
 
@@ -774,7 +765,6 @@ public class BatchTestEntityExportImportTest {
 					{
 						externalReferenceCode = StringUtil.toLowerCase(
 							RandomTestUtil.randomString());
-						id = RandomTestUtil.randomLong();
 						name = StringUtil.toLowerCase(
 							RandomTestUtil.randomString());
 						nestedField = StringUtil.toLowerCase(
