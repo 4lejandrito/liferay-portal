@@ -5799,39 +5799,6 @@ public class ObjectEntryResourceTest {
 	}
 
 	@Test
-	public void testGetObjectEntriesPageActions() throws Exception {
-		JSONObject jsonObject1 = HTTPTestUtil.invokeToJSONObject(
-			null, _objectDefinition4.getRESTContextPath(), Http.Method.GET);
-
-		JSONObject actionsJSONObject1 = jsonObject1.getJSONObject("actions");
-
-		Assert.assertFalse(actionsJSONObject1.isNull("create"));
-		Assert.assertFalse(actionsJSONObject1.isNull("createBatch"));
-		Assert.assertFalse(actionsJSONObject1.isNull("deleteBatch"));
-		Assert.assertTrue(actionsJSONObject1.isNull("get"));
-		Assert.assertFalse(actionsJSONObject1.isNull("updateBatch"));
-
-		HTTPTestUtil.customize(
-		).withGuest(
-		).apply(
-			() -> {
-				JSONObject jsonObject2 = HTTPTestUtil.invokeToJSONObject(
-					null, _objectDefinition4.getRESTContextPath(),
-					Http.Method.GET);
-
-				JSONObject actionsJSONObject2 = jsonObject2.getJSONObject(
-					"actions");
-
-				Assert.assertTrue(actionsJSONObject2.isNull("create"));
-				Assert.assertTrue(actionsJSONObject2.isNull("createBatch"));
-				Assert.assertTrue(actionsJSONObject2.isNull("deleteBatch"));
-				Assert.assertTrue(actionsJSONObject2.isNull("get"));
-				Assert.assertTrue(actionsJSONObject2.isNull("updateBatch"));
-			}
-		);
-	}
-
-	@Test
 	public void testGetObjectEntriesPageWithLocalizedObjectField()
 		throws Exception {
 
@@ -5864,6 +5831,58 @@ public class ObjectEntryResourceTest {
 		itemsJSONArray = jsonObject.getJSONArray("items");
 
 		Assert.assertEquals(1, itemsJSONArray.length());
+	}
+
+	@Test
+	public void testGetObjectEntriesPageWithObjectActions() throws Exception {
+
+		// Company scope
+
+		JSONObject actionsJSONObject1 = _getActionsJSONObject(
+			_objectDefinition4, 0);
+
+		Assert.assertFalse(actionsJSONObject1.isNull("create"));
+		Assert.assertFalse(actionsJSONObject1.isNull("createBatch"));
+		Assert.assertFalse(actionsJSONObject1.isNull("deleteBatch"));
+		Assert.assertFalse(actionsJSONObject1.isNull("get"));
+		Assert.assertFalse(actionsJSONObject1.isNull("updateBatch"));
+
+		HTTPTestUtil.customize(
+		).withGuest(
+		).apply(
+			() -> {
+				JSONObject actionsJSONObject2 = _getActionsJSONObject(
+					_objectDefinition4, 0);
+
+				Assert.assertTrue(
+					actionsJSONObject2.keySet(
+					).isEmpty());
+			}
+		);
+
+		// Site scope
+
+		JSONObject actionsJSONObject3 = _getActionsJSONObject(
+			_siteScopedObjectDefinition1, _group.getGroupId());
+
+		Assert.assertFalse(actionsJSONObject3.isNull("create"));
+		Assert.assertFalse(actionsJSONObject3.isNull("createBatch"));
+		Assert.assertFalse(actionsJSONObject3.isNull("deleteBatch"));
+		Assert.assertFalse(actionsJSONObject3.isNull("get"));
+		Assert.assertFalse(actionsJSONObject3.isNull("updateBatch"));
+
+		HTTPTestUtil.customize(
+		).withGuest(
+		).apply(
+			() -> {
+				JSONObject actionsJSONObject4 = _getActionsJSONObject(
+					_siteScopedObjectDefinition1, _group.getGroupId());
+
+				Assert.assertTrue(
+					actionsJSONObject4.keySet(
+					).isEmpty());
+			}
+		);
 	}
 
 	@FeatureFlag("LPD-17564")
@@ -15289,6 +15308,34 @@ public class ObjectEntryResourceTest {
 
 	private String _escape(String string) {
 		return URLCodec.encodeURL(string);
+	}
+
+	private JSONObject _getActionsJSONObject(
+			ObjectDefinition objectDefinition, long groupId)
+		throws Exception {
+
+		String endpoint;
+
+		if (Objects.equals(
+				objectDefinition.getScope(),
+				ObjectDefinitionConstants.SCOPE_SITE)) {
+
+			endpoint = _getEndpoint(objectDefinition, groupId);
+		}
+		else {
+			endpoint = objectDefinition.getRESTContextPath();
+		}
+
+		JSONObject responseJSONObject = HTTPTestUtil.invokeToJSONObject(
+			null, endpoint, Http.Method.GET);
+
+		if ((responseJSONObject == null) ||
+			!responseJSONObject.has("actions")) {
+
+			return JSONFactoryUtil.createJSONObject();
+		}
+
+		return responseJSONObject.getJSONObject("actions");
 	}
 
 	private Map<String, String> _getActionValue(String href, String method) {
