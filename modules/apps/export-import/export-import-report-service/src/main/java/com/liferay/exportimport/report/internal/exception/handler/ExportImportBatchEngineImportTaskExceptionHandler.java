@@ -55,7 +55,6 @@ public class ExportImportBatchEngineImportTaskExceptionHandler
 			GetterUtil.getLong(
 				ExportImportThreadLocal.getExportImportConfigurationId()),
 			exception.getMessage(), _getErrorStackTrace(exception),
-			batchEngineImportTask.getParameterValue("modelName"),
 			ExportImportReportEntryConstants.ORIGIN_BATCH,
 			ExportImportReportEntryUtil.getScope(groupId),
 			ExportImportReportEntryUtil.getScopeKey(groupId));

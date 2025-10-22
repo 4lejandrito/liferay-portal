@@ -185,7 +185,7 @@ public class EmptyModelManagerImplTest {
 				_exportImportReportEntryLocalService
 			).addEmptyExportImportReportEntry(
 				0L, companyId, externalReferenceCode, classNameId,
-				exportImportConfigurationId, User.class.getName(),
+				exportImportConfigurationId,
 				ExportImportReportEntryConstants.ORIGIN_STAGING,
 				ObjectDefinitionConstants.SCOPE_COMPANY, null
 			);
@@ -386,7 +386,7 @@ public class EmptyModelManagerImplTest {
 				_exportImportReportEntryLocalService
 			).addEmptyExportImportReportEntry(
 				groupId, companyId, userExternalReferenceCode, classNameId,
-				exportImportConfigurationId, User.class.getName(),
+				exportImportConfigurationId,
 				ExportImportReportEntryConstants.ORIGIN_STAGING,
 				ObjectDefinitionConstants.SCOPE_SITE, groupExternalReferenceCode
 			);
@@ -489,7 +489,7 @@ public class EmptyModelManagerImplTest {
 				_exportImportReportEntryLocalService
 			).addEmptyExportImportReportEntry(
 				0L, companyId, externalReferenceCode, classNameId,
-				exportImportConfigurationId, User.class.getName(),
+				exportImportConfigurationId,
 				ExportImportReportEntryConstants.ORIGIN_STAGING,
 				ObjectDefinitionConstants.SCOPE_COMPANY, null
 			);

@@ -101,8 +101,6 @@ public class BatchEnginePortletDataHandlerUtil {
 		).put(
 			"modelClassName", exportImportDescriptor.getModelClassName()
 		).put(
-			"modelName", exportImportDescriptor.getModelName()
-		).put(
 			"siteExternalReferenceCode",
 			() -> {
 				if (Validator.isNotNull(siteExternalReferenceCode)) {
@@ -167,8 +165,6 @@ public class BatchEnginePortletDataHandlerUtil {
 			}
 		).put(
 			"modelClassName", exportImportDescriptor.getModelClassName()
-		).put(
-			"modelName", exportImportDescriptor.getModelName()
 		).put(
 			"siteExternalReferenceCode",
 			() -> {

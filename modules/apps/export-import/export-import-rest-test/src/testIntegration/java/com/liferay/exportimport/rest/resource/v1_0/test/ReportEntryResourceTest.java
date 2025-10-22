@@ -150,7 +150,6 @@ public class ReportEntryResourceTest extends BaseReportEntryResourceTestCase {
 				setErrorStacktrace(
 					exportImportReportEntry.getErrorStacktrace());
 				setId(exportImportReportEntry.getExportImportReportEntryId());
-				setModelName(exportImportReportEntry.getModelName());
 			}
 		};
 	}

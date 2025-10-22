@@ -4723,9 +4723,6 @@ public class ObjectEntryLocalServiceTest {
 				exportImportConfigurationId,
 				exportImportReportEntry.getExportImportConfigurationId());
 			Assert.assertEquals(
-				_siteObjectDefinition.getShortName(),
-				exportImportReportEntry.getModelName());
-			Assert.assertEquals(
 				ObjectDefinitionConstants.SCOPE_SITE,
 				exportImportReportEntry.getScope());
 

@@ -44,7 +44,7 @@ public interface EmptyModelManager {
 			BiFunction<String, Long, T> fetchByExternalReferenceCodeBiFunction,
 			UnsafeBiFunction<String, Long, T, E>
 				getByExternalReferenceCodeUnsafeBiFunction,
-			long groupId, String modelName)
+			long groupId)
 		throws E;
 
 	public boolean isEmptyModel();

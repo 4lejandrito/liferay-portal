@@ -9,14 +9,18 @@ import com.liferay.exportimport.report.constants.ExportImportReportEntryConstant
 import com.liferay.exportimport.report.model.ExportImportReportEntry;
 import com.liferay.exportimport.report.service.base.ExportImportReportEntryLocalServiceBaseImpl;
 import com.liferay.portal.aop.AopService;
+import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
+import com.liferay.portal.kernel.security.permission.ResourceActions;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Carlos Correa
@@ -32,8 +36,8 @@ public class ExportImportReportEntryLocalServiceImpl
 	@Indexable(type = IndexableType.REINDEX)
 	public ExportImportReportEntry addEmptyExportImportReportEntry(
 		long groupId, long companyId, String classExternalReferenceCode,
-		long classNameId, long exportImportConfigurationId, String modelName,
-		int origin, String scope, String scopeKey) {
+		long classNameId, long exportImportConfigurationId, int origin,
+		String scope, String scopeKey) {
 
 		ExportImportReportEntry exportImportReportEntry =
 			exportImportReportEntryPersistence.create(
@@ -46,7 +50,6 @@ public class ExportImportReportEntryLocalServiceImpl
 		exportImportReportEntry.setClassNameId(classNameId);
 		exportImportReportEntry.setExportImportConfigurationId(
 			exportImportConfigurationId);
-		exportImportReportEntry.setModelName(modelName);
 		exportImportReportEntry.setOrigin(origin);
 		exportImportReportEntry.setScope(scope);
 		exportImportReportEntry.setScopeKey(scopeKey);
@@ -64,8 +67,8 @@ public class ExportImportReportEntryLocalServiceImpl
 	public ExportImportReportEntry addErrorExportImportReportEntry(
 		long groupId, long companyId, String classExternalReferenceCode,
 		long classNameId, long classPK, long exportImportConfigurationId,
-		String errorMessage, String errorStacktrace, String modelName,
-		int origin, String scope, String scopeKey) {
+		String errorMessage, String errorStacktrace, int origin, String scope,
+		String scopeKey) {
 
 		ExportImportReportEntry exportImportReportEntry =
 			exportImportReportEntryPersistence.create(
@@ -81,7 +84,6 @@ public class ExportImportReportEntryLocalServiceImpl
 			exportImportConfigurationId);
 		exportImportReportEntry.setErrorMessage(errorMessage);
 		exportImportReportEntry.setErrorStacktrace(errorStacktrace);
-		exportImportReportEntry.setModelName(modelName);
 		exportImportReportEntry.setOrigin(origin);
 		exportImportReportEntry.setScope(scope);
 		exportImportReportEntry.setScopeKey(scopeKey);
@@ -101,5 +103,25 @@ public class ExportImportReportEntryLocalServiceImpl
 		return exportImportReportEntryPersistence.findByC_E(
 			companyId, exportImportConfigurationId);
 	}
+
+	@Override
+	public String getModelName(
+		ExportImportReportEntry exportImportReportEntry, Locale locale) {
+
+		String modelResourceNamePrefix =
+			_resourceActions.getModelResourceNamePrefix();
+
+		return _language.get(
+			locale,
+			modelResourceNamePrefix.concat(
+				exportImportReportEntry.getClassName()),
+			null);
+	}
+
+	@Reference
+	private Language _language;
+
+	@Reference
+	private ResourceActions _resourceActions;
 
 }

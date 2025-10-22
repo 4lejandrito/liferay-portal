@@ -320,7 +320,7 @@ public class ObjectEntryFolderLocalServiceImpl
 			(_externalReferenceCode, _groupId) ->
 				getObjectEntryFolderByExternalReferenceCode(
 					_externalReferenceCode, _groupId, companyId),
-			groupId, ObjectEntryFolder.class.getName());
+			groupId);
 	}
 
 	@Override

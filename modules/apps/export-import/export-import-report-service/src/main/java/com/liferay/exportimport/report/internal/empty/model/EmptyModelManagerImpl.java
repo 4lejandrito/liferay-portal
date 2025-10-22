@@ -63,7 +63,7 @@ public class EmptyModelManagerImpl implements EmptyModelManager {
 					GetterUtil.getLong(
 						ExportImportThreadLocal.
 							getExportImportConfigurationId()),
-					clazz.getName(), ExportImportReportEntryUtil.getOrigin(),
+					ExportImportReportEntryUtil.getOrigin(),
 					ObjectDefinitionConstants.SCOPE_COMPANY, null);
 
 			return emptyModelUnsafeSupplier.get();
@@ -83,8 +83,7 @@ public class EmptyModelManagerImpl implements EmptyModelManager {
 		return getOrAddEmptyModel(
 			clazz.getName(), null, emptyModelUnsafeSupplier,
 			externalReferenceCode, fetchByExternalReferenceCodeBiFunction,
-			getByExternalReferenceCodeUnsafeBiFunction, groupId,
-			clazz.getName());
+			getByExternalReferenceCodeUnsafeBiFunction, groupId);
 	}
 
 	@Override
@@ -95,7 +94,7 @@ public class EmptyModelManagerImpl implements EmptyModelManager {
 			BiFunction<String, Long, T> fetchByExternalReferenceCodeBiFunction,
 			UnsafeBiFunction<String, Long, T, E>
 				getByExternalReferenceCodeUnsafeBiFunction,
-			long groupId, String modelName)
+			long groupId)
 		throws E {
 
 		if (!LazyReferencingThreadLocal.isEnabled()) {
@@ -126,7 +125,7 @@ public class EmptyModelManagerImpl implements EmptyModelManager {
 					GetterUtil.getLong(
 						ExportImportThreadLocal.
 							getExportImportConfigurationId()),
-					modelName, ExportImportReportEntryUtil.getOrigin(),
+					ExportImportReportEntryUtil.getOrigin(),
 					ExportImportReportEntryUtil.getScope(group),
 					ExportImportReportEntryUtil.getScopeKey(group));
 

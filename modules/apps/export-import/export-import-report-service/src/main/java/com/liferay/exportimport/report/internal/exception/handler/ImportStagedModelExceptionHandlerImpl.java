@@ -76,7 +76,6 @@ public class ImportStagedModelExceptionHandlerImpl
 						portletDataContext.getExportImportProcessId()),
 					portletDataException.getMessage(),
 					_getErrorStackTrace(portletDataException),
-					modelClass.getName(),
 					ExportImportReportEntryUtil.getOrigin(), scope,
 					ExportImportReportEntryUtil.getScopeKey(group));
 		}

@@ -6,11 +6,18 @@
 package com.liferay.exportimport.report.internal.search.spi.model.index.contributor;
 
 import com.liferay.exportimport.report.model.ExportImportReportEntry;
+import com.liferay.exportimport.report.service.ExportImportReportEntryLocalService;
+import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.search.spi.model.index.contributor.ModelDocumentContributor;
 
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Petteri Karttunen
@@ -39,11 +46,34 @@ public class ExportImportReportEntryModelDocumentContributor
 			exportImportReportEntry.getExportImportConfigurationId());
 		document.addText(
 			"errorStacktrace", exportImportReportEntry.getErrorStacktrace());
-		document.addText("modelName", exportImportReportEntry.getModelName());
+		document.addLocalizedText(
+			"modelName", _getModelNameMap(exportImportReportEntry), true);
 		document.addNumber(
 			"origin_integer", exportImportReportEntry.getOrigin());
 		document.addNumber("status", exportImportReportEntry.getStatus());
 		document.addNumber("type_integer", exportImportReportEntry.getType());
 	}
+
+	private Map<Locale, String> _getModelNameMap(
+		ExportImportReportEntry exportImportReportEntry) {
+
+		Map<Locale, String> map = new HashMap<>();
+
+		for (Locale locale : _language.getAvailableLocales()) {
+			map.put(
+				locale,
+				_exportImportReportEntryLocalService.getModelName(
+					exportImportReportEntry, locale));
+		}
+
+		return map;
+	}
+
+	@Reference
+	private ExportImportReportEntryLocalService
+		_exportImportReportEntryLocalService;
+
+	@Reference
+	private Language _language;
 
 }

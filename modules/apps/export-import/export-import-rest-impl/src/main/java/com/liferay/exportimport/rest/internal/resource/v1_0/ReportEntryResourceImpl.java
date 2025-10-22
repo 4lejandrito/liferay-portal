@@ -235,20 +235,6 @@ public class ReportEntryResourceImpl extends BaseReportEntryResourceImpl {
 		return null;
 	}
 
-	private String _toModelName(String modelName) {
-		String modelResourceKey = "model.resource." + modelName;
-
-		String value = _language.get(
-			contextAcceptLanguage.getPreferredLocale(), modelResourceKey);
-
-		if (!StringUtil.equals(modelResourceKey, value)) {
-			return value;
-		}
-
-		return _language.get(
-			contextAcceptLanguage.getPreferredLocale(), modelName);
-	}
-
 	private Origin _toOrigin(int origin) {
 		return new Origin() {
 			{
@@ -285,7 +271,9 @@ public class ReportEntryResourceImpl extends BaseReportEntryResourceImpl {
 					() -> _getErrorStacktrace(exportImportReportEntry));
 				setId(exportImportReportEntry::getExportImportReportEntryId);
 				setModelName(
-					() -> _toModelName(exportImportReportEntry.getModelName()));
+					() -> _exportImportReportEntryLocalService.getModelName(
+						exportImportReportEntry,
+						contextAcceptLanguage.getPreferredLocale()));
 				setOrigin(() -> _toOrigin(exportImportReportEntry.getOrigin()));
 				setScope(() -> _getScope(exportImportReportEntry));
 				setStatus(() -> _toStatus(exportImportReportEntry.getStatus()));

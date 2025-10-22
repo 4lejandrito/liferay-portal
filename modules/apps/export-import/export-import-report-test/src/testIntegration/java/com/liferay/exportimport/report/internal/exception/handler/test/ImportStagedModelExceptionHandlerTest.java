@@ -174,9 +174,6 @@ public class ImportStagedModelExceptionHandlerTest {
 			errorMessage, exportImportReportEntry.getErrorMessage());
 		Assert.assertNotNull(exportImportReportEntry.getErrorStacktrace());
 		Assert.assertEquals(
-			TestStagedModel.class.getName(),
-			exportImportReportEntry.getModelName());
-		Assert.assertEquals(
 			ExportImportReportEntryConstants.ORIGIN_STAGING,
 			exportImportReportEntry.getOrigin());
 		Assert.assertEquals(expectedScope, exportImportReportEntry.getScope());

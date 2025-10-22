@@ -411,11 +411,6 @@ public class ObjectEntryResourceImpl
 			}
 
 			@Override
-			public String getModelName() {
-				return _objectDefinition.getShortName();
-			}
-
-			@Override
 			public List<String> getNestedFields() {
 				return transform(
 					_objectRelationshipLocalService.
