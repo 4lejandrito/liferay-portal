@@ -113,7 +113,6 @@ public class ReportEntryResourceTest extends BaseReportEntryResourceTestCase {
 						reportEntry.getClassNameId(),
 						_exportImportConfiguration.
 							getExportImportConfigurationId(),
-						reportEntry.getModelName(),
 						ExportImportReportEntryConstants.ORIGIN_BATCH, null,
 						testGroup.getGroupKey());
 		}
@@ -128,7 +127,6 @@ public class ReportEntryResourceTest extends BaseReportEntryResourceTestCase {
 							getExportImportConfigurationId(),
 						reportEntry.getErrorMessage(),
 						reportEntry.getErrorStacktrace(),
-						reportEntry.getModelName(),
 						ExportImportReportEntryConstants.ORIGIN_BATCH, null,
 						testGroup.getGroupKey());
 		}

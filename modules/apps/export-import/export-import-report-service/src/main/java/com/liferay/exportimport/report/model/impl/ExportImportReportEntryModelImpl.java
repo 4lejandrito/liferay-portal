@@ -68,9 +68,9 @@ public class ExportImportReportEntryModelImpl
 		{"classNameId", Types.BIGINT}, {"classPK", Types.BIGINT},
 		{"exportImportConfigurationId", Types.BIGINT},
 		{"errorMessage", Types.CLOB}, {"errorStacktrace", Types.CLOB},
-		{"modelName", Types.VARCHAR}, {"origin", Types.INTEGER},
-		{"scope", Types.VARCHAR}, {"scopeKey", Types.VARCHAR},
-		{"type_", Types.INTEGER}, {"status", Types.INTEGER}
+		{"origin", Types.INTEGER}, {"scope", Types.VARCHAR},
+		{"scopeKey", Types.VARCHAR}, {"type_", Types.INTEGER},
+		{"status", Types.INTEGER}
 	};
 
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP =
@@ -89,7 +89,6 @@ public class ExportImportReportEntryModelImpl
 		TABLE_COLUMNS_MAP.put("exportImportConfigurationId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("errorMessage", Types.CLOB);
 		TABLE_COLUMNS_MAP.put("errorStacktrace", Types.CLOB);
-		TABLE_COLUMNS_MAP.put("modelName", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("origin", Types.INTEGER);
 		TABLE_COLUMNS_MAP.put("scope", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("scopeKey", Types.VARCHAR);
@@ -98,7 +97,7 @@ public class ExportImportReportEntryModelImpl
 	}
 
 	public static final String TABLE_SQL_CREATE =
-		"create table ExportImportReportEntry (mvccVersion LONG default 0 not null,exportImportReportEntryId LONG not null primary key,groupId LONG,companyId LONG,createDate DATE null,modifiedDate DATE null,classExternalReferenceCode VARCHAR(75) null,classNameId LONG,classPK LONG,exportImportConfigurationId LONG,errorMessage TEXT null,errorStacktrace TEXT null,modelName VARCHAR(255) null,origin INTEGER,scope VARCHAR(75) null,scopeKey VARCHAR(75) null,type_ INTEGER,status INTEGER)";
+		"create table ExportImportReportEntry (mvccVersion LONG default 0 not null,exportImportReportEntryId LONG not null primary key,groupId LONG,companyId LONG,createDate DATE null,modifiedDate DATE null,classExternalReferenceCode VARCHAR(75) null,classNameId LONG,classPK LONG,exportImportConfigurationId LONG,errorMessage TEXT null,errorStacktrace TEXT null,origin INTEGER,scope VARCHAR(75) null,scopeKey VARCHAR(75) null,type_ INTEGER,status INTEGER)";
 
 	public static final String TABLE_SQL_DROP =
 		"drop table ExportImportReportEntry";
@@ -274,8 +273,6 @@ public class ExportImportReportEntryModelImpl
 			attributeGetterFunctions.put(
 				"errorStacktrace", ExportImportReportEntry::getErrorStacktrace);
 			attributeGetterFunctions.put(
-				"modelName", ExportImportReportEntry::getModelName);
-			attributeGetterFunctions.put(
 				"origin", ExportImportReportEntry::getOrigin);
 			attributeGetterFunctions.put(
 				"scope", ExportImportReportEntry::getScope);
@@ -352,10 +349,6 @@ public class ExportImportReportEntryModelImpl
 				"errorStacktrace",
 				(BiConsumer<ExportImportReportEntry, String>)
 					ExportImportReportEntry::setErrorStacktrace);
-			attributeSetterBiConsumers.put(
-				"modelName",
-				(BiConsumer<ExportImportReportEntry, String>)
-					ExportImportReportEntry::setModelName);
 			attributeSetterBiConsumers.put(
 				"origin",
 				(BiConsumer<ExportImportReportEntry, Integer>)
@@ -607,25 +600,6 @@ public class ExportImportReportEntryModelImpl
 	}
 
 	@Override
-	public String getModelName() {
-		if (_modelName == null) {
-			return "";
-		}
-		else {
-			return _modelName;
-		}
-	}
-
-	@Override
-	public void setModelName(String modelName) {
-		if (_columnOriginalValues == Collections.EMPTY_MAP) {
-			_setColumnOriginalValues();
-		}
-
-		_modelName = modelName;
-	}
-
-	@Override
 	public int getOrigin() {
 		return _origin;
 	}
@@ -778,7 +752,6 @@ public class ExportImportReportEntryModelImpl
 			getExportImportConfigurationId());
 		exportImportReportEntryImpl.setErrorMessage(getErrorMessage());
 		exportImportReportEntryImpl.setErrorStacktrace(getErrorStacktrace());
-		exportImportReportEntryImpl.setModelName(getModelName());
 		exportImportReportEntryImpl.setOrigin(getOrigin());
 		exportImportReportEntryImpl.setScope(getScope());
 		exportImportReportEntryImpl.setScopeKey(getScopeKey());
@@ -819,8 +792,6 @@ public class ExportImportReportEntryModelImpl
 			this.<String>getColumnOriginalValue("errorMessage"));
 		exportImportReportEntryImpl.setErrorStacktrace(
 			this.<String>getColumnOriginalValue("errorStacktrace"));
-		exportImportReportEntryImpl.setModelName(
-			this.<String>getColumnOriginalValue("modelName"));
 		exportImportReportEntryImpl.setOrigin(
 			this.<Integer>getColumnOriginalValue("origin"));
 		exportImportReportEntryImpl.setScope(
@@ -975,14 +946,6 @@ public class ExportImportReportEntryModelImpl
 			exportImportReportEntryCacheModel.errorStacktrace = null;
 		}
 
-		exportImportReportEntryCacheModel.modelName = getModelName();
-
-		String modelName = exportImportReportEntryCacheModel.modelName;
-
-		if ((modelName != null) && (modelName.length() == 0)) {
-			exportImportReportEntryCacheModel.modelName = null;
-		}
-
 		exportImportReportEntryCacheModel.origin = getOrigin();
 
 		exportImportReportEntryCacheModel.scope = getScope();
@@ -1081,7 +1044,6 @@ public class ExportImportReportEntryModelImpl
 	private long _exportImportConfigurationId;
 	private String _errorMessage;
 	private String _errorStacktrace;
-	private String _modelName;
 	private int _origin;
 	private String _scope;
 	private String _scopeKey;
@@ -1133,7 +1095,6 @@ public class ExportImportReportEntryModelImpl
 			"exportImportConfigurationId", _exportImportConfigurationId);
 		_columnOriginalValues.put("errorMessage", _errorMessage);
 		_columnOriginalValues.put("errorStacktrace", _errorStacktrace);
-		_columnOriginalValues.put("modelName", _modelName);
 		_columnOriginalValues.put("origin", _origin);
 		_columnOriginalValues.put("scope", _scope);
 		_columnOriginalValues.put("scopeKey", _scopeKey);
@@ -1186,17 +1147,15 @@ public class ExportImportReportEntryModelImpl
 
 		columnBitmasks.put("errorStacktrace", 2048L);
 
-		columnBitmasks.put("modelName", 4096L);
+		columnBitmasks.put("origin", 4096L);
 
-		columnBitmasks.put("origin", 8192L);
+		columnBitmasks.put("scope", 8192L);
 
-		columnBitmasks.put("scope", 16384L);
+		columnBitmasks.put("scopeKey", 16384L);
 
-		columnBitmasks.put("scopeKey", 32768L);
+		columnBitmasks.put("type_", 32768L);
 
-		columnBitmasks.put("type_", 65536L);
-
-		columnBitmasks.put("status", 131072L);
+		columnBitmasks.put("status", 65536L);
 
 		_columnBitmasks = Collections.unmodifiableMap(columnBitmasks);
 	}

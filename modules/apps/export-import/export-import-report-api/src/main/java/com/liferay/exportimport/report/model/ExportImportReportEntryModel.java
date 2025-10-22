@@ -243,21 +243,6 @@ public interface ExportImportReportEntryModel
 	public void setErrorStacktrace(String errorStacktrace);
 
 	/**
-	 * Returns the model name of this export import report entry.
-	 *
-	 * @return the model name of this export import report entry
-	 */
-	@AutoEscape
-	public String getModelName();
-
-	/**
-	 * Sets the model name of this export import report entry.
-	 *
-	 * @param modelName the model name of this export import report entry
-	 */
-	public void setModelName(String modelName);
-
-	/**
 	 * Returns the origin of this export import report entry.
 	 *
 	 * @return the origin of this export import report entry

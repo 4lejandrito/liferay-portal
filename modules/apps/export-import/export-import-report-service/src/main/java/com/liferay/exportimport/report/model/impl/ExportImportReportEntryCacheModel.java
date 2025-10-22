@@ -69,7 +69,7 @@ public class ExportImportReportEntryCacheModel
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(37);
+		StringBundler sb = new StringBundler(35);
 
 		sb.append("{mvccVersion=");
 		sb.append(mvccVersion);
@@ -95,8 +95,6 @@ public class ExportImportReportEntryCacheModel
 		sb.append(errorMessage);
 		sb.append(", errorStacktrace=");
 		sb.append(errorStacktrace);
-		sb.append(", modelName=");
-		sb.append(modelName);
 		sb.append(", origin=");
 		sb.append(origin);
 		sb.append(", scope=");
@@ -151,14 +149,6 @@ public class ExportImportReportEntryCacheModel
 			exportImportConfigurationId);
 		exportImportReportEntryImpl.setErrorMessage(errorMessage);
 		exportImportReportEntryImpl.setErrorStacktrace(errorStacktrace);
-
-		if (modelName == null) {
-			exportImportReportEntryImpl.setModelName("");
-		}
-		else {
-			exportImportReportEntryImpl.setModelName(modelName);
-		}
-
 		exportImportReportEntryImpl.setOrigin(origin);
 
 		if (scope == null) {
@@ -205,7 +195,6 @@ public class ExportImportReportEntryCacheModel
 		exportImportConfigurationId = objectInput.readLong();
 		errorMessage = (String)objectInput.readObject();
 		errorStacktrace = (String)objectInput.readObject();
-		modelName = objectInput.readUTF();
 
 		origin = objectInput.readInt();
 		scope = objectInput.readUTF();
@@ -255,13 +244,6 @@ public class ExportImportReportEntryCacheModel
 			objectOutput.writeObject(errorStacktrace);
 		}
 
-		if (modelName == null) {
-			objectOutput.writeUTF("");
-		}
-		else {
-			objectOutput.writeUTF(modelName);
-		}
-
 		objectOutput.writeInt(origin);
 
 		if (scope == null) {
@@ -295,7 +277,6 @@ public class ExportImportReportEntryCacheModel
 	public long exportImportConfigurationId;
 	public String errorMessage;
 	public String errorStacktrace;
-	public String modelName;
 	public int origin;
 	public String scope;
 	public String scopeKey;

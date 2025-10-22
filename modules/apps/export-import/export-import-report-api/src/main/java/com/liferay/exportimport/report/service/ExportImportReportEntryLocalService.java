@@ -26,6 +26,7 @@ import com.liferay.portal.kernel.util.OrderByComparator;
 import java.io.Serializable;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.osgi.annotation.versioning.ProviderType;
 
@@ -55,16 +56,16 @@ public interface ExportImportReportEntryLocalService
 	@Indexable(type = IndexableType.REINDEX)
 	public ExportImportReportEntry addEmptyExportImportReportEntry(
 		long groupId, long companyId, String classExternalReferenceCode,
-		long classNameId, long exportImportConfigurationId, String modelName,
-		int origin, String scope, String scopeKey);
+		long classNameId, long exportImportConfigurationId, int origin,
+		String scope, String scopeKey);
 
 	@Indexable(type = IndexableType.REINDEX)
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public ExportImportReportEntry addErrorExportImportReportEntry(
 		long groupId, long companyId, String classExternalReferenceCode,
 		long classNameId, long classPK, long exportImportConfigurationId,
-		String errorMessage, String errorStacktrace, String modelName,
-		int origin, String scope, String scopeKey);
+		String errorMessage, String errorStacktrace, int origin, String scope,
+		String scopeKey);
 
 	/**
 	 * Adds the export import report entry to the database. Also notifies the appropriate model listeners.
@@ -253,6 +254,10 @@ public interface ExportImportReportEntryLocalService
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public IndexableActionableDynamicQuery getIndexableActionableDynamicQuery();
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public String getModelName(
+		ExportImportReportEntry exportImportReportEntry, Locale locale);
 
 	/**
 	 * Returns the OSGi service identifier.

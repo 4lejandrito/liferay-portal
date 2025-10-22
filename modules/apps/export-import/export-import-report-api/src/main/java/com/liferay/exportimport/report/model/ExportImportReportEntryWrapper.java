@@ -50,7 +50,6 @@ public class ExportImportReportEntryWrapper
 			"exportImportConfigurationId", getExportImportConfigurationId());
 		attributes.put("errorMessage", getErrorMessage());
 		attributes.put("errorStacktrace", getErrorStacktrace());
-		attributes.put("modelName", getModelName());
 		attributes.put("origin", getOrigin());
 		attributes.put("scope", getScope());
 		attributes.put("scopeKey", getScopeKey());
@@ -135,12 +134,6 @@ public class ExportImportReportEntryWrapper
 
 		if (errorStacktrace != null) {
 			setErrorStacktrace(errorStacktrace);
-		}
-
-		String modelName = (String)attributes.get("modelName");
-
-		if (modelName != null) {
-			setModelName(modelName);
 		}
 
 		Integer origin = (Integer)attributes.get("origin");
@@ -287,16 +280,6 @@ public class ExportImportReportEntryWrapper
 	@Override
 	public long getGroupId() {
 		return model.getGroupId();
-	}
-
-	/**
-	 * Returns the model name of this export import report entry.
-	 *
-	 * @return the model name of this export import report entry
-	 */
-	@Override
-	public String getModelName() {
-		return model.getModelName();
 	}
 
 	/**
@@ -491,16 +474,6 @@ public class ExportImportReportEntryWrapper
 	@Override
 	public void setGroupId(long groupId) {
 		model.setGroupId(groupId);
-	}
-
-	/**
-	 * Sets the model name of this export import report entry.
-	 *
-	 * @param modelName the model name of this export import report entry
-	 */
-	@Override
-	public void setModelName(String modelName) {
-		model.setModelName(modelName);
 	}
 
 	/**

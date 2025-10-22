@@ -35,14 +35,13 @@ public class ExportImportReportEntryLocalServiceWrapper
 	public com.liferay.exportimport.report.model.ExportImportReportEntry
 		addEmptyExportImportReportEntry(
 			long groupId, long companyId, String classExternalReferenceCode,
-			long classNameId, long exportImportConfigurationId,
-			String modelName, int origin, String scope, String scopeKey) {
+			long classNameId, long exportImportConfigurationId, int origin,
+			String scope, String scopeKey) {
 
 		return _exportImportReportEntryLocalService.
 			addEmptyExportImportReportEntry(
 				groupId, companyId, classExternalReferenceCode, classNameId,
-				exportImportConfigurationId, modelName, origin, scope,
-				scopeKey);
+				exportImportConfigurationId, origin, scope, scopeKey);
 	}
 
 	@Override
@@ -50,14 +49,14 @@ public class ExportImportReportEntryLocalServiceWrapper
 		addErrorExportImportReportEntry(
 			long groupId, long companyId, String classExternalReferenceCode,
 			long classNameId, long classPK, long exportImportConfigurationId,
-			String errorMessage, String errorStacktrace, String modelName,
-			int origin, String scope, String scopeKey) {
+			String errorMessage, String errorStacktrace, int origin,
+			String scope, String scopeKey) {
 
 		return _exportImportReportEntryLocalService.
 			addErrorExportImportReportEntry(
 				groupId, companyId, classExternalReferenceCode, classNameId,
 				classPK, exportImportConfigurationId, errorMessage,
-				errorStacktrace, modelName, origin, scope, scopeKey);
+				errorStacktrace, origin, scope, scopeKey);
 	}
 
 	/**
@@ -341,6 +340,16 @@ public class ExportImportReportEntryLocalServiceWrapper
 
 		return _exportImportReportEntryLocalService.
 			getIndexableActionableDynamicQuery();
+	}
+
+	@Override
+	public String getModelName(
+		com.liferay.exportimport.report.model.ExportImportReportEntry
+			exportImportReportEntry,
+		java.util.Locale locale) {
+
+		return _exportImportReportEntryLocalService.getModelName(
+			exportImportReportEntry, locale);
 	}
 
 	/**
