@@ -23,7 +23,7 @@ public interface ExportImportVulcanBatchEngineTaskItemDelegate<T>
 
 	public interface ExportImportDescriptor {
 
-		public default String getClassName() {
+		public default String getUniqueName() {
 			return getClass(
 			).getEnclosingClass(
 			).getName();

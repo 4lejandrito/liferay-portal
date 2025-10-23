@@ -401,7 +401,7 @@ public class ObjectEntryResourceImpl
 		return new ExportImportDescriptor() {
 
 			@Override
-			public String getClassName() {
+			public String getUniqueName() {
 				return _objectDefinition.getClassName();
 			}
 

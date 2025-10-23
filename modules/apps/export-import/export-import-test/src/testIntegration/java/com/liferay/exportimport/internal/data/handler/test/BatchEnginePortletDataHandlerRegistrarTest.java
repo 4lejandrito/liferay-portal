@@ -335,7 +335,7 @@ public class BatchEnginePortletDataHandlerRegistrarTest {
 			return new ExportImportDescriptor() {
 
 				@Override
-				public String getClassName() {
+				public String getUniqueName() {
 					return _className;
 				}
 
