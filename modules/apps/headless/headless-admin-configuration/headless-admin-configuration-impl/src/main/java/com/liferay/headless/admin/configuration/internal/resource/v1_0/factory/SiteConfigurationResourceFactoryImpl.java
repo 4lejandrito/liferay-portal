@@ -6,7 +6,7 @@
 package com.liferay.headless.admin.configuration.internal.resource.v1_0.factory;
 
 import com.liferay.headless.admin.configuration.internal.security.permission.LiberalPermissionChecker;
-import com.liferay.headless.admin.configuration.resource.v1_0.ConfigurationResource;
+import com.liferay.headless.admin.configuration.resource.v1_0.SiteConfigurationResource;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.filter.Filter;
@@ -55,29 +55,29 @@ import org.osgi.service.component.annotations.ReferenceScope;
  * @generated
  */
 @Component(
-	property = "resource.locator.key=/headless-admin-configuration/v1.0/Configuration",
-	service = ConfigurationResource.Factory.class
+	property = "resource.locator.key=/headless-admin-configuration/v1.0/SiteConfiguration",
+	service = SiteConfigurationResource.Factory.class
 )
 @Generated("")
-public class ConfigurationResourceFactoryImpl
-	implements ConfigurationResource.Factory {
+public class SiteConfigurationResourceFactoryImpl
+	implements SiteConfigurationResource.Factory {
 
 	@Override
-	public ConfigurationResource.Builder create() {
-		return new ConfigurationResource.Builder() {
+	public SiteConfigurationResource.Builder create() {
+		return new SiteConfigurationResource.Builder() {
 
 			@Override
-			public ConfigurationResource build() {
+			public SiteConfigurationResource build() {
 				if (_user == null) {
 					throw new IllegalArgumentException("User is not set");
 				}
 
-				Function<InvocationHandler, ConfigurationResource>
-					configurationResourceProxyProviderFunction =
+				Function<InvocationHandler, SiteConfigurationResource>
+					siteConfigurationResourceProxyProviderFunction =
 						ResourceProxyProviderFunctionHolder.
-							_configurationResourceProxyProviderFunction;
+							_siteConfigurationResourceProxyProviderFunction;
 
-				return configurationResourceProxyProviderFunction.apply(
+				return siteConfigurationResourceProxyProviderFunction.apply(
 					(proxy, method, arguments) -> _invoke(
 						method, arguments, _checkPermissions,
 						_httpServletRequest, _httpServletResponse,
@@ -85,7 +85,7 @@ public class ConfigurationResourceFactoryImpl
 			}
 
 			@Override
-			public ConfigurationResource.Builder checkPermissions(
+			public SiteConfigurationResource.Builder checkPermissions(
 				boolean checkPermissions) {
 
 				_checkPermissions = checkPermissions;
@@ -94,7 +94,7 @@ public class ConfigurationResourceFactoryImpl
 			}
 
 			@Override
-			public ConfigurationResource.Builder httpServletRequest(
+			public SiteConfigurationResource.Builder httpServletRequest(
 				HttpServletRequest httpServletRequest) {
 
 				_httpServletRequest = httpServletRequest;
@@ -103,7 +103,7 @@ public class ConfigurationResourceFactoryImpl
 			}
 
 			@Override
-			public ConfigurationResource.Builder httpServletResponse(
+			public SiteConfigurationResource.Builder httpServletResponse(
 				HttpServletResponse httpServletResponse) {
 
 				_httpServletResponse = httpServletResponse;
@@ -112,7 +112,7 @@ public class ConfigurationResourceFactoryImpl
 			}
 
 			@Override
-			public ConfigurationResource.Builder preferredLocale(
+			public SiteConfigurationResource.Builder preferredLocale(
 				Locale preferredLocale) {
 
 				_preferredLocale = preferredLocale;
@@ -121,14 +121,14 @@ public class ConfigurationResourceFactoryImpl
 			}
 
 			@Override
-			public ConfigurationResource.Builder uriInfo(UriInfo uriInfo) {
+			public SiteConfigurationResource.Builder uriInfo(UriInfo uriInfo) {
 				_uriInfo = uriInfo;
 
 				return this;
 			}
 
 			@Override
-			public ConfigurationResource.Builder user(User user) {
+			public SiteConfigurationResource.Builder user(User user) {
 				_user = user;
 
 				return this;
@@ -144,17 +144,17 @@ public class ConfigurationResourceFactoryImpl
 		};
 	}
 
-	private static Function<InvocationHandler, ConfigurationResource>
+	private static Function<InvocationHandler, SiteConfigurationResource>
 		_getProxyProviderFunction() {
 
 		Class<?> proxyClass = ProxyUtil.getProxyClass(
-			ConfigurationResource.class.getClassLoader(),
-			ConfigurationResource.class);
+			SiteConfigurationResource.class.getClassLoader(),
+			SiteConfigurationResource.class);
 
 		try {
-			Constructor<ConfigurationResource> constructor =
-				(Constructor<ConfigurationResource>)proxyClass.getConstructor(
-					InvocationHandler.class);
+			Constructor<SiteConfigurationResource> constructor =
+				(Constructor<SiteConfigurationResource>)
+					proxyClass.getConstructor(InvocationHandler.class);
 
 			return invocationHandler -> {
 				try {
@@ -195,39 +195,41 @@ public class ConfigurationResourceFactoryImpl
 				new LiberalPermissionChecker(user));
 		}
 
-		ConfigurationResource configurationResource =
+		SiteConfigurationResource siteConfigurationResource =
 			_componentServiceObjects.getService();
 
-		configurationResource.setContextAcceptLanguage(
+		siteConfigurationResource.setContextAcceptLanguage(
 			new AcceptLanguageImpl(httpServletRequest, preferredLocale, user));
 
 		Company company = _companyLocalService.getCompany(user.getCompanyId());
 
-		configurationResource.setContextCompany(company);
+		siteConfigurationResource.setContextCompany(company);
 
-		configurationResource.setContextHttpServletRequest(httpServletRequest);
-		configurationResource.setContextHttpServletResponse(
+		siteConfigurationResource.setContextHttpServletRequest(
+			httpServletRequest);
+		siteConfigurationResource.setContextHttpServletResponse(
 			httpServletResponse);
-		configurationResource.setContextUriInfo(uriInfo);
-		configurationResource.setContextUser(user);
-		configurationResource.setExpressionConvert(_expressionConvert);
-		configurationResource.setFilterParserProvider(_filterParserProvider);
-		configurationResource.setGroupLocalService(_groupLocalService);
-		configurationResource.setResourceActionLocalService(
+		siteConfigurationResource.setContextUriInfo(uriInfo);
+		siteConfigurationResource.setContextUser(user);
+		siteConfigurationResource.setExpressionConvert(_expressionConvert);
+		siteConfigurationResource.setFilterParserProvider(
+			_filterParserProvider);
+		siteConfigurationResource.setGroupLocalService(_groupLocalService);
+		siteConfigurationResource.setResourceActionLocalService(
 			_resourceActionLocalService);
-		configurationResource.setResourcePermissionLocalService(
+		siteConfigurationResource.setResourcePermissionLocalService(
 			_resourcePermissionLocalService);
-		configurationResource.setRoleLocalService(_roleLocalService);
-		configurationResource.setSortParserProvider(_sortParserProvider);
+		siteConfigurationResource.setRoleLocalService(_roleLocalService);
+		siteConfigurationResource.setSortParserProvider(_sortParserProvider);
 
 		try {
-			return method.invoke(configurationResource, arguments);
+			return method.invoke(siteConfigurationResource, arguments);
 		}
 		catch (InvocationTargetException invocationTargetException) {
 			throw invocationTargetException.getTargetException();
 		}
 		finally {
-			_componentServiceObjects.ungetService(configurationResource);
+			_componentServiceObjects.ungetService(siteConfigurationResource);
 
 			PrincipalThreadLocal.setName(name);
 
@@ -239,7 +241,7 @@ public class ConfigurationResourceFactoryImpl
 	private CompanyLocalService _companyLocalService;
 
 	@Reference(scope = ReferenceScope.PROTOTYPE_REQUIRED)
-	private ComponentServiceObjects<ConfigurationResource>
+	private ComponentServiceObjects<SiteConfigurationResource>
 		_componentServiceObjects;
 
 	@Reference
@@ -273,9 +275,10 @@ public class ConfigurationResourceFactoryImpl
 
 	private static class ResourceProxyProviderFunctionHolder {
 
-		private static final Function<InvocationHandler, ConfigurationResource>
-			_configurationResourceProxyProviderFunction =
-				_getProxyProviderFunction();
+		private static final Function
+			<InvocationHandler, SiteConfigurationResource>
+				_siteConfigurationResourceProxyProviderFunction =
+					_getProxyProviderFunction();
 
 	}
 

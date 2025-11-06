@@ -35,17 +35,18 @@ import java.util.function.Supplier;
  * @generated
  */
 @Generated("")
-@GraphQLName("Configuration")
+@GraphQLName("SystemConfiguration")
 @JsonFilter("Liferay.Vulcan")
-@XmlRootElement(name = "Configuration")
-public class Configuration implements Serializable {
+@XmlRootElement(name = "SystemConfiguration")
+public class SystemConfiguration implements Serializable {
 
-	public static Configuration toDTO(String json) {
-		return ObjectMapperUtil.readValue(Configuration.class, json);
+	public static SystemConfiguration toDTO(String json) {
+		return ObjectMapperUtil.readValue(SystemConfiguration.class, json);
 	}
 
-	public static Configuration unsafeToDTO(String json) {
-		return ObjectMapperUtil.unsafeReadValue(Configuration.class, json);
+	public static SystemConfiguration unsafeToDTO(String json) {
+		return ObjectMapperUtil.unsafeReadValue(
+			SystemConfiguration.class, json);
 	}
 
 	@io.swagger.v3.oas.annotations.media.Schema
@@ -138,13 +139,13 @@ public class Configuration implements Serializable {
 			return true;
 		}
 
-		if (!(object instanceof Configuration)) {
+		if (!(object instanceof SystemConfiguration)) {
 			return false;
 		}
 
-		Configuration configuration = (Configuration)object;
+		SystemConfiguration systemConfiguration = (SystemConfiguration)object;
 
-		return Objects.equals(toString(), configuration.toString());
+		return Objects.equals(toString(), systemConfiguration.toString());
 	}
 
 	@Override
@@ -194,7 +195,7 @@ public class Configuration implements Serializable {
 
 	@io.swagger.v3.oas.annotations.media.Schema(
 		accessMode = io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY,
-		defaultValue = "com.liferay.headless.admin.configuration.dto.v1_0.Configuration",
+		defaultValue = "com.liferay.headless.admin.configuration.dto.v1_0.SystemConfiguration",
 		name = "x-class-name"
 	)
 	public String xClassName;

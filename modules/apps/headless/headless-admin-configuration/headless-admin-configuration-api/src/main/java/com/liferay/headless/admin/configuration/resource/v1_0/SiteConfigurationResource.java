@@ -5,7 +5,7 @@
 
 package com.liferay.headless.admin.configuration.resource.v1_0;
 
-import com.liferay.headless.admin.configuration.dto.v1_0.Configuration;
+import com.liferay.headless.admin.configuration.dto.v1_0.SiteConfiguration;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ResourceActionLocalService;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
@@ -43,65 +43,36 @@ import org.osgi.annotation.versioning.ProviderType;
  */
 @Generated("")
 @ProviderType
-public interface ConfigurationResource {
+public interface SiteConfigurationResource {
 
-	public Configuration getPortalInstanceConfiguration(
-			String configurationExternalReferenceCode)
-		throws Exception;
-
-	public Page<Configuration> getPortalInstanceConfigurationsPage()
-		throws Exception;
-
-	public Configuration getSiteConfiguration(
+	public SiteConfiguration getSiteSiteConfiguration(
 			String siteExternalReferenceCode,
-			String configurationExternalReferenceCode,
-			Configuration configuration)
+			String siteConfigurationExternalReferenceCode,
+			SiteConfiguration siteConfiguration)
 		throws Exception;
 
-	public Page<Configuration> getSiteConfigurationsPage(
+	public Page<SiteConfiguration> getSiteSiteConfigurationsPage(
 			String siteExternalReferenceCode)
 		throws Exception;
 
-	public Configuration getSystemConfiguration(
-			String configurationExternalReferenceCode)
+	public SiteConfiguration postSiteSiteConfiguration(
+			String siteExternalReferenceCode,
+			SiteConfiguration siteConfiguration)
 		throws Exception;
 
-	public Page<Configuration> getSystemConfigurationsPage() throws Exception;
-
-	public Configuration postPortalInstanceConfiguration(
-			Configuration configuration)
-		throws Exception;
-
-	public Configuration postSiteConfiguration(
-			String siteExternalReferenceCode, Configuration configuration)
-		throws Exception;
-
-	public Response postSiteConfigurationBatch(
+	public Response postSiteSiteConfigurationBatch(
 			String siteExternalReferenceCode, String callbackURL, Object object)
 		throws Exception;
 
-	public Response postSiteConfigurationsPageExportBatch(
+	public Response postSiteSiteConfigurationsPageExportBatch(
 			String siteExternalReferenceCode, String callbackURL,
 			String contentType, String fieldNames)
 		throws Exception;
 
-	public Configuration postSystemConfiguration(Configuration configuration)
-		throws Exception;
-
-	public Configuration putPortalInstanceConfiguration(
-			String configurationExternalReferenceCode,
-			Configuration configuration)
-		throws Exception;
-
-	public Configuration putSiteConfiguration(
+	public SiteConfiguration putSiteSiteConfiguration(
 			String siteExternalReferenceCode,
-			String configurationExternalReferenceCode,
-			Configuration configuration)
-		throws Exception;
-
-	public Configuration putSystemConfiguration(
-			String configurationExternalReferenceCode,
-			Configuration configuration)
+			String siteConfigurationExternalReferenceCode,
+			SiteConfiguration siteConfiguration)
 		throws Exception;
 
 	public default void setContextAcceptLanguage(
@@ -174,7 +145,7 @@ public interface ConfigurationResource {
 	@ProviderType
 	public interface Builder {
 
-		public ConfigurationResource build();
+		public SiteConfigurationResource build();
 
 		public Builder checkPermissions(boolean checkPermissions);
 

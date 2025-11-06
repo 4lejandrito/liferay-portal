@@ -5,7 +5,7 @@
 
 package com.liferay.headless.admin.configuration.client.serdes.v1_0;
 
-import com.liferay.headless.admin.configuration.client.dto.v1_0.Configuration;
+import com.liferay.headless.admin.configuration.client.dto.v1_0.InstanceConfiguration;
 import com.liferay.headless.admin.configuration.client.json.BaseJSONParser;
 
 import jakarta.annotation.Generated;
@@ -21,24 +21,24 @@ import java.util.TreeMap;
  * @generated
  */
 @Generated("")
-public class ConfigurationSerDes {
+public class InstanceConfigurationSerDes {
 
-	public static Configuration toDTO(String json) {
-		ConfigurationJSONParser configurationJSONParser =
-			new ConfigurationJSONParser();
+	public static InstanceConfiguration toDTO(String json) {
+		InstanceConfigurationJSONParser instanceConfigurationJSONParser =
+			new InstanceConfigurationJSONParser();
 
-		return configurationJSONParser.parseToDTO(json);
+		return instanceConfigurationJSONParser.parseToDTO(json);
 	}
 
-	public static Configuration[] toDTOs(String json) {
-		ConfigurationJSONParser configurationJSONParser =
-			new ConfigurationJSONParser();
+	public static InstanceConfiguration[] toDTOs(String json) {
+		InstanceConfigurationJSONParser instanceConfigurationJSONParser =
+			new InstanceConfigurationJSONParser();
 
-		return configurationJSONParser.parseToDTOs(json);
+		return instanceConfigurationJSONParser.parseToDTOs(json);
 	}
 
-	public static String toJSON(Configuration configuration) {
-		if (configuration == null) {
+	public static String toJSON(InstanceConfiguration instanceConfiguration) {
+		if (instanceConfiguration == null) {
 			return "null";
 		}
 
@@ -46,7 +46,7 @@ public class ConfigurationSerDes {
 
 		sb.append("{");
 
-		if (configuration.getExternalReferenceCode() != null) {
+		if (instanceConfiguration.getExternalReferenceCode() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
@@ -55,19 +55,20 @@ public class ConfigurationSerDes {
 
 			sb.append("\"");
 
-			sb.append(_escape(configuration.getExternalReferenceCode()));
+			sb.append(
+				_escape(instanceConfiguration.getExternalReferenceCode()));
 
 			sb.append("\"");
 		}
 
-		if (configuration.getProperties() != null) {
+		if (instanceConfiguration.getProperties() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
 			sb.append("\"properties\": ");
 
-			sb.append(_toJSON(configuration.getProperties()));
+			sb.append(_toJSON(instanceConfiguration.getProperties()));
 		}
 
 		sb.append("}");
@@ -76,50 +77,54 @@ public class ConfigurationSerDes {
 	}
 
 	public static Map<String, Object> toMap(String json) {
-		ConfigurationJSONParser configurationJSONParser =
-			new ConfigurationJSONParser();
+		InstanceConfigurationJSONParser instanceConfigurationJSONParser =
+			new InstanceConfigurationJSONParser();
 
-		return configurationJSONParser.parseToMap(json);
+		return instanceConfigurationJSONParser.parseToMap(json);
 	}
 
-	public static Map<String, String> toMap(Configuration configuration) {
-		if (configuration == null) {
+	public static Map<String, String> toMap(
+		InstanceConfiguration instanceConfiguration) {
+
+		if (instanceConfiguration == null) {
 			return null;
 		}
 
 		Map<String, String> map = new TreeMap<>();
 
-		if (configuration.getExternalReferenceCode() == null) {
+		if (instanceConfiguration.getExternalReferenceCode() == null) {
 			map.put("externalReferenceCode", null);
 		}
 		else {
 			map.put(
 				"externalReferenceCode",
-				String.valueOf(configuration.getExternalReferenceCode()));
+				String.valueOf(
+					instanceConfiguration.getExternalReferenceCode()));
 		}
 
-		if (configuration.getProperties() == null) {
+		if (instanceConfiguration.getProperties() == null) {
 			map.put("properties", null);
 		}
 		else {
 			map.put(
-				"properties", String.valueOf(configuration.getProperties()));
+				"properties",
+				String.valueOf(instanceConfiguration.getProperties()));
 		}
 
 		return map;
 	}
 
-	public static class ConfigurationJSONParser
-		extends BaseJSONParser<Configuration> {
+	public static class InstanceConfigurationJSONParser
+		extends BaseJSONParser<InstanceConfiguration> {
 
 		@Override
-		protected Configuration createDTO() {
-			return new Configuration();
+		protected InstanceConfiguration createDTO() {
+			return new InstanceConfiguration();
 		}
 
 		@Override
-		protected Configuration[] createDTOArray(int size) {
-			return new Configuration[size];
+		protected InstanceConfiguration[] createDTOArray(int size) {
+			return new InstanceConfiguration[size];
 		}
 
 		@Override
@@ -136,18 +141,18 @@ public class ConfigurationSerDes {
 
 		@Override
 		protected void setField(
-			Configuration configuration, String jsonParserFieldName,
-			Object jsonParserFieldValue) {
+			InstanceConfiguration instanceConfiguration,
+			String jsonParserFieldName, Object jsonParserFieldValue) {
 
 			if (Objects.equals(jsonParserFieldName, "externalReferenceCode")) {
 				if (jsonParserFieldValue != null) {
-					configuration.setExternalReferenceCode(
+					instanceConfiguration.setExternalReferenceCode(
 						(String)jsonParserFieldValue);
 				}
 			}
 			else if (Objects.equals(jsonParserFieldName, "properties")) {
 				if (jsonParserFieldValue != null) {
-					configuration.setProperties(
+					instanceConfiguration.setProperties(
 						(Map<String, Object>)jsonParserFieldValue);
 				}
 			}

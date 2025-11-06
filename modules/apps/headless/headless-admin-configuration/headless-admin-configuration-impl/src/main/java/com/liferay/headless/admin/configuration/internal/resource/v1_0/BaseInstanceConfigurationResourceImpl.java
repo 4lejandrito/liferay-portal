@@ -5,8 +5,8 @@
 
 package com.liferay.headless.admin.configuration.internal.resource.v1_0;
 
-import com.liferay.headless.admin.configuration.dto.v1_0.Configuration;
-import com.liferay.headless.admin.configuration.resource.v1_0.ConfigurationResource;
+import com.liferay.headless.admin.configuration.dto.v1_0.InstanceConfiguration;
+import com.liferay.headless.admin.configuration.resource.v1_0.InstanceConfigurationResource;
 import com.liferay.petra.function.UnsafeBiConsumer;
 import com.liferay.petra.function.UnsafeConsumer;
 import com.liferay.petra.function.UnsafeFunction;
@@ -64,59 +64,65 @@ import java.util.Set;
  */
 @Generated("")
 @jakarta.ws.rs.Path("/v1.0")
-public abstract class BaseConfigurationResourceImpl
-	implements ConfigurationResource, EntityModelResource,
-			   VulcanBatchEngineTaskItemDelegate<Configuration> {
+public abstract class BaseInstanceConfigurationResourceImpl
+	implements EntityModelResource, InstanceConfigurationResource,
+			   VulcanBatchEngineTaskItemDelegate<InstanceConfiguration> {
 
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -X 'GET' 'http://localhost:8080/o/headless-admin-configuration/v1.0/portal-instance/configurations/{configurationExternalReferenceCode}'  -u 'test@liferay.com:test'
+	 * curl -X 'GET' 'http://localhost:8080/o/headless-admin-configuration/v1.0/instance-configurations/{instanceConfigurationExternalReferenceCode}'  -u 'test@liferay.com:test'
 	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
-				name = "configurationExternalReferenceCode"
+				name = "instanceConfigurationExternalReferenceCode"
 			)
 		}
 	)
 	@io.swagger.v3.oas.annotations.tags.Tags(
 		value = {
-			@io.swagger.v3.oas.annotations.tags.Tag(name = "Configuration")
+			@io.swagger.v3.oas.annotations.tags.Tag(
+				name = "InstanceConfiguration"
+			)
 		}
 	)
 	@jakarta.ws.rs.GET
 	@jakarta.ws.rs.Path(
-		"/portal-instance/configurations/{configurationExternalReferenceCode}"
+		"/instance-configurations/{instanceConfigurationExternalReferenceCode}"
 	)
 	@jakarta.ws.rs.Produces({"application/json", "application/xml"})
 	@Override
-	public Configuration getPortalInstanceConfiguration(
+	public InstanceConfiguration getInstanceConfiguration(
 			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 			@jakarta.validation.constraints.NotNull
-			@jakarta.ws.rs.PathParam("configurationExternalReferenceCode")
-			String configurationExternalReferenceCode)
+			@jakarta.ws.rs.PathParam(
+				"instanceConfigurationExternalReferenceCode"
+			)
+			String instanceConfigurationExternalReferenceCode)
 		throws Exception {
 
-		return new Configuration();
+		return new InstanceConfiguration();
 	}
 
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -X 'GET' 'http://localhost:8080/o/headless-admin-configuration/v1.0/portal-instance/configurations'  -u 'test@liferay.com:test'
+	 * curl -X 'GET' 'http://localhost:8080/o/headless-admin-configuration/v1.0/instance-configurations'  -u 'test@liferay.com:test'
 	 */
 	@io.swagger.v3.oas.annotations.tags.Tags(
 		value = {
-			@io.swagger.v3.oas.annotations.tags.Tag(name = "Configuration")
+			@io.swagger.v3.oas.annotations.tags.Tag(
+				name = "InstanceConfiguration"
+			)
 		}
 	)
 	@jakarta.ws.rs.GET
-	@jakarta.ws.rs.Path("/portal-instance/configurations")
+	@jakarta.ws.rs.Path("/instance-configurations")
 	@jakarta.ws.rs.Produces({"application/json", "application/xml"})
 	@Override
-	public Page<Configuration> getPortalInstanceConfigurationsPage()
+	public Page<InstanceConfiguration> getInstanceConfigurationsPage()
 		throws Exception {
 
 		return Page.of(Collections.emptyList());
@@ -125,198 +131,34 @@ public abstract class BaseConfigurationResourceImpl
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -X 'GET' 'http://localhost:8080/o/headless-admin-configuration/v1.0/sites/{siteExternalReferenceCode}/configurations/{configurationExternalReferenceCode}' -d $'{"externalReferenceCode": ___, "properties": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
+	 * curl -X 'POST' 'http://localhost:8080/o/headless-admin-configuration/v1.0/instance-configurations' -d $'{"externalReferenceCode": ___, "properties": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
 	 */
-	@io.swagger.v3.oas.annotations.Parameters(
-		value = {
-			@io.swagger.v3.oas.annotations.Parameter(
-				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
-				name = "siteExternalReferenceCode"
-			),
-			@io.swagger.v3.oas.annotations.Parameter(
-				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
-				name = "configurationExternalReferenceCode"
-			)
-		}
-	)
 	@io.swagger.v3.oas.annotations.tags.Tags(
 		value = {
-			@io.swagger.v3.oas.annotations.tags.Tag(name = "Configuration")
+			@io.swagger.v3.oas.annotations.tags.Tag(
+				name = "InstanceConfiguration"
+			)
 		}
 	)
 	@jakarta.ws.rs.Consumes({"application/json", "application/xml"})
-	@jakarta.ws.rs.GET
-	@jakarta.ws.rs.Path(
-		"/sites/{siteExternalReferenceCode}/configurations/{configurationExternalReferenceCode}"
-	)
-	@jakarta.ws.rs.Produces({"application/json", "application/xml"})
-	@Override
-	public Configuration getSiteConfiguration(
-			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
-			@jakarta.validation.constraints.NotNull
-			@jakarta.ws.rs.PathParam("siteExternalReferenceCode")
-			String siteExternalReferenceCode,
-			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
-			@jakarta.validation.constraints.NotNull
-			@jakarta.ws.rs.PathParam("configurationExternalReferenceCode")
-			String configurationExternalReferenceCode,
-			Configuration configuration)
-		throws Exception {
-
-		return new Configuration();
-	}
-
-	/**
-	 * Invoke this method with the command line:
-	 *
-	 * curl -X 'GET' 'http://localhost:8080/o/headless-admin-configuration/v1.0/sites/{siteExternalReferenceCode}/configurations'  -u 'test@liferay.com:test'
-	 */
-	@io.swagger.v3.oas.annotations.Parameters(
-		value = {
-			@io.swagger.v3.oas.annotations.Parameter(
-				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
-				name = "siteExternalReferenceCode"
-			)
-		}
-	)
-	@io.swagger.v3.oas.annotations.tags.Tags(
-		value = {
-			@io.swagger.v3.oas.annotations.tags.Tag(name = "Configuration")
-		}
-	)
-	@jakarta.ws.rs.GET
-	@jakarta.ws.rs.Path("/sites/{siteExternalReferenceCode}/configurations")
-	@jakarta.ws.rs.Produces({"application/json", "application/xml"})
-	@Override
-	public Page<Configuration> getSiteConfigurationsPage(
-			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
-			@jakarta.validation.constraints.NotNull
-			@jakarta.ws.rs.PathParam("siteExternalReferenceCode")
-			String siteExternalReferenceCode)
-		throws Exception {
-
-		return Page.of(Collections.emptyList());
-	}
-
-	/**
-	 * Invoke this method with the command line:
-	 *
-	 * curl -X 'GET' 'http://localhost:8080/o/headless-admin-configuration/v1.0/system/configurations/{configurationExternalReferenceCode}'  -u 'test@liferay.com:test'
-	 */
-	@io.swagger.v3.oas.annotations.Parameters(
-		value = {
-			@io.swagger.v3.oas.annotations.Parameter(
-				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
-				name = "configurationExternalReferenceCode"
-			)
-		}
-	)
-	@io.swagger.v3.oas.annotations.tags.Tags(
-		value = {
-			@io.swagger.v3.oas.annotations.tags.Tag(name = "Configuration")
-		}
-	)
-	@jakarta.ws.rs.GET
-	@jakarta.ws.rs.Path(
-		"/system/configurations/{configurationExternalReferenceCode}"
-	)
-	@jakarta.ws.rs.Produces({"application/json", "application/xml"})
-	@Override
-	public Configuration getSystemConfiguration(
-			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
-			@jakarta.validation.constraints.NotNull
-			@jakarta.ws.rs.PathParam("configurationExternalReferenceCode")
-			String configurationExternalReferenceCode)
-		throws Exception {
-
-		return new Configuration();
-	}
-
-	/**
-	 * Invoke this method with the command line:
-	 *
-	 * curl -X 'GET' 'http://localhost:8080/o/headless-admin-configuration/v1.0/system/configurations'  -u 'test@liferay.com:test'
-	 */
-	@io.swagger.v3.oas.annotations.tags.Tags(
-		value = {
-			@io.swagger.v3.oas.annotations.tags.Tag(name = "Configuration")
-		}
-	)
-	@jakarta.ws.rs.GET
-	@jakarta.ws.rs.Path("/system/configurations")
-	@jakarta.ws.rs.Produces({"application/json", "application/xml"})
-	@Override
-	public Page<Configuration> getSystemConfigurationsPage() throws Exception {
-		return Page.of(Collections.emptyList());
-	}
-
-	/**
-	 * Invoke this method with the command line:
-	 *
-	 * curl -X 'POST' 'http://localhost:8080/o/headless-admin-configuration/v1.0/portal-instance/configurations' -d $'{"externalReferenceCode": ___, "properties": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
-	 */
-	@io.swagger.v3.oas.annotations.tags.Tags(
-		value = {
-			@io.swagger.v3.oas.annotations.tags.Tag(name = "Configuration")
-		}
-	)
-	@jakarta.ws.rs.Consumes({"application/json", "application/xml"})
-	@jakarta.ws.rs.Path("/portal-instance/configurations")
+	@jakarta.ws.rs.Path("/instance-configurations")
 	@jakarta.ws.rs.POST
 	@jakarta.ws.rs.Produces({"application/json", "application/xml"})
 	@Override
-	public Configuration postPortalInstanceConfiguration(
-			Configuration configuration)
+	public InstanceConfiguration postInstanceConfiguration(
+			InstanceConfiguration instanceConfiguration)
 		throws Exception {
 
-		return new Configuration();
+		return new InstanceConfiguration();
 	}
 
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -X 'POST' 'http://localhost:8080/o/headless-admin-configuration/v1.0/sites/{siteExternalReferenceCode}/configurations' -d $'{"externalReferenceCode": ___, "properties": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
+	 * curl -X 'POST' 'http://localhost:8080/o/headless-admin-configuration/v1.0/instance-configurations/batch'  -u 'test@liferay.com:test'
 	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
-			@io.swagger.v3.oas.annotations.Parameter(
-				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
-				name = "siteExternalReferenceCode"
-			)
-		}
-	)
-	@io.swagger.v3.oas.annotations.tags.Tags(
-		value = {
-			@io.swagger.v3.oas.annotations.tags.Tag(name = "Configuration")
-		}
-	)
-	@jakarta.ws.rs.Consumes({"application/json", "application/xml"})
-	@jakarta.ws.rs.Path("/sites/{siteExternalReferenceCode}/configurations")
-	@jakarta.ws.rs.POST
-	@jakarta.ws.rs.Produces({"application/json", "application/xml"})
-	@Override
-	public Configuration postSiteConfiguration(
-			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
-			@jakarta.validation.constraints.NotNull
-			@jakarta.ws.rs.PathParam("siteExternalReferenceCode")
-			String siteExternalReferenceCode,
-			Configuration configuration)
-		throws Exception {
-
-		return new Configuration();
-	}
-
-	/**
-	 * Invoke this method with the command line:
-	 *
-	 * curl -X 'POST' 'http://localhost:8080/o/headless-admin-configuration/v1.0/sites/{siteExternalReferenceCode}/configurations/batch'  -u 'test@liferay.com:test'
-	 */
-	@io.swagger.v3.oas.annotations.Parameters(
-		value = {
-			@io.swagger.v3.oas.annotations.Parameter(
-				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
-				name = "siteExternalReferenceCode"
-			),
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
 				name = "callbackURL"
@@ -325,21 +167,17 @@ public abstract class BaseConfigurationResourceImpl
 	)
 	@io.swagger.v3.oas.annotations.tags.Tags(
 		value = {
-			@io.swagger.v3.oas.annotations.tags.Tag(name = "Configuration")
+			@io.swagger.v3.oas.annotations.tags.Tag(
+				name = "InstanceConfiguration"
+			)
 		}
 	)
 	@jakarta.ws.rs.Consumes("application/json")
-	@jakarta.ws.rs.Path(
-		"/sites/{siteExternalReferenceCode}/configurations/batch"
-	)
+	@jakarta.ws.rs.Path("/instance-configurations/batch")
 	@jakarta.ws.rs.POST
 	@jakarta.ws.rs.Produces("application/json")
 	@Override
-	public Response postSiteConfigurationBatch(
-			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
-			@jakarta.validation.constraints.NotNull
-			@jakarta.ws.rs.PathParam("siteExternalReferenceCode")
-			String siteExternalReferenceCode,
+	public Response postInstanceConfigurationBatch(
 			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 			@jakarta.ws.rs.QueryParam("callbackURL")
 			String callbackURL,
@@ -358,21 +196,18 @@ public abstract class BaseConfigurationResourceImpl
 
 		return responseBuilder.entity(
 			vulcanBatchEngineImportTaskResource.postImportTask(
-				Configuration.class.getName(), callbackURL, null, object)
+				InstanceConfiguration.class.getName(), callbackURL, null,
+				object)
 		).build();
 	}
 
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -X 'POST' 'http://localhost:8080/o/headless-admin-configuration/v1.0/sites/{siteExternalReferenceCode}/configurations/export-batch'  -u 'test@liferay.com:test'
+	 * curl -X 'POST' 'http://localhost:8080/o/headless-admin-configuration/v1.0/instance-configurations/export-batch'  -u 'test@liferay.com:test'
 	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
-			@io.swagger.v3.oas.annotations.Parameter(
-				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
-				name = "siteExternalReferenceCode"
-			),
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
 				name = "callbackURL"
@@ -389,21 +224,17 @@ public abstract class BaseConfigurationResourceImpl
 	)
 	@io.swagger.v3.oas.annotations.tags.Tags(
 		value = {
-			@io.swagger.v3.oas.annotations.tags.Tag(name = "Configuration")
+			@io.swagger.v3.oas.annotations.tags.Tag(
+				name = "InstanceConfiguration"
+			)
 		}
 	)
 	@jakarta.ws.rs.Consumes("application/json")
-	@jakarta.ws.rs.Path(
-		"/sites/{siteExternalReferenceCode}/configurations/export-batch"
-	)
+	@jakarta.ws.rs.Path("/instance-configurations/export-batch")
 	@jakarta.ws.rs.POST
 	@jakarta.ws.rs.Produces("application/json")
 	@Override
-	public Response postSiteConfigurationsPageExportBatch(
-			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
-			@jakarta.validation.constraints.NotNull
-			@jakarta.ws.rs.PathParam("siteExternalReferenceCode")
-			String siteExternalReferenceCode,
+	public Response postInstanceConfigurationsPageExportBatch(
 			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 			@jakarta.ws.rs.QueryParam("callbackURL")
 			String callbackURL,
@@ -430,7 +261,7 @@ public abstract class BaseConfigurationResourceImpl
 
 		return responseBuilder.entity(
 			vulcanBatchEngineExportTaskResource.postExportTask(
-				Configuration.class.getName(), callbackURL, contentType,
+				InstanceConfiguration.class.getName(), callbackURL, contentType,
 				fieldNames)
 		).build();
 	}
@@ -438,164 +269,108 @@ public abstract class BaseConfigurationResourceImpl
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -X 'POST' 'http://localhost:8080/o/headless-admin-configuration/v1.0/system/configurations' -d $'{"externalReferenceCode": ___, "properties": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
-	 */
-	@io.swagger.v3.oas.annotations.tags.Tags(
-		value = {
-			@io.swagger.v3.oas.annotations.tags.Tag(name = "Configuration")
-		}
-	)
-	@jakarta.ws.rs.Consumes({"application/json", "application/xml"})
-	@jakarta.ws.rs.Path("/system/configurations")
-	@jakarta.ws.rs.POST
-	@jakarta.ws.rs.Produces({"application/json", "application/xml"})
-	@Override
-	public Configuration postSystemConfiguration(Configuration configuration)
-		throws Exception {
-
-		return new Configuration();
-	}
-
-	/**
-	 * Invoke this method with the command line:
-	 *
-	 * curl -X 'PUT' 'http://localhost:8080/o/headless-admin-configuration/v1.0/portal-instance/configurations/{configurationExternalReferenceCode}' -d $'{"externalReferenceCode": ___, "properties": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
+	 * curl -X 'PUT' 'http://localhost:8080/o/headless-admin-configuration/v1.0/instance-configurations/{instanceConfigurationExternalReferenceCode}' -d $'{"externalReferenceCode": ___, "properties": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
 	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
-				name = "configurationExternalReferenceCode"
+				name = "instanceConfigurationExternalReferenceCode"
 			)
 		}
 	)
 	@io.swagger.v3.oas.annotations.tags.Tags(
 		value = {
-			@io.swagger.v3.oas.annotations.tags.Tag(name = "Configuration")
+			@io.swagger.v3.oas.annotations.tags.Tag(
+				name = "InstanceConfiguration"
+			)
 		}
 	)
 	@jakarta.ws.rs.Consumes({"application/json", "application/xml"})
 	@jakarta.ws.rs.Path(
-		"/portal-instance/configurations/{configurationExternalReferenceCode}"
+		"/instance-configurations/{instanceConfigurationExternalReferenceCode}"
 	)
 	@jakarta.ws.rs.Produces({"application/json", "application/xml"})
 	@jakarta.ws.rs.PUT
 	@Override
-	public Configuration putPortalInstanceConfiguration(
+	public InstanceConfiguration putInstanceConfiguration(
 			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 			@jakarta.validation.constraints.NotNull
-			@jakarta.ws.rs.PathParam("configurationExternalReferenceCode")
-			String configurationExternalReferenceCode,
-			Configuration configuration)
+			@jakarta.ws.rs.PathParam(
+				"instanceConfigurationExternalReferenceCode"
+			)
+			String instanceConfigurationExternalReferenceCode,
+			InstanceConfiguration instanceConfiguration)
 		throws Exception {
 
-		return new Configuration();
+		return new InstanceConfiguration();
 	}
 
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -X 'PUT' 'http://localhost:8080/o/headless-admin-configuration/v1.0/sites/{siteExternalReferenceCode}/configurations/{configurationExternalReferenceCode}' -d $'{"externalReferenceCode": ___, "properties": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
+	 * curl -X 'PUT' 'http://localhost:8080/o/headless-admin-configuration/v1.0/instance-configurations/batch'  -u 'test@liferay.com:test'
 	 */
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
-				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
-				name = "siteExternalReferenceCode"
-			),
-			@io.swagger.v3.oas.annotations.Parameter(
-				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
-				name = "configurationExternalReferenceCode"
+				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
+				name = "callbackURL"
 			)
 		}
 	)
 	@io.swagger.v3.oas.annotations.tags.Tags(
 		value = {
-			@io.swagger.v3.oas.annotations.tags.Tag(name = "Configuration")
-		}
-	)
-	@jakarta.ws.rs.Consumes({"application/json", "application/xml"})
-	@jakarta.ws.rs.Path(
-		"/sites/{siteExternalReferenceCode}/configurations/{configurationExternalReferenceCode}"
-	)
-	@jakarta.ws.rs.Produces({"application/json", "application/xml"})
-	@jakarta.ws.rs.PUT
-	@Override
-	public Configuration putSiteConfiguration(
-			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
-			@jakarta.validation.constraints.NotNull
-			@jakarta.ws.rs.PathParam("siteExternalReferenceCode")
-			String siteExternalReferenceCode,
-			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
-			@jakarta.validation.constraints.NotNull
-			@jakarta.ws.rs.PathParam("configurationExternalReferenceCode")
-			String configurationExternalReferenceCode,
-			Configuration configuration)
-		throws Exception {
-
-		return new Configuration();
-	}
-
-	/**
-	 * Invoke this method with the command line:
-	 *
-	 * curl -X 'PUT' 'http://localhost:8080/o/headless-admin-configuration/v1.0/system/configurations/{configurationExternalReferenceCode}' -d $'{"externalReferenceCode": ___, "properties": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
-	 */
-	@io.swagger.v3.oas.annotations.Parameters(
-		value = {
-			@io.swagger.v3.oas.annotations.Parameter(
-				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
-				name = "configurationExternalReferenceCode"
+			@io.swagger.v3.oas.annotations.tags.Tag(
+				name = "InstanceConfiguration"
 			)
 		}
 	)
-	@io.swagger.v3.oas.annotations.tags.Tags(
-		value = {
-			@io.swagger.v3.oas.annotations.tags.Tag(name = "Configuration")
-		}
-	)
-	@jakarta.ws.rs.Consumes({"application/json", "application/xml"})
-	@jakarta.ws.rs.Path(
-		"/system/configurations/{configurationExternalReferenceCode}"
-	)
-	@jakarta.ws.rs.Produces({"application/json", "application/xml"})
+	@jakarta.ws.rs.Consumes("application/json")
+	@jakarta.ws.rs.Path("/instance-configurations/batch")
+	@jakarta.ws.rs.Produces("application/json")
 	@jakarta.ws.rs.PUT
 	@Override
-	public Configuration putSystemConfiguration(
+	public Response putInstanceConfigurationBatch(
 			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
-			@jakarta.validation.constraints.NotNull
-			@jakarta.ws.rs.PathParam("configurationExternalReferenceCode")
-			String configurationExternalReferenceCode,
-			Configuration configuration)
+			@jakarta.ws.rs.QueryParam("callbackURL")
+			String callbackURL,
+			Object object)
 		throws Exception {
 
-		return new Configuration();
+		vulcanBatchEngineImportTaskResource.setContextAcceptLanguage(
+			contextAcceptLanguage);
+		vulcanBatchEngineImportTaskResource.setContextCompany(contextCompany);
+		vulcanBatchEngineImportTaskResource.setContextHttpServletRequest(
+			contextHttpServletRequest);
+		vulcanBatchEngineImportTaskResource.setContextUriInfo(contextUriInfo);
+		vulcanBatchEngineImportTaskResource.setContextUser(contextUser);
+
+		Response.ResponseBuilder responseBuilder = Response.accepted();
+
+		return responseBuilder.entity(
+			vulcanBatchEngineImportTaskResource.putImportTask(
+				InstanceConfiguration.class.getName(), callbackURL, object)
+		).build();
 	}
 
 	@Override
 	@SuppressWarnings("PMD.UnusedLocalVariable")
 	public void create(
-			Collection<Configuration> configurations,
+			Collection<InstanceConfiguration> instanceConfigurations,
 			Map<String, Serializable> parameters)
 		throws Exception {
 
-		UnsafeFunction<Configuration, Configuration, Exception>
-			configurationUnsafeFunction = null;
+		UnsafeFunction<InstanceConfiguration, InstanceConfiguration, Exception>
+			instanceConfigurationUnsafeFunction = null;
 
 		String createStrategy = (String)parameters.getOrDefault(
 			"createStrategy", "INSERT");
 
 		if (StringUtil.equalsIgnoreCase(createStrategy, "INSERT")) {
-			if (parameters.containsKey("siteExternalReferenceCode")) {
-				configurationUnsafeFunction =
-					configuration -> postSiteConfiguration(
-						(String)parameters.get("siteExternalReferenceCode"),
-						configuration);
-			}
-			else {
-				throw new NotSupportedException(
-					"One of the following parameters must be specified: [siteExternalReferenceCode]");
-			}
+			instanceConfigurationUnsafeFunction =
+				instanceConfiguration -> postInstanceConfiguration(
+					instanceConfiguration);
 		}
 
 		if (StringUtil.equalsIgnoreCase(createStrategy, "UPSERT")) {
@@ -603,49 +378,46 @@ public abstract class BaseConfigurationResourceImpl
 				"updateStrategy", "UPDATE");
 
 			if (StringUtil.equalsIgnoreCase(updateStrategy, "UPDATE")) {
-				configurationUnsafeFunction = configuration -> {
-					Configuration persistedConfiguration = null;
+				instanceConfigurationUnsafeFunction = instanceConfiguration -> {
+					InstanceConfiguration persistedInstanceConfiguration = null;
 
-					if (parameters.containsKey("siteExternalReferenceCode")) {
-						persistedConfiguration = putSiteConfiguration(
-							(String)parameters.get("siteExternalReferenceCode"),
-							configuration.getExternalReferenceCode(),
-							configuration);
-					}
-					else {
-						throw new NotSupportedException(
-							"One of the following parameters must be specified: [siteExternalReferenceCode]");
-					}
+					persistedInstanceConfiguration = putInstanceConfiguration(
+						instanceConfiguration.getExternalReferenceCode(),
+						instanceConfiguration);
 
-					return persistedConfiguration;
+					return persistedInstanceConfiguration;
 				};
 			}
 		}
 
-		if (configurationUnsafeFunction == null) {
+		if (instanceConfigurationUnsafeFunction == null) {
 			throw new NotSupportedException(
 				"Create strategy \"" + createStrategy +
-					"\" is not supported for Configuration");
+					"\" is not supported for InstanceConfiguration");
 		}
 
 		if (contextBatchUnsafeBiConsumer != null) {
 			contextBatchUnsafeBiConsumer.accept(
-				configurations, configurationUnsafeFunction);
+				instanceConfigurations, instanceConfigurationUnsafeFunction);
 		}
 		else if (contextBatchUnsafeConsumer != null) {
 			contextBatchUnsafeConsumer.accept(
-				configurations, configurationUnsafeFunction::apply);
+				instanceConfigurations,
+				instanceConfigurationUnsafeFunction::apply);
 		}
 		else {
-			for (Configuration configuration : configurations) {
-				configurationUnsafeFunction.apply(configuration);
+			for (InstanceConfiguration instanceConfiguration :
+					instanceConfigurations) {
+
+				instanceConfigurationUnsafeFunction.apply(
+					instanceConfiguration);
 			}
 		}
 	}
 
 	@Override
 	public void delete(
-			Collection<Configuration> configurations,
+			Collection<InstanceConfiguration> instanceConfigurations,
 			Map<String, Serializable> parameters)
 		throws Exception {
 
@@ -670,7 +442,7 @@ public abstract class BaseConfigurationResourceImpl
 	}
 
 	public String getResourceName() {
-		return "Configuration";
+		return "InstanceConfiguration";
 	}
 
 	public String getVersion() {
@@ -678,21 +450,14 @@ public abstract class BaseConfigurationResourceImpl
 	}
 
 	@Override
-	public Page<Configuration> read(
+	public Page<InstanceConfiguration> read(
 			com.liferay.portal.kernel.search.filter.Filter filter,
 			Pagination pagination,
 			com.liferay.portal.kernel.search.Sort[] sorts,
 			Map<String, Serializable> parameters, String search)
 		throws Exception {
 
-		if (parameters.containsKey("siteExternalReferenceCode")) {
-			return getSiteConfigurationsPage(
-				(String)parameters.get("siteExternalReferenceCode"));
-		}
-		else {
-			throw new NotSupportedException(
-				"One of the following parameters must be specified: [siteExternalReferenceCode]");
-		}
+		return getInstanceConfigurationsPage();
 	}
 
 	@Override
@@ -719,7 +484,7 @@ public abstract class BaseConfigurationResourceImpl
 
 	@Override
 	public void update(
-			Collection<Configuration> configurations,
+			Collection<InstanceConfiguration> instanceConfigurations,
 			Map<String, Serializable> parameters)
 		throws Exception {
 
@@ -740,17 +505,18 @@ public abstract class BaseConfigurationResourceImpl
 
 	public void setContextBatchUnsafeBiConsumer(
 		UnsafeBiConsumer
-			<Collection<Configuration>,
-			 UnsafeFunction<Configuration, Configuration, Exception>, Exception>
-				contextBatchUnsafeBiConsumer) {
+			<Collection<InstanceConfiguration>,
+			 UnsafeFunction
+				 <InstanceConfiguration, InstanceConfiguration, Exception>,
+			 Exception> contextBatchUnsafeBiConsumer) {
 
 		this.contextBatchUnsafeBiConsumer = contextBatchUnsafeBiConsumer;
 	}
 
 	public void setContextBatchUnsafeConsumer(
 		UnsafeBiConsumer
-			<Collection<Configuration>,
-			 UnsafeConsumer<Configuration, Exception>, Exception>
+			<Collection<InstanceConfiguration>,
+			 UnsafeConsumer<InstanceConfiguration, Exception>, Exception>
 				contextBatchUnsafeConsumer) {
 
 		this.contextBatchUnsafeConsumer = contextBatchUnsafeConsumer;
@@ -1260,12 +1026,14 @@ public abstract class BaseConfigurationResourceImpl
 
 	protected AcceptLanguage contextAcceptLanguage;
 	protected UnsafeBiConsumer
-		<Collection<Configuration>,
-		 UnsafeFunction<Configuration, Configuration, Exception>, Exception>
-			contextBatchUnsafeBiConsumer;
+		<Collection<InstanceConfiguration>,
+		 UnsafeFunction
+			 <InstanceConfiguration, InstanceConfiguration, Exception>,
+		 Exception> contextBatchUnsafeBiConsumer;
 	protected UnsafeBiConsumer
-		<Collection<Configuration>, UnsafeConsumer<Configuration, Exception>,
-		 Exception> contextBatchUnsafeConsumer;
+		<Collection<InstanceConfiguration>,
+		 UnsafeConsumer<InstanceConfiguration, Exception>, Exception>
+			contextBatchUnsafeConsumer;
 	protected com.liferay.portal.kernel.model.Company contextCompany;
 	protected HttpServletRequest contextHttpServletRequest;
 	protected HttpServletResponse contextHttpServletResponse;
@@ -1286,6 +1054,6 @@ public abstract class BaseConfigurationResourceImpl
 		vulcanBatchEngineImportTaskResource;
 
 	private static final com.liferay.portal.kernel.log.Log _log =
-		LogFactoryUtil.getLog(BaseConfigurationResourceImpl.class);
+		LogFactoryUtil.getLog(BaseInstanceConfigurationResourceImpl.class);
 
 }

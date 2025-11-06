@@ -6,7 +6,7 @@
 package com.liferay.headless.admin.configuration.client.dto.v1_0;
 
 import com.liferay.headless.admin.configuration.client.function.UnsafeSupplier;
-import com.liferay.headless.admin.configuration.client.serdes.v1_0.ConfigurationSerDes;
+import com.liferay.headless.admin.configuration.client.serdes.v1_0.SiteConfigurationSerDes;
 
 import jakarta.annotation.Generated;
 
@@ -20,10 +20,10 @@ import java.util.Objects;
  * @generated
  */
 @Generated("")
-public class Configuration implements Cloneable, Serializable {
+public class SiteConfiguration implements Cloneable, Serializable {
 
-	public static Configuration toDTO(String json) {
-		return ConfigurationSerDes.toDTO(json);
+	public static SiteConfiguration toDTO(String json) {
+		return SiteConfigurationSerDes.toDTO(json);
 	}
 
 	public String getExternalReferenceCode() {
@@ -70,8 +70,8 @@ public class Configuration implements Cloneable, Serializable {
 	protected Map<String, Object> properties;
 
 	@Override
-	public Configuration clone() throws CloneNotSupportedException {
-		return (Configuration)super.clone();
+	public SiteConfiguration clone() throws CloneNotSupportedException {
+		return (SiteConfiguration)super.clone();
 	}
 
 	@Override
@@ -80,13 +80,13 @@ public class Configuration implements Cloneable, Serializable {
 			return true;
 		}
 
-		if (!(object instanceof Configuration)) {
+		if (!(object instanceof SiteConfiguration)) {
 			return false;
 		}
 
-		Configuration configuration = (Configuration)object;
+		SiteConfiguration siteConfiguration = (SiteConfiguration)object;
 
-		return Objects.equals(toString(), configuration.toString());
+		return Objects.equals(toString(), siteConfiguration.toString());
 	}
 
 	@Override
@@ -97,7 +97,7 @@ public class Configuration implements Cloneable, Serializable {
 	}
 
 	public String toString() {
-		return ConfigurationSerDes.toJSON(this);
+		return SiteConfigurationSerDes.toJSON(this);
 	}
 
 }

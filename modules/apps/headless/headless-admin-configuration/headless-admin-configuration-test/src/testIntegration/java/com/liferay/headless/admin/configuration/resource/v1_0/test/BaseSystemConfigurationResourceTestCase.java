@@ -13,11 +13,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
-import com.liferay.headless.admin.configuration.client.dto.v1_0.Configuration;
+import com.liferay.headless.admin.configuration.client.dto.v1_0.SystemConfiguration;
 import com.liferay.headless.admin.configuration.client.http.HttpInvoker;
 import com.liferay.headless.admin.configuration.client.pagination.Page;
-import com.liferay.headless.admin.configuration.client.resource.v1_0.ConfigurationResource;
-import com.liferay.headless.admin.configuration.client.serdes.v1_0.ConfigurationSerDes;
+import com.liferay.headless.admin.configuration.client.resource.v1_0.SystemConfigurationResource;
+import com.liferay.headless.admin.configuration.client.serdes.v1_0.SystemConfigurationSerDes;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringBundler;
@@ -72,7 +72,7 @@ import org.junit.Test;
  * @generated
  */
 @Generated("")
-public abstract class BaseConfigurationResourceTestCase {
+public abstract class BaseSystemConfigurationResourceTestCase {
 
 	@ClassRule
 	@Rule
@@ -93,12 +93,12 @@ public abstract class BaseConfigurationResourceTestCase {
 		testCompany = CompanyLocalServiceUtil.getCompany(
 			testGroup.getCompanyId());
 
-		_configurationResource.setContextCompany(testCompany);
+		_systemConfigurationResource.setContextCompany(testCompany);
 
 		_testCompanyAdminUser = UserTestUtil.getAdminUser(
 			testCompany.getCompanyId());
 
-		configurationResource = ConfigurationResource.builder(
+		systemConfigurationResource = SystemConfigurationResource.builder(
 		).authentication(
 			_testCompanyAdminUser.getEmailAddress(),
 			PropsValues.DEFAULT_ADMIN_PASSWORD
@@ -119,23 +119,24 @@ public abstract class BaseConfigurationResourceTestCase {
 	public void testClientSerDesToDTO() throws Exception {
 		ObjectMapper objectMapper = getClientSerDesObjectMapper();
 
-		Configuration configuration1 = randomConfiguration();
+		SystemConfiguration systemConfiguration1 = randomSystemConfiguration();
 
-		String json = objectMapper.writeValueAsString(configuration1);
+		String json = objectMapper.writeValueAsString(systemConfiguration1);
 
-		Configuration configuration2 = ConfigurationSerDes.toDTO(json);
+		SystemConfiguration systemConfiguration2 =
+			SystemConfigurationSerDes.toDTO(json);
 
-		Assert.assertTrue(equals(configuration1, configuration2));
+		Assert.assertTrue(equals(systemConfiguration1, systemConfiguration2));
 	}
 
 	@Test
 	public void testClientSerDesToJSON() throws Exception {
 		ObjectMapper objectMapper = getClientSerDesObjectMapper();
 
-		Configuration configuration = randomConfiguration();
+		SystemConfiguration systemConfiguration = randomSystemConfiguration();
 
-		String json1 = objectMapper.writeValueAsString(configuration);
-		String json2 = ConfigurationSerDes.toJSON(configuration);
+		String json1 = objectMapper.writeValueAsString(systemConfiguration);
+		String json2 = SystemConfigurationSerDes.toJSON(systemConfiguration);
 
 		Assert.assertEquals(
 			objectMapper.readTree(json1), objectMapper.readTree(json2));
@@ -163,77 +164,35 @@ public abstract class BaseConfigurationResourceTestCase {
 	public void testEscapeRegexInStringFields() throws Exception {
 		String regex = "^[0-9]+(\\.[0-9]{1,2})\"?";
 
-		Configuration configuration = randomConfiguration();
+		SystemConfiguration systemConfiguration = randomSystemConfiguration();
 
-		configuration.setExternalReferenceCode(regex);
+		systemConfiguration.setExternalReferenceCode(regex);
 
-		String json = ConfigurationSerDes.toJSON(configuration);
+		String json = SystemConfigurationSerDes.toJSON(systemConfiguration);
 
 		Assert.assertFalse(json.contains(regex));
 
-		configuration = ConfigurationSerDes.toDTO(json);
+		systemConfiguration = SystemConfigurationSerDes.toDTO(json);
 
-		Assert.assertEquals(regex, configuration.getExternalReferenceCode());
+		Assert.assertEquals(
+			regex, systemConfiguration.getExternalReferenceCode());
 	}
 
 	@Test
-	public void testGetPortalInstanceConfiguration() throws Exception {
-		Configuration postConfiguration =
-			testGetPortalInstanceConfiguration_addConfiguration();
+	public void testGetSystemConfiguration() throws Exception {
+		SystemConfiguration postSystemConfiguration =
+			testGetSystemConfiguration_addSystemConfiguration();
 
-		Configuration getConfiguration =
-			configurationResource.getPortalInstanceConfiguration(
-				postConfiguration.getExternalReferenceCode());
+		SystemConfiguration getSystemConfiguration =
+			systemConfigurationResource.getSystemConfiguration(
+				postSystemConfiguration.getExternalReferenceCode());
 
-		assertEquals(postConfiguration, getConfiguration);
-		assertValid(getConfiguration);
+		assertEquals(postSystemConfiguration, getSystemConfiguration);
+		assertValid(getSystemConfiguration);
 	}
 
-	protected Configuration
-			testGetPortalInstanceConfiguration_addConfiguration()
-		throws Exception {
-
-		return configurationResource.postSiteConfiguration(
-			testGroup.getExternalReferenceCode(), randomConfiguration());
-	}
-
-	@Test
-	public void testGetPortalInstanceConfigurationsPage() throws Exception {
-		Page<Configuration> page =
-			configurationResource.getPortalInstanceConfigurationsPage();
-
-		long totalCount = page.getTotalCount();
-
-		Configuration configuration1 =
-			testGetPortalInstanceConfigurationsPage_addConfiguration(
-				randomConfiguration());
-
-		Configuration configuration2 =
-			testGetPortalInstanceConfigurationsPage_addConfiguration(
-				randomConfiguration());
-
-		page = configurationResource.getPortalInstanceConfigurationsPage();
-
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
-
-		assertContains(configuration1, (List<Configuration>)page.getItems());
-		assertContains(configuration2, (List<Configuration>)page.getItems());
-		assertValid(
-			page, testGetPortalInstanceConfigurationsPage_getExpectedActions());
-	}
-
-	protected Map<String, Map<String, String>>
-			testGetPortalInstanceConfigurationsPage_getExpectedActions()
-		throws Exception {
-
-		Map<String, Map<String, String>> expectedActions = new HashMap<>();
-
-		return expectedActions;
-	}
-
-	protected Configuration
-			testGetPortalInstanceConfigurationsPage_addConfiguration(
-				Configuration configuration)
+	protected SystemConfiguration
+			testGetSystemConfiguration_addSystemConfiguration()
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -241,169 +200,28 @@ public abstract class BaseConfigurationResourceTestCase {
 	}
 
 	@Test
-	public void testGetSiteConfiguration() throws Exception {
-		Configuration postConfiguration =
-			testGetSiteConfiguration_addConfiguration();
-
-		Configuration getConfiguration =
-			configurationResource.getSiteConfiguration(
-				testGetSiteConfiguration_getSiteExternalReferenceCode(),
-				postConfiguration.getExternalReferenceCode(), null);
-
-		assertEquals(postConfiguration, getConfiguration);
-		assertValid(getConfiguration);
-	}
-
-	protected Configuration testGetSiteConfiguration_addConfiguration()
-		throws Exception {
-
-		return configurationResource.postSiteConfiguration(
-			testGroup.getExternalReferenceCode(), randomConfiguration());
-	}
-
-	protected String testGetSiteConfiguration_getSiteExternalReferenceCode()
-		throws Exception {
-
-		return testGroup.getExternalReferenceCode();
-	}
-
-	@Test
-	public void testGetSiteConfigurationsPage() throws Exception {
-		String siteExternalReferenceCode =
-			testGetSiteConfigurationsPage_getSiteExternalReferenceCode();
-		String irrelevantSiteExternalReferenceCode =
-			testGetSiteConfigurationsPage_getIrrelevantSiteExternalReferenceCode();
-
-		Page<Configuration> page =
-			configurationResource.getSiteConfigurationsPage(
-				siteExternalReferenceCode);
-
-		long totalCount = page.getTotalCount();
-
-		if (irrelevantSiteExternalReferenceCode != null) {
-			Configuration irrelevantConfiguration =
-				testGetSiteConfigurationsPage_addConfiguration(
-					irrelevantSiteExternalReferenceCode,
-					randomIrrelevantConfiguration());
-
-			page = configurationResource.getSiteConfigurationsPage(
-				irrelevantSiteExternalReferenceCode);
-
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
-
-			assertContains(
-				irrelevantConfiguration, (List<Configuration>)page.getItems());
-			assertValid(
-				page,
-				testGetSiteConfigurationsPage_getExpectedActions(
-					irrelevantSiteExternalReferenceCode));
-		}
-
-		Configuration configuration1 =
-			testGetSiteConfigurationsPage_addConfiguration(
-				siteExternalReferenceCode, randomConfiguration());
-
-		Configuration configuration2 =
-			testGetSiteConfigurationsPage_addConfiguration(
-				siteExternalReferenceCode, randomConfiguration());
-
-		page = configurationResource.getSiteConfigurationsPage(
-			siteExternalReferenceCode);
-
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
-
-		assertContains(configuration1, (List<Configuration>)page.getItems());
-		assertContains(configuration2, (List<Configuration>)page.getItems());
-		assertValid(
-			page,
-			testGetSiteConfigurationsPage_getExpectedActions(
-				siteExternalReferenceCode));
-	}
-
-	protected Map<String, Map<String, String>>
-			testGetSiteConfigurationsPage_getExpectedActions(
-				String siteExternalReferenceCode)
-		throws Exception {
-
-		Map<String, Map<String, String>> expectedActions = new HashMap<>();
-
-		Map createBatchAction = new HashMap<>();
-		createBatchAction.put("method", "POST");
-		createBatchAction.put(
-			"href",
-			"http://localhost:8080/o/headless-admin-configuration/v1.0/sites/{siteExternalReferenceCode}/configurations/batch".
-				replace(
-					"{siteExternalReferenceCode}",
-					String.valueOf(siteExternalReferenceCode)));
-
-		expectedActions.put("createBatch", createBatchAction);
-
-		return expectedActions;
-	}
-
-	protected Configuration testGetSiteConfigurationsPage_addConfiguration(
-			String siteExternalReferenceCode, Configuration configuration)
-		throws Exception {
-
-		return configurationResource.postSiteConfiguration(
-			siteExternalReferenceCode, configuration);
-	}
-
-	protected String
-			testGetSiteConfigurationsPage_getSiteExternalReferenceCode()
-		throws Exception {
-
-		return testGroup.getExternalReferenceCode();
-	}
-
-	protected String
-			testGetSiteConfigurationsPage_getIrrelevantSiteExternalReferenceCode()
-		throws Exception {
-
-		return irrelevantGroup.getExternalReferenceCode();
-	}
-
-	@Test
-	public void testGetSystemConfiguration() throws Exception {
-		Configuration postConfiguration =
-			testGetSystemConfiguration_addConfiguration();
-
-		Configuration getConfiguration =
-			configurationResource.getSystemConfiguration(
-				postConfiguration.getExternalReferenceCode());
-
-		assertEquals(postConfiguration, getConfiguration);
-		assertValid(getConfiguration);
-	}
-
-	protected Configuration testGetSystemConfiguration_addConfiguration()
-		throws Exception {
-
-		return configurationResource.postSiteConfiguration(
-			testGroup.getExternalReferenceCode(), randomConfiguration());
-	}
-
-	@Test
 	public void testGetSystemConfigurationsPage() throws Exception {
-		Page<Configuration> page =
-			configurationResource.getSystemConfigurationsPage();
+		Page<SystemConfiguration> page =
+			systemConfigurationResource.getSystemConfigurationsPage();
 
 		long totalCount = page.getTotalCount();
 
-		Configuration configuration1 =
-			testGetSystemConfigurationsPage_addConfiguration(
-				randomConfiguration());
+		SystemConfiguration systemConfiguration1 =
+			testGetSystemConfigurationsPage_addSystemConfiguration(
+				randomSystemConfiguration());
 
-		Configuration configuration2 =
-			testGetSystemConfigurationsPage_addConfiguration(
-				randomConfiguration());
+		SystemConfiguration systemConfiguration2 =
+			testGetSystemConfigurationsPage_addSystemConfiguration(
+				randomSystemConfiguration());
 
-		page = configurationResource.getSystemConfigurationsPage();
+		page = systemConfigurationResource.getSystemConfigurationsPage();
 
 		Assert.assertEquals(totalCount + 2, page.getTotalCount());
 
-		assertContains(configuration1, (List<Configuration>)page.getItems());
-		assertContains(configuration2, (List<Configuration>)page.getItems());
+		assertContains(
+			systemConfiguration1, (List<SystemConfiguration>)page.getItems());
+		assertContains(
+			systemConfiguration2, (List<SystemConfiguration>)page.getItems());
 		assertValid(page, testGetSystemConfigurationsPage_getExpectedActions());
 	}
 
@@ -416,48 +234,9 @@ public abstract class BaseConfigurationResourceTestCase {
 		return expectedActions;
 	}
 
-	protected Configuration testGetSystemConfigurationsPage_addConfiguration(
-			Configuration configuration)
-		throws Exception {
-
-		throw new UnsupportedOperationException(
-			"This method needs to be implemented");
-	}
-
-	@Test
-	public void testPostPortalInstanceConfiguration() throws Exception {
-		Configuration randomConfiguration = randomConfiguration();
-
-		Configuration postConfiguration =
-			testPostPortalInstanceConfiguration_addConfiguration(
-				randomConfiguration);
-
-		assertEquals(randomConfiguration, postConfiguration);
-		assertValid(postConfiguration);
-	}
-
-	protected Configuration
-			testPostPortalInstanceConfiguration_addConfiguration(
-				Configuration configuration)
-		throws Exception {
-
-		throw new UnsupportedOperationException(
-			"This method needs to be implemented");
-	}
-
-	@Test
-	public void testPostSiteConfiguration() throws Exception {
-		Configuration randomConfiguration = randomConfiguration();
-
-		Configuration postConfiguration =
-			testPostSiteConfiguration_addConfiguration(randomConfiguration);
-
-		assertEquals(randomConfiguration, postConfiguration);
-		assertValid(postConfiguration);
-	}
-
-	protected Configuration testPostSiteConfiguration_addConfiguration(
-			Configuration configuration)
+	protected SystemConfiguration
+			testGetSystemConfigurationsPage_addSystemConfiguration(
+				SystemConfiguration systemConfiguration)
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -466,17 +245,20 @@ public abstract class BaseConfigurationResourceTestCase {
 
 	@Test
 	public void testPostSystemConfiguration() throws Exception {
-		Configuration randomConfiguration = randomConfiguration();
+		SystemConfiguration randomSystemConfiguration =
+			randomSystemConfiguration();
 
-		Configuration postConfiguration =
-			testPostSystemConfiguration_addConfiguration(randomConfiguration);
+		SystemConfiguration postSystemConfiguration =
+			testPostSystemConfiguration_addSystemConfiguration(
+				randomSystemConfiguration);
 
-		assertEquals(randomConfiguration, postConfiguration);
-		assertValid(postConfiguration);
+		assertEquals(randomSystemConfiguration, postSystemConfiguration);
+		assertValid(postSystemConfiguration);
 	}
 
-	protected Configuration testPostSystemConfiguration_addConfiguration(
-			Configuration configuration)
+	protected SystemConfiguration
+			testPostSystemConfiguration_addSystemConfiguration(
+				SystemConfiguration systemConfiguration)
 		throws Exception {
 
 		throw new UnsupportedOperationException(
@@ -484,102 +266,35 @@ public abstract class BaseConfigurationResourceTestCase {
 	}
 
 	@Test
-	public void testPutPortalInstanceConfiguration() throws Exception {
-		Configuration postConfiguration =
-			testPutPortalInstanceConfiguration_addConfiguration();
-
-		Configuration randomConfiguration = randomConfiguration();
-
-		Configuration putConfiguration =
-			configurationResource.putPortalInstanceConfiguration(
-				postConfiguration.getExternalReferenceCode(),
-				randomConfiguration);
-
-		assertEquals(randomConfiguration, putConfiguration);
-		assertValid(putConfiguration);
-
-		Configuration getConfiguration =
-			configurationResource.getPortalInstanceConfiguration(
-				putConfiguration.getExternalReferenceCode());
-
-		assertEquals(randomConfiguration, getConfiguration);
-		assertValid(getConfiguration);
-	}
-
-	protected Configuration
-			testPutPortalInstanceConfiguration_addConfiguration()
-		throws Exception {
-
-		return configurationResource.postSiteConfiguration(
-			testGroup.getExternalReferenceCode(), randomConfiguration());
-	}
-
-	@Test
-	public void testPutSiteConfiguration() throws Exception {
-		Configuration postConfiguration =
-			testPutSiteConfiguration_addConfiguration();
-
-		Configuration randomConfiguration = randomConfiguration();
-
-		Configuration putConfiguration =
-			configurationResource.putSiteConfiguration(
-				testPutSiteConfiguration_getSiteExternalReferenceCode(),
-				postConfiguration.getExternalReferenceCode(),
-				randomConfiguration);
-
-		assertEquals(randomConfiguration, putConfiguration);
-		assertValid(putConfiguration);
-
-		Configuration getConfiguration =
-			configurationResource.getSiteConfiguration(
-				testPutSiteConfiguration_getSiteExternalReferenceCode(),
-				putConfiguration.getExternalReferenceCode(), null);
-
-		assertEquals(randomConfiguration, getConfiguration);
-		assertValid(getConfiguration);
-	}
-
-	protected Configuration testPutSiteConfiguration_addConfiguration()
-		throws Exception {
-
-		return configurationResource.postSiteConfiguration(
-			testGroup.getExternalReferenceCode(), randomConfiguration());
-	}
-
-	protected String testPutSiteConfiguration_getSiteExternalReferenceCode()
-		throws Exception {
-
-		return testGroup.getExternalReferenceCode();
-	}
-
-	@Test
 	public void testPutSystemConfiguration() throws Exception {
-		Configuration postConfiguration =
-			testPutSystemConfiguration_addConfiguration();
+		SystemConfiguration postSystemConfiguration =
+			testPutSystemConfiguration_addSystemConfiguration();
 
-		Configuration randomConfiguration = randomConfiguration();
+		SystemConfiguration randomSystemConfiguration =
+			randomSystemConfiguration();
 
-		Configuration putConfiguration =
-			configurationResource.putSystemConfiguration(
-				postConfiguration.getExternalReferenceCode(),
-				randomConfiguration);
+		SystemConfiguration putSystemConfiguration =
+			systemConfigurationResource.putSystemConfiguration(
+				postSystemConfiguration.getExternalReferenceCode(),
+				randomSystemConfiguration);
 
-		assertEquals(randomConfiguration, putConfiguration);
-		assertValid(putConfiguration);
+		assertEquals(randomSystemConfiguration, putSystemConfiguration);
+		assertValid(putSystemConfiguration);
 
-		Configuration getConfiguration =
-			configurationResource.getSystemConfiguration(
-				putConfiguration.getExternalReferenceCode());
+		SystemConfiguration getSystemConfiguration =
+			systemConfigurationResource.getSystemConfiguration(
+				putSystemConfiguration.getExternalReferenceCode());
 
-		assertEquals(randomConfiguration, getConfiguration);
-		assertValid(getConfiguration);
+		assertEquals(randomSystemConfiguration, getSystemConfiguration);
+		assertValid(getSystemConfiguration);
 	}
 
-	protected Configuration testPutSystemConfiguration_addConfiguration()
+	protected SystemConfiguration
+			testPutSystemConfiguration_addSystemConfiguration()
 		throws Exception {
 
-		return configurationResource.postSiteConfiguration(
-			testGroup.getExternalReferenceCode(), randomConfiguration());
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test
@@ -588,12 +303,13 @@ public abstract class BaseConfigurationResourceTestCase {
 	}
 
 	protected void assertContains(
-		Configuration configuration, List<Configuration> configurations) {
+		SystemConfiguration systemConfiguration,
+		List<SystemConfiguration> systemConfigurations) {
 
 		boolean contains = false;
 
-		for (Configuration item : configurations) {
-			if (equals(configuration, item)) {
+		for (SystemConfiguration item : systemConfigurations) {
+			if (equals(systemConfiguration, item)) {
 				contains = true;
 
 				break;
@@ -601,7 +317,8 @@ public abstract class BaseConfigurationResourceTestCase {
 		}
 
 		Assert.assertTrue(
-			configurations + " does not contain " + configuration, contains);
+			systemConfigurations + " does not contain " + systemConfiguration,
+			contains);
 	}
 
 	protected void assertHttpResponseStatusCode(
@@ -613,38 +330,45 @@ public abstract class BaseConfigurationResourceTestCase {
 	}
 
 	protected void assertEquals(
-		Configuration configuration1, Configuration configuration2) {
+		SystemConfiguration systemConfiguration1,
+		SystemConfiguration systemConfiguration2) {
 
 		Assert.assertTrue(
-			configuration1 + " does not equal " + configuration2,
-			equals(configuration1, configuration2));
+			systemConfiguration1 + " does not equal " + systemConfiguration2,
+			equals(systemConfiguration1, systemConfiguration2));
 	}
 
 	protected void assertEquals(
-		List<Configuration> configurations1,
-		List<Configuration> configurations2) {
+		List<SystemConfiguration> systemConfigurations1,
+		List<SystemConfiguration> systemConfigurations2) {
 
-		Assert.assertEquals(configurations1.size(), configurations2.size());
+		Assert.assertEquals(
+			systemConfigurations1.size(), systemConfigurations2.size());
 
-		for (int i = 0; i < configurations1.size(); i++) {
-			Configuration configuration1 = configurations1.get(i);
-			Configuration configuration2 = configurations2.get(i);
+		for (int i = 0; i < systemConfigurations1.size(); i++) {
+			SystemConfiguration systemConfiguration1 =
+				systemConfigurations1.get(i);
+			SystemConfiguration systemConfiguration2 =
+				systemConfigurations2.get(i);
 
-			assertEquals(configuration1, configuration2);
+			assertEquals(systemConfiguration1, systemConfiguration2);
 		}
 	}
 
 	protected void assertEqualsIgnoringOrder(
-		List<Configuration> configurations1,
-		List<Configuration> configurations2) {
+		List<SystemConfiguration> systemConfigurations1,
+		List<SystemConfiguration> systemConfigurations2) {
 
-		Assert.assertEquals(configurations1.size(), configurations2.size());
+		Assert.assertEquals(
+			systemConfigurations1.size(), systemConfigurations2.size());
 
-		for (Configuration configuration1 : configurations1) {
+		for (SystemConfiguration systemConfiguration1 : systemConfigurations1) {
 			boolean contains = false;
 
-			for (Configuration configuration2 : configurations2) {
-				if (equals(configuration1, configuration2)) {
+			for (SystemConfiguration systemConfiguration2 :
+					systemConfigurations2) {
+
+				if (equals(systemConfiguration1, systemConfiguration2)) {
 					contains = true;
 
 					break;
@@ -652,12 +376,15 @@ public abstract class BaseConfigurationResourceTestCase {
 			}
 
 			Assert.assertTrue(
-				configurations2 + " does not contain " + configuration1,
+				systemConfigurations2 + " does not contain " +
+					systemConfiguration1,
 				contains);
 		}
 	}
 
-	protected void assertValid(Configuration configuration) throws Exception {
+	protected void assertValid(SystemConfiguration systemConfiguration)
+		throws Exception {
+
 		boolean valid = true;
 
 		for (String additionalAssertFieldName :
@@ -666,7 +393,7 @@ public abstract class BaseConfigurationResourceTestCase {
 			if (Objects.equals(
 					"externalReferenceCode", additionalAssertFieldName)) {
 
-				if (configuration.getExternalReferenceCode() == null) {
+				if (systemConfiguration.getExternalReferenceCode() == null) {
 					valid = false;
 				}
 
@@ -674,7 +401,7 @@ public abstract class BaseConfigurationResourceTestCase {
 			}
 
 			if (Objects.equals("properties", additionalAssertFieldName)) {
-				if (configuration.getProperties() == null) {
+				if (systemConfiguration.getProperties() == null) {
 					valid = false;
 				}
 
@@ -689,19 +416,20 @@ public abstract class BaseConfigurationResourceTestCase {
 		Assert.assertTrue(valid);
 	}
 
-	protected void assertValid(Page<Configuration> page) {
+	protected void assertValid(Page<SystemConfiguration> page) {
 		assertValid(page, Collections.emptyMap());
 	}
 
 	protected void assertValid(
-		Page<Configuration> page,
+		Page<SystemConfiguration> page,
 		Map<String, Map<String, String>> expectedActions) {
 
 		boolean valid = false;
 
-		java.util.Collection<Configuration> configurations = page.getItems();
+		java.util.Collection<SystemConfiguration> systemConfigurations =
+			page.getItems();
 
-		int size = configurations.size();
+		int size = systemConfigurations.size();
 
 		if ((page.getLastPage() > 0) && (page.getPage() > 0) &&
 			(page.getPageSize() > 0) && (page.getTotalCount() > 0) &&
@@ -744,7 +472,7 @@ public abstract class BaseConfigurationResourceTestCase {
 		for (java.lang.reflect.Field field :
 				getDeclaredFields(
 					com.liferay.headless.admin.configuration.dto.v1_0.
-						Configuration.class)) {
+						SystemConfiguration.class)) {
 
 			if (!ArrayUtil.contains(
 					getAdditionalAssertFieldNames(), field.getName())) {
@@ -793,9 +521,10 @@ public abstract class BaseConfigurationResourceTestCase {
 	}
 
 	protected boolean equals(
-		Configuration configuration1, Configuration configuration2) {
+		SystemConfiguration systemConfiguration1,
+		SystemConfiguration systemConfiguration2) {
 
-		if (configuration1 == configuration2) {
+		if (systemConfiguration1 == systemConfiguration2) {
 			return true;
 		}
 
@@ -806,8 +535,8 @@ public abstract class BaseConfigurationResourceTestCase {
 					"externalReferenceCode", additionalAssertFieldName)) {
 
 				if (!Objects.deepEquals(
-						configuration1.getExternalReferenceCode(),
-						configuration2.getExternalReferenceCode())) {
+						systemConfiguration1.getExternalReferenceCode(),
+						systemConfiguration2.getExternalReferenceCode())) {
 
 					return false;
 				}
@@ -817,8 +546,8 @@ public abstract class BaseConfigurationResourceTestCase {
 
 			if (Objects.equals("properties", additionalAssertFieldName)) {
 				if (!equals(
-						(Map)configuration1.getProperties(),
-						(Map)configuration2.getProperties())) {
+						(Map)systemConfiguration1.getProperties(),
+						(Map)systemConfiguration2.getProperties())) {
 
 					return false;
 				}
@@ -882,13 +611,13 @@ public abstract class BaseConfigurationResourceTestCase {
 	protected java.util.Collection<EntityField> getEntityFields()
 		throws Exception {
 
-		if (!(_configurationResource instanceof EntityModelResource)) {
+		if (!(_systemConfigurationResource instanceof EntityModelResource)) {
 			throw new UnsupportedOperationException(
 				"Resource is not an instance of EntityModelResource");
 		}
 
 		EntityModelResource entityModelResource =
-			(EntityModelResource)_configurationResource;
+			(EntityModelResource)_systemConfigurationResource;
 
 		EntityModel entityModel = entityModelResource.getEntityModel(
 			new MultivaluedHashMap());
@@ -921,7 +650,8 @@ public abstract class BaseConfigurationResourceTestCase {
 	}
 
 	protected String getFilterString(
-		EntityField entityField, String operator, Configuration configuration) {
+		EntityField entityField, String operator,
+		SystemConfiguration systemConfiguration) {
 
 		StringBundler sb = new StringBundler();
 
@@ -934,7 +664,7 @@ public abstract class BaseConfigurationResourceTestCase {
 		sb.append(" ");
 
 		if (entityFieldName.equals("externalReferenceCode")) {
-			Object object = configuration.getExternalReferenceCode();
+			Object object = systemConfiguration.getExternalReferenceCode();
 
 			String value = String.valueOf(object);
 
@@ -1026,8 +756,8 @@ public abstract class BaseConfigurationResourceTestCase {
 			invoke(queryGraphQLField.toString()));
 	}
 
-	protected Configuration randomConfiguration() throws Exception {
-		return new Configuration() {
+	protected SystemConfiguration randomSystemConfiguration() throws Exception {
+		return new SystemConfiguration() {
 			{
 				externalReferenceCode = StringUtil.toLowerCase(
 					RandomTestUtil.randomString());
@@ -1035,17 +765,22 @@ public abstract class BaseConfigurationResourceTestCase {
 		};
 	}
 
-	protected Configuration randomIrrelevantConfiguration() throws Exception {
-		Configuration randomIrrelevantConfiguration = randomConfiguration();
+	protected SystemConfiguration randomIrrelevantSystemConfiguration()
+		throws Exception {
 
-		return randomIrrelevantConfiguration;
+		SystemConfiguration randomIrrelevantSystemConfiguration =
+			randomSystemConfiguration();
+
+		return randomIrrelevantSystemConfiguration;
 	}
 
-	protected Configuration randomPatchConfiguration() throws Exception {
-		return randomConfiguration();
+	protected SystemConfiguration randomPatchSystemConfiguration()
+		throws Exception {
+
+		return randomSystemConfiguration();
 	}
 
-	protected ConfigurationResource configurationResource;
+	protected SystemConfigurationResource systemConfigurationResource;
 	protected com.liferay.portal.kernel.model.Group irrelevantGroup;
 	protected com.liferay.portal.kernel.model.Company testCompany;
 	protected com.liferay.portal.kernel.model.Group testGroup;
@@ -1244,15 +979,14 @@ public abstract class BaseConfigurationResourceTestCase {
 	}
 
 	private static final com.liferay.portal.kernel.log.Log _log =
-		LogFactoryUtil.getLog(BaseConfigurationResourceTestCase.class);
+		LogFactoryUtil.getLog(BaseSystemConfigurationResourceTestCase.class);
 
 	private static Format _format;
 
 	private com.liferay.portal.kernel.model.User _testCompanyAdminUser;
 
 	@Inject
-	private
-		com.liferay.headless.admin.configuration.resource.v1_0.
-			ConfigurationResource _configurationResource;
+	private com.liferay.headless.admin.configuration.resource.v1_0.
+		SystemConfigurationResource _systemConfigurationResource;
 
 }
