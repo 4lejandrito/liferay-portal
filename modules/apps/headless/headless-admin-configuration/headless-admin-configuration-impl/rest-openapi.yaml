@@ -1,6 +1,22 @@
 components:
     schemas:
-        Configuration:
+        InstanceConfiguration:
+            properties:
+                externalReferenceCode:
+                    type: string
+                properties:
+                    additionalProperties:
+                        type: object
+                    type: object
+        SiteConfiguration:
+            properties:
+                externalReferenceCode:
+                    type: string
+                properties:
+                    additionalProperties:
+                        type: object
+                    type: object
+        SystemConfiguration:
             properties:
                 externalReferenceCode:
                     type: string
@@ -16,49 +32,49 @@ info:
     version: v1.0
 openapi: 3.0.1
 paths:
-    "/portal-instance/configurations":
+    "/instance-configurations":
         get:
-            operationId: getPortalInstanceConfigurationsPage
+            operationId: getInstanceConfigurationsPage
             responses:
                 200:
                     content:
                         application/json:
                             schema:
                                 items:
-                                    $ref: "#/components/schemas/Configuration"
+                                    $ref: "#/components/schemas/InstanceConfiguration"
                                 type: array
                         application/xml:
                             schema:
                                 items:
-                                    $ref: "#/components/schemas/Configuration"
+                                    $ref: "#/components/schemas/InstanceConfiguration"
                                 type: array
-            tags: ["Configuration"]
+            tags: ["InstanceConfiguration"]
         post:
-            operationId: postPortalInstanceConfiguration
+            operationId: postInstanceConfiguration
             requestBody:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/Configuration"
+                            $ref: "#/components/schemas/InstanceConfiguration"
                     application/xml:
                         schema:
-                            $ref: "#/components/schemas/Configuration"
+                            $ref: "#/components/schemas/InstanceConfiguration"
             responses:
                 200:
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/Configuration"
+                                $ref: "#/components/schemas/InstanceConfiguration"
                         application/xml:
                             schema:
-                                $ref: "#/components/schemas/Configuration"
-            tags: ["Configuration"]
-    "/portal-instance/configurations/{configurationExternalReferenceCode}":
+                                $ref: "#/components/schemas/InstanceConfiguration"
+            tags: ["InstanceConfiguration"]
+    "/instance-configurations/{instanceConfigurationExternalReferenceCode}":
         get:
-            operationId: getPortalInstanceConfiguration
+            operationId: getInstanceConfiguration
             parameters:
                 -   in: path
-                    name: configurationExternalReferenceCode
+                    name: instanceConfigurationExternalReferenceCode
                     required: true
                     schema:
                         type: string
@@ -67,16 +83,16 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/Configuration"
+                                $ref: "#/components/schemas/InstanceConfiguration"
                         application/xml:
                             schema:
-                                $ref: "#/components/schemas/Configuration"
-            tags: ["Configuration"]
+                                $ref: "#/components/schemas/InstanceConfiguration"
+            tags: ["InstanceConfiguration"]
         put:
-            operationId: putPortalInstanceConfiguration
+            operationId: putInstanceConfiguration
             parameters:
                 -   in: path
-                    name: configurationExternalReferenceCode
+                    name: instanceConfigurationExternalReferenceCode
                     required: true
                     schema:
                         type: string
@@ -84,23 +100,23 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/Configuration"
+                            $ref: "#/components/schemas/InstanceConfiguration"
                     application/xml:
                         schema:
-                            $ref: "#/components/schemas/Configuration"
+                            $ref: "#/components/schemas/InstanceConfiguration"
             responses:
                 200:
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/Configuration"
+                                $ref: "#/components/schemas/InstanceConfiguration"
                         application/xml:
                             schema:
-                                $ref: "#/components/schemas/Configuration"
-            tags: ["Configuration"]
-    "/sites/{siteExternalReferenceCode}/configurations":
+                                $ref: "#/components/schemas/InstanceConfiguration"
+            tags: ["InstanceConfiguration"]
+    "/sites/{siteExternalReferenceCode}/site-configurations":
         get:
-            operationId: getSiteConfigurationsPage
+            operationId: getSiteSiteConfigurationsPage
             parameters:
                 -   in: path
                     name: siteExternalReferenceCode
@@ -113,16 +129,16 @@ paths:
                         application/json:
                             schema:
                                 items:
-                                    $ref: "#/components/schemas/Configuration"
+                                    $ref: "#/components/schemas/SiteConfiguration"
                                 type: array
                         application/xml:
                             schema:
                                 items:
-                                    $ref: "#/components/schemas/Configuration"
+                                    $ref: "#/components/schemas/SiteConfiguration"
                                 type: array
-            tags: ["Configuration"]
+            tags: ["SiteConfiguration"]
         post:
-            operationId: postSiteConfiguration
+            operationId: postSiteSiteConfiguration
             parameters:
                 -   in: path
                     name: siteExternalReferenceCode
@@ -133,23 +149,23 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/Configuration"
+                            $ref: "#/components/schemas/SiteConfiguration"
                     application/xml:
                         schema:
-                            $ref: "#/components/schemas/Configuration"
+                            $ref: "#/components/schemas/SiteConfiguration"
             responses:
                 200:
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/Configuration"
+                                $ref: "#/components/schemas/SiteConfiguration"
                         application/xml:
                             schema:
-                                $ref: "#/components/schemas/Configuration"
-            tags: ["Configuration"]
-    "/sites/{siteExternalReferenceCode}/configurations/{configurationExternalReferenceCode}":
+                                $ref: "#/components/schemas/SiteConfiguration"
+            tags: ["SiteConfiguration"]
+    "/sites/{siteExternalReferenceCode}/site-configurations/{siteConfigurationExternalReferenceCode}":
         get:
-            operationId: getSiteConfiguration
+            operationId: getSiteSiteConfiguration
             parameters:
                 -   in: path
                     name: siteExternalReferenceCode
@@ -157,7 +173,7 @@ paths:
                     schema:
                         type: string
                 -   in: path
-                    name: configurationExternalReferenceCode
+                    name: siteConfigurationExternalReferenceCode
                     required: true
                     schema:
                         type: string
@@ -165,22 +181,22 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/Configuration"
+                            $ref: "#/components/schemas/SiteConfiguration"
                     application/xml:
                         schema:
-                            $ref: "#/components/schemas/Configuration"
+                            $ref: "#/components/schemas/SiteConfiguration"
             responses:
                 200:
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/Configuration"
+                                $ref: "#/components/schemas/SiteConfiguration"
                         application/xml:
                             schema:
-                                $ref: "#/components/schemas/Configuration"
-            tags: ["Configuration"]
+                                $ref: "#/components/schemas/SiteConfiguration"
+            tags: ["SiteConfiguration"]
         put:
-            operationId: putSiteConfiguration
+            operationId: putSiteSiteConfiguration
             parameters:
                 -   in: path
                     name: siteExternalReferenceCode
@@ -188,7 +204,7 @@ paths:
                     schema:
                         type: string
                 -   in: path
-                    name: configurationExternalReferenceCode
+                    name: siteConfigurationExternalReferenceCode
                     required: true
                     schema:
                         type: string
@@ -196,21 +212,21 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/Configuration"
+                            $ref: "#/components/schemas/SiteConfiguration"
                     application/xml:
                         schema:
-                            $ref: "#/components/schemas/Configuration"
+                            $ref: "#/components/schemas/SiteConfiguration"
             responses:
                 200:
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/Configuration"
+                                $ref: "#/components/schemas/SiteConfiguration"
                         application/xml:
                             schema:
-                                $ref: "#/components/schemas/Configuration"
-            tags: ["Configuration"]
-    "/system/configurations":
+                                $ref: "#/components/schemas/SiteConfiguration"
+            tags: ["SiteConfiguration"]
+    "/system-configurations":
         get:
             operationId: getSystemConfigurationsPage
             responses:
@@ -219,40 +235,40 @@ paths:
                         application/json:
                             schema:
                                 items:
-                                    $ref: "#/components/schemas/Configuration"
+                                    $ref: "#/components/schemas/SystemConfiguration"
                                 type: array
                         application/xml:
                             schema:
                                 items:
-                                    $ref: "#/components/schemas/Configuration"
+                                    $ref: "#/components/schemas/SystemConfiguration"
                                 type: array
-            tags: ["Configuration"]
+            tags: ["SystemConfiguration"]
         post:
             operationId: postSystemConfiguration
             requestBody:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/Configuration"
+                            $ref: "#/components/schemas/SystemConfiguration"
                     application/xml:
                         schema:
-                            $ref: "#/components/schemas/Configuration"
+                            $ref: "#/components/schemas/SystemConfiguration"
             responses:
                 200:
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/Configuration"
+                                $ref: "#/components/schemas/SystemConfiguration"
                         application/xml:
                             schema:
-                                $ref: "#/components/schemas/Configuration"
-            tags: ["Configuration"]
-    "/system/configurations/{configurationExternalReferenceCode}":
+                                $ref: "#/components/schemas/SystemConfiguration"
+            tags: ["SystemConfiguration"]
+    "/system-configurations/{systemConfigurationExternalReferenceCode}":
         get:
             operationId: getSystemConfiguration
             parameters:
                 -   in: path
-                    name: configurationExternalReferenceCode
+                    name: systemConfigurationExternalReferenceCode
                     required: true
                     schema:
                         type: string
@@ -261,16 +277,16 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/Configuration"
+                                $ref: "#/components/schemas/SystemConfiguration"
                         application/xml:
                             schema:
-                                $ref: "#/components/schemas/Configuration"
-            tags: ["Configuration"]
+                                $ref: "#/components/schemas/SystemConfiguration"
+            tags: ["SystemConfiguration"]
         put:
             operationId: putSystemConfiguration
             parameters:
                 -   in: path
-                    name: configurationExternalReferenceCode
+                    name: systemConfigurationExternalReferenceCode
                     required: true
                     schema:
                         type: string
@@ -278,17 +294,17 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/Configuration"
+                            $ref: "#/components/schemas/SystemConfiguration"
                     application/xml:
                         schema:
-                            $ref: "#/components/schemas/Configuration"
+                            $ref: "#/components/schemas/SystemConfiguration"
             responses:
                 200:
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/Configuration"
+                                $ref: "#/components/schemas/SystemConfiguration"
                         application/xml:
                             schema:
-                                $ref: "#/components/schemas/Configuration"
-            tags: ["Configuration"]
+                                $ref: "#/components/schemas/SystemConfiguration"
+            tags: ["SystemConfiguration"]
