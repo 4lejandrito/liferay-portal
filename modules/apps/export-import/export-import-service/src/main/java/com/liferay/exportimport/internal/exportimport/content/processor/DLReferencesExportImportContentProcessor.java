@@ -624,132 +624,75 @@ public class DLReferencesExportImportContentProcessor
 
 		StringBuilder sb = new StringBuilder(content);
 
-		String contextPath = _portal.getPathContext();
+		DLReferencesReverseIterator dlReferencesReverseIterator =
+			new DLReferencesReverseIterator(
+				content, _fileEntryFriendlyURLResolver, portletDataContext);
 
-		String[] patterns = {
-			contextPath.concat("/c/document_library/get_file?"),
-			contextPath.concat("/documents/"),
-			contextPath.concat("/image/image_gallery?")
-		};
+		while (dlReferencesReverseIterator.hasNext()) {
+			DLReferencesReverseIterator.DLReference dlReference =
+				dlReferencesReverseIterator.next();
 
-		int beginPos = -1;
-		int endPos = content.length();
+			FileEntry fileEntry = dlReference.getFileEntry();
 
-		while (true) {
-			beginPos = StringUtil.lastIndexOfAny(content, patterns, endPos);
-
-			if (beginPos == -1) {
-				break;
+			if (exportReferencedContent && !fileEntry.isInTrash()) {
+				StagedModelDataHandlerUtil.exportReferenceStagedModel(
+					portletDataContext, stagedModel, fileEntry,
+					PortletDataContext.REFERENCE_TYPE_DEPENDENCY);
 			}
+			else {
+				Element entityElement = portletDataContext.getExportDataElement(
+					stagedModel);
 
-			Map<String, String[]> dlReferenceParameters =
-				_getDLReferenceParameters(
-					portletDataContext.getScopeGroupId(), content,
-					beginPos + contextPath.length(), endPos);
-
-			FileEntry fileEntry = _getFileEntry(dlReferenceParameters);
-
-			if ((fileEntry == null) ||
-				_isExternalURL(
-					portletDataContext.getScopeGroupId(), content, beginPos,
-					endPos)) {
-
-				endPos = beginPos - 1;
-
-				continue;
-			}
-
-			endPos = MapUtil.getInteger(dlReferenceParameters, "endPos");
-
-			try {
-				if (exportReferencedContent && !fileEntry.isInTrash()) {
-					StagedModelDataHandlerUtil.exportReferenceStagedModel(
-						portletDataContext, stagedModel, fileEntry,
-						PortletDataContext.REFERENCE_TYPE_DEPENDENCY);
-				}
-				else {
-					Element entityElement =
-						portletDataContext.getExportDataElement(stagedModel);
-
-					String referenceType =
-						PortletDataContext.REFERENCE_TYPE_DEPENDENCY;
-
-					if (fileEntry.isInTrash()) {
-						referenceType =
-							PortletDataContext.
-								REFERENCE_TYPE_DEPENDENCY_DISPOSABLE;
-					}
-
-					portletDataContext.addReferenceElement(
-						stagedModel, entityElement, fileEntry, referenceType,
-						true);
-				}
-
-				String path = ExportImportPathUtil.getModelPath(fileEntry);
-
-				StringBundler exportedReferenceSB = new StringBundler(10);
-
-				exportedReferenceSB.append("[$dl-reference=");
-				exportedReferenceSB.append(path);
-
-				if (dlReferenceParameters.containsKey("friendlyURL")) {
-					exportedReferenceSB.append("$,$include-friendly-url=true");
-				}
-				else {
-					exportedReferenceSB.append("$,$include-uuid=");
-					exportedReferenceSB.append(
-						dlReferenceParameters.containsKey("uuid"));
-				}
-
-				exportedReferenceSB.append("$]");
+				String referenceType =
+					PortletDataContext.REFERENCE_TYPE_DEPENDENCY;
 
 				if (fileEntry.isInTrash()) {
-					String originalReference = sb.substring(beginPos, endPos);
-
-					exportedReferenceSB.append("[#dl-reference=");
-					exportedReferenceSB.append(originalReference);
-
-					if (dlReferenceParameters.containsKey("friendlyURL")) {
-						exportedReferenceSB.append(
-							"#,#include-friendly-url=true");
-					}
-					else {
-						exportedReferenceSB.append("#,#include-uuid=");
-						exportedReferenceSB.append(
-							dlReferenceParameters.containsKey("uuid"));
-					}
-
-					exportedReferenceSB.append("#]");
+					referenceType =
+						PortletDataContext.REFERENCE_TYPE_DEPENDENCY_DISPOSABLE;
 				}
 
-				sb.replace(beginPos, endPos, exportedReferenceSB.toString());
-			}
-			catch (Exception exception) {
-				StringBundler exceptionSB = new StringBundler(6);
-
-				exceptionSB.append("Unable to process file entry ");
-				exceptionSB.append(fileEntry.getFileEntryId());
-				exceptionSB.append(" for staged model ");
-				exceptionSB.append(stagedModel.getModelClassName());
-				exceptionSB.append(" with primary key ");
-				exceptionSB.append(stagedModel.getPrimaryKeyObj());
-
-				ExportImportContentProcessorException
-					exportImportContentProcessorException =
-						new ExportImportContentProcessorException(
-							exceptionSB.toString(), exception);
-
-				if (_log.isDebugEnabled()) {
-					_log.debug(
-						exceptionSB.toString(),
-						exportImportContentProcessorException);
-				}
-				else if (_log.isWarnEnabled()) {
-					_log.warn(exceptionSB.toString());
-				}
+				portletDataContext.addReferenceElement(
+					stagedModel, entityElement, fileEntry, referenceType, true);
 			}
 
-			endPos = beginPos - 1;
+			String path = ExportImportPathUtil.getModelPath(fileEntry);
+
+			StringBundler exportedReferenceSB = new StringBundler(10);
+
+			exportedReferenceSB.append("[$dl-reference=");
+			exportedReferenceSB.append(path);
+
+			if (dlReference.getFriendlyURL() != null) {
+				exportedReferenceSB.append("$,$include-friendly-url=true");
+			}
+			else {
+				exportedReferenceSB.append("$,$include-uuid=");
+				exportedReferenceSB.append(dlReference.getUuid() != null);
+			}
+
+			exportedReferenceSB.append("$]");
+
+			if (fileEntry.isInTrash()) {
+				String originalReference = sb.substring(
+					dlReference.getBeginPos(), dlReference.getEndPos());
+
+				exportedReferenceSB.append("[#dl-reference=");
+				exportedReferenceSB.append(originalReference);
+
+				if (dlReference.getFriendlyURL() != null) {
+					exportedReferenceSB.append("#,#include-friendly-url=true");
+				}
+				else {
+					exportedReferenceSB.append("#,#include-uuid=");
+					exportedReferenceSB.append(dlReference.getUuid() != null);
+				}
+
+				exportedReferenceSB.append("#]");
+			}
+
+			sb.replace(
+				dlReference.getBeginPos(), dlReference.getEndPos(),
+				exportedReferenceSB.toString());
 		}
 
 		return sb.toString();
