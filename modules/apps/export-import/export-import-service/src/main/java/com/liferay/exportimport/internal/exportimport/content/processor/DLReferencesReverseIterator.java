@@ -9,10 +9,12 @@ import com.liferay.document.library.kernel.exception.NoSuchFileEntryException;
 import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.service.DLAppLocalServiceUtil;
 import com.liferay.document.library.kernel.service.DLFileEntryLocalServiceUtil;
-import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
@@ -57,19 +59,18 @@ public class DLReferencesReverseIterator
 	public DLReferencesReverseIterator(
 		String content,
 		FileEntryFriendlyURLResolver fileEntryFriendlyURLResolver,
-		PortletDataContext portletDataContext) {
+		long groupId) {
 
 		_content = content;
 
 		_endPos = content.length();
 
 		_fileEntryFriendlyURLResolver = fileEntryFriendlyURLResolver;
+		_groupId = groupId;
 
 		_pathContext = PortalUtil.getPathContext();
 
 		_patterns = _getPatterns(_pathContext);
-
-		_portletDataContext = portletDataContext;
 	}
 
 	@Override
@@ -105,19 +106,38 @@ public class DLReferencesReverseIterator
 				return null;
 			}
 
+			ObjectValuePair<String, Integer> dlReferenceEndPosObjectValuePair =
+				_getDLReferenceEndPosObjectValuePair(
+					_content, beginPos + _pathContext.length(), _endPos);
+
+			if (dlReferenceEndPosObjectValuePair == null) {
+				_endPos = beginPos - 1;
+
+				continue;
+			}
+
+			String dlReference = dlReferenceEndPosObjectValuePair.getKey();
+
 			Map<String, String[]> dlReferenceParameters =
 				_getDLReferenceParameters(
-					_portletDataContext.getScopeGroupId(), _content,
-					beginPos + _pathContext.length(), _endPos);
+					_groupId, _content, beginPos + _pathContext.length(),
+					dlReferenceEndPosObjectValuePair.getValue(), dlReference);
+
+			if (dlReferenceParameters == null) {
+				_endPos = beginPos - 1;
+
+				continue;
+			}
 
 			FileEntry fileEntry = _getFileEntry(dlReferenceParameters);
 
-			try {
-				if ((fileEntry == null) ||
-					_isExternalURL(
-						_portletDataContext.getScopeGroupId(), _content,
-						beginPos, _endPos)) {
+			if (fileEntry == null) {
+				fileEntry = _getFileEntry(
+					_content, beginPos + _pathContext.length());
+			}
 
+			try {
+				if (_isExternalURL(_groupId, _content, beginPos, _endPos)) {
 					_endPos = beginPos - 1;
 
 					continue;
@@ -137,6 +157,7 @@ public class DLReferencesReverseIterator
 				beginPos, MapUtil.getInteger(dlReferenceParameters, "endPos"),
 				fileEntry,
 				MapUtil.getString(dlReferenceParameters, "friendlyURL", null),
+				dlReferenceParameters, dlReference,
 				MapUtil.getString(dlReferenceParameters, "uuid", null));
 		}
 	}
@@ -145,12 +166,14 @@ public class DLReferencesReverseIterator
 
 		public DLReference(
 			int beginPos, int endPos, FileEntry fileEntry, String friendlyURL,
-			String uuid) {
+			Map<String, String[]> parameters, String reference, String uuid) {
 
 			_beginPos = beginPos;
 			_endPos = endPos;
 			_fileEntry = fileEntry;
 			_friendlyURL = friendlyURL;
+			_parameters = parameters;
+			_reference = reference;
 			_uuid = uuid;
 		}
 
@@ -170,6 +193,14 @@ public class DLReferencesReverseIterator
 			return _friendlyURL;
 		}
 
+		public Map<String, String[]> getParameters() {
+			return _parameters;
+		}
+
+		public String getReference() {
+			return _reference;
+		}
+
 		public String getUuid() {
 			return _uuid;
 		}
@@ -178,6 +209,8 @@ public class DLReferencesReverseIterator
 		private final int _endPos;
 		private final FileEntry _fileEntry;
 		private final String _friendlyURL;
+		private final Map<String, String[]> _parameters;
+		private final String _reference;
 		private final String _uuid;
 
 	}
@@ -208,22 +241,12 @@ public class DLReferencesReverseIterator
 	}
 
 	private Map<String, String[]> _getDLReferenceParameters(
-		long groupId, String content, int beginPos, int endPos) {
-
-		ObjectValuePair<String, Integer> dlReferenceEndPosObjectValuePair =
-			_getDLReferenceEndPosObjectValuePair(content, beginPos, endPos);
-
-		if (dlReferenceEndPosObjectValuePair == null) {
-			return null;
-		}
+		long groupId, String content, int beginPos, int endPos,
+		String dlReference) {
 
 		boolean legacyURL = _isLegacyURL(content, beginPos);
 
 		Map<String, String[]> map = new HashMap<>();
-
-		String dlReference = dlReferenceEndPosObjectValuePair.getKey();
-
-		endPos = dlReferenceEndPosObjectValuePair.getValue();
 
 		while (dlReference.contains(StringPool.AMPERSAND_ENCODED)) {
 			dlReference = StringUtil.replace(
@@ -418,6 +441,44 @@ public class DLReferencesReverseIterator
 		}
 
 		return fileEntry;
+	}
+
+	private FileEntry _getFileEntry(String content, int beginPos) {
+		int jsonBeginPos = StringUtil.lastIndexOfAny(
+			content, new String[] {"<![CDATA["}, beginPos);
+
+		jsonBeginPos = StringUtil.indexOfAny(
+			content, new char[] {'{'}, jsonBeginPos);
+
+		int jsonEndPos = StringUtil.indexOfAny(
+			content, new String[] {"]]>"}, jsonBeginPos);
+
+		jsonEndPos = StringUtil.lastIndexOfAny(
+			content, new char[] {'}'}, jsonEndPos);
+
+		if ((jsonBeginPos == QueryUtil.ALL_POS) &&
+			(jsonEndPos == QueryUtil.ALL_POS)) {
+
+			return null;
+		}
+
+		try {
+			JSONObject jsonObject = JSONFactoryUtil.createJSONObject(
+				content.substring(jsonBeginPos, jsonEndPos + 1));
+
+			return DLAppLocalServiceUtil.getFileEntryByUuidAndGroupId(
+				jsonObject.getString("uuid"), jsonObject.getLong("groupId"));
+		}
+		catch (PortalException portalException) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(portalException);
+			}
+		}
+		catch (Exception exception) {
+			throw new RuntimeException(exception);
+		}
+
+		return null;
 	}
 
 	private Group _getGroup(String name) throws Exception {
@@ -695,10 +756,10 @@ public class DLReferencesReverseIterator
 	private final String _content;
 	private int _endPos;
 	private FileEntryFriendlyURLResolver _fileEntryFriendlyURLResolver;
+	private final long _groupId;
 	private Boolean _hasNext;
 	private DLReference _nextDLReference;
 	private final String _pathContext;
 	private final String[] _patterns;
-	private final PortletDataContext _portletDataContext;
 
 }
