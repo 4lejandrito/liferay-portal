@@ -6,6 +6,7 @@
 package com.liferay.document.library.util;
 
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portal.kernel.repository.model.Folder;
@@ -56,6 +57,8 @@ public interface DLURLHelper {
 	public String getPreviewURL(
 		FileEntry fileEntry, FileVersion fileVersion, ThemeDisplay themeDisplay,
 		String queryString, boolean appendVersion, boolean absoluteURL);
+
+	public String getPreviewURL(String friendlyURL, Group group);
 
 	public String getThumbnailSrc(
 			FileEntry fileEntry, FileVersion fileVersion,

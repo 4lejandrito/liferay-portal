@@ -241,6 +241,13 @@ public class DLURLHelperImpl implements DLURLHelper {
 	}
 
 	@Override
+	public String getPreviewURL(String friendlyURL, Group group) {
+		return _getFriendlyURL(
+			friendlyURL, group, _getPreviewURLPrefix(null, false),
+			StringPool.BLANK);
+	}
+
+	@Override
 	public String getThumbnailSrc(
 		FileEntry fileEntry, FileVersion fileVersion,
 		ThemeDisplay themeDisplay) {
@@ -437,11 +444,6 @@ public class DLURLHelperImpl implements DLURLHelper {
 			return null;
 		}
 
-		StringBundler sb = new StringBundler(6);
-
-		sb.append(previewURLPrefix);
-		sb.append(FriendlyURLResolverConstants.URL_SEPARATOR_Y_FILE_ENTRY);
-
 		Group group = _groupLocalService.fetchGroup(fileEntry.getGroupId());
 
 		if (group == null) {
@@ -449,10 +451,24 @@ public class DLURLHelperImpl implements DLURLHelper {
 				friendlyURLEntry.getGroupId());
 		}
 
+		return _getFriendlyURL(
+			friendlyURLEntry.getUrlTitle(), group, previewURLPrefix,
+			queryString);
+	}
+
+	private String _getFriendlyURL(
+		String friendlyURL, Group group, String previewURLPrefix,
+		String queryString) {
+
+		StringBundler sb = new StringBundler(6);
+
+		sb.append(previewURLPrefix);
+		sb.append(FriendlyURLResolverConstants.URL_SEPARATOR_Y_FILE_ENTRY);
+
 		sb.append(group.getFriendlyURL());
 
 		sb.append(StringPool.SLASH);
-		sb.append(friendlyURLEntry.getUrlTitle());
+		sb.append(friendlyURL);
 
 		if (Validator.isNotNull(queryString)) {
 			sb.append(queryString.replaceFirst("&", "?"));
