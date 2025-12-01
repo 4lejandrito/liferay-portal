@@ -6,14 +6,19 @@
 package com.liferay.exportimport.internal.exportimport.content.processor;
 
 import com.liferay.document.library.kernel.service.DLAppLocalService;
-import com.liferay.document.library.kernel.service.DLFileEntryLocalService;
+import com.liferay.document.library.util.DLURLHelper;
 import com.liferay.exportimport.content.processor.ExportImportContentParser;
 import com.liferay.exportimport.content.processor.constants.ExportImportContentParserConstants;
 import com.liferay.exportimport.kernel.lar.PortletDataContext;
 import com.liferay.petra.string.StringBundler;
+import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.repository.friendly.url.resolver.FileEntryFriendlyURLResolver;
 import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -66,33 +71,64 @@ public class DLReferencesExportImportContentParser
 			String content, PortletDataContext portletDataContext)
 		throws Exception {
 
-		StringBuilder sb = new StringBuilder(content);
-
 		DocumentLibraryReference documentLibraryReference = null;
 
-		while (
-			(documentLibraryReference = DocumentLibraryReference.parse(content)) != null) {
+		while ((documentLibraryReference = DocumentLibraryReference.parse(
+					content)) != null) {
 
 			FileEntry fileEntry =
 				_dlAppLocalService.fetchFileEntryByExternalReferenceCode(
 					portletDataContext.getScopeGroupId(),
 					documentLibraryReference.getExternalReferenceCode());
 
-			if (fileEntry == null) {
+			if ((fileEntry != null) &&
+				!StringUtil.equals(
+					documentLibraryReference.getUuid(), fileEntry.getUuid())) {
 
+				if (_log.isDebugEnabled()) {
+					_log.debug(
+						"The UUID of the referenced FileEntry does not match " +
+							"the UUID of the FileEntry");
+				}
 
+				fileEntry = null;
 			}
+
+			String url = null;
+
+			if (fileEntry == null) {
+				url = _dlurlHelper.getPreviewURL(
+					documentLibraryReference.getFriendlyURL(),
+					_groupLocalService.getGroup(
+						portletDataContext.getScopeGroupId()));
+			}
+			else {
+				url = _dlurlHelper.getPreviewURL(
+					fileEntry, fileEntry.getFileVersion(), null,
+					StringPool.BLANK, false, false);
+			}
+
+			content = StringUtil.replaceLast(
+				content, documentLibraryReference.toString(), url);
 		}
 
 		return content;
 	}
 
+	private static final Log _log = LogFactoryUtil.getLog(
+		DLReferencesExportImportContentParser.class);
 
 	@Reference
 	private DLAppLocalService _dlAppLocalService;
 
 	@Reference
+	private DLURLHelper _dlurlHelper;
+
+	@Reference
 	private FileEntryFriendlyURLResolver _fileEntryFriendlyURLResolver;
+
+	@Reference
+	private GroupLocalService _groupLocalService;
 
 	private static class DocumentLibraryReference {
 
