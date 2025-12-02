@@ -5,7 +5,9 @@
 
 package com.liferay.exportimport.report.service.impl;
 
+import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
 import com.liferay.exportimport.report.constants.ExportImportReportEntryConstants;
+import com.liferay.exportimport.report.internal.util.ExportImportReportEntryUtil;
 import com.liferay.exportimport.report.model.ExportImportReportEntry;
 import com.liferay.exportimport.report.service.base.ExportImportReportEntryLocalServiceBaseImpl;
 import com.liferay.portal.aop.AopService;
@@ -13,6 +15,7 @@ import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
+import com.liferay.portal.kernel.util.GetterUtil;
 
 import java.util.List;
 
@@ -32,8 +35,7 @@ public class ExportImportReportEntryLocalServiceImpl
 	@Indexable(type = IndexableType.REINDEX)
 	public ExportImportReportEntry addEmptyExportImportReportEntry(
 		long groupId, long companyId, String classExternalReferenceCode,
-		long classNameId, long exportImportConfigurationId,
-		String modelNameLanguageKey, int origin) {
+		long classNameId, String modelNameLanguageKey) {
 
 		ExportImportReportEntry exportImportReportEntry =
 			exportImportReportEntryPersistence.create(
@@ -45,9 +47,11 @@ public class ExportImportReportEntryLocalServiceImpl
 			classExternalReferenceCode);
 		exportImportReportEntry.setClassNameId(classNameId);
 		exportImportReportEntry.setExportImportConfigurationId(
-			exportImportConfigurationId);
+			GetterUtil.getLong(
+				ExportImportThreadLocal.getExportImportConfigurationId()));
 		exportImportReportEntry.setModelNameLanguageKey(modelNameLanguageKey);
-		exportImportReportEntry.setOrigin(origin);
+		exportImportReportEntry.setOrigin(
+			ExportImportReportEntryUtil.getOrigin());
 		exportImportReportEntry.setType(
 			ExportImportReportEntryConstants.TYPE_EMPTY);
 		exportImportReportEntry.setStatus(
@@ -61,9 +65,8 @@ public class ExportImportReportEntryLocalServiceImpl
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public ExportImportReportEntry addErrorExportImportReportEntry(
 		long groupId, long companyId, String classExternalReferenceCode,
-		long classNameId, long classPK, long exportImportConfigurationId,
-		String errorMessage, String errorStacktrace,
-		String modelNameLanguageKey, int origin) {
+		long classNameId, String errorMessage, String errorStacktrace,
+		String modelNameLanguageKey) {
 
 		ExportImportReportEntry exportImportReportEntry =
 			exportImportReportEntryPersistence.create(
@@ -74,13 +77,14 @@ public class ExportImportReportEntryLocalServiceImpl
 		exportImportReportEntry.setClassExternalReferenceCode(
 			classExternalReferenceCode);
 		exportImportReportEntry.setClassNameId(classNameId);
-		exportImportReportEntry.setClassPK(classPK);
 		exportImportReportEntry.setExportImportConfigurationId(
-			exportImportConfigurationId);
+			GetterUtil.getLong(
+				ExportImportThreadLocal.getExportImportConfigurationId()));
 		exportImportReportEntry.setErrorMessage(errorMessage);
 		exportImportReportEntry.setErrorStacktrace(errorStacktrace);
 		exportImportReportEntry.setModelNameLanguageKey(modelNameLanguageKey);
-		exportImportReportEntry.setOrigin(origin);
+		exportImportReportEntry.setOrigin(
+			ExportImportReportEntryUtil.getOrigin());
 		exportImportReportEntry.setType(
 			ExportImportReportEntryConstants.TYPE_ERROR);
 		exportImportReportEntry.setStatus(
