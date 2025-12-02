@@ -94,6 +94,36 @@ public class ExportImportReportEntryLocalServiceImpl
 			exportImportReportEntry);
 	}
 
+	@Indexable(type = IndexableType.REINDEX)
+	public ExportImportReportEntry addWarningExportImportReportEntry(
+		long groupId, long companyId, String classExternalReferenceCode,
+		long classNameId, String errorMessage, String modelNameLanguageKey) {
+
+		ExportImportReportEntry exportImportReportEntry =
+			exportImportReportEntryPersistence.create(
+				counterLocalService.increment());
+
+		exportImportReportEntry.setGroupId(groupId);
+		exportImportReportEntry.setCompanyId(companyId);
+		exportImportReportEntry.setClassExternalReferenceCode(
+			classExternalReferenceCode);
+		exportImportReportEntry.setClassNameId(classNameId);
+		exportImportReportEntry.setExportImportConfigurationId(
+			GetterUtil.getLong(
+				ExportImportThreadLocal.getExportImportConfigurationId()));
+		exportImportReportEntry.setErrorMessage(errorMessage);
+		exportImportReportEntry.setModelNameLanguageKey(modelNameLanguageKey);
+		exportImportReportEntry.setOrigin(
+			ExportImportReportEntryUtil.getOrigin());
+		exportImportReportEntry.setType(
+			ExportImportReportEntryConstants.TYPE_WARNING);
+		exportImportReportEntry.setStatus(
+			ExportImportReportEntryConstants.STATUS_UNRESOLVED);
+
+		return exportImportReportEntryPersistence.update(
+			exportImportReportEntry);
+	}
+
 	@Override
 	public List<ExportImportReportEntry> getExportImportReportEntries(
 		long companyId, long exportImportConfigurationId) {
