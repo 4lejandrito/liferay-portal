@@ -76,6 +76,19 @@ public class ExportImportReportEntryLocalServiceWrapper
 			exportImportReportEntry);
 	}
 
+	@Override
+	public com.liferay.exportimport.report.model.ExportImportReportEntry
+		addWarningExportImportReportEntry(
+			long groupId, long companyId, String classExternalReferenceCode,
+			long classNameId, String errorMessage,
+			String modelNameLanguageKey) {
+
+		return _exportImportReportEntryLocalService.
+			addWarningExportImportReportEntry(
+				groupId, companyId, classExternalReferenceCode, classNameId,
+				errorMessage, modelNameLanguageKey);
+	}
+
 	/**
 	 * Creates a new export import report entry with the primary key. Does not add the export import report entry to the database.
 	 *

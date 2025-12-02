@@ -78,6 +78,11 @@ public interface ExportImportReportEntryLocalService
 	public ExportImportReportEntry addExportImportReportEntry(
 		ExportImportReportEntry exportImportReportEntry);
 
+	@Indexable(type = IndexableType.REINDEX)
+	public ExportImportReportEntry addWarningExportImportReportEntry(
+		long groupId, long companyId, String classExternalReferenceCode,
+		long classNameId, String errorMessage, String modelNameLanguageKey);
+
 	/**
 	 * Creates a new export import report entry with the primary key. Does not add the export import report entry to the database.
 	 *
