@@ -14,7 +14,6 @@ import com.liferay.exportimport.report.service.ExportImportReportEntryLocalServi
 import com.liferay.portal.kernel.model.ExternalReferenceCodeModel;
 import com.liferay.portal.kernel.model.StagedModel;
 import com.liferay.portal.kernel.service.GroupLocalService;
-import com.liferay.portal.kernel.util.GetterUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
@@ -58,11 +57,8 @@ public class ImportStagedModelExceptionHandlerImpl
 		_exportImportReportEntryLocalService.addErrorExportImportReportEntry(
 			groupId, portletDataContext.getCompanyId(), externalReferenceCode,
 			ExportImportClassedModelUtil.getClassNameId(stagedModel),
-			ExportImportClassedModelUtil.getClassPK(stagedModel),
-			GetterUtil.getLong(portletDataContext.getExportImportProcessId()),
 			portletDataException.getMessage(),
-			_getErrorStackTrace(portletDataException), modelClass.getName(),
-			ExportImportReportEntryUtil.getOrigin());
+			_getErrorStackTrace(portletDataException), modelClass.getName());
 	}
 
 	private String _getErrorStackTrace(Throwable throwable) {

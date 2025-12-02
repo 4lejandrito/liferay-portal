@@ -9,7 +9,6 @@ import com.liferay.batch.engine.BatchEngineTaskItemDelegate;
 import com.liferay.batch.engine.exception.handler.BatchEngineImportTaskExceptionHandler;
 import com.liferay.batch.engine.model.BatchEngineImportTask;
 import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
-import com.liferay.exportimport.report.constants.ExportImportReportEntryConstants;
 import com.liferay.exportimport.report.internal.util.ExportImportReportEntryUtil;
 import com.liferay.exportimport.report.service.ExportImportReportEntryLocalService;
 import com.liferay.portal.kernel.log.Log;
@@ -58,12 +57,8 @@ public class ExportImportBatchEngineImportTaskExceptionHandler
 			_getExternalReferenceCode(item),
 			_classNameLocalService.getClassNameId(
 				batchEngineImportTask.getParameterValue("modelClassName")),
-			_getId(item),
-			GetterUtil.getLong(
-				ExportImportThreadLocal.getExportImportConfigurationId()),
 			exception.getMessage(), _getErrorStackTrace(exception),
-			batchEngineImportTask.getParameterValue("modelNameLanguageKey"),
-			ExportImportReportEntryConstants.ORIGIN_BATCH);
+			batchEngineImportTask.getParameterValue("modelNameLanguageKey"));
 	}
 
 	private String _getErrorStackTrace(Throwable throwable) {
@@ -88,23 +83,6 @@ public class ExportImportBatchEngineImportTaskExceptionHandler
 			}
 
 			return null;
-		}
-	}
-
-	private long _getId(Object item) {
-		try {
-			Class<?> clazz = item.getClass();
-
-			Method method = clazz.getDeclaredMethod("getId");
-
-			return GetterUtil.getLong(method.invoke(item));
-		}
-		catch (Exception exception) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(exception);
-			}
-
-			return 0L;
 		}
 	}
 

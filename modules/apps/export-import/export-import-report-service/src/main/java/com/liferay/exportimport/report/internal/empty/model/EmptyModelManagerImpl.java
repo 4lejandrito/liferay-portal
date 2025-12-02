@@ -6,8 +6,6 @@
 package com.liferay.exportimport.report.internal.empty.model;
 
 import com.liferay.exportimport.kernel.empty.model.EmptyModelManager;
-import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
-import com.liferay.exportimport.report.internal.util.ExportImportReportEntryUtil;
 import com.liferay.exportimport.report.service.ExportImportReportEntryLocalService;
 import com.liferay.petra.function.UnsafeBiFunction;
 import com.liferay.petra.function.UnsafeSupplier;
@@ -17,7 +15,6 @@ import com.liferay.portal.kernel.lazy.referencing.LazyReferencingThreadLocal;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.GroupLocalService;
-import com.liferay.portal.kernel.util.GetterUtil;
 
 import java.util.function.BiFunction;
 
@@ -59,10 +56,7 @@ public class EmptyModelManagerImpl implements EmptyModelManager {
 				addEmptyExportImportReportEntry(
 					0L, companyId, externalReferenceCode,
 					_classNameLocalService.getClassNameId(clazz.getName()),
-					GetterUtil.getLong(
-						ExportImportThreadLocal.
-							getExportImportConfigurationId()),
-					clazz.getName(), ExportImportReportEntryUtil.getOrigin());
+					clazz.getName());
 
 			return emptyModelUnsafeSupplier.get();
 		}
@@ -121,10 +115,7 @@ public class EmptyModelManagerImpl implements EmptyModelManager {
 				addEmptyExportImportReportEntry(
 					groupId, companyId, externalReferenceCode,
 					_classNameLocalService.getClassNameId(className),
-					GetterUtil.getLong(
-						ExportImportThreadLocal.
-							getExportImportConfigurationId()),
-					modelName, ExportImportReportEntryUtil.getOrigin());
+					modelName);
 
 			return emptyModelUnsafeSupplier.get();
 		}

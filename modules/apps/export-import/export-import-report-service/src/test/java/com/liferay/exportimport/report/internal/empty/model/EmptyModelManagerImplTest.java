@@ -6,8 +6,6 @@
 package com.liferay.exportimport.report.internal.empty.model;
 
 import com.liferay.exportimport.kernel.empty.model.EmptyModelManager;
-import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
-import com.liferay.exportimport.report.constants.ExportImportReportEntryConstants;
 import com.liferay.exportimport.report.service.ExportImportReportEntryLocalService;
 import com.liferay.petra.function.UnsafeBiFunction;
 import com.liferay.petra.function.UnsafeSupplier;
@@ -154,11 +152,6 @@ public class EmptyModelManagerImplTest {
 				classNameId
 			);
 
-			long exportImportConfigurationId = RandomTestUtil.randomLong();
-
-			ExportImportThreadLocal.setExportImportConfigurationId(
-				exportImportConfigurationId);
-
 			long companyId = RandomTestUtil.randomLong();
 			String externalReferenceCode = RandomTestUtil.randomString();
 
@@ -184,8 +177,7 @@ public class EmptyModelManagerImplTest {
 				_exportImportReportEntryLocalService
 			).addEmptyExportImportReportEntry(
 				0L, companyId, externalReferenceCode, classNameId,
-				exportImportConfigurationId, User.class.getName(),
-				ExportImportReportEntryConstants.ORIGIN_STAGING
+				User.class.getName()
 			);
 		}
 	}
@@ -336,11 +328,6 @@ public class EmptyModelManagerImplTest {
 				_group
 			);
 
-			long exportImportConfigurationId = RandomTestUtil.randomLong();
-
-			ExportImportThreadLocal.setExportImportConfigurationId(
-				exportImportConfigurationId);
-
 			String userExternalReferenceCode = RandomTestUtil.randomString();
 
 			Assert.assertSame(
@@ -376,8 +363,7 @@ public class EmptyModelManagerImplTest {
 				_exportImportReportEntryLocalService
 			).addEmptyExportImportReportEntry(
 				groupId, companyId, userExternalReferenceCode, classNameId,
-				exportImportConfigurationId, User.class.getName(),
-				ExportImportReportEntryConstants.ORIGIN_STAGING
+				User.class.getName()
 			);
 		}
 	}
@@ -445,11 +431,6 @@ public class EmptyModelManagerImplTest {
 				classNameId
 			);
 
-			long exportImportConfigurationId = RandomTestUtil.randomLong();
-
-			ExportImportThreadLocal.setExportImportConfigurationId(
-				exportImportConfigurationId);
-
 			long companyId = RandomTestUtil.randomLong();
 			String externalReferenceCode = RandomTestUtil.randomString();
 
@@ -478,8 +459,7 @@ public class EmptyModelManagerImplTest {
 				_exportImportReportEntryLocalService
 			).addEmptyExportImportReportEntry(
 				0L, companyId, externalReferenceCode, classNameId,
-				exportImportConfigurationId, User.class.getName(),
-				ExportImportReportEntryConstants.ORIGIN_STAGING
+				User.class.getName()
 			);
 		}
 	}

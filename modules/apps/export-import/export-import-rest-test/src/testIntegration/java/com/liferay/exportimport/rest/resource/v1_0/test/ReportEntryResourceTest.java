@@ -8,6 +8,7 @@ package com.liferay.exportimport.rest.resource.v1_0.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.exportimport.kernel.background.task.BackgroundTaskExecutorNames;
 import com.liferay.exportimport.kernel.configuration.constants.ExportImportConfigurationConstants;
+import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
 import com.liferay.exportimport.kernel.model.ExportImportConfiguration;
 import com.liferay.exportimport.kernel.service.ExportImportConfigurationLocalService;
 import com.liferay.exportimport.report.constants.ExportImportReportEntryConstants;
@@ -108,6 +109,9 @@ public class ReportEntryResourceTest extends BaseReportEntryResourceTestCase {
 
 		Type type = reportEntry.getType();
 
+		ExportImportThreadLocal.setExportImportConfigurationId(
+			_exportImportConfiguration.getExportImportConfigurationId());
+
 		if ((type != null) &&
 			(type.getCode() == ExportImportReportEntryConstants.TYPE_EMPTY)) {
 
@@ -117,10 +121,7 @@ public class ReportEntryResourceTest extends BaseReportEntryResourceTestCase {
 						testGroup.getGroupId(), testCompany.getCompanyId(),
 						reportEntry.getClassExternalReferenceCode(),
 						reportEntry.getClassNameId(),
-						_exportImportConfiguration.
-							getExportImportConfigurationId(),
-						reportEntry.getModelName(),
-						ExportImportReportEntryConstants.ORIGIN_BATCH);
+						reportEntry.getModelName());
 		}
 		else {
 			exportImportReportEntry =
@@ -128,13 +129,10 @@ public class ReportEntryResourceTest extends BaseReportEntryResourceTestCase {
 					addErrorExportImportReportEntry(
 						testGroup.getGroupId(), testCompany.getCompanyId(),
 						reportEntry.getClassExternalReferenceCode(),
-						reportEntry.getClassNameId(), reportEntry.getClassPK(),
-						_exportImportConfiguration.
-							getExportImportConfigurationId(),
+						reportEntry.getClassNameId(),
 						reportEntry.getErrorMessage(),
 						reportEntry.getErrorStacktrace(),
-						reportEntry.getModelName(),
-						ExportImportReportEntryConstants.ORIGIN_BATCH);
+						reportEntry.getModelName());
 		}
 
 		_exportImportReportEntries.add(exportImportReportEntry);
@@ -202,13 +200,14 @@ public class ReportEntryResourceTest extends BaseReportEntryResourceTestCase {
 
 		ReportEntry reportEntry = randomReportEntry();
 
+		ExportImportThreadLocal.setExportImportConfigurationId(
+			_exportImportConfiguration.getExportImportConfigurationId());
+
 		_exportImportReportEntryLocalService.addErrorExportImportReportEntry(
 			testGroup.getGroupId(), testCompany.getCompanyId(),
 			reportEntry.getClassExternalReferenceCode(),
-			reportEntry.getClassNameId(), reportEntry.getClassPK(),
-			_exportImportConfiguration.getExportImportConfigurationId(),
-			reportEntry.getErrorMessage(), reportEntry.getErrorStacktrace(),
-			"example-text", ExportImportReportEntryConstants.ORIGIN_BATCH);
+			reportEntry.getClassNameId(), reportEntry.getErrorMessage(),
+			reportEntry.getErrorStacktrace(), "example-text");
 
 		Page<ReportEntry> page =
 			reportEntryResource.getImportProcessReportEntriesPage(
