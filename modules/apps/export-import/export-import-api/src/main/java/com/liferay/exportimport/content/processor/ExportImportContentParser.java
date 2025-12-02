@@ -17,7 +17,8 @@ public interface ExportImportContentParser {
 		throws Exception;
 
 	public String parseImportContent(
-			String content, PortletDataContext portletDataContext)
+			String className, String content, Object item, String modelName,
+			PortletDataContext portletDataContext)
 		throws Exception;
 
 }

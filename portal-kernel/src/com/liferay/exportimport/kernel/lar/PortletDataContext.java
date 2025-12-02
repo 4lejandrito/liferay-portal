@@ -5,6 +5,7 @@
 
 package com.liferay.exportimport.kernel.lar;
 
+import com.liferay.petra.function.UnsafeRunnable;
 import com.liferay.portal.kernel.dao.orm.Criterion;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -116,6 +117,8 @@ public interface PortletDataContext extends Serializable {
 	public boolean addScopedPrimaryKey(Class<?> clazz, String primaryKey);
 
 	public void addScopedPrimaryKeys(Collection<String> scopedPrimaryKeys);
+
+	public void addUnsafeRunnable(UnsafeRunnable<Exception> unsafeRunnable);
 
 	public void addZipEntry(String path, byte[] bytes);
 
@@ -373,6 +376,8 @@ public interface PortletDataContext extends Serializable {
 	public boolean isValidateExistingDataHandler();
 
 	public boolean isWithinDateRange(Date modifiedDate);
+
+	public void processUnsafeRunnables() throws Exception;
 
 	public void putNotUniquePerLayout(String dataKey);
 

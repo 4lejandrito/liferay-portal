@@ -217,6 +217,8 @@ public class LayoutImportController implements ImportController {
 
 			_importFile(portletDataContext, userId);
 
+			portletDataContext.processUnsafeRunnables();
+
 			ExportImportThreadLocal.setLayoutImportInProcess(false);
 
 			_exportImportLifecycleManager.fireExportImportLifecycleEvent(

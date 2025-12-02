@@ -168,6 +168,10 @@ public class ReportEntryResourceImpl extends BaseReportEntryResourceImpl {
 			return _language.get(
 				contextAcceptLanguage.getPreferredLocale(), "error");
 		}
+		else if (type == ExportImportReportEntryConstants.TYPE_WARNING) {
+			return _language.get(
+				contextAcceptLanguage.getPreferredLocale(), "warning");
+		}
 
 		return null;
 	}

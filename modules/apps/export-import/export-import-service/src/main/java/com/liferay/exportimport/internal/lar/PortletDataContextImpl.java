@@ -32,6 +32,7 @@ import com.liferay.exportimport.kernel.lar.UserIdStrategy;
 import com.liferay.exportimport.kernel.xstream.XStreamAlias;
 import com.liferay.exportimport.kernel.xstream.XStreamConverter;
 import com.liferay.exportimport.kernel.xstream.XStreamType;
+import com.liferay.petra.function.UnsafeRunnable;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
@@ -448,6 +449,11 @@ public class PortletDataContextImpl implements PortletDataContext {
 	@Override
 	public void addScopedPrimaryKeys(Collection<String> scopedPrimaryKeys) {
 		_scopedPrimaryKeys.addAll(scopedPrimaryKeys);
+	}
+
+	@Override
+	public void addUnsafeRunnable(UnsafeRunnable<Exception> unsafeRunnable) {
+		_unsafeRunnables.add(unsafeRunnable);
 	}
 
 	@Override
@@ -1622,6 +1628,13 @@ public class PortletDataContextImpl implements PortletDataContext {
 	}
 
 	@Override
+	public void processUnsafeRunnables() throws Exception {
+		for (UnsafeRunnable<Exception> unsafeRunnable : _unsafeRunnables) {
+			unsafeRunnable.run();
+		}
+	}
+
+	@Override
 	public void putNotUniquePerLayout(String dataKey) {
 		_notUniquePerLayout.add(dataKey);
 	}
@@ -2791,6 +2804,8 @@ public class PortletDataContextImpl implements PortletDataContext {
 	private long _sourceUserPersonalSiteGroupId;
 	private Date _startDate;
 	private String _type;
+	private final List<UnsafeRunnable<Exception>> _unsafeRunnables =
+		new ArrayList<>();
 	private transient UserIdStrategy _userIdStrategy;
 	private long _userPersonalSiteGroupId;
 	private boolean _validateExistingDataHandler;

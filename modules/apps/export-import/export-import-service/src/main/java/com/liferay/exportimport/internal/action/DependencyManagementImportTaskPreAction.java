@@ -156,7 +156,10 @@ public class DependencyManagementImportTaskPreAction
 			setMethod.invoke(
 				item, fieldName,
 				exportImportContentParser.parseImportContent(
-					value, portletDataContext));
+					exportImportDescriptor.getModelClassName(), value, item,
+					StringUtil.removeFirst(
+						batchEngineImportTask.getTaskItemDelegateName(), "C_"),
+					portletDataContext));
 		}
 	}
 
