@@ -35,28 +35,25 @@ public class ExportImportReportEntryLocalServiceWrapper
 	public com.liferay.exportimport.report.model.ExportImportReportEntry
 		addEmptyExportImportReportEntry(
 			long groupId, long companyId, String classExternalReferenceCode,
-			long classNameId, long exportImportConfigurationId,
-			String modelNameLanguageKey, int origin) {
+			long classNameId, String modelNameLanguageKey) {
 
 		return _exportImportReportEntryLocalService.
 			addEmptyExportImportReportEntry(
 				groupId, companyId, classExternalReferenceCode, classNameId,
-				exportImportConfigurationId, modelNameLanguageKey, origin);
+				modelNameLanguageKey);
 	}
 
 	@Override
 	public com.liferay.exportimport.report.model.ExportImportReportEntry
 		addErrorExportImportReportEntry(
 			long groupId, long companyId, String classExternalReferenceCode,
-			long classNameId, long classPK, long exportImportConfigurationId,
-			String errorMessage, String errorStacktrace,
-			String modelNameLanguageKey, int origin) {
+			long classNameId, String errorMessage, String errorStacktrace,
+			String modelNameLanguageKey) {
 
 		return _exportImportReportEntryLocalService.
 			addErrorExportImportReportEntry(
 				groupId, companyId, classExternalReferenceCode, classNameId,
-				classPK, exportImportConfigurationId, errorMessage,
-				errorStacktrace, modelNameLanguageKey, origin);
+				errorMessage, errorStacktrace, modelNameLanguageKey);
 	}
 
 	/**
