@@ -20,12 +20,14 @@ import com.liferay.portal.kernel.repository.friendly.url.resolver.FileEntryFrien
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.GroupLocalService;
+import com.liferay.portal.kernel.transaction.TransactionCommitCallbackUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.staging.StagingGroupHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -87,110 +89,118 @@ public class DLReferencesExportImportContentParser
 					portletDataContext.getGroupId(),
 					documentLibraryReference.getExternalReferenceCode());
 
-			if (fileEntry == null) {
-				if (_log.isDebugEnabled()) {
-					_log.debug(
-						StringBundler.concat(
-							"The FileEntry with external reference code ",
-							documentLibraryReference.getExternalReferenceCode(),
-							" does not exist yet. A warning is added just in ",
-							"case the FileEntry is not imported"));
-				}
+			if (fileEntry == null && _log.isDebugEnabled()) {
+				_log.debug(
+					StringBundler.concat(
+						"The FileEntry with external reference code ",
+						documentLibraryReference.getExternalReferenceCode(),
+						" does not exist yet. A warning is added just in ",
+						"case the FileEntry is not imported"));
+			};
 
-				portletDataContext.addUnsafeRunnable(
-					() -> {
-						boolean addWarning = false;
+			portletDataContext.addUnsafeRunnable(
+				() -> {
+					boolean addWarning = false;
 
-						String friendlyURL =
-							documentLibraryReference.getFriendlyURL();
+					String friendlyURL =
+						documentLibraryReference.getFriendlyURL();
 
-						try {
-							FileEntry referencedFileEntry =
-								_fileEntryFriendlyURLResolver.
-									resolveFriendlyURL(
-										portletDataContext.getGroupId(),
-										friendlyURL);
+					try {
+						FileEntry referencedFileEntry =
+							_fileEntryFriendlyURLResolver.
+								resolveFriendlyURL(
+									portletDataContext.getGroupId(),
+									friendlyURL);
 
-							if ((referencedFileEntry == null) ||
-								!StringUtil.equals(
-									referencedFileEntry.
-										getExternalReferenceCode(),
-									documentLibraryReference.
-										getExternalReferenceCode()) ||
-								!StringUtil.equals(
-									referencedFileEntry.getUuid(),
-									documentLibraryReference.getUuid())) {
-
-								addWarning = true;
-							}
-						}
-						catch (Exception exception) {
-							if (_log.isDebugEnabled()) {
-								_log.debug(
-									"Error resolving the friendlyURL " +
-										friendlyURL,
-									exception);
-							}
+						if ((referencedFileEntry == null) ||
+							!StringUtil.equals(
+								referencedFileEntry.
+									getExternalReferenceCode(),
+								documentLibraryReference.
+									getExternalReferenceCode()) ||
+							!StringUtil.equals(
+								referencedFileEntry.getUuid(),
+								documentLibraryReference.getUuid())) {
 
 							addWarning = true;
 						}
-
-						if (addWarning) {
-							Group group = _groupLocalService.getGroup(
-								portletDataContext.getGroupId());
-
-							boolean companyGroup =
-								_stagingGroupHelper.isCompanyGroup(group);
-
-							_exportImportReportEntryLocalService.
-								addWarningExportImportReportEntry(
-									companyGroup ? 0L :
-										portletDataContext.getGroupId(),
-									group.getCompanyId(),
-									documentLibraryReference.
-										getExternalReferenceCode(),
-									_classNameLocalService.getClassNameId(
-										className),
-									"This item may contain a wrong reference " +
-										"to a FileEntry",
-									modelName);
+					}
+					catch (Exception exception) {
+						if (_log.isDebugEnabled()) {
+							_log.debug(
+								"Error resolving the friendlyURL " +
+									friendlyURL,
+								exception);
 						}
-					});
-			}
-			else if ((fileEntry != null) &&
-					 !StringUtil.equals(
-						 documentLibraryReference.getUuid(),
-						 fileEntry.getUuid())) {
 
-				if (_log.isDebugEnabled()) {
-					_log.debug(
-						"The UUID of the referenced FileEntry does not match " +
-							"the UUID of the FileEntry");
+						addWarning = true;
+					}
+
+					if (addWarning) {
+						registerWarningCallback(
+							className, documentLibraryReference, modelName,
+							portletDataContext);
+					}
+				});
+
+				String url = null;
+
+				if (fileEntry == null) {
+					if (_log.isDebugEnabled()) {
+						_log.debug(
+							StringBundler.concat(
+								"The FileEntry with external reference code ",
+								documentLibraryReference.getExternalReferenceCode(),
+								" does not exist yet"));
+					}
+
+					url = _dlurlHelper.getPreviewURL(
+						documentLibraryReference.getFriendlyURL(),
+						_groupLocalService.getGroup(
+							portletDataContext.getGroupId()));
+				}
+				else {
+					url = _dlurlHelper.getPreviewURL(
+						fileEntry, fileEntry.getFileVersion(), null,
+						StringPool.BLANK, false, false);
 				}
 
-				fileEntry = null;
-			}
-
-			String url = null;
-
-			if (fileEntry == null) {
-				url = _dlurlHelper.getPreviewURL(
-					documentLibraryReference.getFriendlyURL(),
-					_groupLocalService.getGroup(
-						portletDataContext.getGroupId()));
-			}
-			else {
-				url = _dlurlHelper.getPreviewURL(
-					fileEntry, fileEntry.getFileVersion(), null,
-					StringPool.BLANK, false, false);
-			}
-
-			content = StringUtil.replaceLast(
-				content, documentLibraryReference.getReference(), url);
-		}
+				content = StringUtil.replaceLast(
+					content, documentLibraryReference.getReference(), url);
+			});
 
 		return content;
 	}
+
+	private void registerWarningCallback(
+		String className, DocumentLibraryReference documentLibraryReference,
+		String modelName, PortletDataContext portletDataContext) {
+
+		TransactionCommitCallbackUtil.registerCallback(
+			() -> {
+				Group group = _groupLocalService.getGroup(
+					portletDataContext.getGroupId());
+
+				boolean companyGroup =
+					_stagingGroupHelper.isCompanyGroup(group);
+
+				_exportImportReportEntryLocalService.
+					addWarningExportImportReportEntry(
+						companyGroup ? 0L :
+							portletDataContext.getGroupId(),
+						group.getCompanyId(),
+						documentLibraryReference.
+							getExternalReferenceCode(),
+						_classNameLocalService.getClassNameId(
+							className),
+						_WARNING, modelName);
+
+				return null;
+			});
+	}
+
+	private static final String _WARNING =
+		"This item may contain a wrong reference to a FileEntry";
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		DLReferencesExportImportContentParser.class);
