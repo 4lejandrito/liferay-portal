@@ -167,7 +167,7 @@ public class DLReferencesExportImportContentParser
 
 				content = StringUtil.replaceLast(
 					content, documentLibraryReference.getReference(), url);
-			});
+			}
 
 		return content;
 	}
