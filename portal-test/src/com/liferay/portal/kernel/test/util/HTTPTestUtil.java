@@ -7,6 +7,7 @@ package com.liferay.portal.kernel.test.util;
 
 import com.liferay.petra.function.UnsafeRunnable;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.servlet.HttpHeaders;
@@ -148,7 +149,13 @@ public class HTTPTestUtil {
 		private String _newBaseURL = _baseURL;
 		private String _newCredentials = _credentials;
 		private boolean _newModulePath = _modulePath;
+		private long _timeout;
 
+		public HTTPTestUtilCustomizer withTimeout(int timeout) {
+			_timeout = timeout;
+
+			return this;
+		}
 	}
 
 	private static Http.Options _getHttpOptions(
@@ -186,6 +193,8 @@ public class HTTPTestUtil {
 				body, ContentTypes.APPLICATION_JSON,
 				StandardCharsets.UTF_8.name());
 		}
+
+		options.setTimeout(100000);
 
 		return options;
 	}

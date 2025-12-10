@@ -316,7 +316,8 @@ public class OpenAPIResourceTest {
 
 	@Test
 	public void testGetOpenAPIInDifferentCompany() throws Exception {
-		JSONObject jsonObject = HTTPTestUtil.invokeToJSONObject(
+		JSONObject jsonObject = HTTPTestUtil.customize(
+		).withTimeout(100000).apply(() -> HTTPTestUtil.invokeToJSONObject(
 			JSONUtil.put(
 				"domain", "able.com"
 			).put(
@@ -325,7 +326,7 @@ public class OpenAPIResourceTest {
 				"virtualHost", "www.able.com"
 			).toString(),
 			"headless-portal-instances/v1.0/portal-instances",
-			Http.Method.POST);
+			Http.Method.POST));
 
 		long companyId = jsonObject.getLong("companyId");
 
