@@ -39,6 +39,10 @@ public class CompanyGroupCapabilityContributor
 				return false;
 			}
 
+			@Override
+			public boolean isStagingCompanyGroup() {
+				return true;
+			}
 		};
 	}
 

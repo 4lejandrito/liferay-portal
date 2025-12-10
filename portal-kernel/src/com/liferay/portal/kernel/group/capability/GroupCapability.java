@@ -16,4 +16,7 @@ public interface GroupCapability {
 
 	public boolean isSupportsPages();
 
+	public default boolean isStagingCompanyGroup() {
+		return false;
+	};
 }

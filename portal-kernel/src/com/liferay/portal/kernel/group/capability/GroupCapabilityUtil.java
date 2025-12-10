@@ -66,4 +66,13 @@ public class GroupCapabilityUtil {
 			SystemBundleUtil.getBundleContext(),
 			GroupCapabilityContributor.class);
 
+	public static boolean isStagingCompanyGroup(Group group) {
+		for (GroupCapability groupCapability : _getGroupCapabilities(group)) {
+			if (groupCapability.isStagingCompanyGroup()) {
+				return true;
+			}
+		}
+
+		return false;
+	}
 }
