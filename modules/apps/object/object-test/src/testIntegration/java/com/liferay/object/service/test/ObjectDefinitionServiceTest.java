@@ -142,7 +142,7 @@ public class ObjectDefinitionServiceTest {
 	public void testAddCustomObjectDefinitionByCMSAdministratorRole()
 		throws Exception {
 
-		CMSTestUtil.getOrAddGroup(ObjectDefinitionServiceTest.class);
+		CMSTestUtil.getOrAddGroup();
 
 		User user = UserTestUtil.addUser();
 
@@ -282,7 +282,7 @@ public class ObjectDefinitionServiceTest {
 	public void testPublishCustomObjectDefinitionByCMSAdministratorRole()
 		throws Exception {
 
-		CMSTestUtil.getOrAddGroup(ObjectDefinitionServiceTest.class);
+		CMSTestUtil.getOrAddGroup();
 
 		User user = UserTestUtil.addUser();
 
