@@ -2580,12 +2580,17 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 
 		Assert.assertEquals(WorkflowConstants.STATUS_EMPTY, layout.getStatus());
 
-		sitePageResource.putSiteSitePage(
+		SitePage putSitePage = sitePageResource.putSiteSitePage(
 			testGroup.getExternalReferenceCode(),
 			sitePage.getExternalReferenceCode(), sitePage);
 
+		assertEquals(sitePage, putSitePage);
+		assertValid(putSitePage);
+
 		layout = _layoutLocalService.getLayoutByExternalReferenceCode(
 			sitePage.getExternalReferenceCode(), testGroup.getGroupId());
+
+		_assertSitePage(layout, putSitePage);
 
 		Assert.assertEquals(
 			WorkflowConstants.STATUS_APPROVED, layout.getStatus());
@@ -2629,12 +2634,17 @@ public class SitePageResourceTest extends BaseSitePageResourceTestCase {
 
 		Assert.assertEquals(WorkflowConstants.STATUS_EMPTY, layout.getStatus());
 
-		sitePageResource.putSiteSitePage(
+		SitePage putSitePage = sitePageResource.putSiteSitePage(
 			testGroup.getExternalReferenceCode(),
 			sitePage.getExternalReferenceCode(), sitePage);
 
+		assertEquals(sitePage, putSitePage);
+		assertValid(putSitePage);
+
 		layout = _layoutLocalService.getLayoutByExternalReferenceCode(
 			sitePage.getExternalReferenceCode(), testGroup.getGroupId());
+
+		_assertSitePage(layout, putSitePage);
 
 		Assert.assertEquals(
 			WorkflowConstants.STATUS_APPROVED, layout.getStatus());
