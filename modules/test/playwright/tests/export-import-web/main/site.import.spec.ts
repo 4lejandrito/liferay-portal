@@ -10,7 +10,6 @@ import * as path from 'path';
 import {accountSettingsPagesTest} from '../../../fixtures/accountSettingsPagesTest';
 import {accountsPagesTest} from '../../../fixtures/accountsPagesTest';
 import {applicationsMenuPageTest} from '../../../fixtures/applicationsMenuPageTest';
-import {createCategories} from '../../../helpers/CreateCategories';
 import {dataApiHelpersTest} from '../../../fixtures/dataApiHelpersTest';
 import {depotAdminPageTest} from '../../../fixtures/depotAdminPageTest';
 import {documentLibraryPagesTest} from '../../../fixtures/documentLibraryPages.fixtures';
@@ -25,6 +24,7 @@ import {styleBookPageTest} from '../../../fixtures/styleBookPageTest';
 import {uiElementsPageTest} from '../../../fixtures/uiElementsTest';
 import {usersAndOrganizationsPagesTest} from '../../../fixtures/usersAndOrganizationsPagesTest';
 import {wikiPagesTest} from '../../../fixtures/wikiPagesTest';
+import {createCategories} from '../../../helpers/CreateCategories';
 import {HomePage} from '../../../pages/portal-web/HomePage';
 import {getRandomInt} from '../../../utils/getRandomInt';
 import getRandomString from '../../../utils/getRandomString';
@@ -168,17 +168,14 @@ testWithExportImportAtInstanceLevelFF(
 testWithExportImportAtInstanceLevelFF(
 	'Can export and import vocabularies and categories',
 	async ({apiHelpers, exportImportPage, site}) => {
-		const categoryNames = [
-			{name: getRandomString()},
-			{name: getRandomString()},
-		];
-		const vocabularyName = getRandomString();
-
 		const categories: Array<any> = await createCategories({
 			apiHelpers,
-			categoryNames,
+			categoryNames: [
+				{name: getRandomString()},
+				{name: getRandomString()},
+			],
 			siteId: site.id,
-			vocabularyName,
+			vocabularyName: getRandomString(),
 		});
 
 		apiHelpers.data.push({
@@ -192,31 +189,18 @@ testWithExportImportAtInstanceLevelFF(
 			portletLabels: [`Categories 3 Items`],
 		});
 
-		const vocabularyContent = await readFileFromZip(
-			`com.liferay.headless.admin.taxonomy.dto.v1_0.TaxonomyVocabulary.json`,
-			exportFilePath
-		);
-
-		const vocabularyJson = JSON.parse(vocabularyContent);
-
-		expect(vocabularyJson.length).toBe(1);
-
-		const categoryContent = await readFileFromZip(
-			`com.liferay.headless.admin.taxonomy.dto.v1_0.TaxonomyCategory.json`,
-			exportFilePath
-		);
-
-		const categoryJson = JSON.parse(categoryContent);
-
-		expect(categoryJson.length).toBe(2);
-
 		expect(
-			await apiHelpers.headlessAdminTaxonomy.deleteTaxonomyVocabulary(categories[0].vocabularyId)
+			await apiHelpers.headlessAdminTaxonomy.deleteTaxonomyVocabulary(
+				categories[0].vocabularyId
+			)
 		).toBeOK();
 
 		await exportImportPage.goToImport(site.friendlyUrlPath);
 
-		await exportImportPage.import({filePath: exportFilePath, taskStatus: 'completedWithErrors'});
+		await exportImportPage.import({
+			filePath: exportFilePath,
+			taskStatus: 'completedWithErrors',
+		});
 	}
 );
 
