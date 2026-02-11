@@ -391,7 +391,8 @@ public class SitePageResourceImpl
 	@Override
 	protected SitePage doPutSiteSitePage(
 			String siteExternalReferenceCode,
-			String sitePageExternalReferenceCode, SitePage sitePage)
+			String sitePageExternalReferenceCode, Boolean privatePages,
+			SitePage sitePage)
 		throws Exception {
 
 		if (!FeatureFlagManagerUtil.isEnabled("LPD-35443")) {
