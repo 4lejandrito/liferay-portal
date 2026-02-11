@@ -204,6 +204,9 @@ public class SitePageResourceImpl
 											"'")),
 							")");
 					}
+				).put(
+					"privatePages",
+					String.valueOf(portletDataContext.isPrivateLayout())
 				).build();
 			}
 
@@ -224,13 +227,7 @@ public class SitePageResourceImpl
 
 			@Override
 			public boolean isActive(PortletDataContext portletDataContext) {
-				if (!portletDataContext.isPrivateLayout() &&
-					FeatureFlagManagerUtil.isEnabled("LPD-35443")) {
-
-					return true;
-				}
-
-				return false;
+				return FeatureFlagManagerUtil.isEnabled("LPD-35443");
 			}
 
 			@Override
@@ -317,9 +314,9 @@ public class SitePageResourceImpl
 
 	@Override
 	protected Page<SitePage> doGetSiteSitePagesPage(
-			String siteExternalReferenceCode, String search,
-			Aggregation aggregation, Filter filter, Pagination pagination,
-			Sort[] sorts)
+			String siteExternalReferenceCode, Boolean privatePages,
+			String search, Aggregation aggregation, Filter filter,
+			Pagination pagination, Sort[] sorts)
 		throws Exception {
 
 		if (!FeatureFlagManagerUtil.isEnabled("LPD-35443")) {
