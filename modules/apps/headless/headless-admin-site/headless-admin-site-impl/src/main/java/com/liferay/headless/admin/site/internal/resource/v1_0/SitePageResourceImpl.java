@@ -319,6 +319,8 @@ public class SitePageResourceImpl
 			Pagination pagination, Sort[] sorts)
 		throws Exception {
 
+		// TODO Take privatePages into account
+
 		if (!FeatureFlagManagerUtil.isEnabled("LPD-35443")) {
 			throw new UnsupportedOperationException();
 		}
@@ -394,6 +396,8 @@ public class SitePageResourceImpl
 			String sitePageExternalReferenceCode, Boolean privatePages,
 			SitePage sitePage)
 		throws Exception {
+
+		// TODO Take privatePages into account
 
 		if (!FeatureFlagManagerUtil.isEnabled("LPD-35443")) {
 			throw new UnsupportedOperationException();
