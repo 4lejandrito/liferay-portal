@@ -9293,6 +9293,10 @@ paths:
                     schema:
                         type: string
                 -   in: query
+                    name: privatePages
+                    schema:
+                        type: boolean
+                -   in: query
                     name: restrictFields
                     schema:
                         type: string
@@ -9338,6 +9342,10 @@ paths:
                     name: nestedFields
                     schema:
                         type: string
+                -   in: query
+                    name: privatePages
+                    schema:
+                        type: boolean
                 -   in: query
                     name: restrictFields
                     schema:
