@@ -83,12 +83,14 @@ public interface SitePageResource {
 
 	public SitePage patchSiteSitePage(
 			String siteExternalReferenceCode,
-			String sitePageExternalReferenceCode, SitePage sitePage)
+			String sitePageExternalReferenceCode, Boolean privatePages,
+			SitePage sitePage)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse patchSiteSitePageHttpResponse(
 			String siteExternalReferenceCode,
-			String sitePageExternalReferenceCode, SitePage sitePage)
+			String sitePageExternalReferenceCode, Boolean privatePages,
+			SitePage sitePage)
 		throws Exception;
 
 	public SitePage postSiteSitePage(
@@ -135,12 +137,14 @@ public interface SitePageResource {
 
 	public SitePage putSiteSitePage(
 			String siteExternalReferenceCode,
-			String sitePageExternalReferenceCode, SitePage sitePage)
+			String sitePageExternalReferenceCode, Boolean privatePages,
+			SitePage sitePage)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse putSiteSitePageHttpResponse(
 			String siteExternalReferenceCode,
-			String sitePageExternalReferenceCode, SitePage sitePage)
+			String sitePageExternalReferenceCode, Boolean privatePages,
+			SitePage sitePage)
 		throws Exception;
 
 	public Page<Permission> putSiteSitePagePermissionsPage(
@@ -741,13 +745,14 @@ public interface SitePageResource {
 
 		public SitePage patchSiteSitePage(
 				String siteExternalReferenceCode,
-				String sitePageExternalReferenceCode, SitePage sitePage)
+				String sitePageExternalReferenceCode, Boolean privatePages,
+				SitePage sitePage)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
 				patchSiteSitePageHttpResponse(
 					siteExternalReferenceCode, sitePageExternalReferenceCode,
-					sitePage);
+					privatePages, sitePage);
 
 			String content = httpResponse.getContent();
 
@@ -810,7 +815,8 @@ public interface SitePageResource {
 
 		public HttpInvoker.HttpResponse patchSiteSitePageHttpResponse(
 				String siteExternalReferenceCode,
-				String sitePageExternalReferenceCode, SitePage sitePage)
+				String sitePageExternalReferenceCode, Boolean privatePages,
+				SitePage sitePage)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -835,6 +841,11 @@ public interface SitePageResource {
 			}
 
 			httpInvoker.httpMethod(HttpInvoker.HttpMethod.PATCH);
+
+			if (privatePages != null) {
+				httpInvoker.parameter(
+					"privatePages", String.valueOf(privatePages));
+			}
 
 			httpInvoker.path(
 				_builder._scheme + "://" + _builder._host + ":" +
@@ -1328,12 +1339,13 @@ public interface SitePageResource {
 
 		public SitePage putSiteSitePage(
 				String siteExternalReferenceCode,
-				String sitePageExternalReferenceCode, SitePage sitePage)
+				String sitePageExternalReferenceCode, Boolean privatePages,
+				SitePage sitePage)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse = putSiteSitePageHttpResponse(
 				siteExternalReferenceCode, sitePageExternalReferenceCode,
-				sitePage);
+				privatePages, sitePage);
 
 			String content = httpResponse.getContent();
 
@@ -1396,7 +1408,8 @@ public interface SitePageResource {
 
 		public HttpInvoker.HttpResponse putSiteSitePageHttpResponse(
 				String siteExternalReferenceCode,
-				String sitePageExternalReferenceCode, SitePage sitePage)
+				String sitePageExternalReferenceCode, Boolean privatePages,
+				SitePage sitePage)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -1421,6 +1434,11 @@ public interface SitePageResource {
 			}
 
 			httpInvoker.httpMethod(HttpInvoker.HttpMethod.PUT);
+
+			if (privatePages != null) {
+				httpInvoker.parameter(
+					"privatePages", String.valueOf(privatePages));
+			}
 
 			httpInvoker.path(
 				_builder._scheme + "://" + _builder._host + ":" +

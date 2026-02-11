@@ -74,7 +74,8 @@ public interface SitePageResource {
 
 	public SitePage patchSiteSitePage(
 			String siteExternalReferenceCode,
-			String sitePageExternalReferenceCode, SitePage sitePage)
+			String sitePageExternalReferenceCode, Boolean privatePages,
+			SitePage sitePage)
 		throws Exception;
 
 	public SitePage postSiteSitePage(
@@ -101,7 +102,8 @@ public interface SitePageResource {
 
 	public SitePage putSiteSitePage(
 			String siteExternalReferenceCode,
-			String sitePageExternalReferenceCode, SitePage sitePage)
+			String sitePageExternalReferenceCode, Boolean privatePages,
+			SitePage sitePage)
 		throws Exception;
 
 	public Page<com.liferay.portal.vulcan.permission.Permission>
