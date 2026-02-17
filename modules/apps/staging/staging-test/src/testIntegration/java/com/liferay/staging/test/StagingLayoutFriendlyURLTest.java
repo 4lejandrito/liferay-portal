@@ -15,14 +15,20 @@ import com.liferay.portal.background.task.service.BackgroundTaskLocalService;
 import com.liferay.portal.kernel.backgroundtask.constants.BackgroundTaskConstants;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.service.LayoutLocalService;
+import com.liferay.portal.kernel.test.util.FeatureFlagTestUtil;
+import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.test.rule.FeatureFlag;
+import com.liferay.portal.test.rule.FeatureFlags;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.List;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,6 +37,9 @@ import org.junit.runner.RunWith;
 /**
  * @author Balázs Sáfrány-Kovalik
  */
+@FeatureFlags(
+	featureFlags = {@FeatureFlag("LPD-35443"), @FeatureFlag("LPD-35914")}
+)
 @RunWith(Arquillian.class)
 public class StagingLayoutFriendlyURLTest extends BaseLocalStagingTestCase {
 
@@ -38,6 +47,18 @@ public class StagingLayoutFriendlyURLTest extends BaseLocalStagingTestCase {
 	@Rule
 	public static final LiferayIntegrationTestRule liferayIntegrationTestRule =
 		new LiferayIntegrationTestRule();
+
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+		FeatureFlagTestUtil.invokeFeatureFlagListeners(
+			TestPropsValues.getCompanyId(), true, "LPD-35914");
+	}
+
+	@AfterClass
+	public static void tearDownClass() throws Exception {
+		FeatureFlagTestUtil.invokeFeatureFlagListeners(
+			TestPropsValues.getCompanyId(), false, "LPD-35914");
+	}
 
 	@Test
 	public void testLayoutFriendlyURL() throws Exception {
