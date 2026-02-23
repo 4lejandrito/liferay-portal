@@ -2316,11 +2316,25 @@ public class ObjectEntryLocalServiceImpl
 			return objectEntry;
 		}
 
-		if ((status == WorkflowConstants.STATUS_APPROVED) &&
-			(displayDate != null) && date.before(displayDate)) {
+		ObjectDefinition objectDefinition =
+			_objectDefinitionPersistence.fetchByPrimaryKey(
+				objectEntry.getObjectDefinitionId());
 
-			status = WorkflowConstants.STATUS_SCHEDULED;
-		}
+		int finalStatus = status;
+
+		status = EmptyModelManagerUtil.solveEmptyModel(
+			objectEntry.getExternalReferenceCode(),
+			objectDefinition.getClassName(), objectEntry.getCompanyId(),
+			objectEntry.getGroupId(), objectEntry.getStatus(),
+			() -> {
+				if ((finalStatus == WorkflowConstants.STATUS_APPROVED) &&
+					(displayDate != null) && date.before(displayDate)) {
+
+					return WorkflowConstants.STATUS_SCHEDULED;
+				}
+
+				return finalStatus;
+			});
 
 		Date expirationDate = objectEntry.getExpirationDate();
 
@@ -2358,10 +2372,6 @@ public class ObjectEntryLocalServiceImpl
 		else {
 			objectEntry = objectEntryPersistence.update(objectEntry);
 		}
-
-		ObjectDefinition objectDefinition =
-			_objectDefinitionPersistence.fetchByPrimaryKey(
-				objectEntry.getObjectDefinitionId());
 
 		if (serviceContext.isStrictAdd()) {
 			boolean indexingEnabled = serviceContext.isIndexingEnabled();
