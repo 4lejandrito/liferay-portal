@@ -41,9 +41,6 @@ import com.liferay.document.library.kernel.service.DLFolderService;
 import com.liferay.document.library.util.DLURLHelper;
 import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
 import com.liferay.exportimport.report.constants.ExportImportReportEntryConstants;
-import com.liferay.exportimport.report.exception.NoSuchExportImportReportEntryException;
-import com.liferay.exportimport.report.model.ExportImportReportEntry;
-import com.liferay.exportimport.report.service.ExportImportReportEntryLocalService;
 import com.liferay.list.type.entry.util.ListTypeEntryUtil;
 import com.liferay.list.type.model.ListTypeDefinition;
 import com.liferay.list.type.model.ListTypeEntry;
@@ -194,7 +191,6 @@ import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.MimeTypesUtil;
-import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.TempFileEntryUtil;
 import com.liferay.portal.kernel.util.UnicodePropertiesBuilder;
@@ -7144,11 +7140,6 @@ public class DefaultObjectEntryManagerImplTest
 				ObjectDefinitionSettingConstants.NAME_ACCEPTED_GROUP_IDS,
 				String.valueOf(depotEntry.getGroupId()));
 
-		ObjectEntry objectEntry = _addObjectEntry(
-			_objectDefinition7,
-			ObjectEntryFolderConstants.PARENT_OBJECT_ENTRY_FOLDER_ID_DEFAULT,
-			String.valueOf(depotEntry.getGroupId()), 1);
-
 		ObjectEntryFolder objectEntryFolder1 =
 			_objectEntryFolderLocalService.addObjectEntryFolder(
 				RandomTestUtil.randomString(), depotEntry.getGroupId(),
@@ -7157,14 +7148,6 @@ public class DefaultObjectEntryManagerImplTest
 					PARENT_OBJECT_ENTRY_FOLDER_ID_DEFAULT,
 				null, null, RandomTestUtil.randomString(),
 				ServiceContextTestUtil.getServiceContext());
-
-		_testMoveObjectEntry(
-			objectEntry.getPropertyValue("textObjectFieldName"),
-			objectEntryFolder1.getObjectEntryFolderId(), objectEntry.getId());
-
-		objectEntry = _defaultObjectEntryManager.expireObjectEntry(
-			dtoConverterContext, objectEntry.getExternalReferenceCode(),
-			_objectDefinition7, String.valueOf(depotEntry.getGroupId()));
 
 		ObjectEntryFolder objectEntryFolder2 =
 			_objectEntryFolderLocalService.addObjectEntryFolder(
@@ -7175,8 +7158,7 @@ public class DefaultObjectEntryManagerImplTest
 				ServiceContextTestUtil.getServiceContext());
 
 		_testMoveObjectEntry(
-			objectEntry.getPropertyValue("textObjectFieldName"),
-			objectEntryFolder2.getObjectEntryFolderId(), objectEntry.getId());
+			depotEntry.getGroupId(), objectEntryFolder1, objectEntryFolder2);
 		_testMoveObjectEntryDuplicateName(
 			depotEntry.getGroupId(), objectEntryFolder2, objectEntryFolder1);
 		_testMoveObjectEntryReplace(
@@ -10496,35 +10478,6 @@ public class DefaultObjectEntryManagerImplTest
 		return dlFileEntry.getFileEntryId();
 	}
 
-	private ExportImportReportEntry _getExportImportReportEntry(
-			long exportImportConfigurationId, ObjectEntry objectEntry,
-			ObjectDefinition objectDefinition)
-		throws Exception {
-
-		for (ExportImportReportEntry exportImportReportEntry :
-				_exportImportReportEntryLocalService.
-					getExportImportReportEntries(
-						TestPropsValues.getCompanyId(),
-						exportImportConfigurationId)) {
-
-			if (Objects.equals(
-					objectEntry.getExternalReferenceCode(),
-					exportImportReportEntry.getClassExternalReferenceCode()) &&
-				Objects.equals(
-					_portal.getClassNameId(objectDefinition.getClassName()),
-					exportImportReportEntry.getClassNameId()) &&
-				(objectEntry.getScopeId() ==
-					exportImportReportEntry.getGroupId()) &&
-				(ExportImportReportEntryConstants.TYPE_EMPTY ==
-					exportImportReportEntry.getType())) {
-
-				return exportImportReportEntry;
-			}
-		}
-
-		throw new NoSuchExportImportReportEntryException();
-	}
-
 	private long _getFileEntryId(ObjectEntry objectEntry) {
 		Map<String, Object> properties = objectEntry.getProperties();
 
@@ -10956,14 +10909,8 @@ public class DefaultObjectEntryManagerImplTest
 				_simpleDTOConverterContext, parentExternalReferenceCode,
 				parentObjectDefinition, scopeKey));
 
-		long exportImportConfigurationId = RandomTestUtil.randomLong();
-
 		try (SafeCloseable safeCloseable =
 				LazyReferencingThreadLocal.setEnabledWithSafeCloseable(true)) {
-
-			ExportImportThreadLocal.setPortletImportInProcess(true);
-			ExportImportThreadLocal.setExportImportConfigurationId(
-				exportImportConfigurationId);
 
 			_addObjectEntry(
 				childObjectDefinition,
@@ -10975,10 +10922,6 @@ public class DefaultObjectEntryManagerImplTest
 				},
 				scopeKey);
 		}
-		finally {
-			ExportImportThreadLocal.setPortletImportInProcess(false);
-			ExportImportThreadLocal.setExportImportConfigurationId(0);
-		}
 
 		ObjectEntry objectEntry = _defaultObjectEntryManager.getObjectEntry(
 			TestPropsValues.getCompanyId(), _simpleDTOConverterContext,
@@ -10987,15 +10930,6 @@ public class DefaultObjectEntryManagerImplTest
 		AssertUtils.assertEquals(groupId, objectEntry.getScopeId());
 
 		_assertObjectEntryStatus(WorkflowConstants.STATUS_EMPTY, objectEntry);
-
-		ExportImportReportEntry exportImportReportEntry =
-			_getExportImportReportEntry(
-				exportImportConfigurationId, objectEntry,
-				parentObjectDefinition);
-
-		Assert.assertEquals(
-			ExportImportReportEntryConstants.STATUS_UNRESOLVED,
-			exportImportReportEntry.getStatus());
 
 		objectEntry = _defaultObjectEntryManager.updateObjectEntry(
 			parentObjectDefinition.getCompanyId(), _simpleDTOConverterContext,
@@ -11012,12 +10946,9 @@ public class DefaultObjectEntryManagerImplTest
 		_assertObjectEntryStatus(
 			WorkflowConstants.STATUS_APPROVED, objectEntry);
 
-		exportImportReportEntry = _getExportImportReportEntry(
-			exportImportConfigurationId, objectEntry, parentObjectDefinition);
-
-		Assert.assertEquals(
+		_assertExportImportReportEntriesStatus(
 			ExportImportReportEntryConstants.STATUS_RESOLVED,
-			exportImportReportEntry.getStatus());
+			exportImportConfigurationId, objectEntry, parentObjectDefinition);
 	}
 
 	private void _testAddRelatedObjectEntry(
@@ -11674,20 +11605,26 @@ public class DefaultObjectEntryManagerImplTest
 	}
 
 	private void _testMoveObjectEntry(
-			Object expectedObjectFieldValue, long objectEntryFolderId,
-			long objectEntryId)
+			long groupId, ObjectEntryFolder sourceObjectEntryFolder,
+			ObjectEntryFolder destinationObjectEntryFolder)
 		throws Exception {
 
-		ObjectEntry objectEntry = _defaultObjectEntryManager.moveObjectEntry(
-			_createDTOConverterContext(adminUser), objectEntryId,
-			objectEntryFolderId, false);
+		ObjectEntry objectEntry1 = _addObjectEntry(
+			_objectDefinition7,
+			sourceObjectEntryFolder.getObjectEntryFolderId(),
+			String.valueOf(groupId), 1);
+
+		ObjectEntry objectEntry2 = _defaultObjectEntryManager.moveObjectEntry(
+			_createDTOConverterContext(adminUser), objectEntry1.getId(),
+			destinationObjectEntryFolder.getObjectEntryFolderId(), false);
 
 		Assert.assertEquals(
-			objectEntryFolderId, (long)objectEntry.getObjectEntryFolderId());
+			objectEntry1.getPropertyValue("textObjectFieldName"),
+			objectEntry2.getPropertyValue("textObjectFieldName"));
 		Assert.assertEquals(
-			String.valueOf(expectedObjectFieldValue),
 			String.valueOf(
-				objectEntry.getPropertyValue("textObjectFieldName")));
+				destinationObjectEntryFolder.getObjectEntryFolderId()),
+			String.valueOf(objectEntry2.getObjectEntryFolderId()));
 	}
 
 	private void _testMoveObjectEntryDuplicateName(
@@ -11709,12 +11646,12 @@ public class DefaultObjectEntryManagerImplTest
 			destinationObjectEntryFolder.getObjectEntryFolderId(), false);
 
 		Assert.assertEquals(
+			objectEntry1.getPropertyValue("textObjectFieldName") + " (Copy)",
+			objectEntry2.getPropertyValue("textObjectFieldName"));
+		Assert.assertEquals(
 			String.valueOf(
 				destinationObjectEntryFolder.getObjectEntryFolderId()),
 			String.valueOf(objectEntry2.getObjectEntryFolderId()));
-		Assert.assertEquals(
-			objectEntry1.getPropertyValue("textObjectFieldName") + " (Copy)",
-			objectEntry2.getPropertyValue("textObjectFieldName"));
 	}
 
 	private void _testMoveObjectEntryGroup(
@@ -12163,10 +12100,6 @@ public class DefaultObjectEntryManagerImplTest
 	private DLURLHelper _dlURLHelper;
 
 	@Inject
-	private ExportImportReportEntryLocalService
-		_exportImportReportEntryLocalService;
-
-	@Inject
 	private GroupLocalService _groupLocalService;
 
 	private String _listTypeEntryKey1;
@@ -12234,9 +12167,6 @@ public class DefaultObjectEntryManagerImplTest
 	private OrganizationLocalService _organizationLocalService;
 
 	private NestedFieldsContext _originalNestedFieldsContext;
-
-	@Inject
-	private Portal _portal;
 
 	@Inject
 	private ResourceActions _resourceActions;
