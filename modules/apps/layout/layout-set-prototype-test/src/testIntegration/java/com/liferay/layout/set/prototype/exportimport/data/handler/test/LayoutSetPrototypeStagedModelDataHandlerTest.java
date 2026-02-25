@@ -6,7 +6,6 @@
 package com.liferay.layout.set.prototype.exportimport.data.handler.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
-import com.liferay.exportimport.kernel.lar.ExportImportPathUtil;
 import com.liferay.exportimport.test.util.lar.BaseStagedModelDataHandlerTestCase;
 import com.liferay.layout.page.template.kernel.provider.util.LayoutPageTemplateEntryLayoutProviderUtil;
 import com.liferay.layout.test.util.LayoutTestUtil;
@@ -26,18 +25,9 @@ import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
-import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.kernel.xml.Document;
-import com.liferay.portal.kernel.xml.DocumentException;
-import com.liferay.portal.kernel.xml.Element;
-import com.liferay.portal.kernel.xml.UnsecureSAXReaderUtil;
-import com.liferay.portal.kernel.zip.ZipReader;
 import com.liferay.portal.kernel.zip.ZipReaderFactory;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
-
-import java.io.IOException;
-import java.io.InputStream;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -266,52 +256,17 @@ public class LayoutSetPrototypeStagedModelDataHandlerTest
 	}
 
 	protected Layout importLayoutFromLAR(StagedModel stagedModel)
-		throws DocumentException, IOException {
+		throws Exception {
 
 		LayoutSetPrototype layoutSetPrototype = (LayoutSetPrototype)stagedModel;
 
-		String fileName = layoutSetPrototype.getLayoutSetPrototypeId() + ".lar";
+		List<Layout> importedLayouts = LayoutLocalServiceUtil.getAllLayouts(
+			layoutSetPrototype.getGroupId(), true, "portlet");
 
-		String modelPath = ExportImportPathUtil.getModelPath(
-			stagedModel, fileName);
+		Assert.assertEquals(
+			importedLayouts.toString(), 1, importedLayouts.size());
 
-		try (InputStream inputStream =
-				portletDataContext.getZipEntryAsInputStream(modelPath)) {
-
-			try (ZipReader zipReader = _zipReaderFactory.getZipReader(
-					inputStream)) {
-
-				Document document = UnsecureSAXReaderUtil.read(
-					zipReader.getEntryAsString("manifest.xml"));
-
-				Element rootElement = document.getRootElement();
-
-				Element layoutElement = rootElement.element("Layout");
-
-				List<Element> elements = layoutElement.elements();
-
-				List<Layout> importedLayouts = new ArrayList<>(elements.size());
-
-				for (Element element : elements) {
-					String layoutPrototypeUuid = element.attributeValue(
-						"layout-prototype-uuid");
-
-					if (Validator.isNotNull(layoutPrototypeUuid)) {
-						String path = element.attributeValue("path");
-
-						Layout layout = (Layout)portletDataContext.fromXML(
-							zipReader.getEntryAsString(path));
-
-						importedLayouts.add(layout);
-					}
-				}
-
-				Assert.assertEquals(
-					importedLayouts.toString(), 1, importedLayouts.size());
-
-				return importedLayouts.get(0);
-			}
-		}
+		return importedLayouts.get(0);
 	}
 
 	@Override
