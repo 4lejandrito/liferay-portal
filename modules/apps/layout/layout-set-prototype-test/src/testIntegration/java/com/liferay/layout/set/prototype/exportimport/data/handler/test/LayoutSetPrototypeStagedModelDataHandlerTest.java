@@ -360,6 +360,10 @@ public class LayoutSetPrototypeStagedModelDataHandlerTest
 					layout.getUuid(), groupId, layout.isPrivateLayout());
 
 			Assert.assertNotNull(importedLayout);
+
+			// TODO This assertion is failing because the type settings are not
+			// exported in the pages API. If you remove it the test passes.
+
 			Assert.assertEquals(
 				layout.getTypeSettingsProperty(
 					LayoutSetPrototypeStagedModelDataHandlerTest.class.
