@@ -41,6 +41,7 @@ import com.liferay.document.library.kernel.service.DLFolderService;
 import com.liferay.document.library.util.DLURLHelper;
 import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
 import com.liferay.exportimport.report.constants.ExportImportReportEntryConstants;
+import com.liferay.exportimport.report.exception.NoSuchExportImportReportEntryException;
 import com.liferay.exportimport.report.model.ExportImportReportEntry;
 import com.liferay.exportimport.report.service.ExportImportReportEntryLocalService;
 import com.liferay.list.type.entry.util.ListTypeEntryUtil;
@@ -10038,40 +10039,6 @@ public class DefaultObjectEntryManagerImplTest
 			});
 	}
 
-	private void _assertExportImportReportEntriesStatus(
-			int expectedStatus, long exportImportConfigurationId,
-			ObjectEntry objectEntry, ObjectDefinition objectDefinition)
-		throws Exception {
-
-		boolean hasExportImportReportEntry = false;
-
-		for (ExportImportReportEntry exportImportReportEntry :
-				_exportImportReportEntryLocalService.
-					getExportImportReportEntries(
-						TestPropsValues.getCompanyId(),
-						exportImportConfigurationId)) {
-
-			if (Objects.equals(
-					objectEntry.getExternalReferenceCode(),
-					exportImportReportEntry.getClassExternalReferenceCode()) &&
-				Objects.equals(
-					_portal.getClassNameId(objectDefinition.getClassName()),
-					exportImportReportEntry.getClassNameId()) &&
-				(objectEntry.getScopeId() ==
-					exportImportReportEntry.getGroupId()) &&
-				(ExportImportReportEntryConstants.TYPE_EMPTY ==
-					exportImportReportEntry.getType())) {
-
-				Assert.assertEquals(
-					expectedStatus, exportImportReportEntry.getStatus());
-
-				hasExportImportReportEntry = true;
-			}
-		}
-
-		Assert.assertTrue(hasExportImportReportEntry);
-	}
-
 	private void _assertFailureWithStatusInTrash(
 			UnsafeConsumer<String, Exception> unsafeConsumer)
 		throws Exception {
@@ -10513,6 +10480,35 @@ public class DefaultObjectEntryManagerImplTest
 			ServiceContextTestUtil.getServiceContext(_group.getGroupId()));
 
 		return dlFileEntry.getFileEntryId();
+	}
+
+	private ExportImportReportEntry _getExportImportReportEntry(
+			long exportImportConfigurationId, ObjectEntry objectEntry,
+			ObjectDefinition objectDefinition)
+		throws Exception {
+
+		for (ExportImportReportEntry exportImportReportEntry :
+				_exportImportReportEntryLocalService.
+					getExportImportReportEntries(
+						TestPropsValues.getCompanyId(),
+						exportImportConfigurationId)) {
+
+			if (Objects.equals(
+					objectEntry.getExternalReferenceCode(),
+					exportImportReportEntry.getClassExternalReferenceCode()) &&
+				Objects.equals(
+					_portal.getClassNameId(objectDefinition.getClassName()),
+					exportImportReportEntry.getClassNameId()) &&
+				(objectEntry.getScopeId() ==
+					exportImportReportEntry.getGroupId()) &&
+				(ExportImportReportEntryConstants.TYPE_EMPTY ==
+					exportImportReportEntry.getType())) {
+
+				return exportImportReportEntry;
+			}
+		}
+
+		throw new NoSuchExportImportReportEntryException();
 	}
 
 	private long _getFileEntryId(ObjectEntry objectEntry) {
@@ -10978,9 +10974,14 @@ public class DefaultObjectEntryManagerImplTest
 
 		_assertObjectEntryStatus(WorkflowConstants.STATUS_EMPTY, objectEntry);
 
-		_assertExportImportReportEntriesStatus(
+		ExportImportReportEntry exportImportReportEntry =
+			_getExportImportReportEntry(
+				exportImportConfigurationId, objectEntry,
+				parentObjectDefinition);
+
+		Assert.assertEquals(
 			ExportImportReportEntryConstants.STATUS_UNRESOLVED,
-			exportImportConfigurationId, objectEntry, parentObjectDefinition);
+			exportImportReportEntry.getStatus());
 
 		objectEntry = _defaultObjectEntryManager.updateObjectEntry(
 			parentObjectDefinition.getCompanyId(), _simpleDTOConverterContext,
@@ -10997,9 +10998,12 @@ public class DefaultObjectEntryManagerImplTest
 		_assertObjectEntryStatus(
 			WorkflowConstants.STATUS_APPROVED, objectEntry);
 
-		_assertExportImportReportEntriesStatus(
-			ExportImportReportEntryConstants.STATUS_RESOLVED,
+		exportImportReportEntry = _getExportImportReportEntry(
 			exportImportConfigurationId, objectEntry, parentObjectDefinition);
+
+		Assert.assertEquals(
+			ExportImportReportEntryConstants.STATUS_RESOLVED,
+			exportImportReportEntry.getStatus());
 	}
 
 	private void _testAddRelatedObjectEntry(
