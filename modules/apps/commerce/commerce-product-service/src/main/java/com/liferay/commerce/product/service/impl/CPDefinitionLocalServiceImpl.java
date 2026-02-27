@@ -1316,8 +1316,14 @@ public class CPDefinitionLocalServiceImpl
 						CPDefinition lastApprovedCPDefinition =
 							lastApprovedCPDefinitions.get(0);
 
-						_cProductLocalService.updatePublishedCPDefinitionId(
-							cProduct.getCProductId(),
+						cProduct.setPublishedCPDefinitionId(
+							lastApprovedCPDefinition.getCPDefinitionId());
+						cProduct.setLatestVersion(
+							lastApprovedCPDefinition.getVersion());
+
+						_cProductLocalService.updateCProduct(cProduct);
+
+						_reindexCPDefinition(
 							lastApprovedCPDefinition.getCPDefinitionId());
 					}
 				}
@@ -1428,7 +1434,7 @@ public class CPDefinitionLocalServiceImpl
 
 	@Override
 	public CPDefinition fetchCPDefinitionByCProductExternalReferenceCode(
-		String externalReferenceCode, long companyId) {
+		String externalReferenceCode, long companyId, boolean excludeDraft) {
 
 		if (Validator.isNull(externalReferenceCode)) {
 			return null;
@@ -1445,6 +1451,12 @@ public class CPDefinitionLocalServiceImpl
 		CPDefinition cpDefinition = cpDefinitionPersistence.fetchByPrimaryKey(
 			cProduct.getPublishedCPDefinitionId());
 
+		if (excludeDraft &&
+			((cpDefinition == null) || !cpDefinition.isApproved())) {
+
+			return null;
+		}
+
 		if (cpDefinition != null) {
 			return cpDefinition;
 		}
@@ -1454,7 +1466,9 @@ public class CPDefinitionLocalServiceImpl
 	}
 
 	@Override
-	public CPDefinition fetchCPDefinitionByCProductId(long cProductId) {
+	public CPDefinition fetchCPDefinitionByCProductId(
+		long cProductId, boolean excludeDraft) {
+
 		CProduct cProduct = _cProductLocalService.fetchCProduct(cProductId);
 
 		if (cProduct == null) {
@@ -1463,6 +1477,12 @@ public class CPDefinitionLocalServiceImpl
 
 		CPDefinition cpDefinition = cpDefinitionPersistence.fetchByPrimaryKey(
 			cProduct.getPublishedCPDefinitionId());
+
+		if (excludeDraft &&
+			((cpDefinition == null) || !cpDefinition.isApproved())) {
+
+			return null;
+		}
 
 		if (cpDefinition != null) {
 			return cpDefinition;
@@ -2494,6 +2514,25 @@ public class CPDefinitionLocalServiceImpl
 
 			_assetEntryLocalService.updateVisible(
 				CPDefinition.class.getName(), cpDefinitionId, false);
+
+			// CProduct
+
+			long publishedCPDefinitionId = 0;
+
+			CPDefinition latestApprovedCPDefinition =
+				cpDefinitionPersistence.fetchByC_S_First(
+					cpDefinition.getCProductId(),
+					WorkflowConstants.STATUS_APPROVED,
+					OrderByComparatorFactoryUtil.create(
+						"CPDefinition", "version", "desc"));
+
+			if (latestApprovedCPDefinition != null) {
+				publishedCPDefinitionId =
+					latestApprovedCPDefinition.getCPDefinitionId();
+			}
+
+			_cProductLocalService.updatePublishedCPDefinitionId(
+				cpDefinition.getCProductId(), publishedCPDefinitionId);
 		}
 
 		// Commerce product instances
@@ -3012,6 +3051,15 @@ public class CPDefinitionLocalServiceImpl
 		return false;
 	}
 
+	private void _reindexCPDefinition(long cpDefinitionId)
+		throws PortalException {
+
+		Indexer<CPDefinition> indexer = IndexerRegistryUtil.nullSafeGetIndexer(
+			CPDefinition.class);
+
+		indexer.reindex(CPDefinition.class.getName(), cpDefinitionId);
+	}
+
 	private void _reindexCPDefinitionOptionRels(CPDefinition cpDefinition)
 		throws PortalException {
 
@@ -3076,10 +3124,21 @@ public class CPDefinitionLocalServiceImpl
 
 			Map<String, Serializable> workflowContext = new HashMap<>();
 
-			cpDefinition = WorkflowHandlerRegistryUtil.startWorkflowInstance(
-				cpDefinition.getCompanyId(), cpDefinition.getGroupId(), userId,
-				CPDefinition.class.getName(), cpDefinition.getCPDefinitionId(),
-				cpDefinition, serviceContext, workflowContext);
+			if (serviceContext.getWorkflowAction() ==
+					WorkflowConstants.ACTION_PUBLISH) {
+
+				cpDefinition =
+					WorkflowHandlerRegistryUtil.startWorkflowInstance(
+						cpDefinition.getCompanyId(), cpDefinition.getGroupId(),
+						userId, CPDefinition.class.getName(),
+						cpDefinition.getCPDefinitionId(), cpDefinition,
+						serviceContext, workflowContext);
+			}
+			else {
+				cpDefinition = cpDefinitionLocalService.updateStatus(
+					userId, cpDefinition.getCPDefinitionId(),
+					cpDefinition.getStatus(), serviceContext, workflowContext);
+			}
 		}
 		finally {
 			ObjectActionThreadLocal.setSkipObjectActionExecution(
