@@ -171,7 +171,7 @@ public class UploadAttachmentMVCActionCommandTest {
 		_testProcessAction(RandomTestUtil.randomInt(1, 10));
 	}
 
-	private FileItem _getFileItem(int fileSize) throws Exception {
+	private FileItem _getFileItem(int size) throws Exception {
 		Path path = Files.createTempFile(null, ".txt");
 
 		Files.write(path, "".getBytes());
@@ -195,7 +195,7 @@ public class UploadAttachmentMVCActionCommandTest {
 				}
 
 				public long getSize() {
-					return fileSize;
+					return size;
 				}
 
 				public File getStoreLocation() {
@@ -241,7 +241,7 @@ public class UploadAttachmentMVCActionCommandTest {
 		return mockHttpServletRequest;
 	}
 
-	private void _testProcessAction(int fileSize) throws Exception {
+	private void _testProcessAction(int size) throws Exception {
 		ReflectionTestUtil.setFieldValue(
 			_uploadHandler, "_portal",
 			ProxyUtil.newProxyInstance(
@@ -259,7 +259,7 @@ public class UploadAttachmentMVCActionCommandTest {
 							_getMockHttpServletRequest(
 								_objectField.getObjectFieldId()),
 							HashMapBuilder.put(
-								"file", new FileItem[] {_getFileItem(fileSize)}
+								"file", new FileItem[] {_getFileItem(size)}
 							).build(),
 							new HashMap<>()),
 						null, RandomTestUtil.randomString());
