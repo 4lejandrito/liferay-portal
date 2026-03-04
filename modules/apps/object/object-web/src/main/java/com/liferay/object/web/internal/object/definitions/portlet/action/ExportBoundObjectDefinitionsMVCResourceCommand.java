@@ -62,34 +62,16 @@ public class ExportBoundObjectDefinitionsMVCResourceCommand
 			throw new UnsupportedOperationException();
 		}
 
-		ObjectDefinitionResource.Builder builder =
-			_objectDefinitionResourceFactory.create();
-
-		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		ObjectDefinitionResource objectDefinitionResource = builder.user(
-			themeDisplay.getUser()
-		).build();
+		JSONArray jsonArray = _jsonFactory.createJSONArray();
+		Set<Long> objectDefinitionIds = new HashSet<>();
 
 		long objectDefinitionId = ParamUtil.getLong(
 			resourceRequest, "objectDefinitionId");
+		ObjectDefinitionResource objectDefinitionResource =
+			_getObjectDefinitionResource(resourceRequest);
 
-		ObjectDefinition rootObjectDefinition =
-			objectDefinitionResource.getObjectDefinition(objectDefinitionId);
-
-		ObjectDefinitionTreeFactory objectDefinitionTreeFactory =
-			new ObjectDefinitionTreeFactory(
-				_objectDefinitionLocalService, _objectRelationshipLocalService);
-
-		Tree tree = objectDefinitionTreeFactory.create(
-			rootObjectDefinition.getId());
-
-		Iterator<Node> iterator = tree.iterator();
-
-		JSONArray jsonArray = _jsonFactory.createJSONArray();
-
-		Set<Long> objectDefinitionIds = new HashSet<>();
+		Iterator<Node> iterator = _getTreeIterator(
+			objectDefinitionId, objectDefinitionResource);
 
 		while (iterator.hasNext()) {
 			Node node = iterator.next();
@@ -132,6 +114,38 @@ public class ExportBoundObjectDefinitionsMVCResourceCommand
 				"Bound_Object_Definitions_", objectDefinitionId,
 				StringPool.UNDERLINE, Time.getTimestamp(), ".json"),
 			json.getBytes(), ContentTypes.APPLICATION_JSON);
+	}
+
+	private ObjectDefinitionResource _getObjectDefinitionResource(
+		ResourceRequest resourceRequest) {
+
+		ObjectDefinitionResource.Builder builder =
+			_objectDefinitionResourceFactory.create();
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)resourceRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		return builder.user(
+			themeDisplay.getUser()
+		).build();
+	}
+
+	private Iterator<Node> _getTreeIterator(
+			long objectDefinitionId,
+			ObjectDefinitionResource objectDefinitionResource)
+		throws Exception {
+
+		ObjectDefinitionTreeFactory objectDefinitionTreeFactory =
+			new ObjectDefinitionTreeFactory(
+				_objectDefinitionLocalService, _objectRelationshipLocalService);
+
+		ObjectDefinition rootObjectDefinition =
+			objectDefinitionResource.getObjectDefinition(objectDefinitionId);
+
+		Tree tree = objectDefinitionTreeFactory.create(
+			rootObjectDefinition.getId());
+
+		return tree.iterator();
 	}
 
 	@Reference
