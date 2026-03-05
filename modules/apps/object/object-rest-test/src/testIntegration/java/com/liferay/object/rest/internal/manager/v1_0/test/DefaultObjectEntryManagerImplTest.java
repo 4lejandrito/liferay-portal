@@ -9180,16 +9180,16 @@ public class DefaultObjectEntryManagerImplTest
 			},
 			_group.getGroupKey());
 
-		RoleTestUtil.addResourcePermission(
-			RoleConstants.USER, _objectDefinition4.getClassName(),
+		RoleTestUtil.removeResourcePermission(
+			RoleConstants.USER, ObjectEntryFolder.class.getName(),
 			ResourceConstants.SCOPE_GROUP, String.valueOf(_group.getGroupId()),
 			ActionKeys.VIEW);
 		RoleTestUtil.addResourcePermission(
 			RoleConstants.USER, _objectDefinition4.getClassName(),
 			ResourceConstants.SCOPE_GROUP, String.valueOf(_group.getGroupId()),
 			ActionKeys.UPDATE);
-		RoleTestUtil.removeResourcePermission(
-			RoleConstants.USER, ObjectEntryFolder.class.getName(),
+		RoleTestUtil.addResourcePermission(
+			RoleConstants.USER, _objectDefinition4.getClassName(),
 			ResourceConstants.SCOPE_GROUP, String.valueOf(_group.getGroupId()),
 			ActionKeys.VIEW);
 
