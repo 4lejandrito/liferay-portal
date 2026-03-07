@@ -889,6 +889,10 @@ public class JournalArticleStagedModelDataHandlerTest
 	public void testRenameDLFolder() throws Exception {
 		initExport();
 
+		JournalArticle journalArticle = null;
+
+		Class<?> clazz = getClass();
+
 		DDMFormDeserializerDeserializeRequest.Builder builder =
 			DDMFormDeserializerDeserializeRequest.Builder.newBuilder(
 				JSONUtil.put(
@@ -914,10 +918,6 @@ public class JournalArticleStagedModelDataHandlerTest
 		DDMStructure ddmStructure = DDMStructureTestUtil.addStructure(
 			stagingGroup.getGroupId(), JournalArticle.class.getName(),
 			ddmFormDeserializerDeserializeResponse.getDDMForm());
-
-		Class<?> clazz = getClass();
-
-		JournalArticle journalArticle = null;
 
 		try (InputStream inputStream = clazz.getResourceAsStream(
 				"/com/liferay/journal/dependencies/liferay.png")) {
