@@ -33,7 +33,7 @@ public class OptionCategoryKeyExceptionMapper
 		CPOptionCategoryKeyException cpOptionCategoryKeyException) {
 
 		return new Problem(
-			Response.Status.BAD_REQUEST, "The Option Category Key is invalid");
+			Response.Status.BAD_REQUEST, "Option category key is invalid");
 	}
 
 }
