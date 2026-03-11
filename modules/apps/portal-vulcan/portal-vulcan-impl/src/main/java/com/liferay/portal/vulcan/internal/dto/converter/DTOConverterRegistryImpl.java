@@ -9,13 +9,16 @@ import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMap;
 import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.vulcan.dto.converter.DTOConverter;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterRegistry;
 
+import java.util.Comparator;
 import java.util.Set;
 
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -68,7 +71,8 @@ public class DTOConverterRegistryImpl implements DTOConverterRegistry {
 					emitter.emit(
 						_getKey(applicationName, dtoClassName, version));
 				}
-			});
+			},
+			_defaultDTOConverterServiceReferenceComparator);
 	}
 
 	@Deactivate
@@ -83,6 +87,21 @@ public class DTOConverterRegistryImpl implements DTOConverterRegistry {
 			applicationName, StringPool.POUND, dtoClassName, StringPool.POUND,
 			version);
 	}
+
+	private static final Comparator<ServiceReference<DTOConverter<?, ?>>>
+		_defaultDTOConverterServiceReferenceComparator =
+			(serviceReference1, serviceReference2) -> {
+				boolean defaultDTOConverter1 = GetterUtil.getBoolean(
+					serviceReference1.getProperty("default"));
+				boolean defaultDTOConverter2 = GetterUtil.getBoolean(
+					serviceReference2.getProperty("default"));
+
+				if (defaultDTOConverter1 != defaultDTOConverter2) {
+					return defaultDTOConverter1 ? -1 : 1;
+				}
+
+				return serviceReference2.compareTo(serviceReference1);
+			};
 
 	private ServiceTrackerMap<String, DTOConverter<?, ?>> _serviceTrackerMap;
 
