@@ -1,7 +1,9 @@
 ---
+
 name: test-plan
 description: Generate a targeted local test plan for branch changes. Use when the user wants to know what tests to run before merging, asks for a test plan, wants to validate their changes locally, or mentions running tests for their branch. This skill analyzes commits on top of master and produces a runnable shell script with unit, integration, playwright, and poshi tests that fit within a 20-minute local run budget.
 allowed-tools: [Read, Glob, Grep, Bash, Agent]
+
 ---
 
 # Test Plan Generator
@@ -52,17 +54,24 @@ For each area that could break, search for test files. Use parallel Agent/Glob c
 Apply this priority order:
 
 **Always include:**
+
 1. Unit tests for directly changed code — fast (~5-15s per class), highest signal
-2. Integration tests that directly test changed functionality
-3. Tests that exercise the core logic change end-to-end
+
+1. Integration tests that directly test changed functionality
+
+1. Tests that exercise the core logic change end-to-end
 
 **Include if budget allows:**
-4. Representative integration tests from affected downstream modules — pick a few that cover different usage patterns rather than running all of them
-5. Playwright tests for affected web modules (~1-3 min per spec)
+
+1. Representative integration tests from affected downstream modules — pick a few that cover different usage patterns rather than running all of them
+
+1. Playwright tests for affected web modules (~1-3 min per spec)
 
 **Include if still within budget:**
-6. Poshi tests (~2-5 min each)
-7. More downstream module tests for broader coverage
+
+1. Poshi tests (~2-5 min each)
+
+1. More downstream module tests for broader coverage
 
 When the change affects many modules (e.g., a framework change), don't try to test every single module. Pick a diverse sample that covers different usage patterns of the changed code.
 

@@ -3,6 +3,7 @@
 ## Module Structure
 
 Standard module layout:
+
 ```
 modules/apps/{module-group}/
 ├── {module}-api/           # API/interfaces (rarely has tests)
@@ -64,14 +65,17 @@ modules/apps/{module-group}/
 ## Mapping Source Changes to Tests
 
 ### Direct mapping (same module)
+
 A change to `modules/apps/blogs/blogs-service/src/main/java/com/liferay/blogs/internal/util/PingbackMethodImpl.java` maps to:
 - Unit test: `modules/apps/blogs/blogs-service/src/test/java/com/liferay/blogs/internal/util/PingbackMethodImplTest.java`
 
 ### Cross-module mapping (test module)
+
 A change to `modules/apps/blogs/blogs-service/` maps to:
 - Integration tests in: `modules/apps/blogs/blogs-test/src/testIntegration/java/`
 
 ### Using test.properties for broader mapping
+
 Each module group has a `test.properties` at `modules/apps/{module-group}/test.properties` containing:
 
 ```properties
@@ -91,6 +95,7 @@ modules.includes.required.test.batch.class.names.includes[modules-integration-po
 Use `testray.main.component.name` to find related poshi `.testcase` files by searching for matching `@component-name` or `testray.main.component.name` properties inside them.
 
 ### Playwright mapping
+
 Map the module's web component name to its playwright directory:
 - Change in `modules/apps/blogs/blogs-web/` → tests in `modules/test/playwright/tests/blogs-web/`
 - Change in `modules/apps/document-library/document-library-web/` → tests in `modules/test/playwright/tests/document-library-web/`
