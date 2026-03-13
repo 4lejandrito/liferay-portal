@@ -667,7 +667,7 @@ public class LayoutUtil {
 			return null;
 		}
 
-		return URLUtil.getByteArray(iconImageURL.getUrl());
+		return HttpUtil.URLtoByteArray(iconImageURL.getUrl());
 	}
 
 	private static String _getMasterLayoutPageTemplateEntryERC(
