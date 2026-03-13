@@ -1845,11 +1845,11 @@ public class TaxonomyCategoryResourceTest
 				putTaxonomyCategory.getParentTaxonomyCategory();
 
 			Assert.assertEquals(
-				putParentTaxonomyCategory.getId(),
-				Long.valueOf(assetCategory.getParentCategoryId()));
-			Assert.assertEquals(
 				putParentTaxonomyCategory.getExternalReferenceCode(),
 				parentAssetCategory.getExternalReferenceCode());
+			Assert.assertEquals(
+				putParentTaxonomyCategory.getId(),
+				Long.valueOf(assetCategory.getParentCategoryId()));
 		}
 	}
 
