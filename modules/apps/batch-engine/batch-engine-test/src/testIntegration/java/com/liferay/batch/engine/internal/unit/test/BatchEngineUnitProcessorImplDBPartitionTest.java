@@ -66,7 +66,9 @@ public class BatchEngineUnitProcessorImplDBPartitionTest {
 	}
 
 	@Test
-	public void testGetAdminUserIdResolvesCorrectPartition() throws Exception {
+	public void testGetAdminUserIdResolvesCorrectDBPartition()
+		throws Exception {
+
 		Assert.assertEquals(
 			TestPropsValues.getUserId(),
 			(long)ReflectionTestUtil.invoke(
@@ -98,7 +100,6 @@ public class BatchEngineUnitProcessorImplDBPartitionTest {
 					_batchEngineUnitProcessor, "_getAdminUserId",
 					new Class<?>[] {long.class},
 					TestPropsValues.getCompanyId()));
-
 			Assert.assertEquals(
 				user.getUserId(),
 				(long)ReflectionTestUtil.invoke(
@@ -116,7 +117,6 @@ public class BatchEngineUnitProcessorImplDBPartitionTest {
 					_batchEngineUnitProcessor, "_getAdminUserId",
 					new Class<?>[] {long.class},
 					TestPropsValues.getCompanyId()));
-
 			Assert.assertEquals(
 				user.getUserId(),
 				(long)ReflectionTestUtil.invoke(
