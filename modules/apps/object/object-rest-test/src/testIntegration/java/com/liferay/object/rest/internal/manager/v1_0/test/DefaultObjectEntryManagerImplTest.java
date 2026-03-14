@@ -5772,20 +5772,6 @@ public class DefaultObjectEntryManagerImplTest
 
 		objectDefinitionLocalService.updateObjectDefinition(_objectDefinition2);
 
-		com.liferay.portal.kernel.repository.model.FileEntry fileEntry =
-			_dlAppLocalService.getFileEntry(_getFileEntryId(childObjectEntry1));
-
-		testGetObjectEntries(
-			HashMapBuilder.put(
-				"search", fileEntry.getTitle()
-			).build(),
-			childObjectEntry1);
-		testGetObjectEntries(
-			HashMapBuilder.put(
-				"search", StringUtil.toLowerCase(fileEntry.getTitle())
-			).build(),
-			childObjectEntry1);
-
 		long originalTitleObjectFieldId =
 			_objectDefinition1.getTitleObjectFieldId();
 
@@ -5811,6 +5797,20 @@ public class DefaultObjectEntryManagerImplTest
 		_objectDefinition1 =
 			objectDefinitionLocalService.updateObjectDefinition(
 				_objectDefinition1);
+
+		com.liferay.portal.kernel.repository.model.FileEntry fileEntry =
+			_dlAppLocalService.getFileEntry(_getFileEntryId(childObjectEntry1));
+
+		testGetObjectEntries(
+			HashMapBuilder.put(
+				"search", fileEntry.getTitle()
+			).build(),
+			childObjectEntry1);
+		testGetObjectEntries(
+			HashMapBuilder.put(
+				"search", StringUtil.toLowerCase(fileEntry.getTitle())
+			).build(),
+			childObjectEntry1);
 
 		// "Starts with" expression
 
