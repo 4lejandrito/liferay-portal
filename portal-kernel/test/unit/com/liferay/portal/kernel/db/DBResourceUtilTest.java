@@ -31,16 +31,8 @@ import org.osgi.framework.Bundle;
 public class DBResourceUtilTest {
 
 	@Test
-	public void testGetModuleIndexesSQLWithUnixLineSeparator()
-		throws Exception {
-
+	public void testGetModuleIndexesSQL() throws Exception {
 		_testGetModuleIndexesSQL(StringPool.NEW_LINE);
-	}
-
-	@Test
-	public void testGetModuleIndexesSQLWithWindowsLineSeparator()
-		throws Exception {
-
 		_testGetModuleIndexesSQL(StringPool.RETURN_NEW_LINE);
 	}
 
@@ -86,6 +78,8 @@ public class DBResourceUtilTest {
 	private void _testGetModuleIndexesSQL(String lineSeparator)
 		throws Exception {
 
+		Bundle bundle = Mockito.mock(Bundle.class);
+
 		URL url = Mockito.mock(URL.class);
 
 		Mockito.when(
@@ -93,8 +87,6 @@ public class DBResourceUtilTest {
 		).thenReturn(
 			_getSQLFileInputStream(lineSeparator)
 		);
-
-		Bundle bundle = Mockito.mock(Bundle.class);
 
 		Mockito.when(
 			bundle.getResource(ArgumentMatchers.anyString())
