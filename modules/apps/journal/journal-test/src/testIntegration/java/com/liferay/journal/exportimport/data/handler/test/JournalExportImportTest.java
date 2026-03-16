@@ -140,8 +140,6 @@ public class JournalExportImportTest extends BasePortletExportImportTestCase {
 
 		Group randomGroup = GroupTestUtil.addGroup();
 
-		long groupId = randomGroup.getGroupId();
-
 		Layout parentLayout = LayoutTestUtil.addTypePortletLayout(randomGroup);
 
 		Layout childLayout = LayoutTestUtil.addTypePortletLayout(
@@ -157,11 +155,13 @@ public class JournalExportImportTest extends BasePortletExportImportTestCase {
 
 		DataDefinition dataDefinition =
 			DataDefinitionTestUtil.addDataDefinition(
-				"journal", _dataDefinitionResourceFactory, groupId,
-				_read("data_definition.json"), TestPropsValues.getUser());
+				"journal", _dataDefinitionResourceFactory,
+				randomGroup.getGroupId(), _read("data_definition.json"),
+				TestPropsValues.getUser());
 
 		JournalArticle article = JournalTestUtil.addArticleWithXMLContent(
-			groupId, content, dataDefinition.getDataDefinitionKey(), null);
+			randomGroup.getGroupId(), content,
+			dataDefinition.getDataDefinitionKey(), null);
 
 		exportPortlet(JournalPortletKeys.JOURNAL, parentLayout);
 
