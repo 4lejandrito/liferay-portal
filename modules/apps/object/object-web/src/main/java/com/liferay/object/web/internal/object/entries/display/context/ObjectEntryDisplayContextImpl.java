@@ -1338,9 +1338,7 @@ public class ObjectEntryDisplayContextImpl
 				"objectDefinitionExternalReferenceCode",
 				objectDefinition.getExternalReferenceCode());
 
-			ddmFormField.setProperty(
-				"objectEntryExternalReferenceCode",
-				objectEntry.getExternalReferenceCode());
+			ddmFormField.setProperty("objectEntryId", objectEntry.getId());
 		}
 
 		ddmFormField.setReadOnly(readOnly);
