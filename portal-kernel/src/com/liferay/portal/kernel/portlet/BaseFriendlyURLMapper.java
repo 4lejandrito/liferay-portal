@@ -269,12 +269,12 @@ public abstract class BaseFriendlyURLMapper implements FriendlyURLMapper {
 		String queryString = HttpComponentsUtil.getQueryString(fileName);
 
 		if (Validator.isNull(queryString)) {
-			return _readContent(portlet, fileName);
+			return _read(portlet, fileName);
 		}
 
 		int pos = fileName.indexOf(StringPool.QUESTION);
 
-		String xml = _readContent(portlet, fileName.substring(0, pos));
+		String xml = _read(portlet, fileName.substring(0, pos));
 
 		Map<String, String[]> parameterMap = HttpComponentsUtil.getParameterMap(
 			queryString);
@@ -351,9 +351,7 @@ public abstract class BaseFriendlyURLMapper implements FriendlyURLMapper {
 		return router;
 	}
 
-	private String _readContent(Portlet portlet, String fileName)
-		throws Exception {
-
+	private String _read(Portlet portlet, String fileName) throws Exception {
 		Class<?> clazz = getClass();
 
 		ClassLoader classLoader = clazz.getClassLoader();
