@@ -43,11 +43,12 @@ for (int i = 0; i < portletDataHandlerControls.length; i++) {
 					StagedModelType stagedModelType = new StagedModelType(className, portletDataHandlerBoolean.getReferrerClassName());
 
 					long modelAdditionCount = manifestSummary.getModelAdditionCount(stagedModelType);
+					long modelDeletionCount = manifestSummary.getModelDeletionCount(stagedModelType);
 
 					if (modelAdditionCount != 0) {
 						label += (modelAdditionCount > 0) ? " (" + modelAdditionCount + ")" : StringPool.BLANK;
 					}
-					else if (!showAllPortlets) {
+					else if ((modelDeletionCount <= 0) && !showAllPortlets) {
 						continue control;
 					}
 				}
