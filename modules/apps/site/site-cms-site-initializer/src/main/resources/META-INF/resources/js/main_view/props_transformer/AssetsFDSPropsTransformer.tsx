@@ -87,7 +87,7 @@ export default function AssetsFDSPropsTransformer({
 
 	if (additionalProps.galleryViewEnabled) {
 		const galleryViewRenderer: IView = {
-			component: (props: any) => GalleryView({...props, additionalProps}),
+			component: (props: any) => GalleryView({...props}),
 			default: true,
 			label: Liferay.Language.get('gallery'),
 			name: 'gallery',
