@@ -297,8 +297,8 @@ public class InfoFormValidationException extends InfoFormException {
 		extends InfoFormValidationException {
 
 		public RequiredAssetCategory(
-			AssetVocabulary assetVocabulary,
-			AssetCategoryException assetCategoryException) {
+			AssetCategoryException assetCategoryException,
+			AssetVocabulary assetVocabulary) {
 
 			_assetVocabulary = assetVocabulary;
 			_assetCategoryException = assetCategoryException;

@@ -49,8 +49,8 @@ public class ObjectEntryInfoItemExceptionRequestHandler {
 					AssetCategoryException.AT_LEAST_ONE_CATEGORY) {
 
 				throw new InfoFormValidationException.RequiredAssetCategory(
-					assetCategoryException.getVocabulary(),
-					assetCategoryException);
+					assetCategoryException,
+					assetCategoryException.getVocabulary());
 			}
 		}
 
