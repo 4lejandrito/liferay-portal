@@ -60,7 +60,6 @@ public class UpgradePortletPreferencesTest {
 	public void setUp() throws Exception {
 		_group1 = GroupTestUtil.addGroup();
 		_group2 = GroupTestUtil.addGroup();
-
 		_group3 = GroupTestUtil.addGroup();
 		_group4 = GroupTestUtil.addGroup();
 
