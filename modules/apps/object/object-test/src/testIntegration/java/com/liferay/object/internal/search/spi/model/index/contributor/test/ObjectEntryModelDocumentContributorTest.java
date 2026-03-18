@@ -87,9 +87,8 @@ public class ObjectEntryModelDocumentContributorTest {
 				TestPropsValues.getUserId(),
 				modifiableSystemObjectDefinition.getObjectDefinitionId());
 
-		String objectFieldValue = RandomTestUtil.randomString();
-
 		Date displayDate = new Date();
+		String objectFieldValue = RandomTestUtil.randomString();
 
 		ObjectEntry objectEntry = ObjectEntryTestUtil.addObjectEntry(
 			TestPropsValues.getGroupId(), modifiableSystemObjectDefinition,
