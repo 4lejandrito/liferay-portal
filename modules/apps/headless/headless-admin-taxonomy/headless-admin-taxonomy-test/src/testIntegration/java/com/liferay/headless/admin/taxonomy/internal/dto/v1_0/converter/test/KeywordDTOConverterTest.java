@@ -87,7 +87,6 @@ public class KeywordDTOConverterTest {
 
 		AssetLibrary[] assetLibraries = keyword.getAssetLibraries();
 
-		Assert.assertNotNull(assetLibraries);
 		Assert.assertEquals(
 			Arrays.toString(assetLibraries), 1, assetLibraries.length);
 
