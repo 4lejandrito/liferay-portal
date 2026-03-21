@@ -283,7 +283,7 @@ public class ObjectEntryInfoItemFieldValuesProviderTest {
 
 	@FeatureFlag("LPD-17564")
 	@Test
-	public void testObjectEntryInfoItemFieldValuesProviderWithAttachmentField()
+	public void testObjectEntryInfoItemFieldValuesProviderWithAttachmentObjectField()
 		throws Exception {
 
 		ObjectDefinition objectDefinition = _addObjectDefinition(
@@ -293,7 +293,7 @@ public class ObjectEntryInfoItemFieldValuesProviderTest {
 			).localized(
 				true
 			).name(
-				"localizedAttachmentFieldName"
+				"localizedAttachmentObjectFieldName"
 			).objectFieldSettings(
 				Arrays.asList(
 					_createObjectFieldSetting("acceptedFileExtensions", "png"),
@@ -317,7 +317,7 @@ public class ObjectEntryInfoItemFieldValuesProviderTest {
 
 			ObjectField objectField = _objectFieldLocalService.fetchObjectField(
 				objectDefinition.getObjectDefinitionId(),
-				"localizedAttachmentFieldName");
+				"localizedAttachmentObjectFieldName");
 
 			ObjectEntry objectEntry = _objectEntryLocalService.addObjectEntry(
 				_group.getGroupId(), TestPropsValues.getUserId(),
