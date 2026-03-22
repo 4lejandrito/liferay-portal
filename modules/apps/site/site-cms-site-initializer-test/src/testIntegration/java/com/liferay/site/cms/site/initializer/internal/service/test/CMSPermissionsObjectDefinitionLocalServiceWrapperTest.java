@@ -68,7 +68,6 @@ public class CMSPermissionsObjectDefinitionLocalServiceWrapperTest {
 	@Test
 	public void testPublishCustomObjectDefinition() throws Exception {
 		_testPublishCustomObjectDefinition();
-
 		_testPublishCustomObjectDefinition(
 			ObjectFolderConstants.EXTERNAL_REFERENCE_CODE_CONTENT_STRUCTURES);
 		_testPublishCustomObjectDefinition(
