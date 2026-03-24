@@ -1347,7 +1347,7 @@ public class ObjectFieldLocalServiceTest {
 
 		try {
 			_assertSystemObjectField(
-				"able_", true, true, LocalizedMapUtil.getLocalizedMap("Dog"),
+				"able_", true, false, LocalizedMapUtil.getLocalizedMap("Dog"),
 				true,
 				_addOrUpdateSystemObjectField(
 					systemObjectField.getExternalReferenceCode(),
