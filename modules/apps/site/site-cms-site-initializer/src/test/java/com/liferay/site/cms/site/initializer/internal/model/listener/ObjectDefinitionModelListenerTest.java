@@ -92,12 +92,6 @@ public class ObjectDefinitionModelListenerTest {
 			ObjectDefinition.class);
 
 		Mockito.when(
-			objectDefinition.isCMS()
-		).thenReturn(
-			cms
-		);
-
-		Mockito.when(
 			objectDefinition.getObjectFolderExternalReferenceCode()
 		).thenReturn(
 			objectFolderExternalReferenceCode
@@ -107,6 +101,12 @@ public class ObjectDefinitionModelListenerTest {
 			objectDefinition.getScope()
 		).thenReturn(
 			scope
+		);
+
+		Mockito.when(
+			objectDefinition.isCMS()
+		).thenReturn(
+			cms
 		);
 
 		return objectDefinition;
