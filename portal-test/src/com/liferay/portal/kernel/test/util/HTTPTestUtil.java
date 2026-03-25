@@ -52,16 +52,8 @@ public class HTTPTestUtil {
 			String body, String endpoint, Http.Method httpMethod)
 		throws Exception {
 
-		return invokeToInputStream(body, endpoint, null, httpMethod);
-	}
-
-	public static InputStream invokeToInputStream(
-			String body, String endpoint, Map<String, String> headers,
-			Http.Method httpMethod)
-		throws Exception {
-
 		Http.Options options = _getHttpOptions(
-			body, endpoint, headers, httpMethod);
+			body, endpoint, null, httpMethod);
 
 		return HttpUtil.URLtoInputStream(options);
 	}

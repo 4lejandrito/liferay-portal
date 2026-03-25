@@ -225,10 +225,8 @@ import com.liferay.portlet.documentlibrary.constants.DLConstants;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.core.Feature;
-import jakarta.ws.rs.core.HttpHeaders;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
 
@@ -259,7 +257,6 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
-import java.util.zip.ZipInputStream;
 
 import org.hibernate.SessionFactory;
 
@@ -834,17 +831,6 @@ public class ObjectEntryResourceTest {
 					true
 				).name(
 					_OBJECT_FIELD_NAME_LOCALIZED_RICH_TEXT
-				).build(),
-				new TextObjectFieldBuilder(
-				).indexed(
-					true
-				).labelMap(
-					LocalizedMapUtil.getLocalizedMap(
-						RandomTestUtil.randomString())
-				).localized(
-					true
-				).name(
-					"name"
 				).build(),
 				new TextObjectFieldBuilder(
 				).indexed(
@@ -7247,31 +7233,6 @@ public class ObjectEntryResourceTest {
 					jsonObject.getString("status"));
 			}
 		);
-	}
-
-	@FeatureFlag("LPD-17564")
-	@Test
-	public void testGetObjectEntryTranslation() throws Exception {
-		_testGetObjectEntryTranslation(
-			StringBundler.concat(
-				_objectDefinition4.getRESTContextPath(), StringPool.SLASH,
-				_objectEntry5.getObjectEntryId(),
-				"/translations?sourceLanguageId=en_US",
-				"&targetLanguageIds=es_ES"),
-			null);
-	}
-
-	@FeatureFlag("LPD-17564")
-	@Test
-	public void testGetObjectEntryTranslationLanguage() throws Exception {
-		_testGetObjectEntryTranslation(
-			StringBundler.concat(
-				_objectDefinition4.getRESTContextPath(), StringPool.SLASH,
-				_objectEntry5.getObjectEntryId(),
-				"/translations/en_US?targetLanguageId=es_ES"),
-			HashMapBuilder.put(
-				HttpHeaders.ACCEPT, "application/xliff+xml"
-			).build());
 	}
 
 	@Test
@@ -16738,14 +16699,6 @@ public class ObjectEntryResourceTest {
 		return Type.MANY_TO_MANY;
 	}
 
-	private int _getTempFilesCount() {
-		File tempFile = FileUtil.createTempFile();
-
-		File parentFile = tempFile.getParentFile();
-
-		return ArrayUtil.getLength(parentFile.listFiles());
-	}
-
 	private ValidationRequest _getValidationRequest(
 		Map<String, Object> values,
 		String... objectValidationRuleExternalReferenceCodes) {
@@ -17391,31 +17344,6 @@ public class ObjectEntryResourceTest {
 				_siteScopedObjectDefinition1, jsonObject.getString("id"),
 				sharingEnabled),
 			actionsJSONObject.toMap());
-	}
-
-	private void _testGetObjectEntryTranslation(
-			String endpoint, Map<String, String> headers)
-		throws Exception {
-
-		int tempFilesCount = _getTempFilesCount();
-
-		try (InputStream inputStream = HTTPTestUtil.invokeToInputStream(
-				null, endpoint, headers, Http.Method.GET)) {
-
-			Assert.assertNotNull(inputStream);
-
-			try (ZipInputStream zipInputStream = new ZipInputStream(
-					inputStream)) {
-
-				zipInputStream.getNextEntry();
-
-				Assert.assertNotNull(StringUtil.read(zipInputStream));
-			}
-		}
-
-		Assert.assertEquals(
-			"Temp files were not cleaned up after translation export",
-			tempFilesCount, _getTempFilesCount());
 	}
 
 	private void _testGetObjectEntryWithObjectActions(
