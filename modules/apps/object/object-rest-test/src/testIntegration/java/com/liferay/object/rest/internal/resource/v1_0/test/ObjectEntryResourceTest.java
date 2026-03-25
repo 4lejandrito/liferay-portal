@@ -17413,7 +17413,9 @@ public class ObjectEntryResourceTest {
 			}
 		}
 
-		Assert.assertEquals(tempFilesCount, _getTempFilesCount());
+		Assert.assertEquals(
+			"Temp files were not cleaned up after translation export",
+			tempFilesCount, _getTempFilesCount());
 	}
 
 	private void _testGetObjectEntryWithObjectActions(
