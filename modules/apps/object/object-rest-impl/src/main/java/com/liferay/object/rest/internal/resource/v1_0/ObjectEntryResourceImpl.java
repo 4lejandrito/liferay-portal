@@ -54,7 +54,6 @@ import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.servlet.DummyHttpServletResponse;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.MimeTypesUtil;
@@ -85,12 +84,9 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.StreamingOutput;
 
 import java.io.File;
 import java.io.Serializable;
-
-import java.nio.file.Files;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -673,7 +669,7 @@ public class ObjectEntryResourceImpl
 			StringUtil.split(targetLanguageIds, CharPool.COMMA));
 
 		return Response.ok(
-			_getStreamingOutput(xliffZipFile)
+			xliffZipFile
 		).header(
 			"content-disposition",
 			"attachment; filename=\"" + xliffZipFile.getName() + "\""
@@ -695,7 +691,7 @@ public class ObjectEntryResourceImpl
 			targetLanguageId);
 
 		return Response.ok(
-			_getStreamingOutput(xliffFile)
+			xliffFile
 		).header(
 			"content-disposition",
 			"attachment; filename=\"" + xliffFile.getName() + "\""
@@ -1559,24 +1555,6 @@ public class ObjectEntryResourceImpl
 		contextBatchUnsafeBiConsumer.accept(objectEntries, unsafeFunction);
 	}
 
-	private void _deleteTempFile(File file) {
-		if (file == null) {
-			return;
-		}
-
-		if (file.exists()) {
-			file.delete();
-		}
-
-		File parentFile = file.getParentFile();
-
-		if ((parentFile != null) && parentFile.exists() &&
-			ArrayUtil.isEmpty(parentFile.list())) {
-
-			parentFile.delete();
-		}
-	}
-
 	private DefaultDTOConverterContext _getDTOConverterContext(
 		Long objectEntryId) {
 
@@ -1650,17 +1628,6 @@ public class ObjectEntryResourceImpl
 
 		return modelResourceNamePrefix.concat(
 			objectDefinition.getResourceName());
-	}
-
-	private StreamingOutput _getStreamingOutput(File file) {
-		return streamingOutput -> {
-			try {
-				Files.copy(file.toPath(), streamingOutput);
-			}
-			finally {
-				_deleteTempFile(file);
-			}
-		};
 	}
 
 	private String _getXLIFFMimeType(String accept) {
