@@ -185,8 +185,6 @@ public class GroupModelListenerTest {
 						ObjectDefinitionSettingConstants.
 							NAME_ACCEPT_ALL_GROUPS);
 
-			Assert.assertNotNull(objectDefinitionSetting);
-
 			Assert.assertEquals(
 				StringPool.TRUE, objectDefinitionSetting.getValue());
 
