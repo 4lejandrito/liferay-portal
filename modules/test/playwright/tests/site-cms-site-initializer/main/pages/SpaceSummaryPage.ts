@@ -42,11 +42,11 @@ export class SpaceSummaryPage {
 
 		this.usersTab = page.getByRole('tab', {name: 'Users'});
 
-		this.viewAllContentLink = this.page.getByRole('link', {
+		this.viewAllContentLink = this.page.getByRole('button', {
 			name: 'View All Content',
 		});
 
-		this.viewAllFilesLink = this.page.getByRole('link', {
+		this.viewAllFilesLink = this.page.getByRole('button', {
 			name: 'View All Files',
 		});
 
