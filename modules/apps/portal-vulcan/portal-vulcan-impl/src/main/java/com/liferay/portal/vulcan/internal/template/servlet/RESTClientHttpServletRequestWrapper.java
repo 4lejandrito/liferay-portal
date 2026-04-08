@@ -107,7 +107,8 @@ public class RESTClientHttpServletRequestWrapper
 			return attributeValue;
 		}
 
-		if (VulcanConstants.TRANSACTION_CLEAN_UP_MESSAGE_OBSERVER.equals(
+		if (name.startsWith("javax.servlet.include.") ||
+			VulcanConstants.TRANSACTION_CLEAN_UP_MESSAGE_OBSERVER.equals(
 				name)) {
 
 			return null;
