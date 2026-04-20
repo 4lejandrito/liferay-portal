@@ -233,6 +233,9 @@ BackgroundTask lastCompletedInitialPublicationBackgroundTask = BackgroundTaskMan
 						});
 					}
 				}
+				else {
+					doSubmit();
+				}
 			}
 		</c:if>
 	}
