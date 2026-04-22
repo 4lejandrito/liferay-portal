@@ -112,19 +112,3 @@ Functional tests are a last resort, reserved for complete UI flows that cannot b
     ```bash
     cd <repo-root> && HOSTNAME=localhost ant -buildfile build-test.xml run-selenium-test -Dtest.class=<TestClassName>
     ```
-
-### Format Source
-
-All the code is strictly formatted using source formatter. Code should be formatted before every commit. This is how it works:
-
-Run for a specific module:
-
-```bash
-cd <module-root> && <gradlew> formatSource
-```
-
-Run across the entire codebase:
-
-```bash
-cd <repo-root>/portal-impl && ant format-source-current-branch
-```
