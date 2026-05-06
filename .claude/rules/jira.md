@@ -12,3 +12,5 @@ curl \
 	--url "https://liferay.atlassian.net/rest/api/3/<endpoint>" \
 	--user "${JIRA_API_USER}:${JIRA_API_TOKEN}"
 ```
+
+When either variable is unset or empty, refuse to perform the call and tell the user to export both before retrying. Do not prompt for the values, fall back to anonymous access, or attempt any other authentication mechanism.

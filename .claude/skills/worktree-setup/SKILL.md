@@ -2,32 +2,90 @@
 
 allowed-tools: [Bash, Edit, Glob, Grep, Read, Write]
 argument-hint: "[new | status | list | cleanup]"
-description: Use when creating a Git worktree for parallel Liferay development, setting up a worktree bundle after ant all, checking which ports a worktree uses, listing all worktrees and their status, or tearing down a worktree. Covers the full lifecycle from Git worktree add through cleanup.
+description: Manage Git worktrees for parallel Liferay development — create one with isolated ports and database, inspect a worktree's ports, list every worktree's status, or tear a worktree down. Use when the user asks to create, configure, list, status-check, or clean up a worktree.
 name: worktree-setup
 
 ---
 
 # Worktree Setup
 
-Set up, inspect, or tear down an isolated Liferay worktree with unique ports and database.
+Set up, inspect, or tear down an isolated Liferay worktree with unique ports and a unique database, so multiple branches can run side by side without colliding.
 
-## Determine Action
+## Input
 
-Parse `${ARGUMENTS}` and conversation context:
+### Action
 
-- **"new"** or user wants a new worktree → Full Setup
-- **"status"** or user asks what ports a worktree uses → Status Check
-- **"list"** or user asks which worktrees exist / what is running → List All
-- **"cleanup"** or user wants to tear down → Cleanup
-- **No argument** but worktree exists with a bundle → Configure Ports
-- **No argument** and no worktree context → ask what the user needs
+One of `new`, `status`, `list`, or `cleanup`, supplied via `${ARGUMENTS}`. Resolve in this order:
 
-## Port Defaults
+1. **User Argument** — when `${ARGUMENTS}` names an action, use it.
 
-**Offset 0 is RESERVED for the main worktree. Never use it in a secondary worktree.**
+1. **Conversation Context** — infer the action from how the user asked.
+
+1. **Working Directory** — when no action is supplied and `${PWD}` is inside a worktree that already has a bundle, default to reapplying the `new` flow's port configuration (steps 4–7 of **Workflow**).
+
+1. **Fallback** — ask the user.
+
+### Worktree Name
+
+Required for `new`, `status`, and `cleanup`. Derived from `${PWD}` when it matches `*/liferay-portal-<name>`. Otherwise asked.
+
+### Port Offset
+
+Required for `new` when multiple worktrees are being configured before any of them starts. Optional otherwise — auto-detected by scanning ports starting at offset `1`. **Offset 0 is reserved for the main worktree; never use it in a secondary worktree.**
+
+## Expected Output
+
+### New Worktree (Action `new`)
+
+A configured, runnable Liferay worktree at `../liferay-portal-<name>` with:
+
+- A Git worktree on a branch named `<name>` (created off `master`, or reused when the branch already exists).
+
+- A bundle directory under the worktree, populated by `ant all` or by full-copy reuse of the main worktree's bundle when its `.githash` matches the worktree's `HEAD`. Never symlink.
+
+- All service ports patched to `default + offset` per the **Port Map** below.
+
+- A MySQL database named per the **Database Naming** rule below.
+
+- Tomcat started in JPDA mode in the background via `<tomcat>/bin/catalina.sh jpda run`.
+
+- A summary printed to the user with all assigned ports, the database name, the Liferay URL, and the Glowroot URL.
+
+### Worktree Status (Action `status`)
+
+A port table for a single worktree, read from `<bundles>/.worktree-port-offset`. No modifications.
+
+### Worktree List (Action `list`)
+
+A summary table covering every Git worktree:
+
+```
+Worktree                                 Port     Status     Offset    Database
+liferay-portal                           -        NO TOMCAT  (none)    -
+liferay-portal-LPD-00000                 8081     RUNNING    1         lportal_lpd_00000
+liferay-portal-LPD-12345                 8082     STOPPED    2         lportal_lpd_12345
+```
+
+Each row combines `git worktree list --porcelain` with the worktree's `<bundles>/.worktree-port-offset`. Detect running status by matching `-Dcatalina.base` from running Java processes against each worktree's `<tomcat>` directory — port scanning cannot distinguish which Tomcat owns which port.
+
+### Cleaned-Up Worktree (Action `cleanup`)
+
+The worktree, its database, and (optionally) its branch removed. Confirm with the user before any destructive step:
+
+1. Stop Tomcat via `<tomcat>/bin/catalina.sh stop`.
+
+1. Drop the database: `mysql --execute 'DROP DATABASE IF EXISTS <DB_NAME>;' --user root`.
+
+1. Remove the worktree: `git worktree remove <absolute-path>` (resolve the absolute path from `git worktree list --porcelain`).
+
+1. Ask whether to delete the branch; only run `git branch --delete --force <BRANCH>` when the user confirms.
+
+## Port Map
+
+All ports shift by the same offset `N`:
 
 | Service | Default | Config Location |
-|---|---|---|
+| --- | --- | --- |
 | Tomcat HTTP | 8080 | `<tomcat>/conf/server.xml` |
 | Tomcat Shutdown | 8005 | `<tomcat>/conf/server.xml` |
 | Tomcat AJP | 8009 | `<tomcat>/conf/server.xml` |
@@ -40,37 +98,35 @@ Parse `${ARGUMENTS}` and conversation context:
 | Arquillian | 32763 | `<bundles>/osgi/configs/...ArquillianConnector.config` |
 | DataGuard | 42763 | `<bundles>/osgi/configs/...DataGuardConnector.config` |
 
-All ports shift by the same offset N: `port = default + N`.
-
 ## Database Naming
 
-Derive from the worktree directory name, NOT the offset:
+Derive the database name from the worktree directory name, not the offset:
 
-```
-liferay-portal-LPD-12345  →  lportal_lpd_12345
-liferay-portal-hotfix     →  lportal_hotfix
-liferay-portal            →  lportal (main — never touch)
-```
+| Directory | Database |
+| --- | --- |
+| `liferay-portal-LPD-12345` | `lportal_lpd_12345` |
+| `liferay-portal-hotfix` | `lportal_hotfix` |
+| `liferay-portal` | `lportal` (main — never touch) |
 
-Rule: strip `liferay-portal-` prefix, lowercase, replace nonalphanumeric with `_`, collapse consecutive `_`, truncate to 56 characters, prepend `lportal_`.
+Rule: strip the `liferay-portal-` prefix, lowercase, replace each nonalphanumeric character with `_`, collapse consecutive `_`, truncate to 56 characters, then prepend `lportal_`.
 
-## Full Setup
+## Workflow
+
+Only the `new` action has non-trivial control flow. The `status`, `list`, and `cleanup` actions are fully described under **Expected Output**.
 
 ### 1. Locate or Create the Worktree
 
-If the current working directory matches `*/liferay-portal-<name>`, the worktree already exists (either created by `claude --worktree <name>` through the **WorktreeCreate** hook, or by a previous manual run). Use the current cwd as `<WORKTREE_DIR>` and the directory name as `<DIR_NAME>`, then continue.
+When `${PWD}` matches `*/liferay-portal-<name>`, the worktree already exists — use `${PWD}` as `<WORKTREE_DIR>` and `<name>` as `<DIR_NAME>`.
 
-Otherwise, create one off `master`:
+Otherwise create one off `master`:
 
 ```bash
 git worktree add -b <BRANCH> ../<DIR_NAME> master
 ```
 
-If this fails because the branch already exists, offer the user two options:
-- **Reuse** the existing branch: `git worktree add ../<DIR_NAME> <BRANCH>`
-- **New branch** with a suggested alternative name (e.g., append `-v2`, `-wt`, or a short descriptor)
+When the branch already exists, offer the user two options: **reuse** the existing branch (`git worktree add ../<DIR_NAME> <BRANCH>`) or pick a **new branch name** (suggest `-v2`, `-wt`, or a short descriptor).
 
-### 2. Configure Bundle Directory
+### 2. Configure the Bundle Directory
 
 Create `app.server.<username>.properties` in the worktree root:
 
@@ -78,38 +134,31 @@ Create `app.server.<username>.properties` in the worktree root:
 app.server.parent.dir=${project.dir}/bundle
 ```
 
-### 3. Build
+### 3. Build or Reuse the Bundle
 
 Check whether a bundle already exists by looking for `<tomcat>` inside `<bundles>`.
 
-- **Bundle exists:** Skip `ant all`. Inform the user the existing bundle will be reused. If the user explicitly requests a rebuild, run `ant all`.
-- **No bundle:** Before running `ant all`, try to reuse the main worktree's bundle. Locate the `liferay-portal` worktree (no suffix) via `git worktree list --porcelain`, resolve its `<bundles>`, and read `.githash` from it. When that hash equals `git rev-parse HEAD` in the current worktree, or when the user explicitly asks to copy or reuse the main bundle, reuse it into `<WORKTREE_DIR>/bundle` and skip `ant all`. Always reuse by making a full copy — never by symlinking or sharing the folder. Otherwise, run it:
+- **Bundle exists** — skip `ant all` and inform the user the existing bundle will be reused. When the user explicitly asks to rebuild, run `ant all`.
 
-```bash
-cd <WORKTREE_DIR> && ant setup-profile-dxp && ant all
-```
+- **No bundle** — try to reuse the main worktree's bundle. Locate the `liferay-portal` worktree (no suffix) via `git worktree list --porcelain`, resolve its `<bundles>`, and read `.githash`. When that hash equals `git rev-parse HEAD` in the current worktree, or when the user explicitly asks to copy or reuse the main bundle, copy it fully (never symlink) to `<WORKTREE_DIR>/bundle` and skip `ant all`. Otherwise run `ant setup-profile-dxp && ant all`.
 
-If `ant all` fails, stop and surface the full error to the user — do not continue to port configuration.
+When `ant all` fails, surface the error and stop — do not continue to port configuration.
 
-### 4. Configure Ports
+### 4. Determine the Offset
 
-#### 4a. Determine the Offset
+Resolve in this order:
 
-1. If user specified an offset, use it (reject 0)
+1. **User-Specified** — use it (reject 0).
 
-1. If `.worktree-port-offset` exists in the bundle dir, read it
+1. **Saved** — read `.worktree-port-offset` from the bundle dir when present.
 
-1. Otherwise, scan ports starting from offset=1: for each candidate offset, check if ports `8080+N`, `8005+N`, `8000+N`, `11311+N`, `9201+N`, `9301+N`, `4000+N` are all free using `nc -z localhost <port>`. First offset where ALL are free wins.
+1. **Auto-Detected** — scan offsets starting at `1`; for each candidate `N`, test that ports `8080+N`, `8005+N`, `8000+N`, `11311+N`, `9201+N`, `9301+N`, and `4000+N` are all free with `nc -z localhost <port>`. The first offset where all are free wins.
 
-1. Save the chosen offset to `<bundles>/.worktree-port-offset`
+Save the chosen offset to `<bundles>/.worktree-port-offset`.
 
-#### 4b. Patch server.xml
+### 5. Patch Configuration Files
 
-File: `<tomcat>/conf/server.xml`
-
-Read the current HTTP port from the `protocol="HTTP/1.1"` Connector to determine the current offset. Then replace all port attributes.
-
-**Platform check:** BSD `sed` (macOS) requires an empty-string argument after `-i`, while GNU `sed` (Linux) does not. Detect the platform before any in-place edits:
+All file patches must be **idempotent**. Detect the `sed -i` flavor once before any in-place edit — BSD `sed` (macOS) requires an empty-string argument after `-i`, while GNU `sed` (Linux) does not:
 
 ```bash
 if [[ "$(uname)" == "Darwin" ]]; then
@@ -119,108 +168,24 @@ else
 fi
 ```
 
-Use `"${SED_INPLACE[@]}"` in place of `sed -i` for all subsequent calls:
+Use `"${SED_INPLACE[@]}"` for every in-place edit.
 
-```bash
-# Single sed invocation for atomicity
-"${SED_INPLACE[@]}" \
-	-e 's/port="<CURRENT_SHUTDOWN>"/port="<TARGET_SHUTDOWN>"/g' \
-	-e 's/port="<CURRENT_HTTP>"/port="<TARGET_HTTP>"/g' \
-	-e 's/port="<CURRENT_AJP>"/port="<TARGET_AJP>"/g' \
-	-e 's/port="<CURRENT_HTTPS>"/port="<TARGET_HTTPS>"/g' \
-	-e 's/redirectPort="<CURRENT_HTTPS>"/redirectPort="<TARGET_HTTPS>"/g' \
-	<tomcat>/conf/server.xml
-```
+| File | Survives Rebuild? | Action |
+| --- | --- | --- |
+| `<tomcat>/conf/server.xml` | Yes | Read the current `protocol="HTTP/1.1"` Connector port to determine the current offset, then rewrite the Shutdown, HTTP, AJP, HTTPS, and `redirectPort` attributes in a single `sed` invocation. Skip when the target HTTP port is already present. |
+| `<tomcat>/bin/setenv.sh` | **No** — wiped on rebuild, always reapply | Replace `JPDA_ADDRESS` with `8000+N`. |
+| `<tomcat>/webapps/ROOT/WEB-INF/classes/portal-developer.properties` | **No** — wiped on rebuild, always reapply | Set `module.framework.properties.osgi.console=11311+N`. |
+| `<bundles>/osgi/configs/com.liferay.portal.search.elasticsearch<V>.configuration.ElasticsearchConfiguration.config` | **No** — wiped on rebuild, always overwrite | Detect Elasticsearch version (`elasticsearch7` or `elasticsearch8`; default `elasticsearch8` when neither config is present). Write `sidecarHttpPort="9201+N"`, `transportTcpPort="9301+N"`, `networkBindHost="127.0.0.1"`, `networkPublishHost="127.0.0.1"`. |
+| `<bundles>/osgi/configs/com.liferay.arquillian.extension.junit.bridge.connector.ArquillianConnector.config` | **No** | Write `port="32763+N"`. |
+| `<bundles>/osgi/configs/com.liferay.data.guard.connector.DataGuardConnector.config` | **No** | Write `port="42763+N"`. |
+| `<bundles>/glowroot/admin.json` | Yes | Use `jq` to set `.web.port` to `4000+N`. Skip when already correct. |
+| `<bundles>/portal-ext.properties` | Yes | Ensure these properties are present (remove any existing values first, then append): `include-and-override=portal-developer.properties`, `portal.instance.inet.socket.address=localhost:8080+N`, `browser.launcher.url=`, `setup.wizard.enabled=false`, `terms.of.use.required=false`, `passwords.default.policy.change.required=false`, `users.reminder.queries.enabled=false`. **Important:** the property is `portal.instance.inet.socket.address` (with `inet`), not `portal.instance.http.socket.address`; remove any old `portal.instance.http.socket.address` lines. |
 
-Skip if target HTTP port is already present (idempotent).
+### 6. Configure the MySQL Database
 
-#### 4c. Patch setenv.sh
+Derive the database name per **Database Naming**.
 
-File: `<tomcat>/bin/setenv.sh`
-
-Replace the JPDA debug port (this file gets **wiped on rebuild**):
-
-```bash
-"${SED_INPLACE[@]}" 's/^JPDA_ADDRESS="[0-9]*"/JPDA_ADDRESS="<8000+N>"/' <tomcat>/bin/setenv.sh
-```
-
-Skip if the target value is already present.
-
-#### 4d. Patch portal-developer.properties
-
-File: `<tomcat>/webapps/ROOT/WEB-INF/classes/portal-developer.properties`
-
-Replace the OSGi console port (this file gets **wiped on rebuild**):
-
-```
-module.framework.properties.osgi.console=<11311+N>
-```
-
-Use `"${SED_INPLACE[@]}" 's/osgi\.console=[0-9]*/osgi.console=<TARGET>/'` to handle any current value.
-
-#### 4e. Create OSGi Config Files
-
-These get **wiped on rebuild** — always overwrite.
-
-Detect the Elasticsearch version by checking which configuration file already exists in `<BUNDLE>/osgi/configs`:
-- `com.liferay.portal.search.elasticsearch8.configuration.ElasticsearchConfiguration.config` → elasticsearch8
-- `com.liferay.portal.search.elasticsearch7.configuration.ElasticsearchConfiguration.config` → elasticsearch7
-- Neither exists → default to elasticsearch8
-
-`<BUNDLE>/osgi/configs/com.liferay.portal.search.elasticsearch<VERSION>.configuration.ElasticsearchConfiguration.config`:
-
-```
-sidecarHttpPort="<9201+N>"
-transportTcpPort="<9301+N>"
-networkBindHost="127.0.0.1"
-networkPublishHost="127.0.0.1"
-```
-
-`<BUNDLE>/osgi/configs/com.liferay.arquillian.extension.junit.bridge.connector.ArquillianConnector.config`:
-
-```
-port="<32763+N>"
-```
-
-`<BUNDLE>/osgi/configs/com.liferay.data.guard.connector.DataGuardConnector.config`:
-
-```
-port="<42763+N>"
-```
-
-#### 4f. Patch glowroot/admin.json
-
-File: `<BUNDLE>/glowroot/admin.json`
-
-Use `jq` to set `.web.port` to `4000+N`. Skip if already correct (survives rebuild).
-
-```bash
-jq '.web.port = <TARGET>' admin.json > admin.json.tmp && mv admin.json.tmp admin.json
-```
-
-#### 4g. Patch portal-ext.properties
-
-File: `<BUNDLE>/portal-ext.properties`
-
-Ensure these lines are present (remove old values first, then append):
-
-```properties
-include-and-override=portal-developer.properties
-portal.instance.inet.socket.address=localhost:<8080+N>
-browser.launcher.url=
-setup.wizard.enabled=false
-terms.of.use.required=false
-passwords.default.policy.change.required=false
-users.reminder.queries.enabled=false
-```
-
-**Important:** The property is `portal.instance.inet.socket.address` (with `inet`), NOT `portal.instance.http.socket.address`. Also remove any old `portal.instance.http.socket.address` lines.
-
-#### 4h. Configure MySQL Database
-
-Derive the DB name from the worktree directory (see Database Naming above).
-
-Ensure these lines in `portal-ext.properties`:
+Ensure these lines in `portal-ext.properties` (read existing username/password before replacing them when JDBC properties already exist):
 
 ```properties
 jdbc.default.driverClassName=com.mysql.cj.jdbc.Driver
@@ -229,108 +194,22 @@ jdbc.default.username=root
 jdbc.default.password=
 ```
 
-If existing JDBC properties exist, read the username/password from them before replacing.
-
-**Always** attempt to create the database (even on reruns):
+Always attempt to create the database (idempotent):
 
 ```bash
 mysql --execute 'CREATE DATABASE IF NOT EXISTS <DB_NAME> CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;' --user root
 ```
 
-If `mysql` CLI is unavailable or fails, print the command for the user to run manually. Show errors — never swallow them with `2>/dev/null`.
+When `mysql` is unavailable or fails, print the command for the user to run manually. Show errors — never swallow them with `2>/dev/null`.
 
-#### 4i. Print Summary
+### 7. Print the Summary and Start
 
-Print a table of all assigned ports, the DB name, the Liferay URL, and the Glowroot URL.
-
-### 5. Start
-
-Start Tomcat with the JPDA debugger attached. `jpda run` is a foreground command, so run it in the background so that the call does not block:
-
-```bash
-<tomcat>/bin/catalina.sh jpda run
-```
-
-Tell the user how to follow the log:
+Print the summary described under **New Worktree** above, then start Tomcat in JPDA mode in the background. `jpda run` is foreground, so background it so the call does not block. Tell the user how to follow the log:
 
 ```bash
 tail -f <tomcat>/logs/catalina.out
 ```
 
-## Rerunnability
-
-After `ant all` rebuilds, rerun the Configure Ports steps. The saved offset is reused. Files that survived the rebuild are skipped; wiped files are reapplied.
-
-| File | Survives Rebuild? | Rerun Behavior |
-|---|---|---|
-| server.xml | Yes | Skip if already patched |
-| glowroot/admin.json | Yes | Skip if already patched |
-| portal-ext.properties | Yes | Skip if already correct |
-| setenv.sh | **No** | Always reapply |
-| portal-developer.properties | **No** | Always reapply |
-| osgi/configs/* | **No** | Always overwrite |
-
 ## Multiple Worktrees at Once
 
-When configuring N worktrees before starting any, use explicit offsets — the port scanner only detects running services:
-
-```
-Worktree 1: offset=1
-Worktree 2: offset=2
-Worktree 3: offset=3
-```
-
-## List All
-
-Show a summary table of all Git worktrees with their port, running status, offset, and database.
-
-1. Run `git worktree list --porcelain` to enumerate all worktrees
-
-1. For each, resolve `<bundles>`
-
-1. Read `.worktree-port-offset` to get the offset and derive the HTTP port and DB name
-
-1. Detect running status by matching `-Dcatalina.base` from running Java processes to each worktree's tomcat directory:
-
-```bash
-# Get all running Tomcat catalina.base paths
-ps -eo args | grep --only-matching '\-Dcatalina\.base=[^ ]*' | sed 's/-Dcatalina.base=//'
-```
-
-**Use `-Dcatalina.base` process matching, NOT port scanning.** Port scanning cannot distinguish which Tomcat owns which port.
-
-Print a table like:
-
-```
-Worktree                                 Port     Status     Offset    Database
-liferay-portal                           -        NO TOMCAT  (none)    -
-liferay-portal-LPD-00000                 8081     RUNNING    1         lportal_lpd_00000
-liferay-portal-LPD-12345                 8082     STOPPED    2         lportal_lpd_12345
-```
-
-## Status Check
-
-Read `<BUNDLE>/.worktree-port-offset` and print the port table for a single worktree. No modifications.
-
-## Cleanup
-
-**Confirm with the user before destructive steps.**
-
-Resolve the worktree's absolute path from `git worktree list --porcelain` output.
-
-```bash
-# 1. Stop Tomcat
-<tomcat>/bin/catalina.sh stop
-
-# 2. Drop the database
-mysql --execute 'DROP DATABASE IF EXISTS <DB_NAME>;' --user root
-
-# 3. Remove the worktree (use absolute path from git worktree list)
-git worktree remove <ABSOLUTE_WORKTREE_PATH>
-```
-
-After removing the worktree, ask the user whether to also delete the Git branch. Only delete when they confirm:
-
-```bash
-git branch --delete --force <BRANCH>
-```
+When configuring N worktrees before any of them starts, use explicit offsets (1, 2, 3, …) — the port scanner only detects running services and would otherwise assign every worktree the same offset.

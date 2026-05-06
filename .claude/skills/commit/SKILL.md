@@ -1,7 +1,7 @@
 ---
 
 allowed-tools: [Bash, Glob, Grep, Read, Skill]
-argument-hint: "[optional message hint]"
+argument-hint: "[optional message hint or ticket key]"
 description: Create a Git commit with a Jira-prefixed message derived from the staged diff. Use when the user asks to commit, wants to commit changes, or invokes /commit.
 name: commit
 
@@ -11,45 +11,51 @@ name: commit
 
 Compose a well-crafted Git commit for the current set of changes.
 
-## 1. Format Source
+## Preconditions
 
-Before composing the commit, invoke the `format-source` skill to ensure all changes follow Liferay's coding standards (both the automatic formatter and the manual rules). After it completes, any edits the formatter applied are part of what gets committed.
+- The working tree has stageable changes. Stop with a clear message when nothing is stageable.
+- The `format-source` skill has been invoked. Run it before composing the commit so any edits the formatter applies are part of the commit.
 
-## 2. Gather Context
+## Input
 
-- When Claude modified or created files during this conversation, commit **only** those files. Stage them explicitly by name with `git add <file1> <file2> ...`. Do not include the user's own changes.
-- When Claude did **not** modify any files in this conversation, commit **all** changes. Stage modified and deleted files, but leave untracked files alone. When untracked files exist, ask the user whether to include them.
+### Files to Stage
 
-Never use `git add -A` or `git add .`.
+Derived from the conversation:
 
-When nothing is staged, unstaged, or untracked, inform the user that there is nothing to commit and stop.
+- When Claude modified or created files during this conversation, stage **only** those files, by name. Do not include the user's own changes.
+- When Claude did **not** modify any files in this conversation, stage all modified and deleted files but leave untracked files alone. When untracked files exist, ask the user whether to include them.
 
-## 3. Extract the Jira Ticket
+Never use `git add --all` or `git add .`.
 
-The ticket ID follows the pattern `LPD-12345`, `LCD-12345`, `LRCI-1234`, and similar forms (uppercase letters, hyphen, digits). Resolve the ticket in this order:
+### Jira Ticket
+
+A ticket key following the pattern `LPD-12345`, `LCD-12345`, `LRCI-1234`, and similar forms (uppercase letters, hyphen, digits). Resolve in this order:
+
+1. **User Argument** — when `${ARGUMENTS}` supplies a ticket key, prefer that value.
 
 1. **Branch Name** — extract the ticket from the current branch (e.g., branch `LPD-83847` yields ticket `LPD-83847`).
 
 1. **Recent Commits** — when the branch name lacks a ticket, scan the last five commit messages for a ticket prefix.
 
-1. **User Argument** — when `${ARGUMENTS}` supplies a ticket ID, prefer that value.
+1. **Fallback** — when no ticket surfaces, prompt the user.
 
-1. **Fallback** — when no ticket surfaces, prompt the user for one.
+### Message Hint
 
-## 4. Compose the Commit Message
+Optional free-form text supplied via `${ARGUMENTS}` when it is not a ticket key. Fold it into the commit body when present.
 
-Read the diff, understand the actual behavior change, then compose the message.
+## Expected Output
 
-### Title
+### Git Commit
 
-Format: `<TICKET> <Summary of behavior change>`
+A new commit on the current branch with the staged files. The message has a title and an optional body.
 
-- Lead with the Jira ticket ID.
+**Title** — `<TICKET> <Summary of behavior change>`
+
+- Lead with the Jira ticket key. When a companion ticket also applies, append it after the first: `LPD-12345 LPD-67890 Summary`.
 - Follow with a concise summary of the outcome — the problem resolved or the behavior changed, not the code itself.
 - Use sentence case (capitalize the first word only).
 - Omit a trailing period.
-- Keep the full line under 72 characters, including the ticket prefix.
-- When a companion Jira ticket also applies (e.g., a related subtask), append it after the first: `LPD-12345 LPD-67890 Summary`.
+- Keep the full line under 72 characters.
 
 Examples:
 
@@ -58,36 +64,6 @@ Examples:
 - `LPD-83630 Fix typo`
 - `LPD-84627 Prevent dispatch trigger loss when the Analytics admin user is missing`
 
-### Body
+**Body** — Add only when the title alone does not fully convey the change. Omit for trivial edits such as typo fixes, simple renames, or single-line changes. When warranted, separate the body from the title with a blank line, explain **why** the change is needed (problem, prior behavior, motivation — not the code), do not wrap lines, and write plain prose rather than bullet points to match the repository convention.
 
-Add a body **only** when the title alone does not fully convey the change. Omit the body for trivial edits such as typo fixes, simple renames, or single-line changes.
-
-When a body is warranted:
-
-- Separate it from the title with a blank line.
-- Explain **why** the change is needed — the problem, the prior behavior, or the motivation. Do not restate the code.
-- Do not wrap lines in the body.
-- Write plain prose rather than bullet points, matching the repository convention.
-
-When `${ARGUMENTS}` carries a hint or description rather than a ticket ID, incorporate it into the message.
-
-## 5. Confirm and Commit
-
-Present the proposed commit message to the user and request confirmation. Once they approve, create the commit:
-
-```bash
-COMMIT_MESSAGE=$(cat <<'EOF'
-<title>
-
-<body if applicable>
-EOF
-)
-
-git commit --message "${COMMIT_MESSAGE}"
-```
-
-When the user requests changes, revise the message and reconfirm.
-
-## 6. Post-Commit
-
-Run `git status` to confirm the commit succeeded, then display the result.
+Present the proposed message to the user and request confirmation before creating the commit. Revise and reconfirm when the user asks for changes.

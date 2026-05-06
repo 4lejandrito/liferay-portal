@@ -1,46 +1,66 @@
 ---
 
-allowed-tools: Bash(curl *), Bash(git *), Glob, Grep, Read
-argument-hint: "[commit hash or description]"
-description: Create a Jira bug ticket in the LPD project through the REST API. Use when the user asks to create or file a Jira bug or LPD ticket.
+allowed-tools: [Bash, Glob, Grep, Read]
+argument-hint: '[commit hash or description]'
+description: Create a Jira bug ticket in the LPD project. Use when the user asks to create or file a Jira bug or LPD ticket.
 name: jira-bug
 
 ---
 
 # Create a Jira Bug in LPD
 
-Create a bug ticket in the LPD Jira project through the REST API.
+File a bug ticket against the LPD Jira project.
 
 ## Input
 
-When `${ARGUMENTS}` is a commit hash, inspect the commit with `git show` to understand the fix and infer the bug it addresses. When `${ARGUMENTS}` is a free-form description, use it directly.
+Each field below is resolved in this order: from `${ARGUMENTS}`, from the **Referenced Commit** when one is supplied, then by asking the user.
 
-## Gather Information
+### Referenced Commit
 
-Request any missing details from the user:
+A Git commit hash, supplied via `${ARGUMENTS}` when its value resolves to a commit. Optional. When present, inspect the commit and use it both to seed the other fields and to populate the **Fix** section of the description.
 
-- **Summary** — short title describing the bug.
-- **Steps to Reproduce** — clear, minimal steps.
-- **Expected Behavior** — what should have happened.
-- **Actual Behavior** — what happened instead.
+### Summary
 
-## Required Fields
+Short title describing the bug.
 
-The LPD project requires the following fields. Apply these defaults unless the user specifies otherwise:
+### Steps to Reproduce
 
-- **Affects Version**: `Master` (ID: `16660`).
-- **Component**: Select from the list below, or infer from the code area. Common components include:
-	- `Content Publishing > Resource Importer` (ID: `15805`)
-	- `Data Integration > Export/Import` (ID: `16131`)
-	- `Headless Batch Engine API` (ID: `16022`)
-- **Cross Cutting Properties** (`customfield_10979`): `None` (ID: `14468`).
+Minimal, ordered steps that trigger the bug.
 
-When no listed component matches, fetch the LPD project components and pick the one whose name matches the keyword.
+### Expected Behavior
 
-## Create the Ticket
+What should have happened.
 
-Create the issue in the LPD project with the gathered summary, description, and required fields. Author the description in Atlassian Document Format (ADF) with the following sections, in order: Description, Steps to Reproduce, Expected Behavior, Actual Behavior. Append a Fix section when a commit is referenced.
+### Actual Behavior
 
-## Output
+What happened instead.
 
-Return the ticket key and the browse URL: `https://liferay.atlassian.net/browse/<KEY>`.
+### Component
+
+A single LPD component. When no clear match surfaces from `${ARGUMENTS}` or the referenced commit's code area, fetch the LPD project components and ask the user to pick one. Common components:
+
+| Name | ID |
+| --- | --- |
+| Content Publishing > Resource Importer | 15805 |
+| Data Integration > Export/Import | 16131 |
+| Headless Batch Engine API | 16022 |
+
+## Expected Output
+
+### Bug Ticket
+
+A new issue in the LPD Jira project.
+
+The issue carries these fixed defaults:
+
+| Field | Value | ID |
+| --- | --- | --- |
+| Affects Version | Master | 16660 |
+| Cross Cutting Properties (`customfield_10979`) | None | 14468 |
+| Issue Type | Bug | 10004 |
+
+The description is authored in Atlassian Document Format (ADF) with these sections, in order: **Description**, **Steps to Reproduce**, **Expected Behavior**, **Actual Behavior**. Append a **Fix** section that links the referenced commit when one was provided.
+
+### Summary
+
+Print the ticket key and its browse URL: `https://liferay.atlassian.net/browse/<KEY>`.
