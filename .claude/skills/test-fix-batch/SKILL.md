@@ -1,8 +1,8 @@
 ---
 
 allowed-tools: [Bash, Read, Skill, Write]
-argument-hint: '<caseResultId> [caseResultId...]'
-description: Resolve one or more Liferay test failures by orchestrating `/test-fix` per case result. Use when the user invokes `/test-fix-batch` with one or more Testray case result IDs.
+argument-hint: '<caseResultId> [caseResultId...] | <testrayBuildUrl>'
+description: Resolve one or more Liferay test failures by orchestrating `/test-fix` per case result. Use when the user invokes `/test-fix-batch` with one or more Testray case result IDs or a Testray build URL.
 name: test-fix-batch
 
 ---
@@ -13,9 +13,40 @@ Orchestrate one or more Testray case result fixes.
 
 ## Input
 
+`${ARGUMENTS}` is either a whitespace-separated list of Testray case result IDs or a single Testray build URL. Abort immediately when `${ARGUMENTS}` is empty.
+
 ### Case Result IDs
 
-`${ARGUMENTS}` is one or more positive integers separated by whitespace, each one a Testray case result ID. Tokenise on whitespace into a list and abort immediately when the result is empty or any token is not a positive integer.
+When every whitespace-separated token in `${ARGUMENTS}` is a positive integer, treat the tokens as the list of case result IDs. Abort when any token fails the positive-integer check.
+
+### Testray Build URL
+
+When `${ARGUMENTS}` is a single Testray build URL of the form `https://testray.liferay.com/#/project/<projectId>/routines/<routineId>/build/<buildId>`, with an optional `?filter=<urlEncodedJson>&filterSchema=buildResults` query string inside the fragment, resolve it to the list of case result IDs through the Testray REST API.
+
+1. Parse `<buildId>` from the path. When the fragment includes a `filter` parameter, URL-decode its value and parse it as JSON.
+
+1. Authenticate against Testray by following [`../test-fix/references/testray.md`](../test-fix/references/testray.md) to obtain `${ACCESS_TOKEN}`.
+
+1. Compose the OData filter:
+
+	- Always include `r_buildToCaseResult_c_buildId eq '<buildId>' and dueStatus eq 'FAILED'`.
+
+	- When the parsed filter JSON contains a non-empty `testrayTeamIds` array, append `and (r_teamToCaseResult_c_teamId eq '<id1>' or r_teamToCaseResult_c_teamId eq '<id2>' …)` so only failures owned by those teams remain.
+
+1. Fetch the matching case results:
+
+	```bash
+	curl \
+		--data-urlencode "filter=<filter>" \
+		--data-urlencode "pageSize=200" \
+		--get \
+		--header "Accept: application/json" \
+		--header "Authorization: Bearer ${ACCESS_TOKEN}" \
+		--silent \
+		--url "https://testray.liferay.com/o/c/caseresults"
+	```
+
+	Collect every item's `id` into the case result list, preserving the response order. Abort when the list is empty, or when `totalCount` exceeds 200 (narrow the filter and retry).
 
 ## Expected Output
 
