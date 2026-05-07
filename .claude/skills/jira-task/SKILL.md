@@ -1,65 +1,62 @@
 ---
 
-allowed-tools: Bash(curl *), Bash(git *), Glob, Grep, Read
-argument-hint: "[commit hash or description]"
-description: Create a Jira task in the LPD project through the REST API. Use when the user asks to create a Jira task or LPD task ticket.
+allowed-tools: [Bash, Glob, Grep, Read]
+argument-hint: '[commit hash or description]'
+description: Create a Jira task in the LPD project. Use when the user asks to create a Jira task or LPD task ticket.
 name: jira-task
 
 ---
 
 # Create a Jira Task in LPD
 
-Create a task ticket in the LPD Jira project through the REST API, authenticating with credentials from the `${JIRA_API_USER}` and `${JIRA_API_TOKEN}` environment variables.
+File a task ticket against the LPD Jira project.
 
 ## Input
 
-When `${ARGUMENTS}` is a commit hash, inspect the commit with `git show` to understand the work and infer the task. When `${ARGUMENTS}` is a free-form description, use it directly.
+Each field below is resolved in this order: from `${ARGUMENTS}`, from the **Referenced Commit** when one is supplied, then by asking the user.
 
-## Gather Information
+### Referenced Commit
 
-Request any missing details from the user:
+A Git commit hash, supplied via `${ARGUMENTS}` when its value resolves to a commit. Optional. When present, inspect the commit and use it both to seed the other fields and to populate the **Reference** section of the description.
 
-- **Summary** — short title describing the task.
-- **Description** — what needs to be done and why.
+### Summary
 
-## Required Fields
+Short title describing the task.
 
-The LPD project requires the following fields. Apply these defaults unless the user specifies otherwise:
+### Description
 
-- **Component**: Select from the list below, or infer from the code area. Common components include:
-	- `Content Publishing > Resource Importer` (ID: `15805`)
-	- `Data Integration > Export/Import` (ID: `16131`)
-	- `Headless Batch Engine API` (ID: `16022`)
-- **Issue Type**: `Task` (ID: `10002`).
+What needs to be done and why.
 
-Note: Unlike bugs, tasks do not require the Affects Version or Cross Cutting Properties fields.
+### Acceptance Criteria
 
-When no listed component matches, search by keyword:
+List of conditions that mark the task done. Optional.
 
-```bash
-curl \
-	--silent \
-	--url "https://liferay.atlassian.net/rest/api/3/project/LPD/components" \
-	--user "${JIRA_API_USER}:${JIRA_API_TOKEN}" \
-	| python3 -c "import json, sys; [print(f'{c[\"id\"]:>6} {c[\"name\"]}') for c in json.load(sys.stdin) if 'SEARCH_TERM' in c['name'].lower()]"
-```
+### Component
 
-## Create the Ticket
+A single LPD component. When no clear match surfaces from `${ARGUMENTS}` or the referenced commit's code area, fetch the LPD project components and ask the user to pick one. Common components:
 
-Submit the issue through Jira REST API v3:
+| Name | ID |
+| --- | --- |
+| Content Publishing > Resource Importer | 15805 |
+| Data Integration > Export/Import | 16131 |
+| Headless Batch Engine API | 16022 |
 
-```bash
-curl \
-	--data '<JSON payload>' \
-	--header "Content-Type: application/json" \
-	--request POST \
-	--silent \
-	--url "https://liferay.atlassian.net/rest/api/3/issue" \
-	--user "${JIRA_API_USER}:${JIRA_API_TOKEN}"
-```
+## Expected Output
 
-Author the description in Atlassian Document Format (ADF) with the following sections, in order: Description, Acceptance Criteria (when applicable). Append a Reference section when a commit is referenced.
+### Task Ticket
 
-## Output
+A new issue in the LPD Jira project.
 
-Return the ticket key and the browse URL: `https://liferay.atlassian.net/browse/<KEY>`.
+The issue carries this fixed default:
+
+| Field | Value | ID |
+| --- | --- | --- |
+| Issue Type | Task | 10002 |
+
+Tasks do not require **Affects Version** or **Cross Cutting Properties**.
+
+The description is authored in Atlassian Document Format (ADF) with these sections, in order: **Description**, **Acceptance Criteria** (when applicable). Append a **Reference** section that links the referenced commit when one was provided.
+
+### Summary
+
+Print the ticket key and its browse URL: `https://liferay.atlassian.net/browse/<KEY>`.

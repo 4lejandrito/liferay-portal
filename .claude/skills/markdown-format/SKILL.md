@@ -13,22 +13,16 @@ Apply Liferay Markdown conventions to the target file so its structure, casing, 
 
 ## Input
 
-When `${ARGUMENTS}` is a path to a Markdown file, format that file. When no path is supplied, ask the user which file to format.
+### Target File
 
-## Workflow
+The path to a Markdown file, read from `${ARGUMENTS}`. When `${ARGUMENTS}` is empty, ask the user which file to format.
 
-### 1. Read the File
+## Expected Output
 
-Read the target file in full before making changes. Note the frontmatter, headings, code blocks, and any conventions already in use.
+### Formatted File
 
-### 2. Apply the Conventions
+The target file rewritten in place so every convention defined in `.claude/rules/markdown-style.md` holds.
 
-Apply all conventions defined in `.claude/rules/markdown-style.md`. Work through each category in order. Fix each category before moving to the next.
+### Summary
 
-### 3. Validate
-
-Reread the file after the pass and confirm every check still holds.
-
-### 4. Report
-
-Summarize the changes, grouped by category (frontmatter, headings, prose, shell, lists).
+A short report grouping the changes by category (frontmatter, headings, prose, shell, lists). When the file already conformed, say so.
