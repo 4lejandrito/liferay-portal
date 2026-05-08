@@ -214,7 +214,7 @@ export class StagingPage {
 
 	async gotoTemplatePage() {
 		await this.page
-			.getByText('Staging Open Applications')
+			.getByTestId('headerOptions')
 			.getByLabel('Options')
 			.click();
 		await this.page
