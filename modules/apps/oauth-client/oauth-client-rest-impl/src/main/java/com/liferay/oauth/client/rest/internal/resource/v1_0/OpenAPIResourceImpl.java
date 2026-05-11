@@ -42,7 +42,7 @@ import org.osgi.service.component.annotations.Reference;
 )
 @Generated("")
 @OpenAPIDefinition(
-	info = @Info(license = @License(name = "Apache 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0.html"), title = "", version = "v1.0")
+	info = @Info(description = "Manage OAuth 2.0 client integrations registered on this Liferay portal, including client entries and authorization-server local metadata.. A Java client JAR is available for use with the group ID 'com.liferay', artifact ID 'com.liferay.oauth.client.rest.client', and version '1.0.2'.", license = @License(name = "Apache 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0.html"), title = "Liferay OAuth Client", version = "v1.0")
 )
 @Path("/v1.0")
 public class OpenAPIResourceImpl {
@@ -94,4 +94,4 @@ public class OpenAPIResourceImpl {
 	};
 
 }
-// LIFERAY-REST-BUILDER-HASH:-1720401828
+// LIFERAY-REST-BUILDER-HASH:-214892238

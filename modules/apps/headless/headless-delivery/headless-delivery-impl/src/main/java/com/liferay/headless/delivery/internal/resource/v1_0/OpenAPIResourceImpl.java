@@ -42,7 +42,7 @@ import org.osgi.service.component.annotations.Reference;
 )
 @Generated("")
 @OpenAPIDefinition(
-	info = @Info(description = "A Java client JAR is available for use with the group ID 'com.liferay', artifact ID 'com.liferay.headless.delivery.client', and version '4.0.105'.", license = @License(name = "Apache 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0.html"), title = "Headless Delivery", version = "v1.0")
+	info = @Info(description = "Public content delivery and engagement for end users: blogs (posts, images, comments), knowledge base (articles, folders, attachments), web content (structured content, folders, structures, templates, content sets, content elements), documents (files, folders, metadata sets, shortcuts, data definitions), message boards (messages, threads, sections, attachments), wikis (nodes, pages, attachments), site pages, navigation menus, and available languages.. A Java client JAR is available for use with the group ID 'com.liferay', artifact ID 'com.liferay.headless.delivery.client', and version '4.0.105'.", license = @License(name = "Apache 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0.html"), title = "Headless Delivery", version = "v1.0")
 )
 @Path("/v1.0")
 public class OpenAPIResourceImpl {
@@ -144,4 +144,4 @@ public class OpenAPIResourceImpl {
 	};
 
 }
-// LIFERAY-REST-BUILDER-HASH:-635059371
+// LIFERAY-REST-BUILDER-HASH:1206056187

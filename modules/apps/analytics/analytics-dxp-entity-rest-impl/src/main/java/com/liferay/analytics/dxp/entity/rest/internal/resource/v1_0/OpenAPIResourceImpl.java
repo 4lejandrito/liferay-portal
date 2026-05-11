@@ -43,7 +43,7 @@ import org.osgi.service.component.annotations.Reference;
 )
 @Generated("")
 @OpenAPIDefinition(
-	info = @Info(license = @License(name = "Apache 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0.html"), title = "Liferay Analytics DXP Entity REST", version = "v1.0")
+	info = @Info(description = "Synchronize DXP entity definitions, asset entries, expando fields, and content recommendations with Liferay Analytics Cloud.", license = @License(name = "Apache 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0.html"), title = "Liferay Analytics DXP Entity REST", version = "v1.0")
 )
 public class OpenAPIResourceImpl {
 
@@ -90,4 +90,4 @@ public class OpenAPIResourceImpl {
 	};
 
 }
-// LIFERAY-REST-BUILDER-HASH:-219822589
+// LIFERAY-REST-BUILDER-HASH:-1190897497

@@ -42,7 +42,7 @@ import org.osgi.service.component.annotations.Reference;
 )
 @Generated("")
 @OpenAPIDefinition(
-	info = @Info(description = "Headless Commerce Delivery Catalog API. A Java client JAR is available for use with the group ID 'com.liferay', artifact ID 'com.liferay.headless.commerce.delivery.catalog.client', and version '4.0.65'.", license = @License(name = "Apache 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0.html"), title = "Headless Commerce Delivery Catalog API", version = "v1.0")
+	info = @Info(description = "Storefront catalog browsing for shoppers, exposing channels, categories, products with attachments, options, prices, currencies, and availability.. A Java client JAR is available for use with the group ID 'com.liferay', artifact ID 'com.liferay.headless.commerce.delivery.catalog.client', and version '4.0.65'.", license = @License(name = "Apache 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0.html"), title = "Headless Commerce Delivery Catalog API", version = "v1.0")
 )
 @Path("/v1.0")
 public class OpenAPIResourceImpl {
@@ -122,4 +122,4 @@ public class OpenAPIResourceImpl {
 	};
 
 }
-// LIFERAY-REST-BUILDER-HASH:182272081
+// LIFERAY-REST-BUILDER-HASH:-33600517

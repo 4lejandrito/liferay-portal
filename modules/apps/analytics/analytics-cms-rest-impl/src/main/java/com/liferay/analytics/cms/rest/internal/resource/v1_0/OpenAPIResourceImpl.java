@@ -42,7 +42,7 @@ import org.osgi.service.component.annotations.Reference;
 )
 @Generated("")
 @OpenAPIDefinition(
-	info = @Info(license = @License(name = "Apache 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0.html"), title = "", version = "v1.0")
+	info = @Info(description = "Surfaces CMS analytics for Liferay Analytics, including channel inventory, expired assets, content overview, file overview, and other CMS-side reporting.. A Java client JAR is available for use with the group ID 'com.liferay', artifact ID 'com.liferay.analytics.cms.rest.client', and version '1.0.11'.", license = @License(name = "Apache 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0.html"), title = "Liferay Analytics CMS", version = "v1.0")
 )
 @Path("/v1.0")
 public class OpenAPIResourceImpl {
@@ -108,4 +108,4 @@ public class OpenAPIResourceImpl {
 	};
 
 }
-// LIFERAY-REST-BUILDER-HASH:1723994668
+// LIFERAY-REST-BUILDER-HASH:882571338

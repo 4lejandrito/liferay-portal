@@ -42,7 +42,7 @@ import org.osgi.service.component.annotations.Reference;
 )
 @Generated("")
 @OpenAPIDefinition(
-	info = @Info(license = @License(name = "Apache 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0.html"), title = "Headless Admin Batch Planner", version = "v1.0")
+	info = @Info(description = "Plan and orchestrate batch import and export jobs against Liferay's headless APIs, including field mappings, scope, policies, and execution strategies.. A Java client JAR is available for use with the group ID 'com.liferay', artifact ID 'com.liferay.batch.planner.rest.client', and version '1.0.40'.", license = @License(name = "Apache 2.0", url = "http://www.apache.org/licenses/LICENSE-2.0.html"), title = "Headless Admin Batch Planner", version = "v1.0")
 )
 @Path("/v1.0")
 public class OpenAPIResourceImpl {
@@ -98,4 +98,4 @@ public class OpenAPIResourceImpl {
 	};
 
 }
-// LIFERAY-REST-BUILDER-HASH:960875346
+// LIFERAY-REST-BUILDER-HASH:133049078
