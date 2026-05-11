@@ -104,6 +104,10 @@ components:
                 type:
                     type: string
 info:
+    description:
+        "Plan and orchestrate batch import and export jobs against Liferay's headless APIs, including field mappings,
+        scope, policies, and execution strategies.. A Java client JAR is available for use with the group ID
+        'com.liferay', artifact ID 'com.liferay.batch.planner.rest.client', and version '1.0.40'."
     license:
         name: Apache 2.0
         url: http://www.apache.org/licenses/LICENSE-2.0.html

@@ -4890,7 +4890,8 @@ components:
             type: object
 info:
     description:
-        "A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
+        "Administers site-level page templates, layouts, fragments, navigation menus, theme settings, and site analytics
+        configuration.. A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
         'com.liferay.headless.admin.site.client', and version '1.0.30'."
     license:
         name: Apache 2.0

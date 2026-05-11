@@ -485,7 +485,8 @@ components:
             type: object
 info:
     description:
-        "A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
+        "Manages taxonomy categories, vocabularies, keywords, asset libraries, and category-property metadata for
+        content classification.. A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
         'com.liferay.headless.admin.taxonomy.client', and version '4.0.48'."
     license:
         name: Apache 2.0

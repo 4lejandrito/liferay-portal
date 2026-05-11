@@ -601,7 +601,8 @@ components:
             type: object
 info:
     description:
-        "Liferay SCIM endpoints. A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
+        "SCIM 2.0 user and group provisioning endpoints for synchronizing identities from external identity providers..
+        A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
         'com.liferay.scim.rest.client', and version '1.0.18'."
     license:
         name: Apache 2.0

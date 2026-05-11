@@ -568,8 +568,9 @@ info:
         email: team-commerce@liferay.com
         name: Commerce Team
     description:
-        "Liferay Commerce Admin Account API. A Java client JAR is available for use with the group ID 'com.liferay',
-        artifact ID 'com.liferay.headless.commerce.admin.account.client', and version '4.0.43'."
+        "Manages commerce customer accounts, account groups, account memberships, account organizations, and
+        account-level addresses.. A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
+        'com.liferay.headless.commerce.admin.account.client', and version '4.0.43'."
     license:
         name: Apache 2.0
         url: http://www.apache.org/licenses/LICENSE-2.0.html

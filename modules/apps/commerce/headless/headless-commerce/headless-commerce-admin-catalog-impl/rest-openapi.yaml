@@ -2601,7 +2601,8 @@ info:
         email: team-commerce@liferay.com
         name: Commerce Team
     description:
-        "Liferay Commerce Admin Catalog API. A Java client JAR is available for use with the group ID 'com.liferay',
+        "Manages commerce product catalogs, products, SKUs, product options and specifications, attachments, and
+        category-product configurations.. A Java client JAR is available for use with the group ID 'com.liferay',
         artifact ID 'com.liferay.headless.commerce.admin.catalog.client', and version '4.0.77'."
     license:
         name: Apache 2.0

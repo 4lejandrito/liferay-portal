@@ -1,6 +1,8 @@
 components:
     schemas: {}
 info:
+    description:
+        GraphQL gateway for Liferay Analytics. Submit GraphQL queries to retrieve analytics data.
     license:
         name: Apache 2.0
         url: http://www.apache.org/licenses/LICENSE-2.0.html

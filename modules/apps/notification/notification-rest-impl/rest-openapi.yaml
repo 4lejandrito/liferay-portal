@@ -115,7 +115,8 @@ components:
             type: object
 info:
     description:
-        "A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
+        "Manages outbound notification templates and inspects the queue of notifications waiting to be delivered,
+        including resend.. A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
         'com.liferay.notification.rest.client', and version '1.0.40'."
     license:
         name: Apache 2.0

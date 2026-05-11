@@ -124,6 +124,9 @@ components:
                     type: string
             type: object
 info:
+    description:
+        Synchronize DXP entity definitions, asset entries, expando fields, and content recommendations with Liferay
+        Analytics Cloud.
     license:
         name: Apache 2.0
         url: http://www.apache.org/licenses/LICENSE-2.0.html

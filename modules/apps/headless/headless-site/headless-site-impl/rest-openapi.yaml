@@ -71,8 +71,9 @@ components:
             type: object
 info:
     description:
-        "A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
-        'com.liferay.headless.site.client', and version '1.0.29'."
+        "Reads metadata for a single site by id (limited; use headless-admin-site for full site administration).. A Java
+        client JAR is available for use with the group ID 'com.liferay', artifact ID 'com.liferay.headless.site.client',
+        and version '1.0.29'."
     license:
         name: Apache 2.0
         url: http://www.apache.org/licenses/LICENSE-2.0.html

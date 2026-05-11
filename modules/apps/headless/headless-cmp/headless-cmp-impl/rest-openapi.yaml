@@ -36,10 +36,14 @@ components:
                     readOnly: true
                     type: integer
 info:
+    description:
+        "Headless content-management-platform task statistics and task-assignee data, scoped per project or globally.. A
+        Java client JAR is available for use with the group ID 'com.liferay', artifact ID
+        'com.liferay.headless.cmp.client', and version '1.0.4'."
     license:
         name: Apache 2.0
         url: http://www.apache.org/licenses/LICENSE-2.0.html
-    title: ""
+    title: Liferay Headless CMP
     version: v1.0
 openapi: 3.0.1
 paths:

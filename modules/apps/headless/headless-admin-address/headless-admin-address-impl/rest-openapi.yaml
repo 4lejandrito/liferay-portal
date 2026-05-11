@@ -85,7 +85,8 @@ components:
                 -   name
 info:
     description:
-        "A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
+        "Reference data for postal addresses, including ISO countries (lookup by alpha-2, alpha-3, name, or numeric
+        code) and regions.. A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
         'com.liferay.headless.admin.address.client', and version '1.0.28'."
     license:
         name: Apache 2.0

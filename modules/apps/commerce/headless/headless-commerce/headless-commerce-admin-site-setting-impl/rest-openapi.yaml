@@ -325,8 +325,9 @@ info:
         email: team-commerce@liferay.com
         name: Commerce Team
     description:
-        "Liferay Commerce Admin Site Setting API. A Java client JAR is available for use with the group ID
-        'com.liferay', artifact ID 'com.liferay.headless.commerce.admin.site.setting.client', and version '4.0.42'."
+        "Configures commerce site-level settings such as availability estimates, measurement units, tax categories, and
+        warehouses.. A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
+        'com.liferay.headless.commerce.admin.site.setting.client', and version '4.0.42'."
     license:
         name: Apache 2.0
         url: http://www.apache.org/licenses/LICENSE-2.0.html

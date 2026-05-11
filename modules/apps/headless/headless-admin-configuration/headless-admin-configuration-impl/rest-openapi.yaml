@@ -25,6 +25,10 @@ components:
                         type: object
                     type: object
 info:
+    description:
+        "Read and update Liferay system, instance, and site-scoped configuration settings through a headless REST
+        interface.. A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
+        'com.liferay.headless.admin.configuration.client', and version '1.0.3'."
     license:
         name: Apache 2.0
         url: http://www.apache.org/licenses/LICENSE-2.0.html

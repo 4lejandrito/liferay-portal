@@ -365,8 +365,8 @@ components:
             type: object
 info:
     description:
-        "API for requesting punch out session.. A Java client JAR is available for use with the group ID 'com.liferay',
-        artifact ID 'com.liferay.headless.commerce.punchout.client', and version '1.0.0'."
+        "Initiates B2B punch-out sessions where buyers shop on a Liferay catalog and return their cart selection to a
+        procurement system."
     license:
         name: Apache 2.0
         url: http://www.apache.org/licenses/LICENSE-2.0.html

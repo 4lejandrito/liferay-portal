@@ -1187,7 +1187,8 @@ components:
                     type: integer
 info:
     description:
-        "Headless Commerce Delivery Catalog API. A Java client JAR is available for use with the group ID 'com.liferay',
+        "Storefront catalog browsing for shoppers, exposing channels, categories, products with attachments, options,
+        prices, currencies, and availability.. A Java client JAR is available for use with the group ID 'com.liferay',
         artifact ID 'com.liferay.headless.commerce.delivery.catalog.client', and version '4.0.65'."
     license:
         name: Apache 2.0

@@ -722,8 +722,9 @@ info:
         email: team-commerce@liferay.com
         name: Commerce Team
     description:
-        "Liferay Commerce ML API. A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
-        'com.liferay.headless.commerce.machine.learning.client', and version '1.0.33'."
+        "Commerce machine-learning predictions including account forecasts, account-category forecasts, frequent-pattern
+        recommendations, and time-series order data.. A Java client JAR is available for use with the group ID
+        'com.liferay', artifact ID 'com.liferay.headless.commerce.machine.learning.client', and version '1.0.33'."
     license:
         name: Apache 2.0
         url: http://www.apache.org/licenses/LICENSE-2.0.html

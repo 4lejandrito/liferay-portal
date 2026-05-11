@@ -686,7 +686,8 @@ components:
             type: object
 info:
     description:
-        "A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
+        "Manages workflow definitions, deploys them, and links definitions to content; inspects workflow nodes,
+        transitions, and reviewers.. A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
         'com.liferay.headless.admin.workflow.client', and version '4.0.48'."
     license:
         name: Apache 2.0

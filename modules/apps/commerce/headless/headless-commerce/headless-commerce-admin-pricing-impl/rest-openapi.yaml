@@ -483,8 +483,9 @@ info:
         email: team-commerce@liferay.com
         name: Commerce Team
     description:
-        "Liferay Commerce Admin Pricing API. A Java client JAR is available for use with the group ID 'com.liferay',
-        artifact ID 'com.liferay.headless.commerce.admin.pricing.client', and version '4.0.48'."
+        "Manages commerce price lists, price entries, discounts, discount rules, discount-product, discount-category and
+        discount-account-group bindings, and promotion targeting.. A Java client JAR is available for use with the group
+        ID 'com.liferay', artifact ID 'com.liferay.headless.commerce.admin.pricing.client', and version '4.0.48'."
     license:
         name: Apache 2.0
         url: http://www.apache.org/licenses/LICENSE-2.0.html

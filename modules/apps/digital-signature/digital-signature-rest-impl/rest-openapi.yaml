@@ -84,7 +84,8 @@ components:
                     type: string
 info:
     description:
-        "A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
+        "Sends DocuSign-style digital-signing envelopes, attaches documents and recipients, and returns signing-view
+        URLs for each recipient.. A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
         'com.liferay.digital.signature.rest.client', and version '1.0.35'."
     license:
         name: Apache 2.0

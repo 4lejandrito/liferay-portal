@@ -56,8 +56,9 @@ components:
             type: object
 info:
     description:
-        "A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
-        'com.liferay.headless.portal.instances.client', and version '1.0.30'."
+        "Provisions and manages multi-tenant Liferay portal instances and their administrators.. A Java client JAR is
+        available for use with the group ID 'com.liferay', artifact ID 'com.liferay.headless.portal.instances.client',
+        and version '1.0.30'."
     license:
         name: Apache 2.0
         url: http://www.apache.org/licenses/LICENSE-2.0.html

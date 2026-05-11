@@ -569,7 +569,8 @@ components:
             type: object
 info:
     description:
-        "A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
+        "Workflow analytics endpoints for assignee, process, instance, task, and SLA metrics; triggers reindexing of
+        workflow data.. A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
         'com.liferay.portal.workflow.metrics.rest.client', and version '3.0.47'."
     license:
         name: Apache 2.0
