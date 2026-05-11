@@ -218,41 +218,7 @@ public abstract class BaseToolSetResourceTestCase {
 
 	@Test
 	public void testGetToolSummaries() throws Exception {
-		String toolSetName = testGetToolSummaries_getToolSetName();
-		String irrelevantToolSetName =
-			testGetToolSummaries_getIrrelevantToolSetName();
-
-		Page<ToolSet> page = toolSetResource.getToolSummaries(toolSetName);
-
-		long totalCount = page.getTotalCount();
-
-		if (irrelevantToolSetName != null) {
-			ToolSet irrelevantToolSet = testGetToolSummaries_addToolSet(
-				irrelevantToolSetName, randomIrrelevantToolSet());
-
-			page = toolSetResource.getToolSummaries(irrelevantToolSetName);
-
-			Assert.assertEquals(totalCount + 1, page.getTotalCount());
-
-			assertContains(irrelevantToolSet, (List<ToolSet>)page.getItems());
-			assertValid(
-				page,
-				testGetToolSummaries_getExpectedActions(irrelevantToolSetName));
-		}
-
-		ToolSet toolSet1 = testGetToolSummaries_addToolSet(
-			toolSetName, randomToolSet());
-
-		ToolSet toolSet2 = testGetToolSummaries_addToolSet(
-			toolSetName, randomToolSet());
-
-		page = toolSetResource.getToolSummaries(toolSetName);
-
-		Assert.assertEquals(totalCount + 2, page.getTotalCount());
-
-		assertContains(toolSet1, (List<ToolSet>)page.getItems());
-		assertContains(toolSet2, (List<ToolSet>)page.getItems());
-		assertValid(page, testGetToolSummaries_getExpectedActions(toolSetName));
+		Assert.assertTrue(false);
 	}
 
 	protected Map<String, Map<String, String>>
@@ -290,15 +256,7 @@ public abstract class BaseToolSetResourceTestCase {
 
 	@Test
 	public void testGetTool() throws Exception {
-		ToolSet postToolSet = testGetToolSet_addToolSet();
-
-		Tool postTool = testGetTool_addTool(
-			postToolSet.getToolSetId(), randomTool());
-
-		Tool getTool = toolSetResource.getTool(postToolSet.getToolSetId());
-
-		assertEquals(postTool, getTool);
-		assertValid(getTool);
+		Assert.assertTrue(false);
 	}
 
 	protected Tool testGetTool_addTool(long toolSetId, Tool tool)

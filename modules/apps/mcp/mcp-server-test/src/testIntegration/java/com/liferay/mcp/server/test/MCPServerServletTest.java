@@ -8,6 +8,7 @@ package com.liferay.mcp.server.test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.batch.engine.test.util.BatchEngineTestUtil;
 import com.liferay.object.constants.ObjectEntryFolderConstants;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
@@ -15,7 +16,6 @@ import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectEntryLocalService;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.test.util.ConfigurationTestUtil;
-import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
@@ -31,6 +31,7 @@ import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PropsValues;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.test.rule.FeatureFlag;
+import com.liferay.portal.test.rule.FeatureFlags;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
@@ -51,8 +52,6 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
-import org.hamcrest.CoreMatchers;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -67,7 +66,9 @@ import org.skyscreamer.jsonassert.JSONAssert;
  * @author Alejandro Tardín
  * @author Beni Herrero
  */
-@FeatureFlag("LPD-63311")
+@FeatureFlags(
+	featureFlags = {@FeatureFlag("LPD-63311"), @FeatureFlag("LPD-86164")}
+)
 @RunWith(Arquillian.class)
 public class MCPServerServletTest {
 
@@ -79,6 +80,14 @@ public class MCPServerServletTest {
 	@Before
 	public void setUp() throws Exception {
 		_updateMCPServerConfiguration(true);
+
+		BatchEngineTestUtil.processBatchEngineUnits(
+			"com.liferay.mcp.server", MCPServerServletTest.class,
+			new String[] {
+				".com.liferay.mcp.server.internal.batch.01.object.definition",
+				".com.liferay.mcp.server.internal.batch.02.object.definition",
+				".com.liferay.mcp.server.internal.batch.03.object.entry"
+			});
 	}
 
 	@After
@@ -106,13 +115,13 @@ public class MCPServerServletTest {
 		Assert.assertEquals(404, httpResponse.statusCode());
 	}
 
-	@FeatureFlag("LPD-86164")
 	@Test
 	public void testServiceWithModifiedProfile() throws Exception {
 		String name = RandomTestUtil.randomString();
 
 		ObjectEntry objectEntry = _addObjectEntry(
-			name, "GET /mcp/server-profiles", "POST /mcp/server-profiles");
+			name, "mcp-server-profiles getMCPServerProfilesPage",
+			"mcp-server-profiles postMCPServerProfile");
 
 		McpSyncClient mcpSyncClient = _getMcpSyncClient(name);
 
@@ -139,9 +148,9 @@ public class MCPServerServletTest {
 			HashMapBuilder.<String, Serializable>put(
 				"description", RandomTestUtil.randomString()
 			).put(
-				"endpoints", "GET /mcp/server-profiles"
-			).put(
 				"name", name
+			).put(
+				"tools", "mcp-server-profiles getMCPServerProfilesPage"
 			).build(),
 			ServiceContextTestUtil.getServiceContext());
 
@@ -172,68 +181,105 @@ public class MCPServerServletTest {
 
 		List<McpSchema.Tool> tools = listToolsResult.tools();
 
-		Assert.assertEquals(tools.toString(), 3, tools.size());
+		Assert.assertEquals(tools.toString(), 4, tools.size());
 
-		McpSchema.Tool tool1 = tools.get(0);
-
-		Assert.assertEquals("call-http-endpoint", tool1.name());
-
-		McpSchema.Tool tool2 = tools.get(1);
-
-		Assert.assertEquals("get-openapi", tool2.name());
-
-		McpSchema.Tool tool3 = tools.get(2);
-
-		Assert.assertEquals("get-openapis", tool3.name());
+		_assertTool(tools.get(0), "getToolSets", "get_tool_sets.json");
+		_assertTool(
+			tools.get(1), "getToolSummaries", "get_tool_summaries.json");
+		_assertTool(tools.get(2), "getTool", "get_tool.json");
+		_assertTool(tools.get(3), "invokeTool", "invoke_tool.json");
 
 		McpSchema.CallToolResult callToolResult = mcpSyncClient.callTool(
 			new McpSchema.CallToolRequest(
-				"get-openapis", Collections.emptyMap()));
+				"getToolSets", Collections.emptyMap()));
 
 		List<McpSchema.Content> contents = callToolResult.content();
 
 		McpSchema.TextContent content = (McpSchema.TextContent)contents.get(0);
 
+		Assert.assertFalse(content.text(), callToolResult.isError());
+
+		Assert.assertTrue(
+			content.text(),
+			JSONUtil.toStringList(
+				JSONFactoryUtil.createJSONObject(
+					content.text()
+				).getJSONArray(
+					"items"
+				),
+				"name"
+			).contains(
+				"mcp-server-profiles"
+			));
+
 		callToolResult = mcpSyncClient.callTool(
 			new McpSchema.CallToolRequest(
-				"get-openapi",
+				"getToolSummaries",
 				HashMapBuilder.<String, Object>put(
-					"url",
-					() -> {
-						JSONObject jsonObject =
-							JSONFactoryUtil.createJSONObject(content.text());
-
-						JSONArray jsonArray = jsonObject.getJSONArray(
-							"/object-admin");
-
-						return jsonArray.getString(0);
-					}
+					"toolSetName", "mcp-server-profiles"
 				).build()));
 
 		contents = callToolResult.content();
 
-		McpSchema.TextContent newContent = (McpSchema.TextContent)contents.get(
-			0);
+		content = (McpSchema.TextContent)contents.get(0);
 
-		Assert.assertThat(
-			newContent.text(), CoreMatchers.containsString("/object-admin"));
+		Assert.assertFalse(content.text(), callToolResult.isError());
+
+		Assert.assertTrue(
+			content.text(),
+			JSONUtil.toStringList(
+				JSONFactoryUtil.createJSONObject(
+					content.text()
+				).getJSONArray(
+					"items"
+				),
+				"name"
+			).contains(
+				"getMCPServerProfilesPage"
+			));
 
 		callToolResult = mcpSyncClient.callTool(
 			new McpSchema.CallToolRequest(
-				"call-http-endpoint",
+				"getTool",
 				HashMapBuilder.<String, Object>put(
-					"method", "GET"
+					"toolName", "getMCPServerProfilesPage"
 				).put(
-					"path", "/object-admin/v1.0/object-definitions"
+					"toolSetName", "mcp-server-profiles"
 				).build()));
 
 		contents = callToolResult.content();
 
-		newContent = (McpSchema.TextContent)contents.get(0);
+		content = (McpSchema.TextContent)contents.get(0);
+
+		Assert.assertFalse(content.text(), callToolResult.isError());
+
+		JSONObject toolJSONObject = JSONFactoryUtil.createJSONObject(
+			content.text());
+
+		Assert.assertEquals(
+			"getMCPServerProfilesPage", toolJSONObject.getString("name"));
+		Assert.assertNotNull(toolJSONObject.getJSONObject("inputSchema"));
+
+		callToolResult = mcpSyncClient.callTool(
+			new McpSchema.CallToolRequest(
+				"invokeTool",
+				HashMapBuilder.<String, Object>put(
+					"body", Collections.<String, Object>emptyMap()
+				).put(
+					"toolName", "getMCPServerProfilesPage"
+				).put(
+					"toolSetName", "mcp-server-profiles"
+				).build()));
+
+		contents = callToolResult.content();
+
+		content = (McpSchema.TextContent)contents.get(0);
+
+		Assert.assertFalse(content.text(), callToolResult.isError());
 
 		Assert.assertNotNull(
 			JSONFactoryUtil.createJSONObject(
-				newContent.text()
+				content.text()
 			).getJSONArray(
 				"items"
 			));
@@ -294,13 +340,13 @@ public class MCPServerServletTest {
 		Assert.assertNull(response.getHeader("Mcp-Session-Id"));
 	}
 
-	@FeatureFlag("LPD-86164")
 	@Test
 	public void testServiceWithProfile() throws Exception {
 		String name = RandomTestUtil.randomString();
 
 		_addObjectEntry(
-			name, "GET /mcp/server-profiles", "POST /mcp/server-profiles");
+			name, "mcp-server-profiles getMCPServerProfilesPage",
+			"mcp-server-profiles postMCPServerProfile");
 
 		McpSyncClient mcpSyncClient = _getMcpSyncClient(name);
 
@@ -329,9 +375,9 @@ public class MCPServerServletTest {
 					HashMapBuilder.<String, Object>put(
 						"description", RandomTestUtil.randomString()
 					).put(
-						"endpoints", RandomTestUtil.randomString()
-					).put(
 						"name", entryName
+					).put(
+						"tools", "mcp-server-profiles getMCPServerProfilesPage"
 					).build()
 				).build()));
 
@@ -374,7 +420,7 @@ public class MCPServerServletTest {
 		mcpSyncClient.closeGracefully();
 	}
 
-	private ObjectEntry _addObjectEntry(String name, String... endpoints)
+	private ObjectEntry _addObjectEntry(String name, String... tools)
 		throws Exception {
 
 		ObjectDefinition objectDefinition =
@@ -390,9 +436,9 @@ public class MCPServerServletTest {
 			HashMapBuilder.<String, Serializable>put(
 				"description", RandomTestUtil.randomString()
 			).put(
-				"endpoints", StringUtil.merge(endpoints, "\n")
-			).put(
 				"name", name
+			).put(
+				"tools", StringUtil.merge(tools, "\n")
 			).build(),
 			ServiceContextTestUtil.getServiceContext());
 	}

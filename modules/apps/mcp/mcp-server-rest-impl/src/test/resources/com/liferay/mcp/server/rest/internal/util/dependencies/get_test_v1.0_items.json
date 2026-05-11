@@ -1,0 +1,19 @@
+{
+	"properties": {
+		"fields": {
+			"description": "Comma-separated list of fields to include in the response. Pass only the fields the user actually needs to save tokens.",
+			"type": "string"
+		},
+		"nestedFields": {
+			"description": "Comma-separated list of nested relationships to expand in the response.",
+			"type": "string"
+		},
+		"restrictFields": {
+			"description": "Comma-separated list of fields to exclude from the response.",
+			"type": "string"
+		}
+	},
+	"required": [
+	],
+	"type": "object"
+}

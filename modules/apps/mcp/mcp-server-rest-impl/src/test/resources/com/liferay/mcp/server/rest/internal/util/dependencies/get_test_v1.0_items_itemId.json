@@ -1,0 +1,32 @@
+{
+	"properties": {
+		"active": {
+			"description": "This is the description",
+			"type": "boolean"
+		},
+		"fields": {
+			"description": "Comma-separated list of fields to include in the response. Pass only the fields the user actually needs to save tokens.",
+			"type": "string"
+		},
+		"itemId": {
+			"description": "This is the description",
+			"type": "string"
+		},
+		"nestedFields": {
+			"description": "Comma-separated list of nested relationships to expand in the response.",
+			"type": "string"
+		},
+		"page": {
+			"description": "This is the description",
+			"type": "integer"
+		},
+		"restrictFields": {
+			"description": "Comma-separated list of fields to exclude from the response.",
+			"type": "string"
+		}
+	},
+	"required": [
+		"itemId"
+	],
+	"type": "object"
+}

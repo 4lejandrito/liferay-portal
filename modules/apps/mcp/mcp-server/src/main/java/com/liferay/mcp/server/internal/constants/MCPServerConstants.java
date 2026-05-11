@@ -10,6 +10,8 @@ package com.liferay.mcp.server.internal.constants;
  */
 public class MCPServerConstants {
 
+	public static final String DEFAULT_PROFILE_NAME = "default";
+
 	public static final String EXTERNAL_REFERENCE_CODE_MCP_SERVER_PROFILE =
 		"L_MCP_SERVER_PROFILE";
 

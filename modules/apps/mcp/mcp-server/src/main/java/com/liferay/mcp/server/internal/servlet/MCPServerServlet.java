@@ -9,18 +9,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.liferay.mcp.server.internal.configuration.MCPServerConfiguration;
 import com.liferay.mcp.server.internal.constants.MCPServerConstants;
-import com.liferay.mcp.server.internal.util.OpenAPIUtil;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
 import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectEntryLocalService;
 import com.liferay.petra.function.transform.TransformUtil;
+import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.module.configuration.ConfigurationProvider;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
-import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
@@ -34,7 +33,6 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
 import io.modelcontextprotocol.common.McpTransportContext;
-import io.modelcontextprotocol.json.jackson2.JacksonMcpJsonMapper;
 import io.modelcontextprotocol.server.McpServer;
 import io.modelcontextprotocol.server.McpStatelessServerFeatures;
 import io.modelcontextprotocol.server.McpStatelessSyncServer;
@@ -55,7 +53,6 @@ import java.io.Serializable;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -95,11 +92,10 @@ public class MCPServerServlet extends HttpServlet {
 
 	public void invalidate(long companyId, String profileName) {
 		synchronized (this) {
-			Servlet servlet = _servlets.remove(
-				_getServletKey(companyId, profileName));
+			_destroy(_getServletKey(companyId, profileName));
 
-			if (servlet != null) {
-				servlet.destroy();
+			if (MCPServerConstants.DEFAULT_PROFILE_NAME.equals(profileName)) {
+				_destroy(_getServletKey(companyId, null));
 			}
 		}
 	}
@@ -113,11 +109,7 @@ public class MCPServerServlet extends HttpServlet {
 					servletKey.startsWith(
 						companyIdString + StringPool.UNDERLINE)) {
 
-					Servlet servlet = _servlets.remove(servletKey);
-
-					if (servlet != null) {
-						servlet.destroy();
-					}
+					_destroy(servletKey);
 				}
 			}
 		}
@@ -137,38 +129,41 @@ public class MCPServerServlet extends HttpServlet {
 			return;
 		}
 
-		MCPServerProfile mcpServerProfile = null;
+		String pathProfileName = _getProfileName(httpServletRequest);
 
-		String profileName = _getProfileName(httpServletRequest);
+		String resolvedProfileName = pathProfileName;
 
-		if (profileName != null) {
-			mcpServerProfile = _getMCPServerProfile(companyId, profileName);
+		if (resolvedProfileName == null) {
+			resolvedProfileName = MCPServerConstants.DEFAULT_PROFILE_NAME;
+		}
 
-			if (mcpServerProfile == null) {
-				httpServletResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		MCPServerProfile mcpServerProfile = _getMCPServerProfile(
+			companyId, resolvedProfileName);
 
-				return;
-			}
+		if (mcpServerProfile == null) {
+			httpServletResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+			return;
 		}
 
 		Servlet servlet = _getServlet(
 			httpServletRequest.getHeader("Authorization"),
 			_portal.getPortalURL(httpServletRequest) + _portal.getPathModule(),
-			companyId, mcpServerProfile);
+			companyId, mcpServerProfile, pathProfileName);
 
 		servlet.service(httpServletRequest, httpServletResponse);
 	}
 
 	private Servlet _buildServlet(
-		String baseURL, long companyId, String authorization,
-		MCPServerProfile mcpServerProfile) {
+		String authorization, String baseURL, long companyId,
+		MCPServerProfile mcpServerProfile, String pathProfileName) {
 
 		HttpServletStatelessServerTransport
 			httpServletStatelessServerTransport =
 				HttpServletStatelessServerTransport.builder(
 				).messageEndpoint(
-					(mcpServerProfile != null) ?
-						"/mcp/" + mcpServerProfile._name : "/mcp"
+					(pathProfileName != null) ? "/mcp/" + pathProfileName :
+						"/mcp"
 				).contextExtractor(
 					request -> McpTransportContext.create(
 						HashMapBuilder.<String, Object>put(
@@ -181,75 +176,35 @@ public class MCPServerServlet extends HttpServlet {
 				).build();
 
 		List<McpStatelessServerFeatures.SyncToolSpecification>
-			syncToolSpecifications = new ArrayList<>();
+			syncToolSpecifications = TransformUtil.transformToList(
+				mcpServerProfile._tools,
+				tool -> {
+					String[] tokens = StringUtil.split(tool, CharPool.SPACE);
 
-		if (mcpServerProfile != null) {
-			Map<String, String> openAPIJSONStringCache = new HashMap<>();
+					if (tokens.length != 2) {
+						throw new IllegalArgumentException(
+							"Profile tool must be in \"<toolSetName> " +
+								"<toolName>\" format: " + tool);
+					}
 
-			syncToolSpecifications.addAll(
-				TransformUtil.transformToList(
-					mcpServerProfile._endpoints,
-					endpoint ->
-						new McpStatelessServerFeatures.SyncToolSpecification(
-							OpenAPIUtil.getTool(
-								endpoint,
-								openAPIJSONStringCache.computeIfAbsent(
-									OpenAPIUtil.getOpenAPIURL(endpoint),
-									key -> _getOpenAPIJSONString(
-										baseURL, authorization, key))),
-							(mcpTransportContext, callToolRequest) -> {
-								OpenAPIUtil.HttpCallArguments
-									httpCallArguments =
-										OpenAPIUtil.getHttpCallArguments(
-											callToolRequest.arguments(),
-											baseURL, endpoint);
+					String toolSetName = tokens[0];
+					String toolName = tokens[1];
 
-								return _call(
-									httpCallArguments.getBody(),
-									httpCallArguments.getURL(),
-									mcpTransportContext,
-									httpCallArguments.getMethod());
-							})));
-		}
-		else {
-			JSONObject toolsJSONObject = _getToolsJSONObject(baseURL);
+					String describeURL = StringBundler.concat(
+						baseURL, "/mcp-server/v1.0/tool-sets/", toolSetName,
+						"/tools/", toolName);
 
-			syncToolSpecifications.add(
-				new McpStatelessServerFeatures.SyncToolSpecification(
-					_getTool("call-http-endpoint", toolsJSONObject),
-					(mcpTransportContext, callToolRequest) -> {
-						Map<String, Object> arguments =
-							callToolRequest.arguments();
+					String invokeURL = describeURL + "/invoke";
 
-						String path = String.valueOf(arguments.get("path"));
-
-						if (!path.startsWith("/")) {
-							path = "/" + path;
-						}
-
-						return _call(
-							String.valueOf(arguments.get("payload")),
-							baseURL + path, mcpTransportContext,
-							String.valueOf(arguments.get("method")));
-					}));
-			syncToolSpecifications.add(
-				new McpStatelessServerFeatures.SyncToolSpecification(
-					_getTool("get-openapi", toolsJSONObject),
-					(mcpTransportContext, callToolRequest) -> _call(
-						null,
-						String.valueOf(
-							callToolRequest.arguments(
-							).get(
-								"url"
-							)),
-						mcpTransportContext, "GET")));
-			syncToolSpecifications.add(
-				new McpStatelessServerFeatures.SyncToolSpecification(
-					_getTool("get-openapis", toolsJSONObject),
-					(mcpTransportContext, callToolRequest) -> _call(
-						null, baseURL + "/openapi", mcpTransportContext,
-						"GET")));
-		}
+					return new McpStatelessServerFeatures.SyncToolSpecification(
+						_describeTool(authorization, toolName, describeURL),
+						(mcpTransportContext, callToolRequest) -> _call(
+							_jsonFactory.createJSONObject(
+								callToolRequest.arguments()
+							).toString(),
+							ContentTypes.APPLICATION_JSON, invokeURL,
+							mcpTransportContext, "POST"));
+				});
 
 		McpStatelessSyncServer mcpStatelessSyncServer = McpServer.sync(
 			httpServletStatelessServerTransport
@@ -303,14 +258,18 @@ public class MCPServerServlet extends HttpServlet {
 	}
 
 	private McpSchema.CallToolResult _call(
-		String body, String location, McpTransportContext mcpTransportContext,
-		String method) {
+		String body, String contentType, String location,
+		McpTransportContext mcpTransportContext, String method) {
 
 		Http.Options options = new Http.Options();
 
+		options.setTimeout(60000);
+
+		String resolvedContentType =
+			(contentType != null) ? contentType : ContentTypes.APPLICATION_JSON;
+
 		if (Validator.isNotNull(body)) {
-			options.setBody(
-				body, ContentTypes.APPLICATION_JSON, StringPool.UTF8);
+			options.setBody(body, resolvedContentType, StringPool.UTF8);
 		}
 
 		Object liferayAIHubCellOnBehalfOf = mcpTransportContext.get(
@@ -333,9 +292,7 @@ public class MCPServerServlet extends HttpServlet {
 				}
 			).put(
 				"Content-Type",
-				() ->
-					Validator.isNotNull(body) ? ContentTypes.APPLICATION_JSON :
-						null
+				() -> Validator.isNotNull(body) ? resolvedContentType : null
 			).put(
 				"Liferay-AI-Hub-Cell-On-Behalf-Of",
 				() -> {
@@ -386,6 +343,67 @@ public class MCPServerServlet extends HttpServlet {
 		}
 	}
 
+	private McpSchema.Tool _describeTool(
+		String authorization, String toolName, String url) {
+
+		Http.Options options = new Http.Options();
+
+		if (authorization != null) {
+			options.setHeaders(
+				HashMapBuilder.put(
+					"Authorization", authorization
+				).build());
+		}
+
+		options.setLocation(url);
+
+		try {
+			String content = _http.URLtoString(options);
+
+			Http.Response response = options.getResponse();
+
+			int responseCode = response.getResponseCode();
+
+			if (responseCode >= 300) {
+				throw new RuntimeException(
+					StringBundler.concat(
+						"Unable to describe tool ", toolName, ": HTTP ",
+						responseCode, " ", content));
+			}
+
+			JSONObject toolDetailJSONObject = _jsonFactory.createJSONObject(
+				content);
+
+			JSONObject inputSchemaJSONObject =
+				toolDetailJSONObject.getJSONObject("inputSchema");
+
+			McpSchema.JsonSchema jsonSchema = _objectMapper.readValue(
+				(inputSchemaJSONObject != null) ?
+					inputSchemaJSONObject.toString() : "{\"type\":\"object\"}",
+				McpSchema.JsonSchema.class);
+
+			return McpSchema.Tool.builder(
+			).name(
+				toolName
+			).description(
+				toolDetailJSONObject.getString("description")
+			).inputSchema(
+				jsonSchema
+			).build();
+		}
+		catch (Exception exception) {
+			throw new RuntimeException(exception);
+		}
+	}
+
+	private void _destroy(String servletKey) {
+		Servlet servlet = _servlets.remove(servletKey);
+
+		if (servlet != null) {
+			servlet.destroy();
+		}
+	}
+
 	private MCPServerProfile _getMCPServerProfile(
 		long companyId, String profileName) {
 
@@ -410,33 +428,11 @@ public class MCPServerServlet extends HttpServlet {
 			if (profileName.equals(values.get("name"))) {
 				return new MCPServerProfile(
 					profileName,
-					StringUtil.splitLines((String)values.get("endpoints")));
+					StringUtil.splitLines((String)values.get("tools")));
 			}
 		}
 
 		return null;
-	}
-
-	private String _getOpenAPIJSONString(
-		String baseURL, String authorization, String openAPIURL) {
-
-		Http.Options options = new Http.Options();
-
-		if (authorization != null) {
-			options.setHeaders(
-				HashMapBuilder.put(
-					"Authorization", authorization
-				).build());
-		}
-
-		options.setLocation(baseURL + openAPIURL);
-
-		try {
-			return _http.URLtoString(options);
-		}
-		catch (IOException ioException) {
-			throw new RuntimeException(ioException);
-		}
 	}
 
 	private String _getProfileName(HttpServletRequest httpServletRequest) {
@@ -463,15 +459,14 @@ public class MCPServerServlet extends HttpServlet {
 
 	private Servlet _getServlet(
 		String authorization, String baseURL, long companyId,
-		MCPServerProfile mcpServerProfile) {
+		MCPServerProfile mcpServerProfile, String pathProfileName) {
 
 		synchronized (this) {
 			return _servlets.computeIfAbsent(
-				_getServletKey(
-					companyId,
-					(mcpServerProfile != null) ? mcpServerProfile._name : null),
+				_getServletKey(companyId, pathProfileName),
 				servletKey -> _buildServlet(
-					baseURL, companyId, authorization, mcpServerProfile));
+					authorization, baseURL, companyId, mcpServerProfile,
+					pathProfileName));
 		}
 	}
 
@@ -522,35 +517,6 @@ public class MCPServerServlet extends HttpServlet {
 			});
 	}
 
-	private McpSchema.Tool _getTool(String name, JSONObject toolsJSONObject) {
-		JSONObject toolJSONObject = toolsJSONObject.getJSONObject(name);
-
-		return McpSchema.Tool.builder(
-		).name(
-			name
-		).description(
-			toolJSONObject.getString("description")
-		).inputSchema(
-			new JacksonMcpJsonMapper(new ObjectMapper()),
-			toolJSONObject.getJSONObject(
-				"schema"
-			).toString()
-		).build();
-	}
-
-	private JSONObject _getToolsJSONObject(String baseURL) {
-		try {
-			return _jsonFactory.createJSONObject(
-				StringUtil.replace(
-					StringUtil.read(
-						MCPServerServlet.class, "dependencies/tools.json"),
-					"[$BASE_URL$]", baseURL));
-		}
-		catch (JSONException jsonException) {
-			throw new RuntimeException(jsonException);
-		}
-	}
-
 	private boolean _isEnabled(long companyId) {
 		if (!FeatureFlagManagerUtil.isEnabled(companyId, "LPD-63311")) {
 			return false;
@@ -570,6 +536,8 @@ public class MCPServerServlet extends HttpServlet {
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		MCPServerServlet.class);
+
+	private static final ObjectMapper _objectMapper = new ObjectMapper();
 
 	@Reference
 	private ConfigurationProvider _configurationProvider;
@@ -593,13 +561,13 @@ public class MCPServerServlet extends HttpServlet {
 
 	private static class MCPServerProfile {
 
-		public MCPServerProfile(String name, String[] endpoints) {
+		public MCPServerProfile(String name, String[] tools) {
 			_name = name;
-			_endpoints = endpoints;
+			_tools = tools;
 		}
 
-		private final String[] _endpoints;
 		private final String _name;
+		private final String[] _tools;
 
 	}
 
