@@ -81,9 +81,9 @@ public class MCPServerServlet extends HttpServlet {
 	public void destroy() {
 		synchronized (this) {
 			for (Map.Entry<String, Servlet> entry : _servlets.entrySet()) {
-				Servlet value = entry.getValue();
+				Servlet servlet = entry.getValue();
 
-				value.destroy();
+				servlet.destroy();
 			}
 
 			_servlets.clear();

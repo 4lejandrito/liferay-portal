@@ -222,6 +222,18 @@ When the value is reused for a second lookup in the same scope, reassign `index`
 +	Object value = entry.getValue();
 ```
 
+**Exception:**
+
+```diff
+ for (Map.Entry<String, Servlet> entry : _servlets.entrySet()) {
+-	Servlet value = entry.getValue();
++	Servlet servlet = entry.getValue();
+
+-	value.destroy();
++	servlet.destroy();
+ }
+```
+
 ### Rule 10: Test Method Predicate Phrasing
 
 **Why:** Phrasing the predicate clause of a test method as `<property>Is<state>` rather than `<subject>Has<state><property>` makes a sorted method list group together by the property under test, and reads as a complete subject-verb-complement sentence.
