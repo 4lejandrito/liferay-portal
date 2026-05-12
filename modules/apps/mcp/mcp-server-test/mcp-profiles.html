@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+<title>MCP Server – Profiles</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+	--blue: #0b5fff;
+	--blue-dark: #0042b3;
+	--green: #287d3c;
+	--green-bg: #edf9f0;
+	--red: #da1414;
+	--red-bg: #feefef;
+	--gray-0: #f7f8f9;
+	--gray-1: #e7e7ed;
+	--gray-2: #cdced9;
+	--gray-3: #a7a9bc;
+	--gray-5: #6b6c7e;
+	--gray-7: #393a4a;
+	--gray-9: #1c1d2a;
+	--white: #ffffff;
+	--radius: 8px;
+	--shadow: 0 2px 8px rgba(0,0,0,.12);
+}
+
+body {
+	font-family: "Inter", system-ui, -apple-system, sans-serif;
+	font-size: 14px;
+	color: var(--gray-9);
+	background: var(--gray-0);
+	min-height: 100vh;
+}
+
+/* ── Layout ─────────────────────────────────────────────── */
+.app { display: flex; flex-direction: column; height: 100vh; }
+.app-body { display: flex; flex: 1; overflow: hidden; }
+
+/* ── Nav bar ─────────────────────────────────────────────── */
+.navbar {
+	display: flex; align-items: center; gap: 12px;
+	height: 56px; padding: 0 24px;
+	background: var(--blue); color: white;
+	flex-shrink: 0;
+}
+.navbar-logo { font-weight: 700; font-size: 16px; letter-spacing: -.3px; }
+.navbar-sep { width: 1px; height: 24px; background: rgba(255,255,255,.3); }
+.navbar-title { font-size: 14px; opacity: .9; }
+.navbar-spacer { flex: 1; }
+.navbar-config {
+	display: flex; align-items: center; gap: 8px;
+	font-size: 12px; color: rgba(255,255,255,.85);
+}
+.navbar-config input {
+	background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25);
+	color: white; border-radius: 4px; padding: 4px 8px; font-size: 12px;
+	outline: none; width: 200px;
+}
+.navbar-config input::placeholder { color: rgba(255,255,255,.55); }
+.navbar-config input:focus { background: rgba(255,255,255,.25); border-color: rgba(255,255,255,.5); }
+.navbar-config button {
+	background: white; color: var(--blue); border: none;
+	padding: 5px 10px; border-radius: 4px; font-size: 12px;
+	font-weight: 600; cursor: pointer;
+}
+.navbar-config button:hover { background: var(--gray-0); }
+
+/* ── Sidebar ─────────────────────────────────────────────── */
+.sidebar {
+	width: 220px; flex-shrink: 0;
+	background: white; border-right: 1px solid var(--gray-1);
+	padding: 16px 0; overflow-y: auto;
+}
+.sidebar-section {
+	padding: 0 16px 6px; font-size: 11px; font-weight: 700;
+	color: var(--gray-3); text-transform: uppercase; letter-spacing: .6px;
+	margin-top: 16px;
+}
+.sidebar-section:first-child { margin-top: 0; }
+.nav-item {
+	display: flex; align-items: center; gap: 10px;
+	padding: 9px 16px; font-size: 14px; color: var(--gray-7);
+	text-decoration: none; border-radius: 0; transition: .12s;
+	cursor: pointer;
+}
+.nav-item:hover { background: var(--gray-0); color: var(--gray-9); }
+.nav-item.active {
+	background: #eef3ff; color: var(--blue); font-weight: 600;
+	border-right: 3px solid var(--blue);
+}
+.nav-item svg { flex-shrink: 0; opacity: .7; }
+.nav-item.active svg { opacity: 1; }
+
+/* ── Page shell ──────────────────────────────────────────── */
+.page { flex: 1; overflow: auto; padding: 32px; padding-bottom: 0; }
+
+/* ── Views (toggle) ──────────────────────────────────────── */
+.view { display: none; }
+.view.active { display: block; }
+
+/* ── Page header ─────────────────────────────────────────── */
+.page-header {
+	display: flex; align-items: center; justify-content: space-between;
+	margin-bottom: 24px;
+}
+.page-header h1 { font-size: 22px; font-weight: 600; }
+.page-header p { color: var(--gray-5); margin-top: 2px; font-size: 13px; }
+
+/* ── Buttons ─────────────────────────────────────────────── */
+.btn {
+	display: inline-flex; align-items: center; gap: 6px;
+	padding: 8px 16px; border-radius: 6px; font-size: 14px;
+	font-weight: 500; cursor: pointer; border: none; transition: .15s;
+}
+.btn-primary { background: var(--blue); color: white; }
+.btn-primary:hover { background: var(--blue-dark); }
+.btn-secondary {
+	background: white; color: var(--gray-7);
+	border: 1px solid var(--gray-2);
+}
+.btn-secondary:hover { background: var(--gray-0); }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn[disabled] { opacity: .55; pointer-events: none; }
+
+/* ── Toolbar ─────────────────────────────────────────────── */
+.toolbar {
+	display: flex; align-items: center; gap: 10px;
+	margin-bottom: 16px;
+}
+.search-input {
+	display: flex; align-items: center; gap: 8px;
+	border: 1px solid var(--gray-2); border-radius: 6px;
+	background: white; padding: 7px 12px;
+	flex: 1; max-width: 320px;
+}
+.search-input input {
+	border: none; outline: none; font-size: 14px; width: 100%;
+	background: transparent; color: var(--gray-9);
+}
+.search-input svg { color: var(--gray-3); flex-shrink: 0; }
+
+.filter-select {
+	border: 1px solid var(--gray-2); border-radius: 6px;
+	background: white; padding: 7px 12px; font-size: 14px;
+	color: var(--gray-7); cursor: pointer; outline: none;
+}
+
+/* ── Banners ─────────────────────────────────────────────── */
+.banner {
+	padding: 12px 16px; border-radius: 6px;
+	margin-bottom: 16px; font-size: 13px;
+	display: none; align-items: center; gap: 10px;
+}
+.banner.visible { display: flex; }
+.banner-error { background: var(--red-bg); color: var(--red); border: 1px solid #f5c6cb; }
+.banner-info { background: #eef3ff; color: var(--blue); border: 1px solid #cdd9ff; }
+
+/* ── Table ───────────────────────────────────────────────── */
+.table-card {
+	background: white; border-radius: var(--radius);
+	box-shadow: var(--shadow); overflow: hidden;
+}
+table { width: 100%; border-collapse: collapse; }
+thead { background: var(--gray-0); }
+th {
+	text-align: left; padding: 11px 16px;
+	font-size: 12px; font-weight: 600; color: var(--gray-5);
+	text-transform: uppercase; letter-spacing: .5px;
+	border-bottom: 1px solid var(--gray-1);
+	white-space: nowrap;
+}
+th.sortable {
+	cursor: pointer; user-select: none;
+}
+th.sortable:hover { color: var(--gray-9); background: var(--gray-1); }
+th.sortable .th-inner {
+	display: inline-flex; align-items: center; gap: 5px;
+}
+.sort-icon { opacity: .3; font-size: 11px; line-height: 1; }
+th.sort-asc .sort-icon,
+th.sort-desc .sort-icon { opacity: 1; color: var(--blue); }
+td { padding: 14px 16px; border-bottom: 1px solid var(--gray-1); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--gray-0); }
+
+.col-name { min-width: 160px; }
+.col-desc { max-width: 360px; color: var(--gray-5); }
+.col-desc span { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.col-tools { width: 110px; color: var(--gray-5); font-size: 13px; }
+.col-date { width: 190px; white-space: nowrap; color: var(--gray-5); font-size: 13px; }
+.col-actions { width: 48px; text-align: center; }
+
+.profile-name {
+	font-weight: 600; color: var(--blue); cursor: pointer;
+}
+.profile-name:hover { text-decoration: underline; }
+
+/* ── Three-dot menu ──────────────────────────────────────── */
+.dots-btn {
+	width: 30px; height: 30px; border-radius: 6px;
+	border: none; background: transparent; cursor: pointer;
+	display: flex; align-items: center; justify-content: center;
+	color: var(--gray-5); position: relative;
+}
+.dots-btn:hover { background: var(--gray-1); color: var(--gray-9); }
+
+.dropdown {
+	position: absolute; right: 0; top: 34px; z-index: 99;
+	background: white; border: 1px solid var(--gray-1);
+	border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.14);
+	min-width: 160px; overflow: hidden;
+	display: none;
+}
+.dropdown.open { display: block; }
+.dropdown-item {
+	display: flex; align-items: center; gap: 8px;
+	padding: 10px 14px; cursor: pointer; font-size: 13px;
+	color: var(--gray-7); transition: .1s;
+}
+.dropdown-item:hover { background: var(--gray-0); }
+.dropdown-item.danger { color: var(--red); }
+.dropdown-item.danger:hover { background: var(--red-bg); }
+.dropdown-sep { border: none; border-top: 1px solid var(--gray-1); margin: 4px 0; }
+
+.dots-wrap { position: relative; display: inline-block; }
+
+/* ── Empty / loading state ──────────────────────────────── */
+.empty {
+	text-align: center; padding: 64px 24px; color: var(--gray-5);
+}
+.empty svg { margin-bottom: 16px; color: var(--gray-2); }
+.empty h3 { font-size: 16px; color: var(--gray-7); margin-bottom: 6px; }
+
+/* ── Pagination ──────────────────────────────────────────── */
+.pagination {
+	display: flex; align-items: center; justify-content: space-between;
+	padding: 12px 16px; border-top: 1px solid var(--gray-1);
+	font-size: 13px; color: var(--gray-5);
+}
+
+/* ─────────────────────────────────────────────────────────── */
+/* ── DETAIL VIEW ─────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────── */
+
+.detail-header {
+	display: flex; align-items: center; gap: 12px; margin-bottom: 28px;
+}
+.back-btn {
+	display: flex; align-items: center; gap: 6px;
+	color: var(--blue); background: none; border: none; cursor: pointer;
+	font-size: 14px; font-weight: 500; padding: 0;
+}
+.back-btn:hover { color: var(--blue-dark); }
+
+.detail-layout {
+	display: flex; flex-direction: column; gap: 24px; max-width: 780px;
+}
+
+/* ── Form card ───────────────────────────────────────────── */
+.card {
+	background: white; border-radius: var(--radius);
+	box-shadow: var(--shadow); padding: 24px;
+}
+.card-title {
+	font-size: 16px; font-weight: 600; margin-bottom: 20px;
+	padding-bottom: 14px; border-bottom: 1px solid var(--gray-1);
+}
+
+.form-group { margin-bottom: 18px; }
+.form-group:last-child { margin-bottom: 0; }
+.form-label {
+	display: block; font-size: 12px; font-weight: 600;
+	color: var(--gray-5); text-transform: uppercase; letter-spacing: .4px;
+	margin-bottom: 6px;
+}
+.form-control {
+	width: 100%; padding: 9px 12px; border: 1px solid var(--gray-2);
+	border-radius: 6px; font-size: 14px; color: var(--gray-9);
+	outline: none; transition: border-color .15s;
+	font-family: inherit;
+}
+.form-control:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(11,95,255,.12); }
+textarea.form-control { resize: vertical; min-height: 100px; }
+.form-hint { font-size: 12px; color: var(--gray-3); margin-top: 5px; }
+
+/* ── Tools panel ─────────────────────────────────────────── */
+.tools-panel { display: flex; flex-direction: column; }
+
+.add-tool-row {
+	display: flex; gap: 8px;
+}
+.add-tool-row .form-control { flex: 1; }
+
+.tool-list { display: flex; flex-direction: column; gap: 6px; min-height: 60px; }
+
+.tool-item {
+	display: flex; align-items: center; gap: 10px;
+	padding: 10px 12px; border: 1px solid var(--gray-1);
+	border-radius: 6px; background: white;
+	transition: box-shadow .15s;
+}
+.tool-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,.1); border-color: var(--gray-2); }
+
+.tool-name { font-weight: 500; font-family: "SF Mono","Fira Code",monospace; font-size: 13px; }
+.tool-set-chip {
+	display: inline-block; padding: 1px 7px; border-radius: 4px;
+	background: #eef3ff; color: var(--blue);
+	font-size: 11px; font-weight: 600; letter-spacing: .3px;
+	margin-right: 8px; vertical-align: middle;
+}
+.tool-desc { font-size: 12px; color: var(--gray-5); margin-top: 3px; }
+.remove-tool {
+	width: 26px; height: 26px; border-radius: 4px;
+	border: none; background: transparent; cursor: pointer;
+	color: var(--gray-3); display: flex; align-items: center; justify-content: center;
+	flex-shrink: 0; transition: .15s;
+}
+.remove-tool:hover { background: var(--red-bg); color: var(--red); }
+
+.tools-hint { font-size: 12px; color: var(--gray-3); text-align: center; padding: 16px; }
+
+/* ── Detail footer (sticky bottom bar) ──────────────────── */
+.detail-footer {
+	position: sticky; bottom: 0; left: 0; right: 0;
+	display: flex; align-items: center; justify-content: flex-end; gap: 10px;
+	padding: 14px 32px;
+	background: white; border-top: 1px solid var(--gray-1);
+	box-shadow: 0 -2px 8px rgba(0,0,0,.07);
+	z-index: 10;
+}
+
+/* ── Tool selector dropdown ──────────────────────────────── */
+.tool-selector {
+	position: relative;
+}
+.tool-options {
+	position: absolute; top: 100%; left: 0; right: 0; z-index: 99;
+	background: white; border: 1px solid var(--gray-2);
+	border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,.14);
+	margin-top: 4px; max-height: 260px; overflow-y: auto;
+	display: none;
+}
+.tool-options.open { display: block; }
+.tool-option {
+	padding: 9px 12px; cursor: pointer; transition: .1s;
+	border-bottom: 1px solid var(--gray-1); font-size: 13px;
+}
+.tool-option:last-child { border-bottom: none; }
+.tool-option:hover { background: var(--gray-0); }
+.tool-option small { display: block; color: var(--gray-5); font-size: 11px; margin-top: 1px; }
+.tool-option.disabled { color: var(--gray-3); cursor: not-allowed; }
+.tool-option.disabled:hover { background: white; }
+
+/* ── Confirm modal ──────────────────────────────────────── */
+.modal-overlay {
+	position: fixed; inset: 0; background: rgba(0,0,0,.4);
+	display: none; align-items: center; justify-content: center;
+	z-index: 200;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+	background: white; border-radius: var(--radius);
+	box-shadow: 0 8px 32px rgba(0,0,0,.2);
+	padding: 28px; max-width: 400px; width: 90%;
+}
+.modal-title { font-size: 16px; font-weight: 600; margin-bottom: 10px; }
+.modal-body { font-size: 14px; color: var(--gray-5); margin-bottom: 24px; line-height: 1.5; }
+.modal-footer { display: flex; justify-content: flex-end; gap: 10px; }
+
+/* ── Tooltip ─────────────────────────────────────────────── */
+#tooltip {
+	position: fixed; z-index: 500;
+	background: var(--gray-9); color: white;
+	font-size: 12px; line-height: 1.6;
+	padding: 8px 12px; border-radius: 6px;
+	max-width: 300px; box-shadow: 0 4px 12px rgba(0,0,0,.25);
+	pointer-events: none; display: none; white-space: normal;
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<nav class="navbar">
+	<span class="navbar-logo">Liferay</span>
+	<span class="navbar-sep"></span>
+	<span class="navbar-title">MCP Server</span>
+	<span class="navbar-spacer"></span>
+
+	<div class="navbar-config">
+	<input id="serverUrl" placeholder="(same origin)" title="Leave blank to use the page's own origin" type="text" />
+
+	<input id="serverUser" placeholder="user@example.com" type="text" />
+
+	<input id="serverPass" placeholder="password" type="password" />
+	  <button onclick="applyServerConfig()">Connect</button>
+	</div>
+</nav>
+
+<div class="app-body">
+	<aside class="sidebar">
+	  <p class="sidebar-section">Configuration</p>
+
+	<a class="active nav-item" href="mcp-profiles.html">
+		<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+		Profiles
+	  </a>
+	</aside>
+
+	<main class="page">
+
+	<div class="banner" id="banner"></div>
+
+	<!-- ═══════════════════════════════════════════════════════ -->
+
+	<!-- LIST VIEW -->
+
+	<!-- ═══════════════════════════════════════════════════════ -->
+
+	<div class="active view" id="listView">
+
+	<div class="page-header">
+		<div>
+		  <h1>Profiles</h1>
+		  <p>Manage MCP server profiles and the tools they expose.</p>
+		</div>
+
+		<button class="btn btn-primary" onclick="openDetail(null)">
+		  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+		  New Profile
+		</button>
+	  </div>
+
+	  <!-- Toolbar -->
+
+	<div class="toolbar">
+		<div class="search-input">
+		  <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+
+		<input id="searchQuery" oninput="renderList()" placeholder="Search profiles…" type="text" />
+		</div>
+
+		<button class="btn btn-secondary btn-sm" onclick="loadProfiles()" title="Reload from server">
+		  <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/><path d="M20.49 15a9 9 0 0 1-14.85 3.36L1 14"/></svg>
+		  Refresh
+		</button>
+	  </div>
+
+	  <!-- Table -->
+
+	<div class="table-card">
+		<table>
+		  <thead>
+			<tr>
+			<th class="col-name sortable" onclick="sortBy('name')">
+				<span class="th-inner">Name <span class="sort-icon">↕</span></span>
+			  </th>
+			<th class="col-desc sortable" onclick="sortBy('description')">
+				<span class="th-inner">Description <span class="sort-icon">↕</span></span>
+			  </th>
+			<th class="col-tools sortable" onclick="sortBy('toolCount')">
+				<span class="th-inner">Tools <span class="sort-icon">↕</span></span>
+			  </th>
+			<th class="col-date sortable" onclick="sortBy('dateModified')">
+				<span class="th-inner">Last Modified <span class="sort-icon">↕</span></span>
+			  </th>
+			<th class="col-actions"></th>
+			</tr>
+		  </thead>
+		<tbody id="profileTableBody"></tbody>
+		</table>
+
+		<div class="pagination">
+		<span id="paginationInfo"></span>
+		</div>
+	  </div>
+	</div><!-- /listView -->
+
+	<!-- ═══════════════════════════════════════════════════════ -->
+
+	<!-- DETAIL VIEW -->
+
+	<!-- ═══════════════════════════════════════════════════════ -->
+
+	<div class="view" id="detailView">
+
+	<div class="detail-header">
+		<button class="back-btn" onclick="showList()">
+		  <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+		  Profiles
+		</button>
+
+		<svg width="16" height="16" fill="none" stroke="var(--gray-3)" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+
+		<span id="detailBreadcrumb" style="color:var(--gray-5);font-size:14px;"></span>
+	  </div>
+
+	<div class="detail-layout">
+
+		<!-- Profile information card -->
+
+		<div>
+		<div class="card">
+			<div class="card-title">Profile Information</div>
+
+			<div class="form-group">
+			  <label class="form-label">Name *</label>
+
+			<input class="form-control" id="fieldName" placeholder="e.g. content-editor" type="text" />
+			  <p class="form-hint">The MCP endpoint becomes <code>/o/mcp/{name}</code>.</p>
+			</div>
+
+			<div class="form-group">
+			  <label class="form-label">Description</label>
+
+			<textarea class="form-control" id="fieldDesc" placeholder="Describe what this profile is for…"></textarea>
+			</div>
+		  </div>
+		</div>
+
+		<!-- Tools card -->
+
+		<div class="tools-panel">
+		<div class="card">
+			<div class="card-title">Associated Tools <span id="toolCount" style="font-size:13px;font-weight:400;color:var(--gray-5);"></span></div>
+
+			<div style="margin-bottom:14px;">
+			<div style="margin-bottom:8px;">
+				<select class="filter-select" id="toolSetFilter" onchange="onToolSetChange()" style="width:100%;">
+				  <option value="">Loading tool-sets…</option>
+				</select>
+			  </div>
+			<div class="add-tool-row">
+				<div class="tool-selector" style="flex:1;position:relative;">
+				  <input id="toolSearch" class="form-control" type="text" placeholder="Search tools to add…"
+					oninput="openToolOptions()" onfocus="openToolOptions()" autocomplete="off" />
+				<div class="tool-options" id="toolOptions">
+
+					<!-- populated by JS -->
+
+				  </div>
+				</div>
+
+				<button class="btn btn-secondary btn-sm" onclick="addSelectedTool()" style="white-space:nowrap;">Add Tool</button>
+			  </div>
+			</div>
+
+			<!-- Tool list -->
+
+			<div class="tool-list" id="toolList"></div>
+
+			<p class="tools-hint" id="toolsHint" style="display:none;">No tools assigned. Search above to add one.</p>
+		  </div>
+		</div>
+
+	  </div><!-- /detail-layout -->
+
+	<div class="detail-footer">
+		<button class="btn btn-secondary" onclick="showList()">Cancel</button>
+		<button class="btn btn-primary" id="saveBtn" onclick="saveProfile()">Save Changes</button>
+	  </div>
+
+	</div><!-- /detailView -->
+
+</main>
+</div>
+
+<div class="modal-overlay" id="confirmModal" onclick="handleOverlayClick(event)">
+<div class="modal">
+	<div class="modal-title">Delete Profile</div>
+	<div class="modal-body" id="confirmModalBody">Are you sure you want to delete this profile? This action cannot be undone.</div>
+	<div class="modal-footer">
+	  <button class="btn btn-secondary" onclick="closeConfirmModal()">Cancel</button>
+	  <button class="btn" style="background:var(--red);color:white;" onclick="executeDelete()">Delete</button>
+	</div>
+</div>
+</div>
+
+</div>
+
+<script>
+// ── Server config ─────────────────────────────────────────────
+const CONFIG_KEY = 'mcpServerConfig';
+
+function loadServerConfig() {
+let cfg;
+try { cfg = JSON.parse(localStorage.getItem(CONFIG_KEY)) || {}; } catch { cfg = {}; }
+return {
+	baseUrl: cfg.baseUrl !== undefined ? cfg.baseUrl : '',
+	user: cfg.user || 'test@liferay.com',
+	pass: cfg.pass || 'test',
+};
+}
+
+function saveServerConfig(cfg) {
+localStorage.setItem(CONFIG_KEY, JSON.stringify(cfg));
+}
+
+let serverConfig = loadServerConfig();
+
+function applyServerConfig() {
+serverConfig = {
+	baseUrl: document.getElementById('serverUrl').value.trim(),
+	user: document.getElementById('serverUser').value.trim() || 'test@liferay.com',
+	pass: document.getElementById('serverPass').value || 'test',
+};
+saveServerConfig(serverConfig);
+loadAll();
+}
+
+function authHeader() {
+return 'Basic ' + btoa(serverConfig.user + ':' + serverConfig.pass);
+}
+
+async function api(path, opts = {}) {
+const headers = {
+	'Authorization': authHeader(),
+	'Accept': 'application/json',
+	...(opts.headers || {}),
+};
+if (opts.body && typeof opts.body !== 'string') {
+	opts.body = JSON.stringify(opts.body);
+	headers['Content-Type'] = 'application/json';
+}
+const url = serverConfig.baseUrl.replace(/\/$/, '') + path;
+const res = await fetch(url, { ...opts, headers });
+if (!res.ok) {
+	let detail;
+	try { detail = await res.text(); } catch { detail = res.statusText; }
+	throw new Error(`${res.status} ${res.statusText}: ${detail || ''}`);
+}
+if (res.status === 204) return null;
+const ct = res.headers.get('content-type') || '';
+return ct.includes('json') ? res.json() : res.text();
+}
+
+function showBanner(text, kind = 'error') {
+const b = document.getElementById('banner');
+b.textContent = text;
+b.className = 'banner visible banner-' + kind;
+}
+function hideBanner() { document.getElementById('banner').classList.remove('visible'); }
+
+// ── State ─────────────────────────────────────────────────────
+let profiles = []; // server profiles (Liferay Object entries)
+let toolSets = []; // [{ name, description }]
+let toolsByToolSet = {}; // toolSetName -> [{ name, description }]
+let currentProfile = null; // profile being edited (server object) or null
+let currentTools = []; // list of "toolSetName toolName" strings
+let openDropdown = null;
+let sortCol = null;
+let sortDir = 'asc';
+let selectedTool = null; // { toolSet, name }
+
+// ── Formatting ────────────────────────────────────────────────
+function fmtDate(d) {
+if (!d) return '';
+const date = d instanceof Date ? d : new Date(d);
+if (isNaN(date)) return '';
+const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const yyyy = date.getFullYear();
+const mmm = months[date.getMonth()];
+const dd = String(date.getDate()).padStart(2,'0');
+let h = date.getHours(), m = String(date.getMinutes()).padStart(2,'0');
+const ampm = h >= 12 ? 'PM' : 'AM';
+h = h % 12 || 12;
+return `${yyyy}/${mmm}/${dd} ${h}:${m} ${ampm}`;
+}
+
+function truncate(str, n) {
+if (!str) return '';
+return str.length > n ? str.slice(0, n) + '…' : str;
+}
+
+function parseTools(raw) {
+if (!raw) return [];
+return String(raw).split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+}
+
+function joinTools(list) {
+return list.join('\n');
+}
+
+function toolCountOf(p) {
+return parseTools(p.tools).length;
+}
+
+// ── Loading ───────────────────────────────────────────────────
+async function loadAll() {
+hideBanner();
+await Promise.all([loadProfiles(), loadToolSets()]);
+}
+
+async function loadProfiles() {
+try {
+	const data = await api('/o/mcp/server-profiles?pageSize=200');
+	profiles = (data.items || []).map(p => ({ ...p, _toolCount: parseTools(p.tools).length }));
+	renderList();
+} catch (e) {
+	showBanner('Failed to load profiles: ' + e.message);
+}
+}
+
+async function loadToolSets() {
+try {
+	const r = await api('/o/mcp-server/v1.0/tool-sets');
+	toolSets = Array.isArray(r) ? r : (r?.items || []);
+	populateToolSetFilter();
+} catch (e) {
+	showBanner('Failed to load tool-sets: ' + e.message);
+	toolSets = [];
+	populateToolSetFilter();
+}
+}
+
+async function loadToolsFor(toolSetName) {
+if (toolsByToolSet[toolSetName]) return toolsByToolSet[toolSetName];
+try {
+	const r = await api(`/o/mcp-server/v1.0/tool-sets/${encodeURIComponent(toolSetName)}/tool-summaries`);
+	toolsByToolSet[toolSetName] = Array.isArray(r) ? r : (r?.items || []);
+	return toolsByToolSet[toolSetName];
+} catch (e) {
+	showBanner(`Failed to load tools for "${toolSetName}": ` + e.message);
+	return [];
+}
+}
+
+function populateToolSetFilter() {
+const sel = document.getElementById('toolSetFilter');
+sel.innerHTML = '';
+const all = document.createElement('option');
+all.value = '';
+all.textContent = toolSets.length ? 'All tool-sets' : 'No tool-sets available';
+sel.appendChild(all);
+toolSets.forEach(ts => {
+	const opt = document.createElement('option');
+	opt.value = ts.name;
+	opt.textContent = ts.name;
+	if (ts.description) opt.title = ts.description;
+	sel.appendChild(opt);
+});
+}
+
+// ── Sorting ───────────────────────────────────────────────────
+function sortBy(col) {
+if (sortCol === col) {
+	sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+} else {
+	sortCol = col;
+	sortDir = 'asc';
+}
+renderList();
+}
+
+function getSorted() {
+const q = document.getElementById('searchQuery')?.value.trim().toLowerCase() || '';
+const filtered = profiles.filter(p =>
+	!q ||
+	(p.name || '').toLowerCase().includes(q) ||
+	(p.description || '').toLowerCase().includes(q)
+);
+if (!sortCol) return filtered;
+return [...filtered].sort((a, b) => {
+	let va = sortCol === 'toolCount' ? a._toolCount : a[sortCol];
+	let vb = sortCol === 'toolCount' ? b._toolCount : b[sortCol];
+	if (sortCol === 'dateModified') {
+	  va = new Date(va || 0).getTime();
+	  vb = new Date(vb || 0).getTime();
+	} else if (typeof va !== 'number') {
+	  va = String(va ?? '').toLowerCase();
+	  vb = String(vb ?? '').toLowerCase();
+	}
+	if (va < vb) return sortDir === 'asc' ? -1 : 1;
+	if (va > vb) return sortDir === 'asc' ? 1 : -1;
+	return 0;
+});
+}
+
+function updateSortHeaders() {
+document.querySelectorAll('th.sortable').forEach(th => {
+	th.classList.remove('sort-asc', 'sort-desc');
+	th.querySelector('.sort-icon').textContent = '↕';
+});
+if (!sortCol) return;
+const active = document.querySelector(`th.sortable[onclick="sortBy('${sortCol}')"]`);
+if (!active) return;
+active.classList.add(sortDir === 'asc' ? 'sort-asc' : 'sort-desc');
+active.querySelector('.sort-icon').textContent = sortDir === 'asc' ? '↑' : '↓';
+}
+
+// ── List View ─────────────────────────────────────────────────
+function renderList() {
+const tbody = document.getElementById('profileTableBody');
+tbody.innerHTML = '';
+updateSortHeaders();
+
+const rows = getSorted();
+
+if (!rows.length) {
+	const tr = document.createElement('tr');
+	tr.innerHTML = `<td colspan="5"><div class="empty">
+	  <svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+	  <h3>No profiles yet</h3>
+	  <p>Create a profile to start exposing tools through the MCP server.</p>
+	</div></td>`;
+	tbody.appendChild(tr);
+} else {
+	rows.forEach(p => {
+	  const tr = document.createElement('tr');
+	  tr.innerHTML = `
+		<td class="col-name">
+		  <span class="profile-name" onclick="openDetail(${p.id})">${p.name || '(unnamed)'}</span>
+		</td>
+<td class="col-desc" onmouseenter="showTooltip(event, ${JSON.stringify(p.description || '').replace(/"/g,'&quot;')})"   onmousemove="moveTooltip(event)" onmouseleave="hideTooltip()">   <span>${truncate(p.description || '', 100)}</span> </td> <td class="col-tools">${p._toolCount} tool${p._toolCount === 1 ? '' : 's'}</td> <td class="col-date">${fmtDate(p.dateModified)}</td> <td class="col-actions"> <div class="dots-wrap"> <button class="dots-btn" onclick="toggleDropdown(event, ${p.id})" title="Actions"> <svg fill="currentColor" height="16" viewBox="0 0 24 24" width="16"> <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>   </svg> </button>  <div class="dropdown" id="dd-${p.id}"> <div class="dropdown-item" onclick="openDetail(${p.id});closeDropdown()"> <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit   </div> <hr class="dropdown-sep" /> <div class="danger dropdown-item" onclick="confirmDelete(${p.id})"> <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg> Delete   </div> </div>   </div> </td>`;   tbody.appendChild(tr); }); }  document.getElementById('paginationInfo').textContent = `${rows.length} of ${profiles.length} profile${profiles.length === 1 ? '' : 's'}`; }  function toggleDropdown(e, id) { e.stopPropagation(); const dd = document.getElementById(`dd-${id}`); if (openDropdown && openDropdown !== dd) openDropdown.classList.remove('open'); dd.classList.toggle('open'); openDropdown = dd.classList.contains('open') ? dd : null; }  function closeDropdown() { if (openDropdown) { openDropdown.classList.remove('open'); openDropdown = null; } }  document.addEventListener('click', closeDropdown);  // ── Detail View ─────────────────────────────────────────────── function openDetail(id) { hideBanner(); currentProfile = id ? profiles.find(x => x.id === id) : null;
+const crumb = document.getElementById('detailBreadcrumb');
+
+if (currentProfile) {
+	document.getElementById('fieldName').value = currentProfile.name || '';
+	document.getElementById('fieldDesc').value = currentProfile.description || '';
+	currentTools = parseTools(currentProfile.tools);
+	crumb.textContent = currentProfile.name || '';
+} else {
+	document.getElementById('fieldName').value = '';
+	document.getElementById('fieldDesc').value = '';
+	currentTools = [];
+	crumb.textContent = 'New Profile';
+}
+
+document.getElementById('toolSetFilter').value = '';
+document.getElementById('toolSearch').value = '';
+selectedTool = null;
+renderTools();
+
+document.getElementById('listView').classList.remove('active');
+document.getElementById('detailView').classList.add('active');
+}
+
+function showList() {
+document.getElementById('detailView').classList.remove('active');
+document.getElementById('listView').classList.add('active');
+}
+
+async function saveProfile() {
+const name = document.getElementById('fieldName').value.trim();
+if (!name) { alert('Name is required.'); return; }
+const description = document.getElementById('fieldDesc').value.trim();
+const tools = joinTools(currentTools);
+
+const btn = document.getElementById('saveBtn');
+btn.disabled = true;
+try {
+	if (currentProfile) {
+	  await api(`/o/mcp/server-profiles/${currentProfile.id}`, {
+		method: 'PATCH',
+		body: { name, description, tools },
+	  });
+	} else {
+	  await api('/o/mcp/server-profiles', {
+		method: 'POST',
+		body: { name, description, tools },
+	  });
+	}
+	await loadProfiles();
+	showList();
+} catch (e) {
+	showBanner('Failed to save profile: ' + e.message);
+} finally {
+	btn.disabled = false;
+}
+}
+
+// ── Tools list ────────────────────────────────────────────────
+function renderTools() {
+const list = document.getElementById('toolList');
+const hint = document.getElementById('toolsHint');
+const count = document.getElementById('toolCount');
+
+list.innerHTML = '';
+count.textContent = currentTools.length ? `(${currentTools.length})` : '';
+
+if (!currentTools.length) { hint.style.display = 'block'; return; }
+hint.style.display = 'none';
+
+currentTools.forEach(entry => {
+	const [toolSet, name] = entry.split(/\s+/, 2);
+	const meta = (toolsByToolSet[toolSet] || []).find(t => t.name === name);
+	const desc = meta ? meta.description : '';
+
+	const item = document.createElement('div');
+	item.className = 'tool-item';
+	item.innerHTML = `
+	<div style="flex:1;min-width:0;">
+		<div>
+		  <span class="tool-set-chip">${toolSet || '?'}</span>
+		  <span class="tool-name">${name || '(invalid)'}</span>
+		</div>
+		${desc ? `<div class="tool-desc">${desc}</div>` : ''}
+	  </div>
+	  <button class="remove-tool" title="Remove tool" onclick="removeTool('${entry.replace(/'/g,"\\'")}')">
+		<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+	  </button>`;
+	list.appendChild(item);
+});
+}
+
+function removeTool(entry) {
+currentTools = currentTools.filter(t => t !== entry);
+renderTools();
+}
+
+// ── Tool selector ─────────────────────────────────────────────
+async function onToolSetChange() {
+selectedTool = null;
+document.getElementById('toolSearch').value = '';
+const ts = document.getElementById('toolSetFilter').value;
+if (ts) await loadToolsFor(ts);
+document.getElementById('toolOptions').classList.remove('open');
+}
+
+async function openToolOptions() {
+const opts = document.getElementById('toolOptions');
+const q = document.getElementById('toolSearch').value.toLowerCase();
+const ts = document.getElementById('toolSetFilter').value;
+
+opts.innerHTML = '';
+
+let candidates = [];
+if (ts) {
+	const tools = await loadToolsFor(ts);
+	candidates = tools.map(t => ({ toolSet: ts, name: t.name, description: t.description }));
+} else {
+	for (const t of toolSets) {
+	  if (toolsByToolSet[t.name]) {
+		for (const tool of toolsByToolSet[t.name]) {
+		  candidates.push({ toolSet: t.name, name: tool.name, description: tool.description });
+		}
+	  }
+	}
+	if (!candidates.length && toolSets.length) {
+	  opts.innerHTML = '<div class="tool-option" style="color:var(--gray-3);">Select a tool-set to load its tools</div>';
+	  opts.classList.add('open');
+	  return;
+	}
+}
+
+const filtered = candidates.filter(t =>
+	!q ||
+	t.name.toLowerCase().includes(q) ||
+	(t.description || '').toLowerCase().includes(q)
+);
+
+if (!filtered.length) {
+	opts.innerHTML = '<div class="tool-option" style="color:var(--gray-3);">No tools found</div>';
+} else {
+	filtered.forEach(t => {
+	  const entry = t.toolSet + ' ' + t.name;
+	  const added = currentTools.includes(entry);
+	  const div = document.createElement('div');
+	  div.className = 'tool-option' + (added ? ' disabled' : '');
+	  div.innerHTML = `<span class="tool-set-chip">${t.toolSet}</span>
+		<span style="font-family:'SF Mono','Fira Code',monospace;font-size:12px;">${t.name}</span>
+		${added ? '<em style="color:var(--gray-3);font-size:11px;margin-left:6px;">already added</em>' : ''}
+		${t.description ? `<small>${t.description}</small>` : ''}`;
+	  if (!added) div.onclick = () => selectTool(t);
+	  opts.appendChild(div);
+	});
+}
+
+opts.classList.add('open');
+}
+
+function selectTool(t) {
+selectedTool = t;
+document.getElementById('toolSearch').value = t.name;
+document.getElementById('toolOptions').classList.remove('open');
+}
+
+function addSelectedTool() {
+if (!selectedTool) {
+	// try matching by exact name in current selected tool-set
+	const q = document.getElementById('toolSearch').value.trim();
+	const ts = document.getElementById('toolSetFilter').value;
+	if (ts && q) {
+	  const tool = (toolsByToolSet[ts] || []).find(t => t.name === q);
+	  if (tool) selectedTool = { toolSet: ts, name: tool.name, description: tool.description };
+	}
+}
+if (!selectedTool) { alert('Select a tool from the list.'); return; }
+const entry = selectedTool.toolSet + ' ' + selectedTool.name;
+if (currentTools.includes(entry)) { alert('Tool already added.'); return; }
+currentTools.push(entry);
+selectedTool = null;
+document.getElementById('toolSearch').value = '';
+document.getElementById('toolOptions').classList.remove('open');
+renderTools();
+}
+
+document.addEventListener('click', e => {
+if (!e.target.closest('.tool-selector')) {
+	document.getElementById('toolOptions').classList.remove('open');
+}
+});
+
+// ── Confirm delete modal ──────────────────────────────────────
+let pendingDeleteId = null;
+
+function confirmDelete(id) {
+pendingDeleteId = id;
+closeDropdown();
+const p = profiles.find(x => x.id === id);
+document.getElementById('confirmModalBody').textContent =
+	`Are you sure you want to delete the "${p?.name || ''}" profile? This action cannot be undone.`;
+document.getElementById('confirmModal').classList.add('open');
+}
+
+function closeConfirmModal() {
+pendingDeleteId = null;
+document.getElementById('confirmModal').classList.remove('open');
+}
+
+function handleOverlayClick(e) {
+if (e.target === e.currentTarget) closeConfirmModal();
+}
+
+async function executeDelete() {
+if (pendingDeleteId === null) return;
+const id = pendingDeleteId;
+closeConfirmModal();
+try {
+	await api(`/o/mcp/server-profiles/${id}`, { method: 'DELETE' });
+	await loadProfiles();
+} catch (e) {
+	showBanner('Failed to delete profile: ' + e.message);
+}
+}
+
+// ── Tooltip ───────────────────────────────────────────────────
+function showTooltip(e, text) {
+if (!text) return;
+const tip = document.getElementById('tooltip');
+tip.textContent = text;
+tip.style.display = 'block';
+moveTooltip(e);
+}
+function moveTooltip(e) {
+const tip = document.getElementById('tooltip');
+const gap = 14;
+let x = e.clientX + gap, y = e.clientY + gap;
+const w = tip.offsetWidth, h = tip.offsetHeight;
+if (x + w > window.innerWidth - 8) x = e.clientX - w - gap;
+if (y + h > window.innerHeight - 8) y = e.clientY - h - gap;
+tip.style.left = x + 'px';
+tip.style.top = y + 'px';
+}
+function hideTooltip() {
+document.getElementById('tooltip').style.display = 'none';
+}
+
+// ── Init ──────────────────────────────────────────────────────
+document.getElementById('serverUrl').value = serverConfig.baseUrl;
+document.getElementById('serverUser').value = serverConfig.user;
+document.getElementById('serverPass').value = serverConfig.pass;
+loadAll();
+</script>
+
+<div id="tooltip"></div>
+</body>
+</html>
