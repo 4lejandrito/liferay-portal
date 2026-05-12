@@ -81,9 +81,9 @@ public class MCPServerServlet extends HttpServlet {
 	public void destroy() {
 		synchronized (this) {
 			for (Map.Entry<String, Servlet> entry : _servlets.entrySet()) {
-				Servlet servlet = entry.getValue();
+				Servlet value = entry.getValue();
 
-				servlet.destroy();
+				value.destroy();
 			}
 
 			_servlets.clear();
@@ -161,9 +161,6 @@ public class MCPServerServlet extends HttpServlet {
 		HttpServletStatelessServerTransport
 			httpServletStatelessServerTransport =
 				HttpServletStatelessServerTransport.builder(
-				).messageEndpoint(
-					(pathProfileName != null) ? "/mcp/" + pathProfileName :
-						"/mcp"
 				).contextExtractor(
 					request -> McpTransportContext.create(
 						HashMapBuilder.<String, Object>put(
@@ -173,6 +170,9 @@ public class MCPServerServlet extends HttpServlet {
 							request.getHeader(
 								"Liferay-AI-Hub-Cell-On-Behalf-Of")
 						).build())
+				).messageEndpoint(
+					(pathProfileName != null) ? "/mcp/" + pathProfileName :
+						"/mcp"
 				).build();
 
 		List<McpStatelessServerFeatures.SyncToolSpecification>
@@ -187,8 +187,8 @@ public class MCPServerServlet extends HttpServlet {
 								"<toolName>\" format: " + tool);
 					}
 
-					String toolSetName = tokens[0];
 					String toolName = tokens[1];
+					String toolSetName = tokens[0];
 
 					String describeURL = StringBundler.concat(
 						baseURL, "/mcp-server/v1.0/tool-sets/", toolSetName,
@@ -210,15 +210,15 @@ public class MCPServerServlet extends HttpServlet {
 			httpServletStatelessServerTransport
 		).capabilities(
 			McpSchema.ServerCapabilities.builder(
-			).tools(
-				true
 			).prompts(
 				true
+			).tools(
+				true
 			).build()
-		).tools(
-			syncToolSpecifications
 		).prompts(
 			_getSyncPromptSpecifications(companyId)
+		).tools(
+			syncToolSpecifications
 		).build();
 
 		return new GenericServlet() {
@@ -383,12 +383,12 @@ public class MCPServerServlet extends HttpServlet {
 				McpSchema.JsonSchema.class);
 
 			return McpSchema.Tool.builder(
-			).name(
-				toolName
 			).description(
 				toolDetailJSONObject.getString("description")
 			).inputSchema(
 				jsonSchema
+			).name(
+				toolName
 			).build();
 		}
 		catch (Exception exception) {
@@ -523,11 +523,9 @@ public class MCPServerServlet extends HttpServlet {
 		}
 
 		try {
-			MCPServerConfiguration mcpServerConfiguration =
-				_configurationProvider.getCompanyConfiguration(
-					MCPServerConfiguration.class, companyId);
-
-			return mcpServerConfiguration.enabled();
+			return _configurationProvider.getCompanyConfiguration(
+				MCPServerConfiguration.class, companyId
+			).enabled();
 		}
 		catch (ConfigurationException configurationException) {
 			throw new RuntimeException(configurationException);

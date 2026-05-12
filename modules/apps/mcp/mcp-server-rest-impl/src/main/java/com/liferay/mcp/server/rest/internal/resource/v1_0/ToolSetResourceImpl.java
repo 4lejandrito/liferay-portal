@@ -81,11 +81,10 @@ public class ToolSetResourceImpl extends BaseToolSetResourceImpl {
 
 			toolSetSummary.setName(entry::getKey);
 
-			ToolSetInfo toolSetInfo = entry.getValue();
+			ToolSetInfo value = entry.getValue();
 
 			toolSetSummary.setDescription(
-				() -> _describe(
-					toolSetInfos.get(toolSetInfo._applicationBase)));
+				() -> _describe(toolSetInfos.get(value._applicationBase)));
 
 			toolSetSummaries.add(toolSetSummary);
 		}

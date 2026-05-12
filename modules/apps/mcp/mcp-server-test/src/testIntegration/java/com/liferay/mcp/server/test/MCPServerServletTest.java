@@ -134,11 +134,11 @@ public class MCPServerServletTest {
 		Assert.assertEquals(tools.toString(), 2, tools.size());
 
 		_assertTool(
-			tools.get(0), "getMCPServerProfilesPage",
-			"get_mcp_server_profiles.json");
+			"getMCPServerProfilesPage", "get_mcp_server_profiles.json",
+			tools.get(0));
 		_assertTool(
-			tools.get(1), "postMCPServerProfile",
-			"post_mcp_server_profiles.json");
+			"postMCPServerProfile", "post_mcp_server_profiles.json",
+			tools.get(1));
 
 		mcpSyncClient.closeGracefully();
 
@@ -165,8 +165,8 @@ public class MCPServerServletTest {
 		Assert.assertEquals(tools.toString(), 1, tools.size());
 
 		_assertTool(
-			tools.get(0), "getMCPServerProfilesPage",
-			"get_mcp_server_profiles.json");
+			"getMCPServerProfilesPage", "get_mcp_server_profiles.json",
+			tools.get(0));
 
 		mcpSyncClient.closeGracefully();
 	}
@@ -183,11 +183,11 @@ public class MCPServerServletTest {
 
 		Assert.assertEquals(tools.toString(), 4, tools.size());
 
-		_assertTool(tools.get(0), "getToolSets", "get_tool_sets.json");
+		_assertTool("getToolSets", "get_tool_sets.json", tools.get(0));
 		_assertTool(
-			tools.get(1), "getToolSummaries", "get_tool_summaries.json");
-		_assertTool(tools.get(2), "getTool", "get_tool.json");
-		_assertTool(tools.get(3), "invokeTool", "invoke_tool.json");
+			"getToolSummaries", "get_tool_summaries.json", tools.get(1));
+		_assertTool("getTool", "get_tool.json", tools.get(2));
+		_assertTool("invokeTool", "invoke_tool.json", tools.get(3));
 
 		McpSchema.CallToolResult callToolResult = mcpSyncClient.callTool(
 			new McpSchema.CallToolRequest(
@@ -359,11 +359,11 @@ public class MCPServerServletTest {
 		Assert.assertEquals(tools.toString(), 2, tools.size());
 
 		_assertTool(
-			tools.get(0), "getMCPServerProfilesPage",
-			"get_mcp_server_profiles.json");
+			"getMCPServerProfilesPage", "get_mcp_server_profiles.json",
+			tools.get(0));
 		_assertTool(
-			tools.get(1), "postMCPServerProfile",
-			"post_mcp_server_profiles.json");
+			"postMCPServerProfile", "post_mcp_server_profiles.json",
+			tools.get(1));
 
 		String entryName = RandomTestUtil.randomString();
 
@@ -444,8 +444,8 @@ public class MCPServerServletTest {
 	}
 
 	private void _assertTool(
-			McpSchema.Tool tool, String expectedName,
-			String expectedSchemaFileName)
+			String expectedName, String expectedSchemaFileName,
+			McpSchema.Tool tool)
 		throws Exception {
 
 		Assert.assertEquals(expectedName, tool.name());

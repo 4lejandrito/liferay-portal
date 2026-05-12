@@ -129,10 +129,10 @@ public class OpenAPIUtil {
 		JSONObject argumentsJSONObject, String baseURL, Operation operation,
 		JSONObject rootJSONObject) {
 
-		String[] pathRef = {operation.path};
-		StringBundler queryStringSB = new StringBundler();
 		Set<String> handledKeys = new HashSet<>(
 			Arrays.asList(_VULCAN_QUERY_PARAMETERS));
+		String[] pathRef = {operation.path};
+		StringBundler queryStringSB = new StringBundler();
 
 		_applyParameters(
 			argumentsJSONObject, handledKeys,
@@ -152,7 +152,7 @@ public class OpenAPIUtil {
 			}
 
 			if (value != null) {
-				_appendQueryParameter(name, value, queryStringSB);
+				_appendQueryParameter(name, queryStringSB, value);
 			}
 		}
 
@@ -425,7 +425,7 @@ public class OpenAPIUtil {
 	}
 
 	private static void _appendQueryParameter(
-		String name, Object value, StringBundler queryStringSB) {
+		String name, StringBundler queryStringSB, Object value) {
 
 		if (value == null) {
 			return;
@@ -516,7 +516,7 @@ public class OpenAPIUtil {
 					URLCodec.encodeURL(stringValue));
 			}
 			else if (Objects.equals(in, "query")) {
-				_appendQueryParameter(name, value, queryStringSB);
+				_appendQueryParameter(name, queryStringSB, value);
 			}
 		}
 	}
@@ -602,7 +602,7 @@ public class OpenAPIUtil {
 
 		if (schemaJSONObject == null) {
 			throw new IllegalArgumentException(
-				"Request body content has no schema");
+				"Request body content has no \"schema\"");
 		}
 
 		return schemaJSONObject;
@@ -969,7 +969,7 @@ public class OpenAPIUtil {
 
 		if (Validator.isNull(base64Data)) {
 			throw new IllegalArgumentException(
-				"Multipart part \"" + name + "\" has no data");
+				"Multipart part \"" + name + "\" has no \"data\"");
 		}
 
 		byte[] bytes;
@@ -982,7 +982,7 @@ public class OpenAPIUtil {
 		}
 		catch (IllegalArgumentException illegalArgumentException) {
 			throw new IllegalArgumentException(
-				"Multipart part \"" + name + "\" data is not valid base64",
+				"Multipart part \"" + name + "\" \"data\" is not valid base64",
 				illegalArgumentException);
 		}
 

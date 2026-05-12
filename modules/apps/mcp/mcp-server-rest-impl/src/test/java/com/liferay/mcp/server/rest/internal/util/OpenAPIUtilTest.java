@@ -51,26 +51,26 @@ public class OpenAPIUtilTest {
 	@Test
 	public void testBuildTool() throws Exception {
 		_testBuildTool(
-			"getItemsPage", "This is the summary", "get_c_test.json");
+			"This is the summary", "get_c_test.json", "getItemsPage");
 		_testBuildTool(
-			"getItems", "This is the summary. This is the description",
-			"get_test_v1.0_items.json");
+			"This is the summary. This is the description",
+			"get_test_v1.0_items.json", "getItems");
 		_testBuildTool(
-			"postItem", "POST /v1.0/items", "post_test_v1.0_items.json");
+			"POST /v1.0/items", "post_test_v1.0_items.json", "postItem");
 		_testBuildTool(
-			"getItem", "This is the description",
-			"get_test_v1.0_items_itemId.json");
+			"This is the description", "get_test_v1.0_items_itemId.json",
+			"getItem");
 		_testBuildTool(
-			"patchItem", "PATCH /v1.0/items/{itemId}",
-			"patch_test_v1.0_items_itemId.json");
+			"PATCH /v1.0/items/{itemId}", "patch_test_v1.0_items_itemId.json",
+			"patchItem");
 		_testBuildTool(
-			"putItem", "PUT /v1.0/items/{itemId}",
-			"put_test_v1.0_items_itemId.json");
+			"PUT /v1.0/items/{itemId}", "put_test_v1.0_items_itemId.json",
+			"putItem");
 		_testBuildTool(
-			"uploadFile", "POST /v1.0/uploads", "post_test_v1.0_uploads.json");
+			"POST /v1.0/uploads", "post_test_v1.0_uploads.json", "uploadFile");
 		_testBuildTool(
-			"postBinary", "POST /v1.0/binaries",
-			"post_test_v1.0_binaries.json");
+			"POST /v1.0/binaries", "post_test_v1.0_binaries.json",
+			"postBinary");
 	}
 
 	@Test
@@ -86,14 +86,14 @@ public class OpenAPIUtilTest {
 
 		Assert.assertEquals(toolSummaries.toString(), 8, toolSummaries.size());
 
-		Assert.assertEquals("This is the summary", byName.get("getItemsPage"));
+		Assert.assertEquals("This is the description", byName.get("getItem"));
 		Assert.assertEquals(
 			"This is the summary. This is the description",
 			byName.get("getItems"));
-		Assert.assertEquals("POST /v1.0/items", byName.get("postItem"));
-		Assert.assertEquals("This is the description", byName.get("getItem"));
+		Assert.assertEquals("This is the summary", byName.get("getItemsPage"));
 		Assert.assertEquals(
 			"PATCH /v1.0/items/{itemId}", byName.get("patchItem"));
+		Assert.assertEquals("POST /v1.0/items", byName.get("postItem"));
 	}
 
 	@Test
@@ -137,8 +137,8 @@ public class OpenAPIUtilTest {
 		throws Exception {
 
 		_assertGetHttpCallArguments(
-			"getItems", _arguments(), null, null, "get",
-			"http://localhost/v1.0/items?restrictFields=actions");
+			_arguments(), null, null, "get",
+			"http://localhost/v1.0/items?restrictFields=actions", "getItems");
 	}
 
 	@Test
@@ -146,13 +146,13 @@ public class OpenAPIUtilTest {
 		throws Exception {
 
 		_assertGetHttpCallArguments(
-			"getItem",
 			_arguments(
 				"active", "true", "fields", "name", "itemId", "123", "page",
 				"1"),
 			null, null, "get",
 			"http://localhost/v1.0/items/123?active=true&page=1&fields=name" +
-				"&restrictFields=actions");
+				"&restrictFields=actions",
+			"getItem");
 	}
 
 	@Test
@@ -160,8 +160,9 @@ public class OpenAPIUtilTest {
 		throws Exception {
 
 		_assertGetHttpCallArguments(
-			"getItem", _arguments("itemId", "123"), null, null, "get",
-			"http://localhost/v1.0/items/123?restrictFields=actions");
+			_arguments("itemId", "123"), null, null, "get",
+			"http://localhost/v1.0/items/123?restrictFields=actions",
+			"getItem");
 	}
 
 	@Test
@@ -169,9 +170,9 @@ public class OpenAPIUtilTest {
 		throws Exception {
 
 		_assertGetHttpCallArguments(
-			"getItems", _arguments("restrictFields", "name,actions"), null,
-			null, "get",
-			"http://localhost/v1.0/items?restrictFields=name%2Cactions");
+			_arguments("restrictFields", "name,actions"), null, null, "get",
+			"http://localhost/v1.0/items?restrictFields=name%2Cactions",
+			"getItems");
 	}
 
 	@Test
@@ -179,8 +180,9 @@ public class OpenAPIUtilTest {
 		throws Exception {
 
 		_assertGetHttpCallArguments(
-			"getItems", _arguments("restrictFields", "name"), null, null, "get",
-			"http://localhost/v1.0/items?restrictFields=name%2Cactions");
+			_arguments("restrictFields", "name"), null, null, "get",
+			"http://localhost/v1.0/items?restrictFields=name%2Cactions",
+			"getItems");
 	}
 
 	@Test
@@ -188,11 +190,11 @@ public class OpenAPIUtilTest {
 		throws Exception {
 
 		_assertGetHttpCallArguments(
-			"getItem",
 			_arguments("fields", "name eq 'John Doe'", "itemId", "123"), null,
 			null, "get",
 			"http://localhost/v1.0/items/123?fields=name+eq+%27John+Doe%27" +
-				"&restrictFields=actions");
+				"&restrictFields=actions",
+			"getItem");
 	}
 
 	@Test
@@ -200,10 +202,9 @@ public class OpenAPIUtilTest {
 		throws Exception {
 
 		_assertGetHttpCallArguments(
-			"patchItem",
 			_arguments("body", JSONUtil.put("name", "Test"), "itemId", "123"),
 			"{\"name\":\"Test\"}", "application/json", "patch",
-			"http://localhost/v1.0/items/123");
+			"http://localhost/v1.0/items/123", "patchItem");
 	}
 
 	@Test
@@ -211,9 +212,9 @@ public class OpenAPIUtilTest {
 		throws Exception {
 
 		_assertGetHttpCallArguments(
-			"postItem", _arguments("body", JSONUtil.put("name", "Test")),
+			_arguments("body", JSONUtil.put("name", "Test")),
 			"{\"name\":\"Test\"}", "application/json", "post",
-			"http://localhost/v1.0/items");
+			"http://localhost/v1.0/items", "postItem");
 	}
 
 	@Test
@@ -250,7 +251,6 @@ public class OpenAPIUtilTest {
 
 		List<Http.FilePart> fileParts = httpCallArguments.getFileParts();
 
-		Assert.assertNotNull(fileParts);
 		Assert.assertEquals(fileParts.toString(), 1, fileParts.size());
 
 		Http.FilePart filePart = fileParts.get(0);
@@ -262,7 +262,6 @@ public class OpenAPIUtilTest {
 
 		Map<String, String> parts = httpCallArguments.getParts();
 
-		Assert.assertNotNull(parts);
 		Assert.assertEquals(parts.toString(), 1, parts.size());
 		Assert.assertEquals("Hello", parts.get("name"));
 	}
@@ -288,7 +287,6 @@ public class OpenAPIUtilTest {
 
 		Map<String, String> parts = httpCallArguments.getParts();
 
-		Assert.assertNotNull(parts);
 		Assert.assertEquals(parts.toString(), 3, parts.size());
 		Assert.assertEquals("true", parts.get("boolean"));
 		Assert.assertEquals("42", parts.get("integer"));
@@ -316,9 +314,9 @@ public class OpenAPIUtilTest {
 	}
 
 	private void _assertGetHttpCallArguments(
-			String tool, JSONObject argumentsJSONObject, String expectedBody,
+			JSONObject argumentsJSONObject, String expectedBody,
 			String expectedContentType, String expectedMethod,
-			String expectedURL)
+			String expectedURL, String tool)
 		throws Exception {
 
 		OpenAPIUtil.HttpCallArguments httpCallArguments =
@@ -345,8 +343,8 @@ public class OpenAPIUtilTest {
 	}
 
 	private void _testBuildTool(
-			String tool, String expectedDescription,
-			String expectedSchemaFileName)
+			String expectedDescription, String expectedSchemaFileName,
+			String tool)
 		throws Exception {
 
 		Tool toolDetail = OpenAPIUtil.buildTool(true, _rootJSONObject, tool);
