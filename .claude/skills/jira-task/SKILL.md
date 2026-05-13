@@ -42,4 +42,6 @@ Create the issue in the LPD project with the gathered summary, description, and 
 
 ## Output
 
-Return the ticket key and the browse URL: `https://liferay.atlassian.net/browse/<KEY>`.
+Return the parent task key and the browse URL: `https://liferay.atlassian.net/browse/<KEY>`.
+
+The parent task is enough on its own. Jira does not autocreate the Technical Task subtask until the parent transitions to an in-progress status, and that subtask is only relevant once development starts (branch naming, commit prefixes, PR title). When the user is going to begin work on the ticket, point them to the `start-work` skill, which transitions the parent, resolves the subtask, assigns both, and creates the branch.
