@@ -119,3 +119,7 @@ Functional tests are a last resort, reserved for complete UI flows that cannot b
 ### Format Source
 
 Run `/format-source` (the `format-source` skill). See `.claude/skills/format-source/SKILL.md` for details.
+
+### Frontend Development
+
+Frontend source conventions live in `.claude/rules/frontend.md`. Jest and React Testing Library conventions live in `.claude/rules/jest-testing.md`. Both files declare `paths:` and auto-inject when matching source or test files are edited.
