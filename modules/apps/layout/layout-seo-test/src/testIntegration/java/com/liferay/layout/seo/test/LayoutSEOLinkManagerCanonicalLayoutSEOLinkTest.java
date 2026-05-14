@@ -349,7 +349,7 @@ public class LayoutSEOLinkManagerCanonicalLayoutSEOLinkTest {
 		themeDisplay.setScopeGroupId(_group.getGroupId());
 		themeDisplay.setSecure(false);
 		themeDisplay.setServerName(_VIRTUAL_HOSTNAME);
-		themeDisplay.setServerPort(_SERVER_PORT);
+		themeDisplay.setServerPort(PortalUtil.getPortalServerPort(false));
 		themeDisplay.setSiteGroupId(_group.getGroupId());
 
 		return themeDisplay;
@@ -417,9 +417,6 @@ public class LayoutSEOLinkManagerCanonicalLayoutSEOLinkTest {
 	private static final String _LAYOUT_SEO_CONFIGURATION_PID =
 		"com.liferay.layout.seo.internal.configuration." +
 			"LayoutSEOCompanyConfiguration";
-
-	private static final int _SERVER_PORT = PortalUtil.getPortalServerPort(
-		false);
 
 	private static final String _VIRTUAL_HOSTNAME = "test.com";
 

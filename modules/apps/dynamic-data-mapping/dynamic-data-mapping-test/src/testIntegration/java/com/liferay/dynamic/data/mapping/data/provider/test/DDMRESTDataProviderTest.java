@@ -139,7 +139,7 @@ public class DDMRESTDataProviderTest {
 			_createDDMDataProviderDDMFormValues(
 				false, false, StringPool.BLANK, null, outputParameterId,
 				"nameCurrentValue;name", "list", null, null,
-				_GET_COUNTRIES_URL),
+				_getCountriesURL()),
 			false);
 
 		DDMDataProviderResponse ddmDataProviderResponse =
@@ -167,7 +167,7 @@ public class DDMRESTDataProviderTest {
 			_createDDMDataProviderDDMFormValues(
 				true, false, StringPool.BLANK, "name",
 				StringUtil.randomString(), "nameCurrentValue;name", "list",
-				null, null, _GET_COUNTRY_BY_NAME_URL),
+				null, null, _getCountryByNameURL()),
 			false);
 
 		DDMDataProviderRequest ddmDataProviderRequest =
@@ -178,7 +178,7 @@ public class DDMRESTDataProviderTest {
 
 		String cacheKey = StringBundler.concat(
 			ddmDataProviderRequest.getDDMDataProviderId(), StringPool.AT,
-			_GET_COUNTRY_BY_NAME_URL, "?name=brazil");
+			_getCountryByNameURL(), "?name=brazil");
 
 		Class<?> clazz = _ddmDataProvider.getClass();
 
@@ -201,7 +201,7 @@ public class DDMRESTDataProviderTest {
 			_createDDMDataProviderDDMFormValues(
 				false, true, "name", null, outputParameterId,
 				"nameCurrentValue;name", "list", null, null,
-				_GET_COUNTRY_BY_NAME_URL),
+				_getCountryByNameURL()),
 			false);
 
 		DDMDataProviderResponse ddmDataProviderResponse =
@@ -229,8 +229,7 @@ public class DDMRESTDataProviderTest {
 		long ddmDataProviderId = _addDDMDataProviderInstance(
 			_createDDMDataProviderDDMFormValues(
 				false, false, StringPool.BLANK, "name", outputParameterId,
-				"nameCurrentValue", "list", null, null,
-				_GET_COUNTRY_BY_NAME_URL),
+				"nameCurrentValue", "list", null, null, _getCountryByNameURL()),
 			false);
 
 		DDMDataProviderResponse ddmDataProviderResponse =
@@ -260,7 +259,7 @@ public class DDMRESTDataProviderTest {
 			_createDDMDataProviderDDMFormValues(
 				false, false, StringPool.BLANK, "name", outputParameterId,
 				"nameCurrentValue", "list", null, null,
-				_GET_COUNTRY_BY_NAME_URL + "?name={name}"),
+				_getCountryByNameURL() + "?name={name}"),
 			false);
 
 		DDMDataProviderResponse ddmDataProviderResponse =
@@ -314,7 +313,7 @@ public class DDMRESTDataProviderTest {
 			_createDDMDataProviderDDMFormValues(
 				false, false, StringPool.BLANK, null, outputParameterId,
 				"nameCurrentValue;name", "list", null, null,
-				_GET_COUNTRIES_URL),
+				_getCountriesURL()),
 			false);
 
 		_testGetDataWithLocale(
@@ -334,7 +333,7 @@ public class DDMRESTDataProviderTest {
 		long ddmDataProviderId = _addDDMDataProviderInstance(
 			_createDDMDataProviderDDMFormValues(
 				false, false, null, null, outputParameterId, "$.length()",
-				"number", null, null, _GET_COUNTRIES_URL),
+				"number", null, null, _getCountriesURL()),
 			false);
 
 		DDMDataProviderResponse ddmDataProviderResponse =
@@ -374,7 +373,7 @@ public class DDMRESTDataProviderTest {
 		long ddmDataProviderId = _addDDMDataProviderInstance(
 			_createDDMDataProviderDDMFormValues(
 				false, false, StringPool.BLANK, null, outputParameterId, null,
-				null, null, null, _GET_COUNTRIES_URL),
+				null, null, null, _getCountriesURL()),
 			false);
 
 		DDMDataProviderResponse ddmDataProviderResponse =
@@ -400,7 +399,7 @@ public class DDMRESTDataProviderTest {
 			_createDDMDataProviderDDMFormValues(
 				false, false, StringPool.BLANK, null, StringUtil.randomString(),
 				"nameCurrentValue;name", "list", null, null,
-				_GET_COUNTRIES_URL),
+				_getCountriesURL()),
 			false);
 
 		DDMDataProviderRequest ddmDataProviderRequest =
@@ -419,7 +418,7 @@ public class DDMRESTDataProviderTest {
 		long ddmDataProviderId = _addDDMDataProviderInstance(
 			_createDDMDataProviderDDMFormValues(
 				false, false, StringPool.BLANK, null, outputParameterId,
-				"nameCurrentValue", "list", "7", "2", _GET_COUNTRIES_URL),
+				"nameCurrentValue", "list", "7", "2", _getCountriesURL()),
 			false);
 
 		DDMDataProviderResponse ddmDataProviderResponse =
@@ -447,7 +446,7 @@ public class DDMRESTDataProviderTest {
 			_createDDMDataProviderDDMFormValues(
 				false, false, StringPool.BLANK, "name", outputParameterId,
 				"$.nameCurrentValue", "text", null, null,
-				_GET_COUNTRY_BY_NAME_URL + "?name={name}"),
+				_getCountryByNameURL() + "?name={name}"),
 			false);
 
 		DDMDataProviderResponse ddmDataProviderResponse =
@@ -473,7 +472,7 @@ public class DDMRESTDataProviderTest {
 			_createDDMDataProviderDDMFormValues(
 				false, true, "name", null, outputParameterId,
 				"nameCurrentValue;name", "list", null, null,
-				_GET_COUNTRY_BY_NAME_URL),
+				_getCountryByNameURL()),
 			true);
 
 		DDMDataProviderResponse ddmDataProviderResponse =
@@ -672,6 +671,18 @@ public class DDMRESTDataProviderTest {
 		).build();
 	}
 
+	private String _getCountriesURL() {
+		return StringBundler.concat(
+			"http://localhost:", PortalUtil.getPortalServerPort(false),
+			"/api/jsonws/country/get-countries");
+	}
+
+	private String _getCountryByNameURL() {
+		return StringBundler.concat(
+			"http://localhost:", PortalUtil.getPortalServerPort(false),
+			"/api/jsonws/country/get-country-by-name");
+	}
+
 	private void _setUpPermissionThreadLocal() {
 		_originalPermissionChecker =
 			PermissionThreadLocal.getPermissionChecker();
@@ -707,14 +718,6 @@ public class DDMRESTDataProviderTest {
 				keyValuePair.getValue());
 		}
 	}
-
-	private static final String _GET_COUNTRIES_URL = StringBundler.concat(
-		"http://localhost:", PortalUtil.getPortalServerPort(false),
-		"/api/jsonws/country/get-countries");
-
-	private static final String _GET_COUNTRY_BY_NAME_URL = StringBundler.concat(
-		"http://localhost:", PortalUtil.getPortalServerPort(false),
-		"/api/jsonws/country/get-country-by-name");
 
 	private static ServiceRegistration<Application> _serviceRegistration;
 
