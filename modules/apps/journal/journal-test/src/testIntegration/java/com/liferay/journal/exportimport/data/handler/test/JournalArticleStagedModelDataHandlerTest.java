@@ -681,8 +681,9 @@ public class JournalArticleStagedModelDataHandlerTest
 				dlFileEntry.getFileEntryId());
 
 		String stagingGroupDLFileEntryFriendlyURL = StringBundler.concat(
-			"http://localhost:", PortalUtil.getPortalServerPort(false), "/documents/d", stagingGroup.getFriendlyURL(),
-			StringPool.SLASH, mainFriendlyURLEntry.getUrlTitle());
+			"http://localhost:", PortalUtil.getPortalServerPort(false),
+			"/documents/d", stagingGroup.getFriendlyURL(), StringPool.SLASH,
+			mainFriendlyURLEntry.getUrlTitle());
 
 		JournalArticle journalArticle = JournalTestUtil.addArticle(
 			stagingGroup.getGroupId(),
@@ -719,8 +720,9 @@ public class JournalArticleStagedModelDataHandlerTest
 			String content = journalArticle.getContent();
 
 			String liveGroupDLFileEntryFriendlyURL = StringBundler.concat(
-				"http://localhost:", PortalUtil.getPortalServerPort(false), "/documents/d", liveGroup.getFriendlyURL(),
-				StringPool.SLASH, mainFriendlyURLEntry.getUrlTitle());
+				"http://localhost:", PortalUtil.getPortalServerPort(false),
+				"/documents/d", liveGroup.getFriendlyURL(), StringPool.SLASH,
+				mainFriendlyURLEntry.getUrlTitle());
 
 			Assert.assertEquals(
 				content.replaceAll(

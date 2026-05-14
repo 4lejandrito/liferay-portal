@@ -399,7 +399,8 @@ public class ExportImportLayoutPageTemplateEntriesTest {
 		).put(
 			"DISPLAY_PAGE_URL",
 			StringBundler.concat(
-				"\"http://localhost:", PortalUtil.getPortalServerPort(false), "/web", _group1.getFriendlyURL(),
+				"\"http://localhost:", PortalUtil.getPortalServerPort(false),
+				"/web", _group1.getFriendlyURL(),
 				FriendlyURLResolverConstants.URL_SEPARATOR_JOURNAL_ARTICLE,
 				journalArticle.getUrlTitle(), "\"")
 		).build();

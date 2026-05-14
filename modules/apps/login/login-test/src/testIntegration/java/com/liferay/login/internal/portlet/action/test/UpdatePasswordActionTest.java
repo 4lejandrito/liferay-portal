@@ -198,16 +198,17 @@ public class UpdatePasswordActionTest {
 		if (usePlid) {
 			url = new URL(
 				StringBundler.concat(
-					"http://", _company.getVirtualHostname(),
-					":", PortalUtil.getPortalServerPort(false), "/c/portal/update_password?p_l_id=",
-					_layout1.getPlid(), "&ticketId=", ticketId, "&ticketId=",
-					ticketKey));
+					"http://", _company.getVirtualHostname(), ":",
+					PortalUtil.getPortalServerPort(false),
+					"/c/portal/update_password?p_l_id=", _layout1.getPlid(),
+					"&ticketId=", ticketId, "&ticketId=", ticketKey));
 		}
 		else {
 			url = new URL(
 				StringBundler.concat(
-					"http://", _company.getVirtualHostname(),
-					":", PortalUtil.getPortalServerPort(false), "/c/portal/update_password?ticketId=", ticketId,
+					"http://", _company.getVirtualHostname(), ":",
+					PortalUtil.getPortalServerPort(false),
+					"/c/portal/update_password?ticketId=", ticketId,
 					"&ticketId=", ticketKey));
 		}
 

@@ -190,7 +190,8 @@ public class UpdateArticleMVCActionCommandTest {
 				mockMultipartHttpServletRequest);
 
 		mockLiferayPortletActionRequest.setAttribute(
-			WebKeys.CURRENT_URL, "http://localhost:" + PortalUtil.getPortalServerPort(false));
+			WebKeys.CURRENT_URL,
+			"http://localhost:" + PortalUtil.getPortalServerPort(false));
 
 		mockMultipartHttpServletRequest.setAttribute(
 			JavaConstants.JAKARTA_PORTLET_CONFIG,

@@ -130,7 +130,8 @@ public class RenderPortletActionTest {
 			};
 
 		mockHttpServletRequest.setAttribute(
-			WebKeys.CURRENT_URL, "http://localhost:" + PortalUtil.getPortalServerPort(false));
+			WebKeys.CURRENT_URL,
+			"http://localhost:" + PortalUtil.getPortalServerPort(false));
 
 		Group group = GroupTestUtil.addGroup();
 

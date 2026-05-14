@@ -107,7 +107,9 @@ public class MCPServerServletTest {
 			).header(
 				"Authorization", _getAuthorization()
 			).uri(
-				URI.create("http://localhost:" + PortalUtil.getPortalServerPort(false) + "/o/mcp")
+				URI.create(
+					"http://localhost:" +
+						PortalUtil.getPortalServerPort(false) + "/o/mcp")
 			).build(),
 			HttpResponse.BodyHandlers.discarding()
 		);

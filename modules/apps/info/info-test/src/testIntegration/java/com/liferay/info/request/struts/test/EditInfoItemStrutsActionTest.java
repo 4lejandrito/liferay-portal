@@ -483,9 +483,11 @@ public class EditInfoItemStrutsActionTest {
 	@Test
 	public void testAddInfoItemWithEmbeddedSuccessMessage() throws Exception {
 		_testAddInfoItem(
-			null, "http://localhost:" + PortalUtil.getPortalServerPort(false) + "/home", null, null, null, null, null,
-			null, "123456", "123456", null, null, null, null,
-			WorkflowConstants.STATUS_APPROVED);
+			null,
+			"http://localhost:" + PortalUtil.getPortalServerPort(false) +
+				"/home",
+			null, null, null, null, null, null, "123456", "123456", null, null,
+			null, null, WorkflowConstants.STATUS_APPROVED);
 	}
 
 	@Test
@@ -525,8 +527,10 @@ public class EditInfoItemStrutsActionTest {
 	public void testAddInfoItemWithPageSuccessMessage() throws Exception {
 		_testAddInfoItem(
 			null, null, null, null, null, null, null, null, "123456", "123456",
-			null, null, "http://localhost:" + PortalUtil.getPortalServerPort(false) + "/home", null,
-			WorkflowConstants.STATUS_APPROVED);
+			null, null,
+			"http://localhost:" + PortalUtil.getPortalServerPort(false) +
+				"/home",
+			null, WorkflowConstants.STATUS_APPROVED);
 	}
 
 	@FeatureFlag("LPD-17564")
@@ -658,7 +662,9 @@ public class EditInfoItemStrutsActionTest {
 			new MockMultipartHttpServletRequest();
 
 		mockMultipartHttpServletRequest.addHeader(
-			HttpHeaders.REFERER, "http://localhost:" + PortalUtil.getPortalServerPort(false) + "/error");
+			HttpHeaders.REFERER,
+			"http://localhost:" + PortalUtil.getPortalServerPort(false) +
+				"/error");
 		mockMultipartHttpServletRequest.setContentType(
 			"multipart/form-data;boundary=" + System.currentTimeMillis());
 
@@ -1149,7 +1155,9 @@ public class EditInfoItemStrutsActionTest {
 			new MockMultipartHttpServletRequest();
 
 		mockMultipartHttpServletRequest.addHeader(
-			HttpHeaders.REFERER, "http://localhost:" + PortalUtil.getPortalServerPort(false) + "/error");
+			HttpHeaders.REFERER,
+			"http://localhost:" + PortalUtil.getPortalServerPort(false) +
+				"/error");
 		mockMultipartHttpServletRequest.setContentType(
 			"multipart/form-data;boundary=" + System.currentTimeMillis());
 
@@ -1254,7 +1262,9 @@ public class EditInfoItemStrutsActionTest {
 		}
 
 		mockMultipartHttpServletRequest.addHeader(
-			HttpHeaders.REFERER, "http://localhost:" + PortalUtil.getPortalServerPort(false) + "/error");
+			HttpHeaders.REFERER,
+			"http://localhost:" + PortalUtil.getPortalServerPort(false) +
+				"/error");
 
 		return UploadTestUtil.createUploadPortletRequest(
 			UploadTestUtil.createUploadServletRequest(

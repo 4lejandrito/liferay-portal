@@ -509,7 +509,8 @@ public class DDMStructureStagedModelDataHandlerTest
 		ddmFormValues.addDDMFormFieldValue(
 			DDMFormValuesTestUtil.createUnlocalizedDDMFormFieldValue(
 				"url",
-				"http://localhost:" + PortalUtil.getPortalServerPort(false) + "/api/jsonws/country/get-countries"));
+				"http://localhost:" + PortalUtil.getPortalServerPort(false) +
+					"/api/jsonws/country/get-countries"));
 		ddmFormValues.addDDMFormFieldValue(
 			DDMFormValuesTestUtil.createUnlocalizedDDMFormFieldValue(
 				"username", "test@liferay.com"));

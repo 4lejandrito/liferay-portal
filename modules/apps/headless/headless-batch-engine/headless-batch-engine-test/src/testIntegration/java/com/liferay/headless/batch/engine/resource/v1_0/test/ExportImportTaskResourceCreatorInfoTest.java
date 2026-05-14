@@ -469,7 +469,8 @@ public class ExportImportTaskResourceCreatorInfoTest {
 				_invoke(
 					host,
 					StringBundler.concat(
-						"http://", host, ":", PortalUtil.getPortalServerPort(false),
+						"http://", host, ":",
+						PortalUtil.getPortalServerPort(false),
 						"/o/headless-batch-engine/v1.0/import-task",
 						"/by-external-reference-code/",
 						externalReferenceCode)));

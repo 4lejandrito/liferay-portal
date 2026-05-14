@@ -153,7 +153,8 @@ public class DownloadObjectEntryFolderCMSServletTest
 			new MockHttpServletRequest();
 
 		mockHttpServletRequest.setAttribute(
-			WebKeys.CURRENT_URL, "http://localhost:" + PortalUtil.getPortalServerPort(false) + "/");
+			WebKeys.CURRENT_URL,
+			"http://localhost:" + PortalUtil.getPortalServerPort(false) + "/");
 		mockHttpServletRequest.setAttribute(
 			WebKeys.THEME_DISPLAY, _getThemeDisplay(mockHttpServletRequest));
 		mockHttpServletRequest.setAttribute(

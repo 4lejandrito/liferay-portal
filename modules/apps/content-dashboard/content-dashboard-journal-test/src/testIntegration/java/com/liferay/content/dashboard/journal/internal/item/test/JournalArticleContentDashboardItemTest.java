@@ -449,7 +449,8 @@ public class JournalArticleContentDashboardItemTest {
 		httpServletRequest.setAttribute(
 			JavaConstants.JAKARTA_PORTLET_CONFIG, _getLiferayPortletConfig());
 		httpServletRequest.setAttribute(
-			WebKeys.CURRENT_URL, "http://localhost:" + PortalUtil.getPortalServerPort(false));
+			WebKeys.CURRENT_URL,
+			"http://localhost:" + PortalUtil.getPortalServerPort(false));
 		httpServletRequest.setAttribute(
 			WebKeys.THEME_DISPLAY, _getThemeDisplay(LocaleUtil.US));
 		httpServletRequest.setAttribute(

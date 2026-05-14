@@ -209,7 +209,8 @@ public abstract class BaseTestPreparatorBundleActivator
 		return createOAuth2Application(
 			companyId, user, clientId, "oauthTestApplicationSecret",
 			allowedGrantTypesList,
-			Collections.singletonList("http://redirecturi:" + PortalUtil.getPortalServerPort(false)),
+			Collections.singletonList(
+				"http://redirecturi:" + PortalUtil.getPortalServerPort(false)),
 			rememberDevice, scopeAliasesList, trustedApplication);
 	}
 
@@ -222,7 +223,8 @@ public abstract class BaseTestPreparatorBundleActivator
 		return createOAuth2Application(
 			companyId, user, clientId, "oauthTestApplicationSecret",
 			allowedGrantTypesList,
-			Collections.singletonList("http://redirecturi:" + PortalUtil.getPortalServerPort(false)),
+			Collections.singletonList(
+				"http://redirecturi:" + PortalUtil.getPortalServerPort(false)),
 			scopeAliasesList);
 	}
 

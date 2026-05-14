@@ -104,7 +104,8 @@ public class OAuth2WebServerServletTest extends BaseClientTestCase {
 		return client.target(
 			uriBuilder.uri(
 				StringBundler.concat(
-					"http://", company.getVirtualHostname(), ":", PortalUtil.getPortalServerPort(false), path)));
+					"http://", company.getVirtualHostname(), ":",
+					PortalUtil.getPortalServerPort(false), path)));
 	}
 
 	private static final String _TEST_FILE_CONTENT = "Test File Content";

@@ -348,7 +348,9 @@ public class UpdateTranslationMVCActionCommandTest {
 		mockActionRequest.setParameter("classPK", String.valueOf(classPK));
 		mockActionRequest.setParameter("groupId", String.valueOf(groupId));
 		mockActionRequest.setParameter(
-			"redirect", "http://localhost:" + PortalUtil.getPortalServerPort(false) + "/content-list");
+			"redirect",
+			"http://localhost:" + PortalUtil.getPortalServerPort(false) +
+				"/content-list");
 		mockActionRequest.setParameter(
 			"sourceLanguageId", LocaleUtil.US.toString());
 		mockActionRequest.setParameter(

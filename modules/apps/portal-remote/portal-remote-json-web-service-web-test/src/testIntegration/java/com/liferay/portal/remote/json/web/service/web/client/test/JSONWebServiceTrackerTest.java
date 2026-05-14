@@ -87,8 +87,8 @@ public class JSONWebServiceTrackerTest {
 
 		URL url = new URL(
 			StringBundler.concat(
-				"http://localhost:", PortalUtil.getPortalServerPort(false), "/api/jsonws/test.testweb/sum/a/", a,
-				"/b/", b));
+				"http://localhost:", PortalUtil.getPortalServerPort(false),
+				"/api/jsonws/test.testweb/sum/a/", a, "/b/", b));
 
 		Assert.assertEquals(
 			a + b, GetterUtil.getInteger(URLUtil.toString(url)));

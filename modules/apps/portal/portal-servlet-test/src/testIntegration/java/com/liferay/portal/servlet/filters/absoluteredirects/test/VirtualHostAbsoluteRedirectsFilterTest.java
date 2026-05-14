@@ -212,7 +212,8 @@ public class VirtualHostAbsoluteRedirectsFilterTest {
 
 		_mockHttpServletRequest.setRemoteHost(hostname);
 		_mockHttpServletRequest.setServerName(hostname);
-		_mockHttpServletRequest.setServerPort(PortalUtil.getPortalServerPort(false));
+		_mockHttpServletRequest.setServerPort(
+			PortalUtil.getPortalServerPort(false));
 		_mockHttpServletRequest.setRequestURI("/web/guest");
 	}
 

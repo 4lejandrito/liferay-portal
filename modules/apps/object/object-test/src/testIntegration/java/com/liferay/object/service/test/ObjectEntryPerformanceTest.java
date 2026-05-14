@@ -272,7 +272,8 @@ public class ObjectEntryPerformanceTest {
 
 	private String _getPath(String pathSuffix) {
 		return StringBundler.concat(
-			"http://", _VIRTUAL_HOST_NAME, ":", PortalUtil.getPortalServerPort(false), pathSuffix);
+			"http://", _VIRTUAL_HOST_NAME, ":",
+			PortalUtil.getPortalServerPort(false), pathSuffix);
 	}
 
 	private HttpInvoker.HttpResponse _invoke(

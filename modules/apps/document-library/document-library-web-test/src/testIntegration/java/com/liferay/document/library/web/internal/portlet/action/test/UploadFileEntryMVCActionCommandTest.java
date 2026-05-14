@@ -217,7 +217,8 @@ public class UploadFileEntryMVCActionCommandTest {
 			WebKeys.THEME_DISPLAY, themeDisplay);
 
 		mockHttpServletRequest.setAttribute(
-			WebKeys.CURRENT_URL, "http://localhost:" + PortalUtil.getPortalServerPort(false));
+			WebKeys.CURRENT_URL,
+			"http://localhost:" + PortalUtil.getPortalServerPort(false));
 		mockHttpServletRequest.setContentType(
 			"multipart/form-data;boundary=" + System.currentTimeMillis());
 

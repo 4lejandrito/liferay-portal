@@ -213,8 +213,8 @@ public class PortalImplCanonicalURLTest {
 			portalDomain, _defaultGroup, _SERVER_PORT, false);
 
 		String completeURL = _generateURL(
-			portalDomain, _SERVER_PORT_STRING, StringPool.BLANK, _group.getFriendlyURL(),
-			_layout2.getFriendlyURL(), false);
+			portalDomain, _SERVER_PORT_STRING, StringPool.BLANK,
+			_group.getFriendlyURL(), _layout2.getFriendlyURL(), false);
 
 		Assert.assertEquals(
 			completeURL,
@@ -228,13 +228,14 @@ public class PortalImplCanonicalURLTest {
 
 		Assert.assertEquals(
 			_generateURL(
-				portalDomain, _SERVER_PORT_STRING, StringPool.BLANK, _group.getFriendlyURL(),
-				_layout5.getFriendlyURL(), false),
+				portalDomain, _SERVER_PORT_STRING, StringPool.BLANK,
+				_group.getFriendlyURL(), _layout5.getFriendlyURL(), false),
 			_portal.getCanonicalURL(
 				_generateURL(
 					portalDomain, _SERVER_PORT_STRING, StringPool.BLANK,
 					_group.getFriendlyURL(), "/test%20page", false),
-				_createThemeDisplay(portalDomain, _defaultGroup, _SERVER_PORT, false),
+				_createThemeDisplay(
+					portalDomain, _defaultGroup, _SERVER_PORT, false),
 				_layout5, false, false));
 	}
 
@@ -278,8 +279,8 @@ public class PortalImplCanonicalURLTest {
 				FriendlyURLResolverRegistryUtil.getURLSeparators()) {
 
 			String completeURL = _generateURL(
-				portalDomain, _SERVER_PORT_STRING, StringPool.BLANK, _group.getFriendlyURL(),
-				urlSeparator + "content-name", false);
+				portalDomain, _SERVER_PORT_STRING, StringPool.BLANK,
+				_group.getFriendlyURL(), urlSeparator + "content-name", false);
 
 			Assert.assertEquals(
 				completeURL,
@@ -322,7 +323,8 @@ public class PortalImplCanonicalURLTest {
 				FriendlyURLResolverRegistryUtil.getURLSeparators()) {
 
 			String completeURL = _generateURL(
-				portalDomain, _SERVER_PORT_STRING, StringPool.BLANK, _group.getFriendlyURL(),
+				portalDomain, _SERVER_PORT_STRING, StringPool.BLANK,
+				_group.getFriendlyURL(),
 				_layout1.getFriendlyURL() + urlSeparator + "blogs/content-name",
 				false);
 
@@ -342,8 +344,8 @@ public class PortalImplCanonicalURLTest {
 
 		String completeURL = HttpComponentsUtil.addParameter(
 			_generateURL(
-				portalDomain, _SERVER_PORT_STRING, "/en", _group.getFriendlyURL(),
-				_layout1.getFriendlyURL(), false),
+				portalDomain, _SERVER_PORT_STRING, "/en",
+				_group.getFriendlyURL(), _layout1.getFriendlyURL(), false),
 			"_ga", "2.237928582.786466685.1515402734-1365236376");
 
 		ThemeDisplay themeDisplay = _createThemeDisplay(

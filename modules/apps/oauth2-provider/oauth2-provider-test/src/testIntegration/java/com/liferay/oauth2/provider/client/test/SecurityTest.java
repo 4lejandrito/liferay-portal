@@ -156,7 +156,8 @@ public class SecurityTest extends BaseClientTestCase {
 				webTarget -> webTarget.queryParam(
 					"client_id", "oauthTestApplicationCode"
 				).queryParam(
-					"redirect_uri", "http://invalid:" + PortalUtil.getPortalServerPort(false)
+					"redirect_uri",
+					"http://invalid:" + PortalUtil.getPortalServerPort(false)
 				).queryParam(
 					"response_type", "code"
 				)));
@@ -178,7 +179,9 @@ public class SecurityTest extends BaseClientTestCase {
 					webTarget -> webTarget.queryParam(
 						"client_id", "oauthTestApplicationCode"
 					).queryParam(
-						"redirect_uri", "http://redirecturi:" + PortalUtil.getPortalServerPort(false)
+						"redirect_uri",
+						"http://redirecturi:" +
+							PortalUtil.getPortalServerPort(false)
 					).queryParam(
 						"response_type", "code"
 					))));
@@ -190,7 +193,8 @@ public class SecurityTest extends BaseClientTestCase {
 			getToken(
 				"oauthTestApplicationCode", null,
 				getExchangeAuthorizationCodeBiFunction(
-					authorizationCode, "http://invalid:" + PortalUtil.getPortalServerPort(false)),
+					authorizationCode,
+					"http://invalid:" + PortalUtil.getPortalServerPort(false)),
 				this::parseError));
 	}
 
@@ -249,8 +253,10 @@ public class SecurityTest extends BaseClientTestCase {
 			createOAuth2ApplicationWithNone(
 				companyId, _user, "oauthTestApplicationCodePKCE",
 				Collections.singletonList(GrantType.AUTHORIZATION_CODE_PKCE),
-				Collections.singletonList("http://redirecturi:" + PortalUtil.getPortalServerPort(false)), false,
-				Collections.singletonList("everything"), false);
+				Collections.singletonList(
+					"http://redirecturi:" +
+						PortalUtil.getPortalServerPort(false)),
+				false, Collections.singletonList("everything"), false);
 
 			Company company = CompanyLocalServiceUtil.getCompany(companyId);
 

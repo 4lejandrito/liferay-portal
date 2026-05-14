@@ -168,7 +168,8 @@ public class SaveAsDraftArticleMVCActionCommandTest {
 		mockLiferayPortletActionRequest.addParameter(
 			"version", String.valueOf(journalArticle.getVersion()));
 		mockLiferayPortletActionRequest.setAttribute(
-			WebKeys.CURRENT_URL, "http://localhost:" + PortalUtil.getPortalServerPort(false));
+			WebKeys.CURRENT_URL,
+			"http://localhost:" + PortalUtil.getPortalServerPort(false));
 		mockLiferayPortletActionRequest.setAttribute(
 			WebKeys.THEME_DISPLAY, _getThemeDisplay());
 

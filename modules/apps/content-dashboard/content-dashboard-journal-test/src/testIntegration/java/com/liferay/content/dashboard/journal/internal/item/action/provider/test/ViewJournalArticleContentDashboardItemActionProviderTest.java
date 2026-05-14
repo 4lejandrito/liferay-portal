@@ -141,7 +141,8 @@ public class ViewJournalArticleContentDashboardItemActionProviderTest {
 						journalArticle.getTitle(LocaleUtil.US))));
 
 			String escapeURL = HtmlUtil.escapeURL(
-				"http://localhost:" + PortalUtil.getPortalServerPort(false) + "/currentURL");
+				"http://localhost:" + PortalUtil.getPortalServerPort(false) +
+					"/currentURL");
 
 			Assert.assertTrue(url.contains("p_l_back_url=" + escapeURL));
 		}

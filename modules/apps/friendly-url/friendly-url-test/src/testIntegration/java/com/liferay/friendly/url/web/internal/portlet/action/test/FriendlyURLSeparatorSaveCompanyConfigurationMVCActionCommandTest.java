@@ -374,7 +374,8 @@ public class FriendlyURLSeparatorSaveCompanyConfigurationMVCActionCommandTest {
 			WebKeys.THEME_DISPLAY, _getThemeDisplay());
 
 		mockLiferayPortletActionRequest.setParameter(
-			"redirect", "http://localhost:" + PortalUtil.getPortalServerPort(false));
+			"redirect",
+			"http://localhost:" + PortalUtil.getPortalServerPort(false));
 
 		for (Map.Entry<String, String> friendlyURLSeparator :
 				friendlyURLSeparators.entrySet()) {

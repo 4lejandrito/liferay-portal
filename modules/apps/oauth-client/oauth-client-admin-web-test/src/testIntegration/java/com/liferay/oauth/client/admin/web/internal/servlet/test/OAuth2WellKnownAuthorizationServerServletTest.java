@@ -72,8 +72,9 @@ public class OAuth2WellKnownAuthorizationServerServletTest {
 			TestPropsValues.getCompanyId());
 
 		String urlString = StringBundler.concat(
-			Http.HTTP_WITH_SLASH, company.getVirtualHostname(),
-			":", PortalUtil.getPortalServerPort(false), "/o/.well-known/oauth-authorization-server/");
+			Http.HTTP_WITH_SLASH, company.getVirtualHostname(), ":",
+			PortalUtil.getPortalServerPort(false),
+			"/o/.well-known/oauth-authorization-server/");
 
 		options.setLocation(urlString);
 

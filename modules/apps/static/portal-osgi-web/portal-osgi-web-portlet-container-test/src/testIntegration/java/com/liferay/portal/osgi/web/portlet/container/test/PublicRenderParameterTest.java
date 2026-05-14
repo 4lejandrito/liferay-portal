@@ -75,7 +75,8 @@ public class PublicRenderParameterTest extends BasePortletContainerTestCase {
 			},
 			Collections.emptyMap(),
 			() -> StringBundler.concat(
-				"http://localhost:", PortalUtil.getPortalServerPort(false), "/web", group.getFriendlyURL(),
+				"http://localhost:", PortalUtil.getPortalServerPort(false),
+				"/web", group.getFriendlyURL(),
 				contentLayout.getFriendlyURL(LocaleUtil.getDefault()),
 				"?p_r_p_", _publicRenderParameterName, "=",
 				_publicRenderParameterValue));

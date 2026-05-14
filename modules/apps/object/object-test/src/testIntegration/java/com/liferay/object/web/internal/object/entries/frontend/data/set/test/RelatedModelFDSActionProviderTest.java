@@ -226,7 +226,9 @@ public class RelatedModelFDSActionProviderTest {
 		mockHttpServletRequest.addParameter(
 			"objectEntryId", String.valueOf(objectEntryId));
 		mockHttpServletRequest.setAttribute(
-			WebKeys.CURRENT_URL, "http://localhost:" + PortalUtil.getPortalServerPort(false) + "/currentURL");
+			WebKeys.CURRENT_URL,
+			"http://localhost:" + PortalUtil.getPortalServerPort(false) +
+				"/currentURL");
 
 		ThemeDisplay themeDisplay = new ThemeDisplay();
 

@@ -56,7 +56,9 @@ public abstract class BaseSectionDisplayContextTestCase {
 						TestPropsValues.getCompanyId()));
 				setLocale(LocaleUtil.getDefault());
 				setScopeGroupId(group.getGroupId());
-				setURLCurrent("http://localhost:" + PortalUtil.getPortalServerPort(false) + "/currentURL");
+				setURLCurrent(
+					"http://localhost:" +
+						PortalUtil.getPortalServerPort(false) + "/currentURL");
 				setUser(TestPropsValues.getUser());
 			}
 		};

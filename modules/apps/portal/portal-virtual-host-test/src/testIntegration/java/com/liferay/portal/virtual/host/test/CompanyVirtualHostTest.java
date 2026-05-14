@@ -55,7 +55,8 @@ public class CompanyVirtualHostTest extends BaseVirtualHostTestCase {
 					body.contains(layout.getName(LocaleUtil.getDefault())));
 			},
 			StringBundler.concat(
-				"http://", company1.getVirtualHostname(), ":", PortalUtil.getPortalServerPort(false), "/web",
+				"http://", company1.getVirtualHostname(), ":",
+				PortalUtil.getPortalServerPort(false), "/web",
 				group.getFriendlyURL()));
 
 		assertURLtoString(
@@ -64,7 +65,8 @@ public class CompanyVirtualHostTest extends BaseVirtualHostTestCase {
 				Assert.assertTrue(body.contains(company2.getVirtualHostname()));
 			},
 			StringBundler.concat(
-				"http://", company2.getVirtualHostname(), ":", PortalUtil.getPortalServerPort(false), "/web",
+				"http://", company2.getVirtualHostname(), ":",
+				PortalUtil.getPortalServerPort(false), "/web",
 				group.getFriendlyURL()));
 	}
 

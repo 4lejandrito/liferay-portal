@@ -197,7 +197,9 @@ public class PortalConfigurationCORSClientTest extends BaseCORSClientTestCase {
 
 		UriBuilder uriBuilder = runtimeDelegate.createUriBuilder();
 
-		return client.target(uriBuilder.uri("http://localhost:" + PortalUtil.getPortalServerPort(false)));
+		return client.target(
+			uriBuilder.uri(
+				"http://localhost:" + PortalUtil.getPortalServerPort(false)));
 	}
 
 	private WebTarget _getWebTarget(String... paths) {

@@ -90,9 +90,9 @@ public class UpdatePasswordActionTest {
 
 		URL url = new URL(
 			StringBundler.concat(
-				"http://localhost:", PortalUtil.getPortalServerPort(false), "/c/portal/update_password?languageId=",
-				user.getLanguageId(), "&ticketId=", _ticketId, "&ticketKey=",
-				_ticketKey));
+				"http://localhost:", PortalUtil.getPortalServerPort(false),
+				"/c/portal/update_password?languageId=", user.getLanguageId(),
+				"&ticketId=", _ticketId, "&ticketKey=", _ticketKey));
 
 		String content = URLUtil.toString(url);
 

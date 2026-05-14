@@ -173,7 +173,8 @@ public class UpdateDataEngineDefaultValuesMVCActionCommandTest {
 				null, RandomTestUtil.randomString());
 
 		uploadPortletRequest.setAttribute(
-			WebKeys.CURRENT_URL, "http://localhost:" + PortalUtil.getPortalServerPort(false));
+			WebKeys.CURRENT_URL,
+			"http://localhost:" + PortalUtil.getPortalServerPort(false));
 
 		JournalArticle article = ReflectionTestUtil.invoke(
 			_mvcActionCommand, "_addOrUpdateArticleDefaultValues",

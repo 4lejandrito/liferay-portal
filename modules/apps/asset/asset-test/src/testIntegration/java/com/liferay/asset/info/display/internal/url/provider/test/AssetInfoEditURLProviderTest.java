@@ -61,7 +61,9 @@ public class AssetInfoEditURLProviderTest {
 		mockHttpServletRequest.setAttribute(
 			WebKeys.THEME_DISPLAY, _getThemeDisplay());
 
-		String backURL = "http://localhost:" + PortalUtil.getPortalServerPort(false) + "/test";
+		String backURL =
+			"http://localhost:" + PortalUtil.getPortalServerPort(false) +
+				"/test";
 
 		mockHttpServletRequest.setParameter("backURL", backURL);
 
@@ -70,7 +72,9 @@ public class AssetInfoEditURLProviderTest {
 		mockHttpServletRequest.setParameter("backURLTitle", backURLTitle);
 
 		mockHttpServletRequest.setParameter(
-			"redirect", "http://localhost:" + PortalUtil.getPortalServerPort(false) + "/redirect");
+			"redirect",
+			"http://localhost:" + PortalUtil.getPortalServerPort(false) +
+				"/redirect");
 
 		JournalArticle journalArticle = JournalTestUtil.addArticle(
 			_group.getGroupId(), DLFolderConstants.DEFAULT_PARENT_FOLDER_ID);

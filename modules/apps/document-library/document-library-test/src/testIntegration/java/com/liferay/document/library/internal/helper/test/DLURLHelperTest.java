@@ -100,7 +100,9 @@ public class DLURLHelperTest {
 			StringPool.BLANK, true, true);
 
 		Assert.assertTrue(
-			downloadURL, downloadURL.startsWith("http://localhost:" + PortalUtil.getPortalServerPort(false)));
+			downloadURL,
+			downloadURL.startsWith(
+				"http://localhost:" + PortalUtil.getPortalServerPort(false)));
 	}
 
 	@Test
@@ -123,7 +125,9 @@ public class DLURLHelperTest {
 			StringPool.BLANK, true, false);
 
 		Assert.assertFalse(
-			downloadURL, downloadURL.startsWith("http://localhost:" + PortalUtil.getPortalServerPort(false)));
+			downloadURL,
+			downloadURL.startsWith(
+				"http://localhost:" + PortalUtil.getPortalServerPort(false)));
 	}
 
 	@Test
@@ -170,7 +174,9 @@ public class DLURLHelperTest {
 			StringPool.BLANK, false, true);
 
 		Assert.assertTrue(
-			downloadURL, downloadURL.startsWith("http://localhost:" + PortalUtil.getPortalServerPort(false)));
+			downloadURL,
+			downloadURL.startsWith(
+				"http://localhost:" + PortalUtil.getPortalServerPort(false)));
 	}
 
 	@Test
@@ -223,7 +229,9 @@ public class DLURLHelperTest {
 			StringPool.BLANK, false, true);
 
 		Assert.assertTrue(
-			previewURL, previewURL.startsWith("http://localhost:" + PortalUtil.getPortalServerPort(false)));
+			previewURL,
+			previewURL.startsWith(
+				"http://localhost:" + PortalUtil.getPortalServerPort(false)));
 	}
 
 	@Test
@@ -246,7 +254,9 @@ public class DLURLHelperTest {
 			StringPool.BLANK, true, false);
 
 		Assert.assertFalse(
-			previewURL, previewURL.startsWith("http://localhost:" + PortalUtil.getPortalServerPort(false)));
+			previewURL,
+			previewURL.startsWith(
+				"http://localhost:" + PortalUtil.getPortalServerPort(false)));
 	}
 
 	@Test
@@ -292,7 +302,9 @@ public class DLURLHelperTest {
 			StringPool.BLANK, false, true);
 
 		Assert.assertTrue(
-			previewURL, previewURL.startsWith("http://localhost:" + PortalUtil.getPortalServerPort(false)));
+			previewURL,
+			previewURL.startsWith(
+				"http://localhost:" + PortalUtil.getPortalServerPort(false)));
 	}
 
 	@Test

@@ -81,7 +81,9 @@ public class SitemapStrutsActionTest {
 			WebKeys.THEME_DISPLAY, themeDisplay);
 
 		mockHttpServletRequest.setParameter(
-			"currentURL", "http://localhost:" + PortalUtil.getPortalServerPort(false) + "/sitemap.xml");
+			"currentURL",
+			"http://localhost:" + PortalUtil.getPortalServerPort(false) +
+				"/sitemap.xml");
 
 		MockHttpServletResponse mockHttpServletResponse =
 			new MockHttpServletResponse();

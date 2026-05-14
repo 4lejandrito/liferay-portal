@@ -68,7 +68,9 @@ public class GetLayoutReportsIssuesStrutsActionTest {
 							ClassUtil.getClassName(
 								_getLayoutReportsIssuesStrutsAction));
 
-					String url = "http://localhost:" + PortalUtil.getPortalServerPort(false) + "/test";
+					String url =
+						"http://localhost:" +
+							PortalUtil.getPortalServerPort(false) + "/test";
 
 					String key = LocaleUtil.getDefault() + "-" + url;
 
@@ -108,7 +110,10 @@ public class GetLayoutReportsIssuesStrutsActionTest {
 						JSONObject jsonObject = _serveResource(
 							LayoutTestUtil.addTypePortletLayout(
 								TestPropsValues.getGroupId()),
-							true, "http://localhost:" + PortalUtil.getPortalServerPort(false) + "/test");
+							true,
+							"http://localhost:" +
+								PortalUtil.getPortalServerPort(false) +
+									"/test");
 
 						JSONObject layoutReportsIssuesJSONObject =
 							jsonObject.getJSONObject("layoutReportsIssues");

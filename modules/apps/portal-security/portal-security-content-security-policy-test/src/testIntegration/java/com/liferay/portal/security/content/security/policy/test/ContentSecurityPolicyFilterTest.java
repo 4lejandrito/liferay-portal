@@ -53,7 +53,8 @@ public class ContentSecurityPolicyFilterTest {
 						false, null, "", false)) {
 
 			HttpURLConnection httpURLConnection = _openHttpURLConnection(
-				"http://localhost:" + PortalUtil.getPortalServerPort(false) + "/html/common/null.html");
+				"http://localhost:" + PortalUtil.getPortalServerPort(false) +
+					"/html/common/null.html");
 
 			Map<String, List<String>> headerFields =
 				httpURLConnection.getHeaderFields();

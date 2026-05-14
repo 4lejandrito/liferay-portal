@@ -504,7 +504,9 @@ public class JournalTransformerTest {
 				WebKeys.THEME_DISPLAY, themeDisplay);
 			mockHttpServletRequest.setMethod(HttpMethods.GET);
 			mockHttpServletRequest.setParameter(
-				"currentURL", "http://localhost:" + PortalUtil.getPortalServerPort(false) + "/currentURL");
+				"currentURL",
+				"http://localhost:" + PortalUtil.getPortalServerPort(false) +
+					"/currentURL");
 
 			themeDisplay.setRequest(mockHttpServletRequest);
 

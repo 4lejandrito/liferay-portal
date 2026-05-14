@@ -122,8 +122,8 @@ public class LoginActionTest {
 				location.contains(
 					StringBundler.concat(
 						"_com_liferay_login_web_portlet_LoginPortlet_redirect=",
-						"http%3A%2F%2F", _company.getVirtualHostname(),
-						"%3A", PortalUtil.getPortalServerPort(false),
+						"http%3A%2F%2F", _company.getVirtualHostname(), "%3A",
+						PortalUtil.getPortalServerPort(false),
 						HtmlUtil.escapeURL(contextPath),
 						"%2Fweb%2Fguest%2Fhome")));
 		}
@@ -173,8 +173,8 @@ public class LoginActionTest {
 				query.contains(
 					StringBundler.concat(
 						"_com_liferay_login_web_portlet_LoginPortlet_redirect=",
-						"http%3A%2F%2F", _company.getVirtualHostname(),
-						"%3A", PortalUtil.getPortalServerPort(false),
+						"http%3A%2F%2F", _company.getVirtualHostname(), "%3A",
+						PortalUtil.getPortalServerPort(false),
 						"%2Fweb%2Fguest%2Fhome")));
 		}
 	}
@@ -235,7 +235,8 @@ public class LoginActionTest {
 
 			URL url = new URL(
 				StringBundler.concat(
-					"http://", _company.getVirtualHostname(), ":", PortalUtil.getPortalServerPort(false), "/web",
+					"http://", _company.getVirtualHostname(), ":",
+					PortalUtil.getPortalServerPort(false), "/web",
 					_group.getFriendlyURL(), layout.getFriendlyURL()));
 
 			HttpURLConnection httpURLConnection =
@@ -269,8 +270,9 @@ public class LoginActionTest {
 
 		URL url = new URL(
 			StringBundler.concat(
-				"http://", _company.getVirtualHostname(),
-				":", PortalUtil.getPortalServerPort(false), "/c/portal/login?p_l_id=", TestPropsValues.getPlid(),
+				"http://", _company.getVirtualHostname(), ":",
+				PortalUtil.getPortalServerPort(false),
+				"/c/portal/login?p_l_id=", TestPropsValues.getPlid(),
 				"&windowState=exclusive"));
 
 		HttpURLConnection httpURLConnection =

@@ -210,7 +210,8 @@ public class SiteVirtualHostTest extends BaseVirtualHostTestCase {
 					body.contains(layout.getName(LocaleUtil.getDefault())));
 			},
 			StringBundler.concat(
-				"http://", virtualHostName, ":", PortalUtil.getPortalServerPort(false), "/web",
+				"http://", virtualHostName, ":",
+				PortalUtil.getPortalServerPort(false), "/web",
 				group.getFriendlyURL()));
 	}
 

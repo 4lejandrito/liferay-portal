@@ -307,7 +307,8 @@ public class SegmentsExperienceSelectorDisplayContextTest {
 		mockHttpServletRequest.addParameter(
 			"segmentsExperienceId", String.valueOf(segmentsExperienceId));
 		mockHttpServletRequest.setAttribute(
-			WebKeys.CURRENT_URL, "http://localhost:" + PortalUtil.getPortalServerPort(false) + "/");
+			WebKeys.CURRENT_URL,
+			"http://localhost:" + PortalUtil.getPortalServerPort(false) + "/");
 		mockHttpServletRequest.setAttribute(
 			WebKeys.THEME_DISPLAY, _getThemeDisplay());
 

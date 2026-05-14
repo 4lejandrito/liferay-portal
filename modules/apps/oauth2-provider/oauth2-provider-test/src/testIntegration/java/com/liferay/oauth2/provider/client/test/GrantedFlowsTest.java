@@ -127,8 +127,10 @@ public class GrantedFlowsTest extends BaseClientTestCase {
 			createOAuth2ApplicationWithNone(
 				companyId, _user, "oauthTestApplicationCodePKCE",
 				Collections.singletonList(GrantType.AUTHORIZATION_CODE_PKCE),
-				Collections.singletonList("http://redirecturi:" + PortalUtil.getPortalServerPort(false)), false,
-				Collections.singletonList("everything"), false);
+				Collections.singletonList(
+					"http://redirecturi:" +
+						PortalUtil.getPortalServerPort(false)),
+				false, Collections.singletonList("everything"), false);
 
 			createOAuth2Application(
 				companyId, _user, "oauthTestApplicationClient",
@@ -138,8 +140,10 @@ public class GrantedFlowsTest extends BaseClientTestCase {
 			createOAuth2ApplicationWithNone(
 				companyId, _user, "oauthTestApplicationNoGrants",
 				Collections.emptyList(),
-				Collections.singletonList("http://redirecturi:" + PortalUtil.getPortalServerPort(false)), false,
-				Collections.singletonList("everything"), false);
+				Collections.singletonList(
+					"http://redirecturi:" +
+						PortalUtil.getPortalServerPort(false)),
+				false, Collections.singletonList("everything"), false);
 
 			createOAuth2Application(
 				companyId, _user, "oauthTestApplicationPassword",
