@@ -245,7 +245,8 @@ public class DepotEntryUserNotificationTest {
 		ServiceContext serviceContext = new ServiceContext();
 
 		serviceContext.setLanguageId("en_US");
-		serviceContext.setPortalURL("http://localhost:8080");
+		serviceContext.setPortalURL(
+			"http://localhost:" + PortalUtil.getPortalServerPort(false));
 
 		ThemeDisplay themeDisplay = _getThemeDisplay();
 
