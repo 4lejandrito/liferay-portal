@@ -114,7 +114,7 @@ public class GetDataMVCResourceCommandTest {
 		mockLiferayResourceRequest.setAttribute(
 			PortletServlet.PORTLET_SERVLET_REQUEST, mockHttpServletRequest);
 
-		String url = "http://localhost:8080";
+		String url = "http://localhost:" + PortalUtil.getPortalServerPort(false);
 
 		mockLiferayResourceRequest.setParameter("backURL", url);
 
