@@ -341,7 +341,7 @@ public class DDMFormInstanceRecordLocalServiceTest
 			JavaConstants.JAKARTA_PORTLET_RESPONSE,
 			new MockLiferayPortletRenderResponse());
 		httpServletRequest.setAttribute(
-			WebKeys.CURRENT_URL, "http://localhost:8080/currentURL");
+			WebKeys.CURRENT_URL, "http://localhost:" + PortalUtil.getPortalServerPort(false) + "/currentURL");
 
 		ThemeDisplay themeDisplay = new ThemeDisplay();
 
