@@ -26,6 +26,7 @@ import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalServiceUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.HashMapDictionary;
@@ -279,16 +280,19 @@ public abstract class BaseTestPreparatorBundleActivator
 
 		autoCloseables.add(() -> bundleContext.ungetService(serviceReference));
 
+		String portalURL =
+			"http://localhost:" + PortalUtil.getPortalServerPort(false);
+
 		OAuth2Application oAuth2Application =
 			oAuth2ApplicationLocalService.addOAuth2Application(
 				companyId, user.getUserId(), user.getFullName(),
 				allowedGrantTypesList, clientAuthenticationMethod,
 				user.getUserId(), clientId, 0, clientSecret,
 				"test oauth application",
-				Collections.singletonList("token.introspection"),
-				"http://localhost:8080", 0, jwks, "test application",
-				"http://localhost:8080", redirectURIsList, rememberDevice,
-				scopeAliasesList, trustedApplication, new ServiceContext());
+				Collections.singletonList("token.introspection"), portalURL, 0,
+				jwks, "test application", portalURL, redirectURIsList,
+				rememberDevice, scopeAliasesList, trustedApplication,
+				new ServiceContext());
 
 		autoCloseables.add(
 			() -> {
