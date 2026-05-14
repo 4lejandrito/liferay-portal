@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.test.AssertUtils;
 import com.liferay.portal.kernel.test.rule.DataGuard;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.test.rule.Inject;
 
 import org.junit.Test;
@@ -39,7 +40,8 @@ public class FormStructureResourceTest
 		FormStructureResource formStructureResource =
 			FormStructureResource.builder(
 			).endpoint(
-				testCompany.getVirtualHostname(), 8080, "http"
+				testCompany.getVirtualHostname(),
+				PortalUtil.getPortalServerPort(false), "http"
 			).build();
 
 		AssertUtils.assertFailure(
