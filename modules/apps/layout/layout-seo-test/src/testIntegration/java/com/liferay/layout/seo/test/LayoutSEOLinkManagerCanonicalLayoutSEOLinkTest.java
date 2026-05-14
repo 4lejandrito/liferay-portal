@@ -418,7 +418,8 @@ public class LayoutSEOLinkManagerCanonicalLayoutSEOLinkTest {
 		"com.liferay.layout.seo.internal.configuration." +
 			"LayoutSEOCompanyConfiguration";
 
-	private static final int _SERVER_PORT = 8080;
+	private static final int _SERVER_PORT = PortalUtil.getPortalServerPort(
+		false);
 
 	private static final String _VIRTUAL_HOSTNAME = "test.com";
 
