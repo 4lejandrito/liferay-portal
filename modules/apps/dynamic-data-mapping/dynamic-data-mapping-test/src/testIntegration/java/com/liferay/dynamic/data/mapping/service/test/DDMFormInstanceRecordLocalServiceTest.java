@@ -161,8 +161,9 @@ public class DDMFormInstanceRecordLocalServiceTest
 			ddmFormInstance.getName(), workflowContext.get("entryTitleXML"));
 		Assert.assertEquals(
 			StringBundler.concat(
-				"http://localhost:8080/path-friendly-url-public/forms/shared/-",
-				"/form/", ddmFormInstance.getFormInstanceId(), "?_",
+				"http://localhost:", PortalUtil.getPortalServerPort(false),
+				"/path-friendly-url-public/forms/shared/-/form/",
+				ddmFormInstance.getFormInstanceId(), "?_",
 				DDMPortletKeys.DYNAMIC_DATA_MAPPING_FORM,
 				"_formInstanceRecordId=",
 				ddmFormInstanceRecord.getFormInstanceRecordId()),
