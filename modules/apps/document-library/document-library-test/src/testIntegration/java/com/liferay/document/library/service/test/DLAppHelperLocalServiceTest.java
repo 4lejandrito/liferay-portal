@@ -18,6 +18,7 @@ import com.liferay.document.library.kernel.service.DLAppLocalService;
 import com.liferay.document.library.kernel.service.DLFileEntryTypeLocalServiceUtil;
 import com.liferay.document.library.kernel.service.DLFileVersionLocalService;
 import com.liferay.layout.page.template.test.util.DisplayPageTemplateTestUtil;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portal.kernel.service.CompanyLocalService;
@@ -222,7 +223,9 @@ public class DLAppHelperLocalServiceTest {
 		_addFileEntry(fileEntryContent, null, "test.txt", serviceContext);
 
 		Assert.assertEquals(
-			"http://localhost:8080/web/guest/d/test-txt",
+			StringBundler.concat(
+				"http://localhost:", PortalUtil.getPortalServerPort(false),
+				"/web/guest/d/test-txt"),
 			serviceContext.getAttribute("friendlyURL"));
 	}
 
