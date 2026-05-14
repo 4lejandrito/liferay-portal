@@ -425,3 +425,78 @@ Update the call sites at the same time.
 -_removeStaleFoos(deletedIdsMap);
 +_deleteStaleFoos(deletedIdsMap);
 ```
+
+### Rule 20: Replace Hardcoded Port 8080 With Dynamic Port Lookup
+
+**Why:** Tests that hardcode `8080` break in environments where the portal runs on a different HTTP port; `PortalUtil.getPortalServerPort(false)` reads the actual bound port so the same test passes regardless of bundle configuration.
+
+**Examples:**
+
+In REST client `endpoint(...)` builder calls, replace the literal port argument.
+
+```diff
++import com.liferay.portal.kernel.util.PortalUtil;
+ ...
+ _fooResource = FooResource.builder(
+ ).endpoint(
+-	company.getVirtualHostname(), 8080, "http"
++	company.getVirtualHostname(), PortalUtil.getPortalServerPort(false),
++	"http"
+ ).build();
+```
+
+In URL literals passed to `StringBundler.concat(...)`, split the literal at the port so the dynamic value becomes its own token.
+
+```diff
+ String url = StringBundler.concat(
+-	"http://localhost:8080/o/some-path?key=",
+-	value);
++	"http://localhost:", PortalUtil.getPortalServerPort(false),
++	"/o/some-path?key=", value);
+```
+
+In URL literals concatenated with `+`, split at the port the same way.
+
+```diff
+ String url =
+-	"http://localhost:8080/o/some-path/" + id;
++	"http://localhost:" + PortalUtil.getPortalServerPort(false) +
++		"/o/some-path/" + id;
+```
+
+When the split form would produce three or more concatenation operands, prefer `StringBundler.concat(...)` instead of a long `+` chain.
+
+```diff
+ String url =
+-	"http://localhost:8080/o/some-path/" +
+-		"/sub-path/" + id;
++	StringBundler.concat(
++		"http://localhost:", PortalUtil.getPortalServerPort(false),
++		"/o/some-path/sub-path/", id);
+```
+
+In `String.format(...)` calls whose format string embeds the URL, split the format string at the port.
+
+```diff
+ String url = String.format(
+-	"http://localhost:8080/o/some-path?key=%s", value);
++	"http://localhost:" + PortalUtil.getPortalServerPort(false) +
++		"/o/some-path?key=%s",
++	value);
+```
+
+When the same URL prefix appears more than once in a method, extract a local once and reuse it.
+
+```diff
++String portalURL =
++	"http://localhost:" + PortalUtil.getPortalServerPort(false);
++
+ foo.setRedirectURL(
+-	"http://localhost:8080");
++	portalURL);
+ foo.setAllowedRedirectURLs(
+-	List.of("http://localhost:8080"));
++	List.of(portalURL));
+```
+
+Skip generated curl-example Javadoc that contains `:8080` (emitted by rest-builder and refreshed on regeneration).
