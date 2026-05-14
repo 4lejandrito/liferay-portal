@@ -535,7 +535,7 @@ public abstract class BaseLicenseTestCase implements Serializable {
 		int localPort = PortalUtil.getPortalLocalPort(false);
 
 		if (localPort == -1) {
-			localPort = 8080;
+			localPort = PortalUtil.getPortalServerPort(false);
 		}
 
 		return localPort;
