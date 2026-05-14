@@ -1326,11 +1326,11 @@ public class OpenGraphTopHeadDynamicIncludeTest {
 			mockHttpServletResponse.getContentAsString());
 
 		_assertMetaTag(
-			document, "property", "og:image", "http://localhost:8080/imageURL");
+			document, "property", "og:image", StringBundler.concat("http://localhost:", PortalUtil.getPortalServerPort(false), "/imageURL"));
 		_assertMetaTag(document, "property", "og:image:alt", "mappedImageAlt");
 		_assertMetaTag(
 			document, "property", "og:image:url",
-			"http://localhost:8080/imageURL");
+			StringBundler.concat("http://localhost:", PortalUtil.getPortalServerPort(false), "/imageURL"));
 	}
 
 	@Test
@@ -1364,11 +1364,11 @@ public class OpenGraphTopHeadDynamicIncludeTest {
 
 		_assertMetaTag(
 			document, "property", "og:image",
-			"http://localhost:8080/imageFileURL");
+			StringBundler.concat("http://localhost:", PortalUtil.getPortalServerPort(false), "/imageFileURL"));
 		_assertMetaTag(document, "property", "og:image:alt", "mappedImageAlt");
 		_assertMetaTag(
 			document, "property", "og:image:url",
-			"http://localhost:8080/imageFileURL");
+			StringBundler.concat("http://localhost:", PortalUtil.getPortalServerPort(false), "/imageFileURL"));
 	}
 
 	@Test
