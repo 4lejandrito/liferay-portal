@@ -158,7 +158,7 @@ public class PortletURLImplTest {
 		liferayPortletURL.setCopyCurrentRenderParameters(true);
 
 		String expectedToString = StringBundler.concat(
-			"http://localhost:8080/web", _group.getFriendlyURL(),
+			"http://localhost:", PortalUtil.getPortalServerPort(false), "/web", _group.getFriendlyURL(),
 			layout.getFriendlyURL(), "?p_p_id=", PortletKeys.LOGIN,
 			"&p_p_lifecycle=0&_", PortletKeys.LOGIN, "_name=value1&_",
 			PortletKeys.LOGIN, "_name=value2");
