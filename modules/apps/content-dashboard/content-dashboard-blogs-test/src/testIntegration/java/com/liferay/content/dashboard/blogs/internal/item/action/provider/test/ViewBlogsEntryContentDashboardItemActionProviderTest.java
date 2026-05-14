@@ -114,10 +114,11 @@ public class ViewBlogsEntryContentDashboardItemActionProviderTest {
 		Assert.assertTrue(
 			url.contains(StringUtil.toLowerCase(blogsEntry.getTitle())));
 
-		Assert.assertTrue(
-			url.contains(
-				"p_l_back_url=" +
-					HtmlUtil.escapeURL("http://localhost:8080/currentURL")));
+		String escapedURL = HtmlUtil.escapeURL(
+			"http://localhost:" + PortalUtil.getPortalServerPort(false) +
+				"/currentURL");
+
+		Assert.assertTrue(url.contains("p_l_back_url=" + escapedURL));
 	}
 
 	@Test
