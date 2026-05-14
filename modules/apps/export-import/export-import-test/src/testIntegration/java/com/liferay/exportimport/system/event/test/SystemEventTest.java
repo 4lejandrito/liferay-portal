@@ -108,7 +108,7 @@ public class SystemEventTest {
 			// Fall back to default port
 
 			if (_serverPort <= 0) {
-				_serverPort = 8080;
+				_serverPort = _portal.getPortalServerPort(false);
 			}
 
 			StagingLocalServiceUtil.enableRemoteStaging(
