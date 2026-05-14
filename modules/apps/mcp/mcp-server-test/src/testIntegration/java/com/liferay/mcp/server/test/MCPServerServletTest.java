@@ -14,6 +14,7 @@ import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
 import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectEntryLocalService;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.test.util.ConfigurationTestUtil;
 import com.liferay.portal.kernel.json.JSONArray;
@@ -254,7 +255,10 @@ public class MCPServerServletTest {
 		Http.Options options = new Http.Options();
 
 		options.addHeader("Authorization", _getAuthorization());
-		options.setLocation("http://localhost:8080/o/mcp");
+		options.setLocation(
+			StringBundler.concat(
+				"http://localhost:", PortalUtil.getPortalServerPort(false),
+				"/o/mcp"));
 
 		_http.URLtoString(options);
 
@@ -291,7 +295,10 @@ public class MCPServerServletTest {
 				)
 			).toString(),
 			ContentTypes.APPLICATION_JSON, StringPool.UTF8);
-		options.setLocation("http://localhost:8080/o/mcp");
+		options.setLocation(
+			StringBundler.concat(
+				"http://localhost:", PortalUtil.getPortalServerPort(false),
+				"/o/mcp"));
 		options.setPost(true);
 
 		_http.URLtoString(options);
