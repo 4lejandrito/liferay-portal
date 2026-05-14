@@ -1300,7 +1300,10 @@ public class SitemapManagerTest {
 			_company, group, layout);
 
 		_themeDisplay.setPortalDomain(serverName);
-		_themeDisplay.setPortalURL("http://" + serverName + ":8080");
+		_themeDisplay.setPortalURL(
+			StringBundler.concat(
+				"http://", serverName, ":",
+				PortalUtil.getPortalServerPort(false)));
 
 		MockHttpServletRequest mockHttpServletRequest =
 			new MockHttpServletRequest();
