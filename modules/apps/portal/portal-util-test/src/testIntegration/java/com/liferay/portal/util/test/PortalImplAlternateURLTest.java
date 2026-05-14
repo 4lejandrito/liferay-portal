@@ -237,7 +237,8 @@ public class PortalImplAlternateURLTest {
 		portletPreferences.store();
 
 		String canonicalURL = StringBundler.concat(
-			"http://", defaultVirtualHostname, ":8080",
+			"http://", defaultVirtualHostname, ":",
+			PortalUtil.getPortalServerPort(false),
 			PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
 			_group.getFriendlyURL(), layout.getFriendlyURL());
 
@@ -246,21 +247,24 @@ public class PortalImplAlternateURLTest {
 
 		Assert.assertEquals(
 			StringBundler.concat(
-				"http://", defaultVirtualHostname, ":8080/fr",
+				"http://", defaultVirtualHostname, ":",
+				PortalUtil.getPortalServerPort(false), "/fr",
 				PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
 				_group.getFriendlyURL(),
 				layout.getFriendlyURL(LocaleUtil.FRANCE)),
 			alternateURLs.get(LocaleUtil.FRANCE));
 		Assert.assertEquals(
 			StringBundler.concat(
-				"http://", germanVirtualHostname, ":8080/de",
+				"http://", germanVirtualHostname, ":",
+				PortalUtil.getPortalServerPort(false), "/de",
 				PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
 				_group.getFriendlyURL(),
 				layout.getFriendlyURL(LocaleUtil.GERMANY)),
 			alternateURLs.get(LocaleUtil.GERMANY));
 		Assert.assertEquals(
 			StringBundler.concat(
-				"http://", spanishVirtualHostname, ":8080/es",
+				"http://", spanishVirtualHostname, ":",
+				PortalUtil.getPortalServerPort(false), "/es",
 				PropsValues.LAYOUT_FRIENDLY_URL_PUBLIC_SERVLET_MAPPING,
 				_group.getFriendlyURL(),
 				layout.getFriendlyURL(LocaleUtil.SPAIN)),
@@ -522,7 +526,8 @@ public class PortalImplAlternateURLTest {
 		}
 
 		return StringBundler.concat(
-			"http://", virtualHostnames.firstKey(), ":8080",
+			"http://", virtualHostnames.firstKey(), ":",
+			PortalUtil.getPortalServerPort(false),
 			_getI18nPath(defaultLocale, locale, portletPreferences),
 			friendlyURL);
 	}
