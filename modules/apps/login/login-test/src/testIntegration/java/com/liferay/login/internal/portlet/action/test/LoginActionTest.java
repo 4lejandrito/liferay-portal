@@ -123,7 +123,8 @@ public class LoginActionTest {
 					StringBundler.concat(
 						"_com_liferay_login_web_portlet_LoginPortlet_redirect=",
 						"http%3A%2F%2F", _company.getVirtualHostname(),
-						"%3A8080", HtmlUtil.escapeURL(contextPath),
+						"%3A", PortalUtil.getPortalServerPort(false),
+						HtmlUtil.escapeURL(contextPath),
 						"%2Fweb%2Fguest%2Fhome")));
 		}
 	}
@@ -173,7 +174,8 @@ public class LoginActionTest {
 					StringBundler.concat(
 						"_com_liferay_login_web_portlet_LoginPortlet_redirect=",
 						"http%3A%2F%2F", _company.getVirtualHostname(),
-						"%3A8080%2Fweb%2Fguest%2Fhome")));
+						"%3A", PortalUtil.getPortalServerPort(false),
+						"%2Fweb%2Fguest%2Fhome")));
 		}
 	}
 
