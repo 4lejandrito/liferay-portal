@@ -18,6 +18,7 @@ import com.liferay.layout.display.page.LayoutDisplayPageProvider;
 import com.liferay.layout.page.template.model.LayoutPageTemplateEntry;
 import com.liferay.layout.page.template.service.LayoutPageTemplateEntryLocalService;
 import com.liferay.layout.page.template.test.util.DisplayPageTemplateTestUtil;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -32,6 +33,7 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -116,7 +118,10 @@ public class ViewJournalArticleContentDashboardItemActionProviderTest {
 
 			themeDisplay.setRequest(mockHttpServletRequest);
 
-			themeDisplay.setURLCurrent("http://localhost:8080/currentURL");
+			themeDisplay.setURLCurrent(
+				StringBundler.concat(
+					"http://localhost:", PortalUtil.getPortalServerPort(false),
+					"/currentURL"));
 
 			serviceContext.setRequest(mockHttpServletRequest);
 
@@ -297,7 +302,10 @@ public class ViewJournalArticleContentDashboardItemActionProviderTest {
 
 			themeDisplay.setRequest(mockHttpServletRequest);
 
-			themeDisplay.setURLCurrent("http://localhost:8080/currentURL");
+			themeDisplay.setURLCurrent(
+				StringBundler.concat(
+					"http://localhost:", PortalUtil.getPortalServerPort(false),
+					"/currentURL"));
 
 			serviceContext.setRequest(mockHttpServletRequest);
 
