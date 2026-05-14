@@ -1000,3 +1000,275 @@ The same applies when renaming a method or its parameter to match the vocabulary
 ```
 
 When you rename a local, propagate the new name to every call site, every parameter that passes it on, and every private helper that receives it.
+### Rule 48: Consolidate Test Cases via Private Helpers
+
+**Why:** A single `@Test` per scenario fragments the JUnit surface and duplicates fixture setup. Consolidating related cases into one `@Test` matches Liferay convention; when the consolidated body is too long to scan inline, extract each case into a private `_test<MethodName><Scenario>` helper that the single `@Test` driver calls in sequence. The driver method stays under one `@Test` annotation, and each helper reads as a self-contained scenario.
+
+**Examples:**
+
+The simple case — short inline scenarios stay inline.
+
+```diff
+ @Test
+ public void testGetFoo() {
+     Assert.assertEquals(1, FooUtil.getFoo(_buildBar(1)));
+     Assert.assertEquals(2, FooUtil.getFoo(_buildBar(2)));
+     Assert.assertEquals(0, FooUtil.getFoo(null));
+ }
+```
+
+When each scenario needs multi-line setup or distinct fixtures, extract helpers.
+
+```diff
+-@Test
+-public void testGetFooBelowLimit() { ... long body ... }
+-
+-@Test
+-public void testGetFooAtLimit() { ... long body ... }
+-
+-@Test
+-public void testGetFooKeepsNewest() { ... long body ... }
++@Test
++public void testGetFoo() {
++    _testGetFooBelowLimit();
++    _testGetFooAtLimit();
++    _testGetFooKeepsNewest();
++}
++
++private void _testGetFooBelowLimit() { ... long body ... }
++
++private void _testGetFooAtLimit() { ... long body ... }
++
++private void _testGetFooKeepsNewest() { ... long body ... }
+```
+
+The helper name mirrors the original `@Test` name with a leading underscore.
+
+**Trade-off:** consolidation collapses failure reporting too — if helper A fails, helpers B and C never run, and the runner reports the umbrella method name rather than the specific scenario. Apply when the scenarios are tightly related and per-scenario reporting is not required; keep separate `@Test` methods when each scenario benefits from running and reporting independently (regression catalog, flake triage, parallelization).
+
+### Rule 49: Use `RandomTestUtil` for Test Data Values
+
+**Why:** When a test only cares that a value exists — not its exact contents — randomizing the value prevents accidental coupling to specific literals (a test passing only because `"Fragment Collection"` happens to appear in setup data elsewhere), surfaces test-isolation bugs earlier (different seeds shake loose hidden dependencies), and matches existing Liferay convention. Keep the literal when the assertion depends on its specific value: class name strings (`"com.liferay.journal.model.JournalArticle"`), attribute keys (`"data-analytics-asset-id"`), enum-like constants (`"basic-web-content"`), action labels (`"impression"`), case-sensitive or format-sensitive code paths, and locale comparisons that need to differ.
+
+For small ID values in unit-test mocks, hardcoded numbers add noise without value, but `RandomTestUtil.randomLong()` is still cheap and preferable.
+
+**Examples:**
+
+```diff
+ _fragmentCollectionLocalService.addFragmentCollection(
+-	"ERC-12345", TestPropsValues.getUserId(),
+-	_group.getGroupId(), "Fragment Collection", null,
++	RandomTestUtil.randomString(), TestPropsValues.getUserId(),
++	_group.getGroupId(), RandomTestUtil.randomString(), null,
+ 	ServiceContextTestUtil.getServiceContext(_group.getGroupId()));
+```
+
+```diff
+-themeDisplay.setDoAsUserId("abcdef1234567890");
+-themeDisplay.setScopeGroupId(20126L);
++themeDisplay.setDoAsUserId(RandomTestUtil.randomString());
++themeDisplay.setScopeGroupId(RandomTestUtil.randomLong());
+```
+
+### Rule 50: Use `StringPool` Constants for Common Single-Char Literals
+
+**Why:** Liferay source uses `com.liferay.petra.string.StringPool` for common single-char and short-string literals. Source formatter rewrites these automatically, so writing the literal directly is churn against the formatter.
+
+Frequently hit constants:
+
+| Literal | Use |
+| --- | --- |
+| `""` | `StringPool.BLANK` |
+| `" "` | `StringPool.SPACE` |
+| `"."` | `StringPool.PERIOD` |
+| `","` | `StringPool.COMMA` |
+| `":"` | `StringPool.COLON` |
+| `";"` | `StringPool.SEMICOLON` |
+| `"/"` | `StringPool.SLASH` |
+| `"_"` | `StringPool.UNDERLINE` |
+| `"-"` | `StringPool.DASH` |
+| `"="` | `StringPool.EQUAL` |
+| `"\""` | `StringPool.QUOTE` |
+| `"'"` | `StringPool.APOSTROPHE` |
+| `"@"` | `StringPool.AT` |
+
+Leave the literal alone in OSGi annotation arrays such as `@Component(property = …)` (Liferay convention uses literals there so the source-formatter can scan them; this is a convention, not a compiler requirement — `static final String` constants would otherwise satisfy JLS §15.28), inside multi-character strings (`"hello world"` is not decomposed), and in string concatenations where the surrounding text is a semantic label rather than a delimiter.
+
+**Examples:**
+
+```diff
+-Assert.assertEquals("", someCall());
++Assert.assertEquals(StringPool.BLANK, someCall());
+```
+
+```diff
+-sb.append(" ");
+-sb.append(".");
++sb.append(StringPool.SPACE);
++sb.append(StringPool.PERIOD);
+```
+
+### Rule 51: Extract a Nested Multi-Call Expression Into a Named Local Before Passing It as an Argument
+
+**Why:** When a method or constructor argument is itself a multi-call nested expression (`X.call(Y.call(Z.call(...)))`), pull the inner expression out into a named local and pass the local instead. Cascading an unnamed nested expression inline forces the reader to parse it twice — once to find the seams, once to understand the outer call — and buries what the value is under the machinery of how it was obtained.
+
+Apply when any of these hold: the expression is two or more method calls deep; the outer call already has three or more arguments; the local name captures a concept the raw expression does not (`viewMode`, `errorMessages`, `fragmentCollection`). If none hold, **Rule 12** wins — inline the trivial call.
+
+**Examples:**
+
+```diff
++String viewMode = ParamUtil.getString(
++	PortalUtil.getOriginalServletRequest(request), "p_l_mode",
++	Constants.VIEW);
++
+ AssetAnalyticsAttributesProvider assetAnalyticsAttributesProvider =
+ 	new AssetAnalyticsAttributesProvider(
+-		assetEntry, assetRenderer, locale,
+-		ParamUtil.getString(
+-			PortalUtil.getOriginalServletRequest(request), "p_l_mode",
+-			Constants.VIEW));
++		assetEntry, assetRenderer, locale, viewMode);
+```
+
+The outer call now reads as "construct a Provider from (entry, renderer, locale, viewMode)" — four named pieces.
+
+**Counter-example — Rule 12 wins, not Rule 23:** when the expression is one trivial call and the local name would just re-state what the call already says, inline rather than extract.
+
+```java
+Group group = GroupLocalServiceUtil.fetchGroup(assetEntry.getGroupId());
+```
+
+No need to introduce `long groupId = assetEntry.getGroupId();` first — `getGroupId()` already names the value.
+
+### Rule 52: No Blank Line Between Same-Kind Declarations
+
+**Why:** Within a declaration cluster at the top of a method (for example, two `FragmentCollection fragmentCollectionN = ...` lines), no blank line goes between them. The cluster reads as a single homogeneous preamble; a blank line falsely signals a topic change. Elsewhere **Rule 14** ("Declare Locals Next to First Use") takes precedence — this rule applies specifically to homogeneous preambles.
+
+**Examples:**
+
+```diff
+ FragmentCollection fragmentCollection1 = ...;
+-
+ FragmentCollection fragmentCollection2 = ...;
+```
+
+### Rule 53: Avoid Chaining When Not Building
+
+**Why:** A builder or fluent chain is appropriate when the chain is actually building something. For a plain getter whose result is then asserted against or used in an expression, extract the getter into a local with a meaningful name — do not chain `.getX().length > 0` inside an assert. The local makes the value's role explicit and lets the assertion line read as one comparison rather than as a two-step navigation plus comparison. The same applies to cascading getter chains (`a.getB().getC()`): assign the meaningful endpoint to a named local before using it.
+
+This rule complements **Rule 1** (which orders calls inside a legitimate builder chain) and **Rule 51** (which extracts nested expressions used as arguments). Rule 53 governs whether to chain at all when the chain is not a build.
+
+**Examples:**
+
+```diff
+-Assert.assertTrue(validationResponse.getErrorMessages().length > 0);
++String[] errorMessages = validationResponse.getErrorMessages();
++
++Assert.assertTrue(errorMessages.length > 0);
+```
+
+```diff
+-if (entry.getCategory().getName().startsWith("draft-")) {
++Category category = entry.getCategory();
++
++if (category.getName().startsWith("draft-")) {
+```
+
+### Rule 54: No Assertion Messages Unless Source Formatter Requires One
+
+**Why:** Default form is `Assert.assertEquals(expected, actual)` with no leading message argument. JUnit already reports the expected and actual values plus the line number, so an ad-hoc description adds noise and drifts as the test evolves. Descriptive sub-case labels belong in the test method name (or a `_test*` helper per **Rule 48**), not in an assert argument.
+
+This rule supersedes the narrower **Rule 13** for general practice: Rule 13 explicitly drops verbose narrative messages on `assertTrue` / `assertFalse`; Rule 54 says do not add a message of any length to any `Assert.*` call unless the source formatter asks for one.
+
+**When the source formatter does ask:** an `Assert.assertEquals(actual.toString(), expected, actual.size())` form (and similar) is required when the `actual` side is a scalar derived from a collection or map (`.size()`, `.isEmpty()` via size comparisons, etc.) — the leading message exists so the failure prints the collection contents. Add the message only when the check flags it.
+
+**Examples:**
+
+```diff
+-Assert.assertEquals("content field -> view action", ACTION_VIEW, ...);
+-Assert.assertEquals(
+-	"type is full class name for non-ObjectDefinition",
+-	_CLASS_NAME_JOURNAL_ARTICLE, ...);
++Assert.assertEquals(ACTION_VIEW, ...);
++Assert.assertEquals(_CLASS_NAME_JOURNAL_ARTICLE, ...);
+```
+
+```diff
+-Assert.assertTrue(
+-	"Form action should contain doAsUserId: " + formAction,
+-	formAction.contains("doAsUserId="));
++Assert.assertTrue(formAction.contains("doAsUserId="));
+```
+
+### Rule 55: Keep Persistence Mutations Out of Model Classes
+
+**Why:** A `*Impl` class under `model/impl` is the entity, not a service. Modifying the database from a model — calling `delete*`, `update*`, `add*` on a `LocalService`, or otherwise persisting state — couples data shape to business logic, makes transactions implicit, and bypasses the service tier where permission checks, indexing, and side effects belong. Database modifications must happen in `*LocalServiceImpl` or `*ServiceImpl` instead. The model exposes the data; the service mutates it.
+
+A model method may *read* derived state (computed properties, lookups via `LocalServiceUtil` getters) when needed, but write paths belong on the service.
+
+**Examples:**
+
+```diff
+ // model/impl/ObjectImpl.java
+
+-public void deleteOrphanedRelations() {
+-	List<Relation> relations = getRelations();
+-
+-	if (relations.isEmpty()) {
+-		return;
+-	}
+-
+-	RelationLocalServiceUtil.deleteRelations(relations);
+-}
+```
+
+```diff
+ // service/impl/ObjectLocalServiceImpl.java
+
++public void deleteOrphanedRelations(Object object) throws PortalException {
++	List<Relation> relations = object.getRelations();
++
++	if (relations.isEmpty()) {
++		return;
++	}
++
++	_relationLocalService.deleteRelations(relations);
++}
+```
+
+The caller now goes through `ObjectLocalServiceUtil.deleteOrphanedRelations(object)` instead of `object.deleteOrphanedRelations()`. Permission checks, transaction boundaries, and indexer notifications can be wired in alongside the delete; none of that is reachable from a method on the entity.
+
+### Rule 56: Declare the Return Variable First in `_get*` / `_create*` / `_fetch*` / `_generate*` Helpers
+
+**Why:** `ReturnVariableDeclarationAsUsedCheck` enforces that in a private helper whose name matches `_?(create|fetch|generate|get)[A-Z].*`, the return variable must be the **first statement** in the method body when its initializer is `new Type()` with no constructor arguments. The object needs no context to construct, so declaring it first tells the reader immediately what is being built; the lines that follow configure it. This is a **specific exception to Rule 14** ("Declare Locals Next to First Use") — the formatter treats it as a violation if the no-arg return variable is buried below setup code.
+
+**Examples:**
+
+```diff
+ private Foo _getFoo(String name) {
++    Foo foo = new Foo();
++
+     Bar bar = Mockito.mock(Bar.class);
+
+     Mockito.when(
+         bar.getName()
+     ).thenReturn(
+         name
+     );
+
+-    Foo foo = new Foo();
+-
+     foo.setBar(bar);
+
+     return foo;
+ }
+```
+
+**Scope:** only fires when all of these hold:
+
+1. Method name matches `_?(create|fetch|generate|get)[A-Z].*`
+1. Return variable name case-insensitively matches the suffix after the verb (e.g. `_getFoo` → `foo`)
+1. Initializer is `new Type()` — no constructor arguments
+1. No other method calls appear before the declaration in the same scope
+
+If the constructor takes arguments (e.g. `new Foo(name)`) or the method contains preceding calls that block the move, the check does not fire — Rule 14 applies as normal.
