@@ -56,7 +56,11 @@ public class UpdateEmailAddressActionTest {
 
 	@Test
 	public void testRenderRefererURL() throws Exception {
-		_testRenderRefererURL("http://localhost:8080", "http://localhost:8080");
+		String portalURL =
+			"http://localhost:" + PortalUtil.getPortalServerPort(false);
+
+		_testRenderRefererURL(portalURL, portalURL);
+
 		_testRenderRefererURL(
 			StringPool.BLANK,
 			"http://" + RandomTestUtil.randomString() + ".com");
@@ -80,7 +84,8 @@ public class UpdateEmailAddressActionTest {
 			};
 
 		mockHttpServletRequest.setAttribute(
-			WebKeys.CURRENT_URL, "http://localhost:8080");
+			WebKeys.CURRENT_URL,
+			"http://localhost:" + PortalUtil.getPortalServerPort(false));
 
 		ThemeDisplay themeDisplay = new ThemeDisplay();
 
