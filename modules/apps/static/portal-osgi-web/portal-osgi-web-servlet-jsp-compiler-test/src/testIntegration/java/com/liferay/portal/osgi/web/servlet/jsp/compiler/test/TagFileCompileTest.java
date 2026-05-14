@@ -93,7 +93,7 @@ public class TagFileCompileTest {
 
 			URL url = new URL(
 				StringBundler.concat(
-					"http://localhost:8080/web",
+					"http://localhost:", PortalUtil.getPortalServerPort(false), "/web",
 					testGroupAutoCloseable._group.getFriendlyURL(), "?p_p_id=",
 					JspPrecompilePortlet.PORTLET_NAME, StringPool.AMPERSAND,
 					JspPrecompilePortlet.getJspFileNameParameterName(), "=/",
