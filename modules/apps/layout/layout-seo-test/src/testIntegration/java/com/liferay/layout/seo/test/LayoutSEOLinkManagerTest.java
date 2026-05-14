@@ -626,7 +626,8 @@ public class LayoutSEOLinkManagerTest {
 		"com.liferay.layout.seo.internal.configuration." +
 			"LayoutSEOCompanyConfiguration";
 
-	private static final String _PORTAL_URL = "http://localhost:8080";
+	private static final String _PORTAL_URL =
+		"http://localhost:" + PortalUtil.getPortalServerPort(false);
 
 	@Inject
 	private AssetDisplayPageEntryLocalService
