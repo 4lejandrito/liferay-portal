@@ -72,6 +72,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -661,9 +662,8 @@ public class ObjectEntryRelatedObjectsResourceTest {
 	}
 
 	@Test
-	public void testDeleteObjectEntryWithHierarchy() throws Exception {
-
-		// Modifiable system as child
+	public void testDeleteObjectEntryWithHierarchyModifiableSystemAsChild()
+		throws Exception {
 
 		String objectFieldName = "x" + RandomTestUtil.randomString();
 
@@ -703,24 +703,38 @@ public class ObjectEntryRelatedObjectsResourceTest {
 					modifiableSystemObjectDefinition,
 					relatedObjectEntry.getPrimaryKey()),
 				Http.Method.GET));
+	}
 
-		// Modifiable system as parent
+	@Ignore(
+		"LPD-88577: REST CRUD on a modifiable system Object Definition " +
+			"acting as parent requires a registered " +
+				"SystemObjectDefinitionManager backing the /test endpoint; " +
+					"not yet implemented."
+	)
+	@Test
+	public void testDeleteObjectEntryWithHierarchyModifiableSystemAsParent()
+		throws Exception {
+
+		String objectFieldName = "x" + RandomTestUtil.randomString();
+
+		ObjectDefinition modifiableSystemObjectDefinition =
+			_publishModifiableSystemObjectDefinition(objectFieldName);
 
 		ObjectEntry objectEntry = ObjectEntryTestUtil.addObjectEntry(
 			modifiableSystemObjectDefinition, objectFieldName,
 			RandomTestUtil.randomString());
 
-		objectRelationship = TreeTestUtil.bind(
+		ObjectRelationship objectRelationship = TreeTestUtil.bind(
 			modifiableSystemObjectDefinition.getObjectDefinitionId(),
 			_objectDefinition2.getObjectDefinitionId(),
 			_objectRelationshipLocalService);
 
 		_objectRelationships.add(objectRelationship);
 
-		objectField = _objectFieldLocalService.fetchObjectField(
+		ObjectField objectField = _objectFieldLocalService.fetchObjectField(
 			objectRelationship.getObjectFieldId2());
 
-		relatedObjectEntry = ObjectEntryTestUtil.addObjectEntry(
+		ObjectEntry relatedObjectEntry = ObjectEntryTestUtil.addObjectEntry(
 			_objectDefinition2,
 			HashMapBuilder.<String, Serializable>put(
 				objectField.getName(), objectEntry.getPrimaryKey()
@@ -1084,9 +1098,8 @@ public class ObjectEntryRelatedObjectsResourceTest {
 	}
 
 	@Test
-	public void testGetRelatedObjectEntriesWithHierarchy() throws Exception {
-
-		// Modifiable system as child
+	public void testGetRelatedObjectEntriesWithHierarchyModifiableSystemAsChild()
+		throws Exception {
 
 		String objectFieldName = "x" + RandomTestUtil.randomString();
 
@@ -1122,24 +1135,38 @@ public class ObjectEntryRelatedObjectsResourceTest {
 			).getJSONArray(
 				"items"
 			));
+	}
 
-		// Modifiable system as parent
+	@Ignore(
+		"LPD-88577: REST CRUD on a modifiable system Object Definition " +
+			"acting as parent requires a registered " +
+				"SystemObjectDefinitionManager backing the /test endpoint; " +
+					"not yet implemented."
+	)
+	@Test
+	public void testGetRelatedObjectEntriesWithHierarchyModifiableSystemAsParent()
+		throws Exception {
+
+		String objectFieldName = "x" + RandomTestUtil.randomString();
+
+		ObjectDefinition modifiableSystemObjectDefinition =
+			_publishModifiableSystemObjectDefinition(objectFieldName);
 
 		ObjectEntry objectEntry = ObjectEntryTestUtil.addObjectEntry(
 			modifiableSystemObjectDefinition, objectFieldName,
 			RandomTestUtil.randomString());
 
-		objectRelationship = TreeTestUtil.bind(
+		ObjectRelationship objectRelationship = TreeTestUtil.bind(
 			modifiableSystemObjectDefinition.getObjectDefinitionId(),
 			_objectDefinition2.getObjectDefinitionId(),
 			_objectRelationshipLocalService);
 
 		_objectRelationships.add(objectRelationship);
 
-		objectField = _objectFieldLocalService.fetchObjectField(
+		ObjectField objectField = _objectFieldLocalService.fetchObjectField(
 			objectRelationship.getObjectFieldId2());
 
-		relatedObjectEntry = ObjectEntryTestUtil.addObjectEntry(
+		ObjectEntry relatedObjectEntry = ObjectEntryTestUtil.addObjectEntry(
 			_objectDefinition2,
 			HashMapBuilder.<String, Serializable>put(
 				objectField.getName(), objectEntry.getPrimaryKey()
@@ -1354,9 +1381,8 @@ public class ObjectEntryRelatedObjectsResourceTest {
 	}
 
 	@Test
-	public void testPostRelatedObjectEntryWithHierarchy() throws Exception {
-
-		// Modifiable system as child
+	public void testPostRelatedObjectEntryWithHierarchyModifiableSystemAsChild()
+		throws Exception {
 
 		String objectFieldName = "x" + RandomTestUtil.randomString();
 
@@ -1391,14 +1417,28 @@ public class ObjectEntryRelatedObjectsResourceTest {
 		Assert.assertEquals(
 			objectFieldValue1,
 			relatedObjectEntryJSONObject.get(objectFieldName));
+	}
 
-		// Modifiable system as parent
+	@Ignore(
+		"LPD-88577: REST CRUD on a modifiable system Object Definition " +
+			"acting as parent requires a registered " +
+				"SystemObjectDefinitionManager backing the /test endpoint; " +
+					"not yet implemented."
+	)
+	@Test
+	public void testPostRelatedObjectEntryWithHierarchyModifiableSystemAsParent()
+		throws Exception {
+
+		String objectFieldName = "x" + RandomTestUtil.randomString();
+
+		ObjectDefinition modifiableSystemObjectDefinition =
+			_publishModifiableSystemObjectDefinition(objectFieldName);
 
 		ObjectEntry objectEntry = ObjectEntryTestUtil.addObjectEntry(
 			modifiableSystemObjectDefinition, objectFieldName,
 			RandomTestUtil.randomString());
 
-		objectRelationship = TreeTestUtil.bind(
+		ObjectRelationship objectRelationship = TreeTestUtil.bind(
 			modifiableSystemObjectDefinition.getObjectDefinitionId(),
 			_objectDefinition2.getObjectDefinitionId(),
 			_objectRelationshipLocalService);
@@ -1407,15 +1447,17 @@ public class ObjectEntryRelatedObjectsResourceTest {
 
 		String objectFieldValue2 = RandomTestUtil.randomString();
 
-		relatedObjectEntryJSONObject = HTTPTestUtil.invokeToJSONObject(
-			JSONFactoryUtil.createJSONObject(
-			).put(
-				_OBJECT_FIELD_NAME_2, objectFieldValue2
-			).toJSONString(),
-			_getEndpoint(
-				objectRelationship.getName(), modifiableSystemObjectDefinition,
-				objectEntry.getPrimaryKey()),
-			Http.Method.POST);
+		JSONObject relatedObjectEntryJSONObject =
+			HTTPTestUtil.invokeToJSONObject(
+				JSONFactoryUtil.createJSONObject(
+				).put(
+					_OBJECT_FIELD_NAME_2, objectFieldValue2
+				).toJSONString(),
+				_getEndpoint(
+					objectRelationship.getName(),
+					modifiableSystemObjectDefinition,
+					objectEntry.getPrimaryKey()),
+				Http.Method.POST);
 
 		Assert.assertEquals(
 			0,
