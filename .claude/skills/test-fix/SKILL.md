@@ -13,11 +13,6 @@ Resolve a single test failure end-to-end.
 
 ## Preconditions
 
-Verify all of these once at the start of the run. Fail fast with a clear message if any is missing.
-
-- The current working directory is a git checkout of `liferay-portal`.
-- The working tree is clean (`git status --porcelain` is empty).
-- The checkout is on `master`.
 - The Liferay portal is running (required for `Java Integration`, `Playwright`, and `Poshi`). Start it if it is not.
 
 ## Input
