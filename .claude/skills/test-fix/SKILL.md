@@ -22,21 +22,17 @@ Verify all of these once at the start of the run. Fail fast with a clear message
 
 ## Input
 
-### Case Result ID
+### Fetch Failure Data
 
-When `${ARGUMENTS}` is a positive integer, use it directly as the Testray case result ID.
+Run the fetch script at the start of every run:
 
-### Testray Build URL
+```bash
+python3 ".claude/skills/test-fix/fetch-failure-data.py" "${ARGUMENTS}"
+```
 
-When `${ARGUMENTS}` is a URL of the form `https://testray.liferay.com/#/project/<projectId>/routines/<routineId>/build/<buildId>?filter=<urlencoded-json>`, resolve it to a case result ID by following [`references/testray.md`](references/testray.md). The procedure returns a case result ID that the rest of the workflow consumes identically to a user-supplied one.
+The script accepts a case result ID (positive integer), a Testray build URL, or a test name, and prints a JSON object to stdout. When it exits non-zero, surface the stderr message and exit with `Verdict: Unresolved`.
 
-### Test Name
-
-When `${ARGUMENTS}` is anything else, resolve it to a case result ID by following [`references/testray.md`](references/testray.md). When the resolution aborts, surface the reason and ask the user to retry with the case result ID directly.
-
-### Failure Data
-
-Fetched at the start of the run by following [`references/testray.md`](references/testray.md), which covers authentication, name-to-ID resolution, and how to derive each field. When a test name was passed and the resolution aborts, surface the reason and ask the user to retry with the case result ID directly. When the case result is already `PASSED`, skip the workflow and exit with `Verdict: No fix needed`. Otherwise, the procedure returns these fields:
+When `status` is `PASSED`, skip the workflow and exit with `Verdict: No fix needed`. Otherwise, the JSON carries these fields:
 
 - **errorTrace** — error trace produced by the test framework.
 - **failureDate** — timestamp when the case result was recorded, used to scope the duplicate-ticket check in **Claim the Failure**.
