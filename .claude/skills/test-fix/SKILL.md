@@ -82,9 +82,9 @@ The Task created in **Claim the Failure** is the persistent ticket of record for
 
 - **Bug in portal** — invoke the `jira-bug` skill to create a separate Bug describing the regression. The title summarizes the regression. The description carries the failing test name, the trace, and the reproduction steps derived from the test scenario. Link the Bug to the Task with the **Fix** issue link type so the Task surfaces it as **is fixed by**. Return the Bug URL alongside the Task URL.
 
-- **Outdated test** — return the Task URL.
-
 - **No fix needed** — close the Task as `Won't Do` with a comment containing the literal `Test passes locally`. No PR is opened.
+
+- **Outdated test** — return the Task URL.
 
 - **Unresolved** — leave the Task in **In Progress**, append the handover summary as a comment, and return its URL so the human picking it up has a single landing page.
 
@@ -125,7 +125,7 @@ Commit `<short-sha>` ("<subject>") <one or two sentences>.
 
 ### Claim the Failure
 
-1. Check Jira for an LPD ticket whose summary contains `<test-name>`, is labeled `claude-test-fix`, and was **created on or after `<failureDate>`**. A ticket matching those criteria already covers this failure (in progress when still open, already shipped when resolved), so skip it; if there are other candidates, retry with the next one.
+1. Check Jira for an LPD ticket whose summary matches `<test-name>` and is labeled `claude-test-fix`. When one exists and is not Closed, this failure is already being handled — skip it; if there are other candidates, retry with the next one.
 
 1. Invoke the `jira-task` skill with summary `<test-name>` and a description that names the case result ID, the source build, and the failure trace excerpt. Add the `claude-test-fix` label.
 
@@ -145,9 +145,9 @@ Inspect the test source to discover which feature flags it depends on. Mirror th
 
 #### Run the Test
 
-Run the test, deploying first when the type requires it. For `Java Semantic Versioning`, the "test" is `<gradlew> baseline` from the failing module — strictly an API contract check, not a behavioral test. Then compare the local outcome with **errorTrace**:
+Run the test, deploying first when the type requires it. For `Java Semantic Versioning`, the "test" is `<gradlew> baseline` from the failing module — strictly an API contract check, not a behavioral test. For test types that exercise the runtime (`Java Integration`, `Playwright`, `Poshi`), also read the server log after the run; it captures portal-side exceptions, deployment errors, and stack traces that never reach **errorTrace**, and frequently names the real failure. Then compare the local outcome with **errorTrace**:
 
-- **Test passes** → exit with `Verdict: No fix needed`. **Do not** investigate further: skip **Identify Suspect Commits** and **Iterate Through Suspects**. Run the cleanup in **Restore the Portal** and exit.
+- **Test passes** → check whether a commit between `${FIRST_FAIL_SHA}` and `HEAD` already addresses the failure. When one does, exit with `Verdict: No fix needed`. Otherwise, reason about why the test failed in CI (the test may be flaky or fail for environmental reasons), try to fix it and rerun to confirm. When no plausible cause surfaces, exit with `Verdict: No fix needed`. Skip **Identify Suspect Commits** and **Iterate Through Suspects** in either case.
 - **Same failure** → continue to **Identify Suspect Commits**.
 - **Different failure** → surface the diff and ask the user whether to proceed. When the user is unreachable or declines, mark the failure as `Unresolved` with a `Conclusion` summarizing both traces (the one returned by the Testray fetch and the one observed locally) and exit.
 
