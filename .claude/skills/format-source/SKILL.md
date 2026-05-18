@@ -106,11 +106,18 @@ These files are overwritten on the next build, so manual edits are lost and only
 
 **Examples:**
 
-Strings and other reference types like `Date`, `JSONObject` get a type suffix.
+A `String` suffix is required only when the variable name is too generic to convey its type on its own — for example, a single-word name like `foo`, `result`, or `value` that could equally be any type. Descriptive names like `viewMode`, `title`, `structureKey`, or `className` are already self-explanatory and do not need a `String` suffix. The same logic applies to other reference types like `Date` and `JSONObject`: add the suffix when the name is ambiguous, not by default.
 
 ```diff
 -String foo = result.toString();
 +String fooString = result.toString();
+```
+
+A descriptive name needs no suffix:
+
+```diff
+ String viewMode = ParamUtil.getString(request, "p_l_mode", VIEW);
+ String title = assetRenderer.getTitle(locale);
 ```
 
 `int`, `long`, `boolean` keep descriptive names without a type suffix.
