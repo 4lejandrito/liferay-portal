@@ -300,6 +300,17 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 							"dynamic.registration.anonymous.allowed.hosts",
 							new String[] {clientHost}
 						).put(
+							"dynamic.registration.anonymous.allowed.redirect." +
+								"uri.patterns",
+							new String[0]
+						).put(
+							"dynamic.registration.anonymous.allowed.scopes",
+							new String[0]
+						).put(
+							"dynamic.registration.anonymous.registrations." +
+								"per.hour",
+							0
+						).put(
 							"dynamic.registration.require.initial.access.token",
 							false
 						).build())) {
@@ -344,6 +355,16 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 						"com.liferay.oauth2.provider.rest.internal." +
 							"configuration.DynamicRegistrationConfiguration",
 						HashMapDictionaryBuilder.<String, Object>put(
+							"dynamic.registration.anonymous.allowed.hosts",
+							new String[0]
+						).put(
+							"dynamic.registration.anonymous.allowed.redirect." +
+								"uri.patterns",
+							new String[0]
+						).put(
+							"dynamic.registration.anonymous.allowed.scopes",
+							new String[0]
+						).put(
 							"dynamic.registration.anonymous.registrations." +
 								"per.hour",
 							0
@@ -395,6 +416,16 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 						"com.liferay.oauth2.provider.rest.internal." +
 							"configuration.DynamicRegistrationConfiguration",
 						HashMapDictionaryBuilder.<String, Object>put(
+							"dynamic.registration.anonymous.allowed.hosts",
+							new String[0]
+						).put(
+							"dynamic.registration.anonymous.allowed.redirect." +
+								"uri.patterns",
+							new String[0]
+						).put(
+							"dynamic.registration.anonymous.allowed.scopes",
+							new String[0]
+						).put(
 							"dynamic.registration.anonymous.registrations." +
 								"per.hour",
 							3
@@ -431,18 +462,46 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 	@FeatureFlag("LPD-63416")
 	@Test
 	public void testPostAnonymousRejectedWhenStrict() throws Exception {
+		long companyId = TestPropsValues.getCompanyId();
+
 		WebTarget registerWebTarget = getRegisterWebTarget();
 
-		Invocation.Builder invocationBuilder = registerWebTarget.request();
+		try (CompanyConfigurationTemporarySwapper
+				companyConfigurationTemporarySwapper =
+					new CompanyConfigurationTemporarySwapper(
+						companyId,
+						"com.liferay.oauth2.provider.rest.internal." +
+							"configuration.DynamicRegistrationConfiguration",
+						HashMapDictionaryBuilder.<String, Object>put(
+							"dynamic.registration.anonymous.allowed.hosts",
+							new String[0]
+						).put(
+							"dynamic.registration.anonymous.allowed.redirect." +
+								"uri.patterns",
+							new String[0]
+						).put(
+							"dynamic.registration.anonymous.allowed.scopes",
+							new String[0]
+						).put(
+							"dynamic.registration.anonymous.registrations." +
+								"per.hour",
+							0
+						).put(
+							"dynamic.registration.require.initial.access.token",
+							true
+						).build())) {
 
-		Response response = invocationBuilder.method(
-			"post",
-			Entity.json(
-				JSONUtil.put(
-					"client_name", RandomTestUtil.randomString()
-				).toString()));
+			Invocation.Builder invocationBuilder = registerWebTarget.request();
 
-		Assert.assertEquals(401, response.getStatus());
+			Response response = invocationBuilder.method(
+				"post",
+				Entity.json(
+					JSONUtil.put(
+						"client_name", RandomTestUtil.randomString()
+					).toString()));
+
+			Assert.assertEquals(401, response.getStatus());
+		}
 	}
 
 	@FeatureFlag("LPD-63416")
@@ -477,6 +536,17 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 							new String[] {
 								"test-allowed-" + RandomTestUtil.randomString()
 							}
+						).put(
+							"dynamic.registration.anonymous.allowed.redirect." +
+								"uri.patterns",
+							new String[0]
+						).put(
+							"dynamic.registration.anonymous.allowed.scopes",
+							new String[0]
+						).put(
+							"dynamic.registration.anonymous.registrations." +
+								"per.hour",
+							0
 						).put(
 							"dynamic.registration.require.initial.access.token",
 							false
@@ -521,9 +591,19 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 						"com.liferay.oauth2.provider.rest.internal." +
 							"configuration.DynamicRegistrationConfiguration",
 						HashMapDictionaryBuilder.<String, Object>put(
+							"dynamic.registration.anonymous.allowed.hosts",
+							new String[0]
+						).put(
 							"dynamic.registration.anonymous.allowed.redirect." +
 								"uri.patterns",
 							new String[] {"https://*.example.org/*"}
+						).put(
+							"dynamic.registration.anonymous.allowed.scopes",
+							new String[0]
+						).put(
+							"dynamic.registration.anonymous.registrations." +
+								"per.hour",
+							0
 						).put(
 							"dynamic.registration.require.initial.access.token",
 							false
@@ -562,10 +642,21 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 						"com.liferay.oauth2.provider.rest.internal." +
 							"configuration.DynamicRegistrationConfiguration",
 						HashMapDictionaryBuilder.<String, Object>put(
+							"dynamic.registration.anonymous.allowed.hosts",
+							new String[0]
+						).put(
+							"dynamic.registration.anonymous.allowed.redirect." +
+								"uri.patterns",
+							new String[0]
+						).put(
 							"dynamic.registration.anonymous.allowed.scopes",
 							new String[] {
 								"Liferay.Headless.Delivery.everything"
 							}
+						).put(
+							"dynamic.registration.anonymous.registrations." +
+								"per.hour",
+							0
 						).put(
 							"dynamic.registration.require.initial.access.token",
 							false
@@ -733,6 +824,15 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 			"com.liferay.oauth2.provider.rest.internal.configuration." +
 				"DynamicRegistrationConfiguration",
 			HashMapDictionaryBuilder.<String, Object>put(
+				"dynamic.registration.anonymous.allowed.hosts", new String[0]
+			).put(
+				"dynamic.registration.anonymous.allowed.redirect.uri.patterns",
+				new String[0]
+			).put(
+				"dynamic.registration.anonymous.allowed.scopes", new String[0]
+			).put(
+				"dynamic.registration.anonymous.registrations.per.hour", 0
+			).put(
 				"dynamic.registration.require.initial.access.token", false
 			).build());
 	}
