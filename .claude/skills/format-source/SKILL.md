@@ -1000,3 +1000,39 @@ The same applies when renaming a method or its parameter to match the vocabulary
 ```
 
 When you rename a local, propagate the new name to every call site, every parameter that passes it on, and every private helper that receives it.
+
+### Rule 48: REST Integration Tests Override, Never Add
+
+**Why:** `Base*ResourceTestCase` defines the test contract; subclass methods must override inherited ones so every assertion lives under one canonical name and the base `setUp`/`tearDown` chain always runs.
+
+**Examples:**
+
+Every `@Test`, `@Before`, and `@After` in a `*ResourceTest` overrides an inherited method. In `tearDown`, call `super.tearDown()` first.
+
+```diff
+-@After
+-public void tearDownFoos() throws Exception {
++@After
++@Override
++public void tearDown() throws Exception {
++	super.tearDown();
++
+ 	_fooLocalService.deleteFoo(_foo);
+ }
+
+-@Test
+-public void testGetFooEdgeCase() throws Exception {
+-	// new public test introduced in the subclass
+-}
+```
+
+Extra logic goes into a private `_test*` helper whose name extends the overridden test with a suffix describing the variation (`With`, `In`, `When`, `For`, and similar are all fine — whatever reads naturally).
+
+```diff
+ @Override
+ @Test
+ public void testGetFoo() throws Exception {
++	_testGetFooWithBar(input -> resource.getFoo(input));
++	_testGetFooWhenQuxIsNull(input -> resource.getFoo(input));
+ }
+```
