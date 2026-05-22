@@ -391,11 +391,15 @@ public class DynamicRegistrationServiceContainerRequestFilter
 			Response.status(
 				Response.Status.TOO_MANY_REQUESTS
 			).entity(
-				StringBundler.concat(
-					"{\"error\":\"rate_limited\",\"error_description\":\"",
-					"Anonymous client registration rate limit exceeded for ",
-					"host ", clientHost, ". Retry after ", retryAfterSeconds,
-					" seconds.\"}")
+				JSONUtil.put(
+					"error", "rate_limited"
+				).put(
+					"error_description",
+					StringBundler.concat(
+						"Anonymous client registration rate limit exceeded ",
+						"for host ", clientHost, ". Retry after ",
+						retryAfterSeconds, " seconds.")
+				).toString()
 			).header(
 				"Retry-After", retryAfterSeconds
 			).type(
