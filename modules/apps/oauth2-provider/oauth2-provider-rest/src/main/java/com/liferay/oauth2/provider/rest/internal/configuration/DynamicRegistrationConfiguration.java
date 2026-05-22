@@ -25,6 +25,15 @@ public interface DynamicRegistrationConfiguration {
 
 	@Meta.AD(
 		deflt = "",
+		description = "dynamic-registration-anonymous-allowed-grant-types-description",
+		id = "dynamic.registration.anonymous.allowed.grant.types",
+		name = "dynamic-registration-anonymous-allowed-grant-types",
+		required = false
+	)
+	public String[] anonymousAllowedGrantTypes();
+
+	@Meta.AD(
+		deflt = "",
 		description = "dynamic-registration-anonymous-allowed-hosts-description",
 		id = "dynamic.registration.anonymous.allowed.hosts",
 		name = "dynamic-registration-anonymous-allowed-hosts", required = false
