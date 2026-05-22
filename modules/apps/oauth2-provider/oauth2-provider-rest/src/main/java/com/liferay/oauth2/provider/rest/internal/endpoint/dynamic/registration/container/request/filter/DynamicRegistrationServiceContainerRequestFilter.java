@@ -32,7 +32,6 @@ import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermi
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.servlet.ProtectedPrincipal;
 import com.liferay.portal.kernel.settings.CompanyServiceSettingsLocator;
-import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -516,33 +515,29 @@ public class DynamicRegistrationServiceContainerRequestFilter
 		HttpServletRequest httpServletRequest, long companyId,
 		String[] allowedHosts) {
 
-		if (ArrayUtil.isEmpty(allowedHosts)) {
-			return;
-		}
-
 		Set<String> normalizedAllowedHosts = new HashSet<>();
 
-		for (String allowedHost : allowedHosts) {
-			if (Validator.isBlank(allowedHost)) {
-				continue;
-			}
-
-			for (String line : allowedHost.split("\\s+")) {
-				if (Validator.isBlank(line)) {
+		if (allowedHosts != null) {
+			for (String allowedHost : allowedHosts) {
+				if (Validator.isBlank(allowedHost)) {
 					continue;
 				}
 
-				normalizedAllowedHosts.add(line);
-			}
-		}
+				for (String line : allowedHost.split("\\s+")) {
+					if (Validator.isBlank(line)) {
+						continue;
+					}
 
-		if (normalizedAllowedHosts.isEmpty()) {
-			return;
+					normalizedAllowedHosts.add(line);
+				}
+			}
 		}
 
 		String clientHost = _getClientHost(httpServletRequest);
 
-		if (!normalizedAllowedHosts.contains(clientHost)) {
+		if (normalizedAllowedHosts.isEmpty() ||
+			!normalizedAllowedHosts.contains(clientHost)) {
+
 			_auditRejection(
 				httpServletRequest, companyId, "anonymous", "access_denied",
 				"Host " + clientHost +

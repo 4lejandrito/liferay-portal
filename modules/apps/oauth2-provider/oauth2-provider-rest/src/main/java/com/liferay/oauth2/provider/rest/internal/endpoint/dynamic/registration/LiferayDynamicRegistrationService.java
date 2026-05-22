@@ -26,7 +26,6 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.module.configuration.ConfigurationException;
 import com.liferay.portal.kernel.module.service.Snapshot;
 import com.liferay.portal.kernel.settings.CompanyServiceSettingsLocator;
-import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
@@ -812,16 +811,6 @@ public class LiferayDynamicRegistrationService
 	private void _validateAnonymousRedirectURIs(
 		ClientRegistration clientRegistration, String[] allowedPatterns) {
 
-		if (ArrayUtil.isEmpty(allowedPatterns)) {
-			return;
-		}
-
-		List<String> redirectUris = clientRegistration.getRedirectUris();
-
-		if (ListUtil.isEmpty(redirectUris)) {
-			return;
-		}
-
 		List<Pattern> compiledPatterns = new ArrayList<>(
 			allowedPatterns.length);
 
@@ -840,6 +829,14 @@ public class LiferayDynamicRegistrationService
 		}
 
 		if (compiledPatterns.isEmpty()) {
+			OAuth2ErrorUtil.reportInvalidRequestError(
+				"Anonymous registration does not permit any redirect URI",
+				"invalid_redirect_uri", Response.Status.BAD_REQUEST);
+		}
+
+		List<String> redirectUris = clientRegistration.getRedirectUris();
+
+		if (ListUtil.isEmpty(redirectUris)) {
 			return;
 		}
 
@@ -868,16 +865,6 @@ public class LiferayDynamicRegistrationService
 	private void _validateAnonymousScopes(
 		ClientRegistration clientRegistration, String[] allowedScopes) {
 
-		if (ArrayUtil.isEmpty(allowedScopes)) {
-			return;
-		}
-
-		String scope = clientRegistration.getScope();
-
-		if (Validator.isBlank(scope)) {
-			return;
-		}
-
 		Set<String> normalizedAllowedScopes = new HashSet<>();
 
 		for (String allowedScope : allowedScopes) {
@@ -892,6 +879,18 @@ public class LiferayDynamicRegistrationService
 
 				normalizedAllowedScopes.add(line);
 			}
+		}
+
+		if (normalizedAllowedScopes.isEmpty()) {
+			OAuth2ErrorUtil.reportInvalidRequestError(
+				"Anonymous registration does not permit any scope",
+				OAuthConstants.INVALID_SCOPE, Response.Status.BAD_REQUEST);
+		}
+
+		String scope = clientRegistration.getScope();
+
+		if (Validator.isBlank(scope)) {
+			return;
 		}
 
 		List<String> requestedScopes = OAuthUtils.parseScope(scope);
