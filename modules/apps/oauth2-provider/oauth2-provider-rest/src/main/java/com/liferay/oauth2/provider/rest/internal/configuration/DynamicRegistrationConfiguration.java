@@ -67,6 +67,15 @@ public interface DynamicRegistrationConfiguration {
 	public int anonymousRegistrationsPerHour();
 
 	@Meta.AD(
+		deflt = "default-service-account",
+		description = "dynamic-registration-anonymous-service-account-screen-name-description",
+		id = "dynamic.registration.anonymous.service.account.screen.name",
+		name = "dynamic-registration-anonymous-service-account-screen-name",
+		required = false
+	)
+	public String anonymousServiceAccountScreenName();
+
+	@Meta.AD(
 		deflt = "true",
 		description = "dynamic-registration-require-initial-access-token-description",
 		id = "dynamic.registration.require.initial.access.token",

@@ -159,7 +159,9 @@ public class DynamicRegistrationServiceContainerRequestFilter
 						anonymousRegistrationsPerHour());
 
 				user = _userLocalService.getUserByScreenName(
-					companyId, "default-service-account");
+					companyId,
+					dynamicRegistrationConfiguration.
+						anonymousServiceAccountScreenName());
 				anonymous = true;
 
 				if (_log.isInfoEnabled()) {
