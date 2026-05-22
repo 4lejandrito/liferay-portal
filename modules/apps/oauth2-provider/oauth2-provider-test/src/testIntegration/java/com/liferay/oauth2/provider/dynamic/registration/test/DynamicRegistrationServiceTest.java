@@ -299,15 +299,19 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 						"com.liferay.oauth2.provider.rest.internal." +
 							"configuration.DynamicRegistrationConfiguration",
 						HashMapDictionaryBuilder.<String, Object>put(
+							"dynamic.registration.anonymous.allowed.grant." +
+								"types",
+							new String[] {"*"}
+						).put(
 							"dynamic.registration.anonymous.allowed.hosts",
 							new String[] {clientHost}
 						).put(
 							"dynamic.registration.anonymous.allowed.redirect." +
 								"uri.patterns",
-							new String[0]
+							new String[] {"*"}
 						).put(
 							"dynamic.registration.anonymous.allowed.scopes",
-							new String[0]
+							new String[] {"*"}
 						).put(
 							"dynamic.registration.anonymous.registrations." +
 								"per.hour",
@@ -357,15 +361,19 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 						"com.liferay.oauth2.provider.rest.internal." +
 							"configuration.DynamicRegistrationConfiguration",
 						HashMapDictionaryBuilder.<String, Object>put(
+							"dynamic.registration.anonymous.allowed.grant." +
+								"types",
+							new String[] {"*"}
+						).put(
 							"dynamic.registration.anonymous.allowed.hosts",
-							new String[0]
+							new String[] {"*"}
 						).put(
 							"dynamic.registration.anonymous.allowed.redirect." +
 								"uri.patterns",
-							new String[0]
+							new String[] {"*"}
 						).put(
 							"dynamic.registration.anonymous.allowed.scopes",
-							new String[0]
+							new String[] {"*"}
 						).put(
 							"dynamic.registration.anonymous.registrations." +
 								"per.hour",
@@ -418,15 +426,19 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 						"com.liferay.oauth2.provider.rest.internal." +
 							"configuration.DynamicRegistrationConfiguration",
 						HashMapDictionaryBuilder.<String, Object>put(
+							"dynamic.registration.anonymous.allowed.grant." +
+								"types",
+							new String[] {"*"}
+						).put(
 							"dynamic.registration.anonymous.allowed.hosts",
-							new String[0]
+							new String[] {"*"}
 						).put(
 							"dynamic.registration.anonymous.allowed.redirect." +
 								"uri.patterns",
-							new String[0]
+							new String[] {"*"}
 						).put(
 							"dynamic.registration.anonymous.allowed.scopes",
-							new String[0]
+							new String[] {"*"}
 						).put(
 							"dynamic.registration.anonymous.registrations." +
 								"per.hour",
@@ -534,6 +546,10 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 						"com.liferay.oauth2.provider.rest.internal." +
 							"configuration.DynamicRegistrationConfiguration",
 						HashMapDictionaryBuilder.<String, Object>put(
+							"dynamic.registration.anonymous.allowed.grant." +
+								"types",
+							new String[] {"*"}
+						).put(
 							"dynamic.registration.anonymous.allowed.hosts",
 							new String[] {
 								"test-allowed-" + RandomTestUtil.randomString()
@@ -541,10 +557,10 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 						).put(
 							"dynamic.registration.anonymous.allowed.redirect." +
 								"uri.patterns",
-							new String[0]
+							new String[] {"*"}
 						).put(
 							"dynamic.registration.anonymous.allowed.scopes",
-							new String[0]
+							new String[] {"*"}
 						).put(
 							"dynamic.registration.anonymous.registrations." +
 								"per.hour",
@@ -593,15 +609,19 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 						"com.liferay.oauth2.provider.rest.internal." +
 							"configuration.DynamicRegistrationConfiguration",
 						HashMapDictionaryBuilder.<String, Object>put(
+							"dynamic.registration.anonymous.allowed.grant." +
+								"types",
+							new String[] {"*"}
+						).put(
 							"dynamic.registration.anonymous.allowed.hosts",
-							new String[0]
+							new String[] {"*"}
 						).put(
 							"dynamic.registration.anonymous.allowed.redirect." +
 								"uri.patterns",
 							new String[] {"https://*.example.org/*"}
 						).put(
 							"dynamic.registration.anonymous.allowed.scopes",
-							new String[0]
+							new String[] {"*"}
 						).put(
 							"dynamic.registration.anonymous.registrations." +
 								"per.hour",
@@ -644,12 +664,16 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 						"com.liferay.oauth2.provider.rest.internal." +
 							"configuration.DynamicRegistrationConfiguration",
 						HashMapDictionaryBuilder.<String, Object>put(
+							"dynamic.registration.anonymous.allowed.grant." +
+								"types",
+							new String[] {"*"}
+						).put(
 							"dynamic.registration.anonymous.allowed.hosts",
-							new String[0]
+							new String[] {"*"}
 						).put(
 							"dynamic.registration.anonymous.allowed.redirect." +
 								"uri.patterns",
-							new String[0]
+							new String[] {"*"}
 						).put(
 							"dynamic.registration.anonymous.allowed.scopes",
 							new String[] {
@@ -885,12 +909,17 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 			"com.liferay.oauth2.provider.rest.internal.configuration." +
 				"DynamicRegistrationConfiguration",
 			HashMapDictionaryBuilder.<String, Object>put(
-				"dynamic.registration.anonymous.allowed.hosts", new String[0]
+				"dynamic.registration.anonymous.allowed.grant.types",
+				new String[] {"*"}
+			).put(
+				"dynamic.registration.anonymous.allowed.hosts",
+				new String[] {"*"}
 			).put(
 				"dynamic.registration.anonymous.allowed.redirect.uri.patterns",
-				new String[0]
+				new String[] {"*"}
 			).put(
-				"dynamic.registration.anonymous.allowed.scopes", new String[0]
+				"dynamic.registration.anonymous.allowed.scopes",
+				new String[] {"*"}
 			).put(
 				"dynamic.registration.anonymous.registrations.per.hour", 0
 			).put(
