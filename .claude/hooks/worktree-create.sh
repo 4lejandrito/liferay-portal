@@ -89,7 +89,7 @@ function _resolve_main_worktree_dir {
 
 	repo_dir="$(git -C "${WORKTREE_DIR}" rev-parse --show-toplevel)"
 
-	git -C "${repo_dir}" worktree list --porcelain | grep --extended-regexp "^worktree .*/liferay-portal\$" | head --lines=1 | sed "s/^worktree //"
+	git -C "${repo_dir}" worktree list --porcelain | grep --extended-regexp "^worktree .*/liferay-portal\$" | head --lines=1 | _sed "s/^worktree //"
 }
 
 function _reuse_worktree {
@@ -131,15 +131,6 @@ function _reuse_worktree {
 		cp --archive "${main_bundles}/." "${BUNDLES_DIR}/"
 
 		_bundle_exists "${BUNDLES_DIR}" || _die "Bundle copy finished but no tomcat-* directory exists under ${BUNDLES_DIR}."
-	fi
-}
-
-function _sed_inplace {
-	if [[ $(uname) == Darwin ]]
-	then
-		sed -i "" "${@}"
-	else
-		sed --in-place "${@}"
 	fi
 }
 
