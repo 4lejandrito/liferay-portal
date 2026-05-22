@@ -12,6 +12,40 @@ function _atomic_write {
 	mv "${file}.tmp" "${file}"
 }
 
+function _sed {
+	if [[ $(uname) == Darwin ]]
+	then
+		local args=()
+		local arg
+
+		for arg in "${@}"
+		do
+			case "${arg}" in
+				--expression)
+					args+=(-e)
+					;;
+				--regexp-extended)
+					args+=(-E)
+					;;
+				--in-place)
+					args+=(-i "")
+					;;
+				*)
+					args+=("${arg}")
+					;;
+			esac
+		done
+
+		sed "${args[@]}"
+	else
+		sed "${@}"
+	fi
+}
+
+function _sed_inplace {
+	_sed --in-place "${@}"
+}
+
 function _derive_db_name {
 	local dir_name="${1}"
 
@@ -26,7 +60,7 @@ function _derive_db_name {
 		return
 	fi
 
-	suffix="$(echo "${suffix}" | tr "[:upper:]" "[:lower:]" | sed --regexp-extended "s/[^a-z0-9]+/_/g; s/^_+|_+\$//g")"
+	suffix="$(echo "${suffix}" | tr "[:upper:]" "[:lower:]" | _sed --regexp-extended "s/[^a-z0-9]+/_/g; s/^_+|_+\$//g")"
 	suffix="${suffix:0:56}"
 
 	echo "lportal_${suffix}"
@@ -79,12 +113,12 @@ function _find_app_server_parent_dir {
 
 	if [[ -f ${user_props} ]]
 	then
-		raw="$(grep --extended-regexp "^[[:space:]]*app\.server\.parent\.dir=" "${user_props}" | tail --lines=1 | sed "s/^[[:space:]]*app\.server\.parent\.dir=//")"
+		raw="$(grep --extended-regexp "^[[:space:]]*app\.server\.parent\.dir=" "${user_props}" | tail --lines=1 | _sed "s/^[[:space:]]*app\.server\.parent\.dir=//")"
 	fi
 
 	if [[ -z ${raw} && -f ${default_props} ]]
 	then
-		raw="$(grep --extended-regexp "^[[:space:]]*app\.server\.parent\.dir=" "${default_props}" | tail --lines=1 | sed "s/^[[:space:]]*app\.server\.parent\.dir=//")"
+		raw="$(grep --extended-regexp "^[[:space:]]*app\.server\.parent\.dir=" "${default_props}" | tail --lines=1 | _sed "s/^[[:space:]]*app\.server\.parent\.dir=//")"
 	fi
 
 	[[ -n ${raw} ]] || return 1
@@ -123,7 +157,7 @@ function _get_property {
 
 	if [[ -f ${file} ]] && grep --extended-regexp --quiet "^[[:space:]]*${key}=" "${file}"
 	then
-		value="$(grep --extended-regexp "^[[:space:]]*${key}=" "${file}" | tail --lines=1 | sed --regexp-extended "s/^[[:space:]]*${key}=[[:space:]]*//; s/[[:space:]]+\$//")"
+		value="$(grep --extended-regexp "^[[:space:]]*${key}=" "${file}" | tail --lines=1 | _sed --regexp-extended "s/^[[:space:]]*${key}=[[:space:]]*//; s/[[:space:]]+\$//")"
 	fi
 
 	echo "${value}"
