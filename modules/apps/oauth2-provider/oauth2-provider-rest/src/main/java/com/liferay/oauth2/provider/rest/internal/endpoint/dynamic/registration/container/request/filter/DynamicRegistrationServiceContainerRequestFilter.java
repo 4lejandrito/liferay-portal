@@ -539,6 +539,10 @@ public class DynamicRegistrationServiceContainerRequestFilter
 			}
 		}
 
+		if (normalizedAllowedHosts.contains(StringPool.STAR)) {
+			return;
+		}
+
 		String clientHost = _getClientHost(httpServletRequest);
 
 		if (normalizedAllowedHosts.isEmpty() ||

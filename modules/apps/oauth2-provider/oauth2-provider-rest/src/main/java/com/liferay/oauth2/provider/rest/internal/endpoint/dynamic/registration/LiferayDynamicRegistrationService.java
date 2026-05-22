@@ -596,6 +596,30 @@ public class LiferayDynamicRegistrationService
 			PROPERTY_VALUE_DYNAMIC_REGISTRATION_MODE_ANONYMOUS.equals(mode);
 	}
 
+	private Set<String> _normalize(String[] values) {
+		Set<String> normalized = new HashSet<>();
+
+		if (values == null) {
+			return normalized;
+		}
+
+		for (String value : values) {
+			if (Validator.isBlank(value)) {
+				continue;
+			}
+
+			for (String line : value.split("\\s+")) {
+				if (Validator.isBlank(line)) {
+					continue;
+				}
+
+				normalized.add(line);
+			}
+		}
+
+		return normalized;
+	}
+
 	private void _promotePublicClientAuthorizationCode(Client client) {
 		if (!OAuthConstants.TOKEN_ENDPOINT_AUTH_NONE.equals(
 				client.getTokenEndpointAuthMethod())) {
@@ -732,32 +756,22 @@ public class LiferayDynamicRegistrationService
 	private void _validateAnonymousGrantTypes(
 		ClientRegistration clientRegistration, String[] allowedGrantTypes) {
 
-		Set<String> normalizedAllowedGrantTypes = new HashSet<>();
+		List<String> requestedGrantTypes = clientRegistration.getGrantTypes();
 
-		for (String allowedGrantType : allowedGrantTypes) {
-			if (Validator.isBlank(allowedGrantType)) {
-				continue;
-			}
+		if (ListUtil.isEmpty(requestedGrantTypes)) {
+			return;
+		}
 
-			for (String line : allowedGrantType.split("\\s+")) {
-				if (Validator.isBlank(line)) {
-					continue;
-				}
+		Set<String> normalizedAllowedGrantTypes = _normalize(allowedGrantTypes);
 
-				normalizedAllowedGrantTypes.add(line);
-			}
+		if (normalizedAllowedGrantTypes.contains(StringPool.STAR)) {
+			return;
 		}
 
 		if (normalizedAllowedGrantTypes.isEmpty()) {
 			OAuth2ErrorUtil.reportInvalidRequestError(
 				"Anonymous registration does not permit any grant type",
 				"invalid_client_metadata", Response.Status.BAD_REQUEST);
-		}
-
-		List<String> requestedGrantTypes = clientRegistration.getGrantTypes();
-
-		if (ListUtil.isEmpty(requestedGrantTypes)) {
-			return;
 		}
 
 		for (String requestedGrantType : requestedGrantTypes) {
@@ -811,33 +825,29 @@ public class LiferayDynamicRegistrationService
 	private void _validateAnonymousRedirectURIs(
 		ClientRegistration clientRegistration, String[] allowedPatterns) {
 
-		List<Pattern> compiledPatterns = new ArrayList<>(
-			allowedPatterns.length);
+		List<String> redirectUris = clientRegistration.getRedirectUris();
 
-		for (String allowedPattern : allowedPatterns) {
-			if (Validator.isBlank(allowedPattern)) {
-				continue;
-			}
-
-			for (String line : allowedPattern.split("\\s+")) {
-				if (Validator.isBlank(line)) {
-					continue;
-				}
-
-				compiledPatterns.add(_globToPattern(line));
-			}
+		if (ListUtil.isEmpty(redirectUris)) {
+			return;
 		}
 
-		if (compiledPatterns.isEmpty()) {
+		Set<String> normalizedAllowedPatterns = _normalize(allowedPatterns);
+
+		if (normalizedAllowedPatterns.contains(StringPool.STAR)) {
+			return;
+		}
+
+		if (normalizedAllowedPatterns.isEmpty()) {
 			OAuth2ErrorUtil.reportInvalidRequestError(
 				"Anonymous registration does not permit any redirect URI",
 				"invalid_redirect_uri", Response.Status.BAD_REQUEST);
 		}
 
-		List<String> redirectUris = clientRegistration.getRedirectUris();
+		List<Pattern> compiledPatterns = new ArrayList<>(
+			normalizedAllowedPatterns.size());
 
-		if (ListUtil.isEmpty(redirectUris)) {
-			return;
+		for (String normalizedAllowedPattern : normalizedAllowedPatterns) {
+			compiledPatterns.add(_globToPattern(normalizedAllowedPattern));
 		}
 
 		for (String redirectUri : redirectUris) {
@@ -865,32 +875,22 @@ public class LiferayDynamicRegistrationService
 	private void _validateAnonymousScopes(
 		ClientRegistration clientRegistration, String[] allowedScopes) {
 
-		Set<String> normalizedAllowedScopes = new HashSet<>();
+		String scope = clientRegistration.getScope();
 
-		for (String allowedScope : allowedScopes) {
-			if (Validator.isBlank(allowedScope)) {
-				continue;
-			}
+		if (Validator.isBlank(scope)) {
+			return;
+		}
 
-			for (String line : allowedScope.split("\\s+")) {
-				if (Validator.isBlank(line)) {
-					continue;
-				}
+		Set<String> normalizedAllowedScopes = _normalize(allowedScopes);
 
-				normalizedAllowedScopes.add(line);
-			}
+		if (normalizedAllowedScopes.contains(StringPool.STAR)) {
+			return;
 		}
 
 		if (normalizedAllowedScopes.isEmpty()) {
 			OAuth2ErrorUtil.reportInvalidRequestError(
 				"Anonymous registration does not permit any scope",
 				OAuthConstants.INVALID_SCOPE, Response.Status.BAD_REQUEST);
-		}
-
-		String scope = clientRegistration.getScope();
-
-		if (Validator.isBlank(scope)) {
-			return;
 		}
 
 		List<String> requestedScopes = OAuthUtils.parseScope(scope);
