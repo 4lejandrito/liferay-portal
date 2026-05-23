@@ -88,6 +88,13 @@ function _create_worktree {
 		fi
 	fi
 
+	if [[ ${LIFERAY_WORKTREE_REFRESH_BASE:-false} == true ]]
+	then
+		git -C "${cwd}" fetch --no-tags upstream master >&2
+
+		(cd "${target_path}" && git rebase upstream/master >&2) || _die "Failed to rebase ${name} onto upstream/master."
+	fi
+
 	WORKTREE_DIR="${target_path}"
 }
 
