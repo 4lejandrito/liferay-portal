@@ -370,6 +370,13 @@ function _set_portal_http_address {
 	_set_property "${BUNDLES_DIR}/portal-ext.properties" portal.instance.inet.socket.address "localhost:${http_port}"
 }
 
+function _set_poshi_portal_url {
+	local file="${WORKTREE_DIR}/test.${USER}.properties"
+	local http_port=$((8080 + OFFSET))
+
+	_set_property "${file}" default.portal.url "http://localhost:${http_port}"
+}
+
 function _set_property {
 	local file="${1}"
 	local key="${2}"
@@ -510,6 +517,7 @@ function main {
 	_set_playwright_port
 	_set_portal_home
 	_set_portal_http_address
+	_set_poshi_portal_url
 	_set_test_auto_deploy_dir
 	_set_test_integration_port
 	_set_tomcat_ports
