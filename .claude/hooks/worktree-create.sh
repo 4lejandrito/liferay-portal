@@ -198,18 +198,35 @@ function _set_database {
 	_set_property "${file}" jdbc.default.username "${existing_user}"
 	_set_property "${file}" jdbc.default.password "${existing_password}"
 
-	command -v mysql >/dev/null 2>&1 || return 0
+	local main_worktree
 
-	local mysql_args=()
+	main_worktree="$(_resolve_main_worktree_dir)"
 
-	if [[ -n ${existing_password} ]]
+	local container=
+	local root_password=
+
+	if [[ -n ${main_worktree} ]]
 	then
-		mysql_args+=(--password="${existing_password}")
+		container="$(_get_property "${main_worktree}/app.server.${USER}.properties" "worktree\.mysql\.container")"
+		root_password="$(_get_property "${main_worktree}/app.server.${USER}.properties" "worktree\.mysql\.root\.password")"
 	fi
 
-	mysql_args+=(--user "${existing_user}")
+	local mysql_command=()
 
-	mysql "${mysql_args[@]}" --execute "CREATE DATABASE IF NOT EXISTS ${db_name} CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;" >&2 || true
+	if [[ -n ${container} ]]
+	then
+		command -v docker >/dev/null 2>&1 || return 0
+
+		docker container inspect "${container}" >/dev/null 2>&1 || return 0
+
+		mysql_command=(docker exec --env "MYSQL_PWD=${root_password}" "${container}" mysql)
+	else
+		command -v mysql >/dev/null 2>&1 || return 0
+
+		mysql_command=(env "MYSQL_PWD=${root_password}" mysql)
+	fi
+
+	"${mysql_command[@]}" --user root --execute "CREATE DATABASE IF NOT EXISTS ${db_name} CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci; GRANT ALL ON ${db_name}.* TO '${existing_user}'@'%';" >&2 || true
 }
 
 function _set_debug_port {
