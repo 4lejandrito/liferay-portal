@@ -259,15 +259,41 @@ function _set_elasticsearch_ports {
 	fi
 
 	local file="${configs_dir}/com.liferay.portal.search.${es_version}.configuration.ElasticsearchConfiguration.config"
-	local sidecar=$((9201 + OFFSET))
-	local transport=$((9301 + OFFSET))
 
-	_atomic_write "${file}" <<EOF
+	local main_worktree
+
+	main_worktree="$(_resolve_main_worktree_dir)"
+
+	local endpoint=
+
+	if [[ -n ${main_worktree} ]]
+	then
+		endpoint="$(_get_property "${main_worktree}/app.server.${USER}.properties" "worktree\.elasticsearch\.endpoint")"
+	fi
+
+	local prefix
+
+	prefix="$(_derive_es_index_prefix "$(basename "${WORKTREE_DIR}")")"
+
+	if [[ -n ${endpoint} ]]
+	then
+		_atomic_write "${file}" <<EOF
+indexNamePrefix="${prefix}"
+networkHostAddresses=["${endpoint}"]
+productionModeEnabled=B"true"
+EOF
+	else
+		local sidecar=$((9201 + OFFSET))
+		local transport=$((9301 + OFFSET))
+
+		_atomic_write "${file}" <<EOF
+indexNamePrefix="${prefix}"
 sidecarHttpPort="${sidecar}"
 transportTcpPort="${transport}"
 networkBindHost="127.0.0.1"
 networkPublishHost="127.0.0.1"
 EOF
+	fi
 }
 
 function _set_glowroot_port {

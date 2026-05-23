@@ -15,21 +15,44 @@ function _atomic_write {
 function _derive_db_name {
 	local dir_name="${1}"
 
-	local suffix="${dir_name#liferay-portal}"
+	local slug
 
-	suffix="${suffix#-}"
+	slug="$(_derive_worktree_slug "${dir_name}")"
 
-	if [[ -z ${suffix} ]]
+	if [[ ${slug} == master ]]
 	then
 		echo lportal
 
 		return
 	fi
 
-	suffix="$(echo "${suffix}" | tr "[:upper:]" "[:lower:]" | sed --regexp-extended "s/[^a-z0-9]+/_/g; s/^_+|_+\$//g")"
+	echo "lportal_${slug//-/_}"
+}
+
+function _derive_es_index_prefix {
+	local dir_name="${1}"
+
+	echo "liferay-$(_derive_worktree_slug "${dir_name}")-"
+}
+
+function _derive_worktree_slug {
+	local dir_name="${1}"
+
+	local suffix="${dir_name#liferay-portal}"
+
+	suffix="${suffix#-}"
+
+	if [[ -z ${suffix} ]]
+	then
+		echo master
+
+		return
+	fi
+
+	suffix="$(echo "${suffix}" | tr "[:upper:]" "[:lower:]" | sed --regexp-extended "s/[^a-z0-9]+/-/g; s/^-+|-+\$//g")"
 	suffix="${suffix:0:56}"
 
-	echo "lportal_${suffix}"
+	echo "${suffix}"
 }
 
 function _die {
