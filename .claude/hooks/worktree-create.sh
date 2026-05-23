@@ -565,7 +565,7 @@ function main {
 
 	if [[ ${LIFERAY_PROVISION:-} == fresh ]]
 	then
-		(cd "${WORKTREE_DIR}" && ANT_OPTS="-Xmx2560m" ant all >&2) || _die "ant all failed under ${WORKTREE_DIR}."
+		(cd "${WORKTREE_DIR}" && ANT_OPTS="-Xmx2560m" ant all > "${WORKTREE_DIR}/.worktree-ant-all.log" 2>&1) || _die "ant all failed under ${WORKTREE_DIR}. See ${WORKTREE_DIR}/.worktree-ant-all.log."
 	else
 		_reuse_worktree
 	fi
