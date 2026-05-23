@@ -132,6 +132,8 @@ function _reuse_worktree {
 
 		_bundle_exists "${BUNDLES_DIR}" || _die "Bundle copy finished but no tomcat-* directory exists under ${BUNDLES_DIR}."
 	fi
+
+	(cd "${WORKTREE_DIR}" && ANT_OPTS="-Xmx2560m" ant setup-sdk >&2) || _die "ant setup-sdk failed under ${WORKTREE_DIR}."
 }
 
 function _sed_inplace {
