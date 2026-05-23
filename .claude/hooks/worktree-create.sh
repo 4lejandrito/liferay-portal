@@ -262,7 +262,7 @@ function _set_elasticsearch_ports {
 
 	mkdir --parents "${configs_dir}"
 
-	local es_version=elasticsearch8
+	local es_version=
 
 	if [[ -f ${configs_dir}/com.liferay.portal.search.elasticsearch7.configuration.ElasticsearchConfiguration.config ]]
 	then
@@ -271,6 +271,42 @@ function _set_elasticsearch_ports {
 	then
 		es_version=elasticsearch8
 	fi
+
+	if [[ -z ${es_version} ]]
+	then
+		local branch
+
+		branch="$(git -C "${WORKTREE_DIR}" rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
+
+		if [[ ${branch} == master ]]
+		then
+			es_version=elasticsearch8
+		elif [[ ${branch} =~ ^release-([0-9]{4})\.q([1-4])$ ]]
+		then
+			local year="${BASH_REMATCH[1]}"
+			local quarter="${BASH_REMATCH[2]}"
+
+			if (( year > 2025 )) || (( year == 2025 && quarter >= 3 ))
+			then
+				es_version=elasticsearch8
+			else
+				es_version=elasticsearch7
+			fi
+		fi
+	fi
+
+	if [[ -z ${es_version} ]]
+	then
+		if [[ -d ${WORKTREE_DIR}/modules/apps/portal-search-elasticsearch7 ]]
+		then
+			es_version=elasticsearch7
+		elif [[ -d ${WORKTREE_DIR}/modules/apps/portal-search-elasticsearch8 ]]
+		then
+			es_version=elasticsearch8
+		fi
+	fi
+
+	es_version="${es_version:-elasticsearch8}"
 
 	local file="${configs_dir}/com.liferay.portal.search.${es_version}.configuration.ElasticsearchConfiguration.config"
 
