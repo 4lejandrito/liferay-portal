@@ -21,6 +21,87 @@ function _all_ports_free_for_offset {
 	return 0
 }
 
+function _bring_master_feature_flags {
+	[[ ${LIFERAY_BRING_MASTER_FLAGS:-} == yes ]] || return 0
+
+	local main_worktree
+
+	main_worktree="$(_resolve_main_worktree_dir)"
+
+	[[ -n ${main_worktree} && ${main_worktree} != "${WORKTREE_DIR}" ]] || return 0
+
+	local main_bundles
+
+	main_bundles="$(_find_app_server_parent_dir "${main_worktree}" 2>/dev/null)" || return 0
+
+	local source_file="${main_bundles}/portal-ext.properties"
+
+	[[ -f ${source_file} ]] || return 0
+
+	local target_file="${BUNDLES_DIR}/portal-ext.properties"
+
+	touch "${target_file}"
+
+	local extracted
+
+	extracted="$(awk '
+		NR == FNR {
+			if (/^[[:space:]]*feature\.flag\.[^=]+=/) {
+				key = $0
+
+				sub(/=.*/, "", key)
+				sub(/^[[:space:]]+/, "", key)
+
+				existing[key] = 1
+			}
+
+			next
+		}
+
+		/^[[:space:]]*#/ {
+			if (comment_buf == "") {
+				comment_buf = $0
+			}
+			else {
+				comment_buf = comment_buf "\n" $0
+			}
+
+			next
+		}
+
+		/^feature\.flag\.[^=]+=true$/ {
+			key = $0
+
+			sub(/=.*/, "", key)
+
+			if (!(key in existing)) {
+				if (comment_buf != "") {
+					print comment_buf
+				}
+
+				print $0
+			}
+
+			comment_buf = ""
+
+			next
+		}
+
+		{
+			comment_buf = ""
+		}
+	' "${target_file}" "${source_file}")"
+
+	[[ -n ${extracted} ]] || return 0
+
+	if [[ -s ${target_file} ]] && [[ -n $(tail --bytes=1 "${target_file}") ]]
+	then
+		echo "" >> "${target_file}"
+	fi
+
+	echo "${extracted}" >> "${target_file}"
+}
+
 function _bundle_exists {
 	local bundles_dir="${1}"
 
@@ -623,6 +704,8 @@ function main {
 	_set_test_auto_deploy_dir
 	_set_test_integration_port
 	_set_tomcat_ports
+
+	_bring_master_feature_flags
 
 	[[ -z ${LIFERAY_PROVISION_SKIP_TOMCAT:-} ]] && "$(_find_tomcat_dir "${BUNDLES_DIR}")/bin/catalina.sh" jpda start >&2
 
