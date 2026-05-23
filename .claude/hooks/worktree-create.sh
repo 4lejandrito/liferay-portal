@@ -39,7 +39,7 @@ function _collect_claimed_offsets {
 
 	repo_dir="$(git -C "${WORKTREE_DIR}" rev-parse --show-toplevel)"
 
-	local line worktree_path bundles offset_file
+	local line worktree_path offset_file
 
 	while IFS= read -r line
 	do
@@ -49,9 +49,16 @@ function _collect_claimed_offsets {
 
 		[[ ${worktree_path} != "${WORKTREE_DIR}" ]] || continue
 
-		bundles="$(_find_app_server_parent_dir "${worktree_path}" 2>/dev/null)" || continue
+		offset_file="${worktree_path}/.worktree-port-offset"
 
-		offset_file="${bundles}/.worktree-port-offset"
+		if [[ ! -f ${offset_file} ]]
+		then
+			local bundles
+
+			bundles="$(_find_app_server_parent_dir "${worktree_path}" 2>/dev/null)" || continue
+
+			offset_file="${bundles}/.worktree-port-offset"
+		fi
 
 		[[ -f ${offset_file} ]] || continue
 
@@ -368,11 +375,20 @@ EOF
 }
 
 function _set_port_offset {
-	local offset_file="${BUNDLES_DIR}/.worktree-port-offset"
+	local offset_file="${WORKTREE_DIR}/.worktree-port-offset"
+	local legacy_file="${BUNDLES_DIR}/.worktree-port-offset"
 
 	if [[ -f ${offset_file} ]]
 	then
 		OFFSET="$(cat "${offset_file}")"
+
+		return
+	fi
+
+	if [[ -f ${legacy_file} ]]
+	then
+		OFFSET="$(cat "${legacy_file}")"
+		echo "${OFFSET}" > "${offset_file}"
 
 		return
 	fi
