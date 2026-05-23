@@ -387,6 +387,39 @@ function _set_property {
 	echo "${key}=${value}" >> "${file}"
 }
 
+function _set_test_auto_deploy_dir {
+	local source_file="${WORKTREE_DIR}/portal-impl/src/portal.properties"
+
+	[[ -f ${source_file} ]] || _die "${source_file} is missing."
+
+	local current_value
+
+	current_value="$(awk '
+		/^[[:space:]]*module\.framework\.auto\.deploy\.dirs=/ {
+			in_block = 1
+
+			sub(/^[[:space:]]*module\.framework\.auto\.deploy\.dirs=/, "")
+		}
+
+		in_block {
+			gsub(/[[:space:]]/, "")
+
+			if (sub(/\\$/, "")) {
+				printf "%s", $0
+			}
+			else {
+				print $0
+
+				exit
+			}
+		}
+	' "${source_file}")"
+
+	[[ -n ${current_value} ]] || _die "Unable to read module.framework.auto.deploy.dirs from ${source_file}."
+
+	_set_property "${BUNDLES_DIR}/portal-ext.properties" module.framework.auto.deploy.dirs "${current_value},\${module.framework.base.dir}/test"
+}
+
 function _set_test_integration_port {
 	local file="${WORKTREE_DIR}/.gradle/init.d/worktree-ports.gradle"
 
@@ -475,6 +508,7 @@ function main {
 	_set_playwright_port
 	_set_portal_home
 	_set_portal_http_address
+	_set_test_auto_deploy_dir
 	_set_test_integration_port
 	_set_tomcat_ports
 
