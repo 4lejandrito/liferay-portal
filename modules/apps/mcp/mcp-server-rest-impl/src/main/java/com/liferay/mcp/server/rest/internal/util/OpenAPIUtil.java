@@ -15,11 +15,15 @@ import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.HashMapBuilder;
-import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.LinkedHashMapBuilder;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.URLCodec;
 import com.liferay.portal.kernel.util.Validator;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
+import java.nio.charset.StandardCharsets;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,31 +41,39 @@ import java.util.UUID;
  */
 public class OpenAPIUtil {
 
-	public static Http.Options getOptions(
-		String baseURL, JSONObject inputJSONObject,
-		JSONObject openAPIJSONObject, String toolName) {
-
-		Http.Options options = new Http.Options();
+	public static Request getRequest(
+		JSONObject inputJSONObject, JSONObject openAPIJSONObject,
+		String toolName) {
 
 		Operation operation = _getOperation(openAPIJSONObject, toolName);
 
-		String url = baseURL + _getPath(inputJSONObject, operation);
+		String pathWithQuery = _getPath(inputJSONObject, operation);
 
 		String queryString = _getQueryString(inputJSONObject, operation);
 
 		if (!queryString.isEmpty()) {
-			url = url + StringPool.QUESTION + queryString;
+			pathWithQuery = pathWithQuery + StringPool.QUESTION + queryString;
 		}
 
-		options.setLocation(url);
-		options.setMethod(
-			Http.Method.valueOf(StringUtil.toUpperCase(operation._method)));
+		String method = StringUtil.toUpperCase(operation._method);
 
 		if (_isMultipartRequest(operation._operationJSONObject)) {
-			_setMultipartBody(
-				inputJSONObject, openAPIJSONObject, operation, options);
+			String boundary = UUID.randomUUID(
+			).toString();
+
+			byte[] body = _buildMultipartBody(
+				boundary, inputJSONObject, openAPIJSONObject, operation);
+
+			if (body == null) {
+				return new Request(method, pathWithQuery, null, null);
+			}
+
+			return new Request(
+				method, pathWithQuery,
+				"multipart/form-data; boundary=" + boundary, body);
 		}
-		else if (inputJSONObject.has("body")) {
+
+		if (inputJSONObject.has("body")) {
 			Object bodyValue = inputJSONObject.get("body");
 
 			String body = null;
@@ -74,14 +86,13 @@ public class OpenAPIUtil {
 			}
 
 			if (Validator.isNotNull(body)) {
-				options.setBody(
-					body, ContentTypes.APPLICATION_JSON, StringPool.UTF8);
-				options.addHeader(
-					"Content-Type", ContentTypes.APPLICATION_JSON);
+				return new Request(
+					method, pathWithQuery, ContentTypes.APPLICATION_JSON,
+					body.getBytes(StandardCharsets.UTF_8));
 			}
 		}
 
-		return options;
+		return new Request(method, pathWithQuery, null, null);
 	}
 
 	public static Tool getTool(JSONObject openAPIJSONObject, String toolName) {
@@ -138,6 +149,41 @@ public class OpenAPIUtil {
 		}
 
 		return toolSummaries;
+	}
+
+	public static class Request {
+
+		public Request(
+			String method, String pathWithQuery, String contentType,
+			byte[] body) {
+
+			_method = method;
+			_pathWithQuery = pathWithQuery;
+			_contentType = contentType;
+			_body = body;
+		}
+
+		public byte[] getBody() {
+			return _body;
+		}
+
+		public String getContentType() {
+			return _contentType;
+		}
+
+		public String getMethod() {
+			return _method;
+		}
+
+		public String getPathWithQuery() {
+			return _pathWithQuery;
+		}
+
+		private final byte[] _body;
+		private final String _contentType;
+		private final String _method;
+		private final String _pathWithQuery;
+
 	}
 
 	private static void _addMultipartParts(
@@ -290,6 +336,96 @@ public class OpenAPIUtil {
 		).put(
 			"type", "object"
 		).build();
+	}
+
+	private static byte[] _buildMultipartBody(
+		String boundary, JSONObject inputJSONObject,
+		JSONObject openAPIJSONObject, Operation operation) {
+
+		Map<String, Object> bodySchema = (Map<String, Object>)_resolveRefs(
+			openAPIJSONObject,
+			_getBodySchemaJSONObject(operation._operationJSONObject),
+			new HashSet<>());
+
+		Map<String, Object> partProperties =
+			(Map<String, Object>)bodySchema.get("properties");
+
+		if (partProperties == null) {
+			return null;
+		}
+
+		List<FilePart> fileParts = new ArrayList<>();
+		Map<String, String> parts = new LinkedHashMap<>();
+
+		for (Map.Entry<String, Object> entry : partProperties.entrySet()) {
+			String partName = entry.getKey();
+
+			if (!inputJSONObject.has(partName)) {
+				continue;
+			}
+
+			Object value = inputJSONObject.get(partName);
+
+			if (value == null) {
+				continue;
+			}
+
+			Map<String, Object> partSchema =
+				(Map<String, Object>)entry.getValue();
+
+			if (Objects.equals(partSchema.get("format"), "binary")) {
+				fileParts.add(_getFilePart(partName, value));
+			}
+			else {
+				parts.put(partName, _getPart(value));
+			}
+		}
+
+		if (fileParts.isEmpty() && parts.isEmpty()) {
+			return null;
+		}
+
+		ByteArrayOutputStream byteArrayOutputStream =
+			new ByteArrayOutputStream();
+
+		try {
+			for (Map.Entry<String, String> entry : parts.entrySet()) {
+				_writeASCII(byteArrayOutputStream, "--", boundary, _CRLF);
+				_writeASCII(
+					byteArrayOutputStream,
+					"Content-Disposition: form-data; name=\"", entry.getKey(),
+					"\"", _CRLF, "Content-Type: ", ContentTypes.TEXT_PLAIN_UTF8,
+					_CRLF, _CRLF);
+
+				byteArrayOutputStream.write(
+					entry.getValue(
+					).getBytes(
+						StandardCharsets.UTF_8
+					));
+
+				_writeASCII(byteArrayOutputStream, _CRLF);
+			}
+
+			for (FilePart filePart : fileParts) {
+				_writeASCII(byteArrayOutputStream, "--", boundary, _CRLF);
+				_writeASCII(
+					byteArrayOutputStream,
+					"Content-Disposition: form-data; name=\"", filePart._name,
+					"\"; filename=\"", filePart._fileName, "\"", _CRLF,
+					"Content-Type: ", filePart._contentType, _CRLF, _CRLF);
+
+				byteArrayOutputStream.write(filePart._bytes);
+
+				_writeASCII(byteArrayOutputStream, _CRLF);
+			}
+
+			_writeASCII(byteArrayOutputStream, "--", boundary, "--", _CRLF);
+		}
+		catch (IOException ioException) {
+			throw new RuntimeException(ioException);
+		}
+
+		return byteArrayOutputStream.toByteArray();
 	}
 
 	private static Map<String, Object> _collectMatchingParameters(
@@ -487,7 +623,7 @@ public class OpenAPIUtil {
 		return StringUtil.toUpperCase(method) + StringPool.SPACE + path;
 	}
 
-	private static Http.FilePart _getFilePart(String name, Object value) {
+	private static FilePart _getFilePart(String name, Object value) {
 		String fileName = name;
 		String contentType = ContentTypes.APPLICATION_OCTET_STREAM;
 		String base64Data;
@@ -524,10 +660,8 @@ public class OpenAPIUtil {
 
 		Base64.Decoder decoder = Base64.getDecoder();
 
-		byte[] bytes = decoder.decode(base64Data);
-
-		return new Http.FilePart(
-			name, fileName, bytes, contentType, StringPool.UTF8);
+		return new FilePart(
+			name, fileName, contentType, decoder.decode(base64Data));
 	}
 
 	private static Map<String, Object> _getInputSchema(
@@ -860,63 +994,17 @@ public class OpenAPIUtil {
 		return value;
 	}
 
-	private static void _setMultipartBody(
-		JSONObject inputJSONObject, JSONObject openAPIJSONObject,
-		Operation operation, Http.Options options) {
+	private static void _writeASCII(
+			ByteArrayOutputStream byteArrayOutputStream, String... strings)
+		throws IOException {
 
-		Map<String, Object> bodySchema = (Map<String, Object>)_resolveRefs(
-			openAPIJSONObject,
-			_getBodySchemaJSONObject(operation._operationJSONObject),
-			new HashSet<>());
-
-		Map<String, Object> partProperties =
-			(Map<String, Object>)bodySchema.get("properties");
-
-		if (partProperties == null) {
-			return;
-		}
-
-		List<Http.FilePart> fileParts = new ArrayList<>();
-		Map<String, String> parts = new LinkedHashMap<>();
-
-		for (Map.Entry<String, Object> entry : partProperties.entrySet()) {
-			String partName = entry.getKey();
-
-			if (!inputJSONObject.has(partName)) {
-				continue;
-			}
-
-			Object value = inputJSONObject.get(partName);
-
-			if (value == null) {
-				continue;
-			}
-
-			Map<String, Object> partSchema =
-				(Map<String, Object>)entry.getValue();
-
-			if (Objects.equals(partSchema.get("format"), "binary")) {
-				fileParts.add(_getFilePart(partName, value));
-			}
-			else {
-				parts.put(partName, _getPart(value));
-			}
-		}
-
-		if (!fileParts.isEmpty()) {
-			options.setFileParts(fileParts);
-		}
-
-		if (!parts.isEmpty()) {
-			options.setParts(parts);
-		}
-
-		if (!fileParts.isEmpty() || !parts.isEmpty()) {
-			options.addHeader(
-				"Content-Type",
-				"multipart/form-data; boundary=" + UUID.randomUUID());
+		for (String string : strings) {
+			byteArrayOutputStream.write(
+				string.getBytes(StandardCharsets.UTF_8));
 		}
 	}
+
+	private static final String _CRLF = "\r\n";
 
 	private static final String[] _METHODS = {
 		"delete", "get", "head", "options", "patch", "post", "put"
@@ -926,6 +1014,24 @@ public class OpenAPIUtil {
 		"actions", "example", "exclusiveMaximum", "exclusiveMinimum", "xml");
 	private static final Set<String> _vulcanFieldSelectionParameterNames =
 		Set.of("fields", "restrictFields");
+
+	private static class FilePart {
+
+		private FilePart(
+			String name, String fileName, String contentType, byte[] bytes) {
+
+			_name = name;
+			_fileName = fileName;
+			_contentType = contentType;
+			_bytes = bytes;
+		}
+
+		private final byte[] _bytes;
+		private final String _contentType;
+		private final String _fileName;
+		private final String _name;
+
+	}
 
 	private static class Operation {
 

@@ -9,14 +9,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.liferay.mcp.server.rest.dto.v1_0.Tool;
 import com.liferay.mcp.server.rest.dto.v1_0.ToolSummary;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.test.AssertUtils;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
-import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.test.rule.LiferayUnitTestRule;
+
+import java.nio.charset.StandardCharsets;
 
 import java.util.Base64;
 import java.util.List;
@@ -49,44 +51,37 @@ public class OpenAPIUtilTest {
 	}
 
 	@Test
-	public void testGetOptions() {
-		_testGetOptions(
-			null, null, Http.Method.GET,
-			"http://localhost/test/v1.0/items?restrictFields=actions",
+	public void testGetRequest() {
+		_testGetRequest(
+			null, null, "GET", "/v1.0/items?restrictFields=actions",
 			JSONFactoryUtil.createJSONObject(), "getItems");
-		_testGetOptions(
-			null, null, Http.Method.GET,
-			"http://localhost/test/v1.0/items?page=1&pageSize=20" +
-				"&restrictFields=actions",
+		_testGetRequest(
+			null, null, "GET",
+			"/v1.0/items?page=1&pageSize=20&restrictFields=actions",
 			JSONUtil.put(
 				"page", "1"
 			).put(
 				"pageSize", "20"
 			),
 			"getItems");
-		_testGetOptions(
-			null, null, Http.Method.GET,
-			"http://localhost/test/v1.0/items?filter=name+eq+%27John+Doe%27" +
-				"&restrictFields=actions",
+		_testGetRequest(
+			null, null, "GET",
+			"/v1.0/items?filter=name+eq+%27John+Doe%27&restrictFields=actions",
 			JSONUtil.put("filter", "name eq 'John Doe'"), "getItems");
-		_testGetOptions(
-			null, null, Http.Method.GET,
-			"http://localhost/test/v1.0/items?restrictFields=actions",
+		_testGetRequest(
+			null, null, "GET", "/v1.0/items?restrictFields=actions",
 			JSONUtil.put("fields", "name"), "getItems");
-		_testGetOptions(
-			null, null, Http.Method.GET,
-			"http://localhost/test/v1.0/items?restrictFields=actions",
+		_testGetRequest(
+			null, null, "GET", "/v1.0/items?restrictFields=actions",
 			JSONUtil.put("restrictFields", "name"), "getItems");
-		_testGetOptions(
-			null, null, Http.Method.GET,
-			"http://localhost/test/v1.0/items/123?restrictFields=actions",
+		_testGetRequest(
+			null, null, "GET", "/v1.0/items/123?restrictFields=actions",
 			JSONUtil.put("itemId", "123"), "getItem");
-		_testGetOptions(
+		_testGetRequest(
 			JSONUtil.put(
 				"name", "Test"
 			).toString(),
-			"application/json", Http.Method.PATCH,
-			"http://localhost/test/v1.0/items/123",
+			"application/json", "PATCH", "/v1.0/items/123",
 			JSONUtil.put(
 				"body", JSONUtil.put("name", "Test")
 			).put(
@@ -98,8 +93,7 @@ public class OpenAPIUtilTest {
 		String fileName = RandomTestUtil.randomString();
 		String name = RandomTestUtil.randomString();
 
-		Http.Options options = OpenAPIUtil.getOptions(
-			"http://localhost/test",
+		OpenAPIUtil.Request request = OpenAPIUtil.getRequest(
 			JSONUtil.put(
 				"data",
 				JSONUtil.put(
@@ -119,30 +113,32 @@ public class OpenAPIUtilTest {
 			),
 			_openAPIJSONObject, "postBinary");
 
-		Assert.assertNull(options.getBody());
-		_assertMultipartContentType(options);
-		Assert.assertEquals(Http.Method.POST, options.getMethod());
-		Assert.assertEquals(
-			"http://localhost/test/v1.0/binaries", options.getLocation());
+		Assert.assertEquals("POST", request.getMethod());
+		Assert.assertEquals("/v1.0/binaries", request.getPathWithQuery());
 
-		List<Http.FilePart> fileParts = options.getFileParts();
+		String boundary = _assertMultipartContentType(request);
+		String body = new String(request.getBody(), StandardCharsets.UTF_8);
 
-		Assert.assertEquals(fileParts.toString(), 1, fileParts.size());
+		Assert.assertTrue(
+			body,
+			body.contains(
+				StringBundler.concat(
+					"--", boundary,
+					"\r\nContent-Disposition: form-data; name=\"name\"\r\n",
+					"Content-Type: text/plain; charset=UTF-8\r\n\r\n", name,
+					"\r\n")));
+		Assert.assertTrue(
+			body,
+			body.contains(
+				StringBundler.concat(
+					"--", boundary,
+					"\r\nContent-Disposition: form-data; name=\"data\"; ",
+					"filename=\"", fileName,
+					"\"\r\nContent-Type: text/plain\r\n\r\n", fileContent,
+					"\r\n")));
+		Assert.assertTrue(body, body.endsWith("--" + boundary + "--\r\n"));
 
-		Http.FilePart filePart = fileParts.get(0);
-
-		Assert.assertEquals("text/plain", filePart.getContentType());
-		Assert.assertEquals(fileName, filePart.getFileName());
-		Assert.assertEquals("data", filePart.getName());
-		Assert.assertArrayEquals(fileContent.getBytes(), filePart.getValue());
-
-		Map<String, String> parts = options.getParts();
-
-		Assert.assertEquals(parts.toString(), 1, parts.size());
-		Assert.assertEquals(name, parts.get("name"));
-
-		options = OpenAPIUtil.getOptions(
-			"http://localhost/test",
+		request = OpenAPIUtil.getRequest(
 			JSONUtil.put(
 				"boolean", true
 			).put(
@@ -152,19 +148,37 @@ public class OpenAPIUtilTest {
 			),
 			_openAPIJSONObject, "postUpload");
 
-		Assert.assertNull(options.getBody());
-		_assertMultipartContentType(options);
-		Assert.assertNull(options.getFileParts());
-		Assert.assertEquals(Http.Method.POST, options.getMethod());
-		Assert.assertEquals(
-			"http://localhost/test/v1.0/uploads", options.getLocation());
+		Assert.assertEquals("POST", request.getMethod());
+		Assert.assertEquals("/v1.0/uploads", request.getPathWithQuery());
 
-		parts = options.getParts();
+		boundary = _assertMultipartContentType(request);
+		body = new String(request.getBody(), StandardCharsets.UTF_8);
 
-		Assert.assertEquals(parts.toString(), 3, parts.size());
-		Assert.assertEquals("true", parts.get("boolean"));
-		Assert.assertEquals("1", parts.get("integer"));
-		Assert.assertEquals(fileContent, parts.get("string"));
+		Assert.assertTrue(
+			body,
+			body.contains(
+				StringBundler.concat(
+					"--", boundary,
+					"\r\nContent-Disposition: form-data; name=\"boolean\"",
+					"\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\n",
+					"true\r\n")));
+		Assert.assertTrue(
+			body,
+			body.contains(
+				StringBundler.concat(
+					"--", boundary,
+					"\r\nContent-Disposition: form-data; name=\"integer\"",
+					"\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\n",
+					"1\r\n")));
+		Assert.assertTrue(
+			body,
+			body.contains(
+				StringBundler.concat(
+					"--", boundary,
+					"\r\nContent-Disposition: form-data; name=\"string\"",
+					"\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\n",
+					fileContent, "\r\n")));
+		Assert.assertTrue(body, body.endsWith("--" + boundary + "--\r\n"));
 	}
 
 	@Test
@@ -254,13 +268,16 @@ public class OpenAPIUtilTest {
 				JSONFactoryUtil.createJSONObject()));
 	}
 
-	private void _assertMultipartContentType(Http.Options options) {
-		String contentTypeHeader = options.getHeader("Content-Type");
+	private String _assertMultipartContentType(OpenAPIUtil.Request request) {
+		String contentType = request.getContentType();
 
-		Assert.assertNotNull(contentTypeHeader);
-		Assert.assertTrue(
-			contentTypeHeader,
-			contentTypeHeader.startsWith("multipart/form-data; boundary="));
+		Assert.assertNotNull(contentType);
+
+		String prefix = "multipart/form-data; boundary=";
+
+		Assert.assertTrue(contentType, contentType.startsWith(prefix));
+
+		return contentType.substring(prefix.length());
 	}
 
 	private void _assertToolSummary(
@@ -284,29 +301,27 @@ public class OpenAPIUtilTest {
 			getClass().getResourceAsStream("dependencies/" + fileName));
 	}
 
-	private void _testGetOptions(
-		String expectedBody, String expectedContentType,
-		Http.Method expectedMethod, String expectedURL,
-		JSONObject inputJSONObject, String toolName) {
+	private void _testGetRequest(
+		String expectedBody, String expectedContentType, String expectedMethod,
+		String expectedPathWithQuery, JSONObject inputJSONObject,
+		String toolName) {
 
-		Http.Options options = OpenAPIUtil.getOptions(
-			"http://localhost/test", inputJSONObject, _openAPIJSONObject,
-			toolName);
-
-		Http.Body body = options.getBody();
+		OpenAPIUtil.Request request = OpenAPIUtil.getRequest(
+			inputJSONObject, _openAPIJSONObject, toolName);
 
 		if (expectedBody == null) {
-			Assert.assertNull(body);
+			Assert.assertNull(request.getBody());
+			Assert.assertNull(request.getContentType());
 		}
 		else {
-			Assert.assertEquals(expectedBody, body.getContent());
-			Assert.assertEquals(expectedContentType, body.getContentType());
+			Assert.assertEquals(
+				expectedBody,
+				new String(request.getBody(), StandardCharsets.UTF_8));
+			Assert.assertEquals(expectedContentType, request.getContentType());
 		}
 
-		Assert.assertNull(options.getFileParts());
-		Assert.assertEquals(expectedURL, options.getLocation());
-		Assert.assertEquals(expectedMethod, options.getMethod());
-		Assert.assertNull(options.getParts());
+		Assert.assertEquals(expectedMethod, request.getMethod());
+		Assert.assertEquals(expectedPathWithQuery, request.getPathWithQuery());
 	}
 
 	private void _testGetTool(

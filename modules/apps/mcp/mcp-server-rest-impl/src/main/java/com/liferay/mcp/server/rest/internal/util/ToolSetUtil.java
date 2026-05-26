@@ -10,7 +10,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.liferay.mcp.server.rest.dto.v1_0.Tool;
 import com.liferay.mcp.server.rest.dto.v1_0.ToolSet;
 import com.liferay.mcp.server.rest.dto.v1_0.ToolSummary;
+import com.liferay.mcp.server.rest.internal.servlet.MCPServerHttpServletRequestWrapper;
+import com.liferay.mcp.server.rest.internal.servlet.MCPServerHttpServletResponse;
 import com.liferay.petra.function.transform.TransformUtil;
+import com.liferay.petra.io.unsync.UnsyncStringWriter;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
@@ -19,13 +22,15 @@ import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.module.service.Snapshot;
+import com.liferay.portal.kernel.security.access.control.AccessControlUtil;
+import com.liferay.portal.kernel.security.auth.AccessControlContext;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
+import com.liferay.portal.kernel.servlet.PipingServletResponse;
+import com.liferay.portal.kernel.servlet.ServletContextPool;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.HashMapBuilder;
-import com.liferay.portal.kernel.util.Http;
-import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.Portal;
-import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.vulcan.jackson.databind.ObjectMapperProviderUtil;
@@ -34,6 +39,8 @@ import com.liferay.portal.vulcan.pagination.Page;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 
 import jakarta.ws.rs.core.Response;
@@ -147,55 +154,67 @@ public class ToolSetUtil {
 			}
 		}
 
-		Http.Options options = _getOptions(
-			httpServletRequest, inputJSONObject, toolName, toolSetName);
+		OpenAPIBrief openAPIBrief = _getOpenAPIBrief(toolSetName);
 
-		String content = _getContent(HttpUtil.URLtoString(options));
+		OpenAPIUtil.Request request = OpenAPIUtil.getRequest(
+			inputJSONObject,
+			_getOpenAPIJSONObject(openAPIBrief, httpServletRequest), toolName);
 
-		Http.Response response = options.getResponse();
+		DispatchResult dispatchResult = _dispatch(
+			httpServletRequest, request.getMethod(),
+			openAPIBrief._basePath + request.getPathWithQuery(),
+			request.getContentType(), request.getBody());
 
 		return Response.status(
-			response.getResponseCode()
+			dispatchResult._status
 		).entity(
-			content
+			_getContent(dispatchResult._body)
 		).type(
 			ContentTypes.TEXT_PLAIN_UTF8
 		).build();
 	}
 
-	private static String _get(
-			HttpServletRequest httpServletRequest, String url)
+	private static DispatchResult _dispatch(
+			HttpServletRequest httpServletRequest, String method, String path,
+			String contentType, byte[] body)
 		throws Exception {
 
-		Http.Options options = new Http.Options();
+		ServletContext servletContext = _getServletContext();
 
-		Map<String, String> headers = _getHeaders(httpServletRequest);
+		RequestDispatcher requestDispatcher =
+			servletContext.getRequestDispatcher(Portal.PATH_MODULE + path);
 
-		if (!headers.isEmpty()) {
-			options.setHeaders(headers);
+		UnsyncStringWriter unsyncStringWriter = new UnsyncStringWriter();
+
+		MCPServerHttpServletResponse mcpServerHttpServletResponse =
+			new MCPServerHttpServletResponse();
+
+		PipingServletResponse pipingServletResponse = new PipingServletResponse(
+			mcpServerHttpServletResponse, unsyncStringWriter);
+
+		AccessControlContext accessControlContext =
+			AccessControlUtil.getAccessControlContext();
+		PermissionChecker permissionChecker =
+			PermissionThreadLocal.getPermissionChecker();
+
+		try {
+			AccessControlUtil.setAccessControlContext(null);
+
+			requestDispatcher.forward(
+				new MCPServerHttpServletRequestWrapper(
+					httpServletRequest, method, path, contentType, body),
+				pipingServletResponse);
+		}
+		finally {
+			AccessControlUtil.setAccessControlContext(accessControlContext);
+			PermissionThreadLocal.setPermissionChecker(permissionChecker);
 		}
 
-		options.setLocation(url);
-		options.setTimeout(60000);
+		String responseBody = unsyncStringWriter.toString();
 
-		String content = HttpUtil.URLtoString(options);
-
-		Http.Response response = options.getResponse();
-
-		int responseCode = response.getResponseCode();
-
-		if (responseCode >= 300) {
-			throw new Exception(
-				StringBundler.concat(
-					"HTTP ", responseCode, " for ", url, ": ", content));
-		}
-
-		return content;
-	}
-
-	private static String _getBaseURL(HttpServletRequest httpServletRequest) {
-		return PortalUtil.getPortalURL(httpServletRequest) +
-			PortalUtil.getPathContext() + Portal.PATH_MODULE;
+		return new DispatchResult(
+			mcpServerHttpServletResponse.getStatus(),
+			Validator.isNull(responseBody) ? null : responseBody);
 	}
 
 	private static String _getContent(String content) {
@@ -248,34 +267,6 @@ public class ToolSetUtil {
 		}
 
 		return description;
-	}
-
-	private static Map<String, String> _getHeaders(
-		HttpServletRequest httpServletRequest) {
-
-		String authorization = httpServletRequest.getHeader("Authorization");
-
-		if (authorization != null) {
-			return HashMapBuilder.put(
-				"Authorization", authorization
-			).build();
-		}
-
-		Map<String, String> headers = new HashMap<>();
-
-		String cookie = httpServletRequest.getHeader("Cookie");
-
-		if (cookie != null) {
-			headers.put("Cookie", cookie);
-		}
-
-		String csrfToken = httpServletRequest.getHeader("X-CSRF-Token");
-
-		if (csrfToken != null) {
-			headers.put("X-CSRF-Token", csrfToken);
-		}
-
-		return headers;
 	}
 
 	private static OpenAPIBrief _getOpenAPIBrief(String toolSetName) {
@@ -334,12 +325,21 @@ public class ToolSetUtil {
 		OpenAPIBrief openAPIBrief, HttpServletRequest httpServletRequest) {
 
 		return _openAPIJSONObjectCache.computeIfAbsent(
-			_getBaseURL(httpServletRequest) + openAPIBrief._basePath +
-				openAPIBrief._openAPIPath,
-			url -> {
+			openAPIBrief._basePath + openAPIBrief._openAPIPath,
+			path -> {
 				try {
+					DispatchResult dispatchResult = _dispatch(
+						httpServletRequest, "GET", path, null, null);
+
+					if (dispatchResult._status >= 300) {
+						throw new RuntimeException(
+							StringBundler.concat(
+								"HTTP ", dispatchResult._status, " for ", path,
+								": ", dispatchResult._body));
+					}
+
 					return JSONFactoryUtil.createJSONObject(
-						_get(httpServletRequest, url));
+						dispatchResult._body);
 				}
 				catch (Exception exception) {
 					throw new RuntimeException(exception);
@@ -379,35 +379,26 @@ public class ToolSetUtil {
 		return null;
 	}
 
-	private static Http.Options _getOptions(
-		HttpServletRequest httpServletRequest, JSONObject inputJSONObject,
-		String toolName, String toolSetName) {
-
-		OpenAPIBrief openAPIBrief = _getOpenAPIBrief(toolSetName);
-
-		Http.Options options = OpenAPIUtil.getOptions(
-			_getBaseURL(httpServletRequest) + openAPIBrief._basePath,
-			inputJSONObject,
-			_getOpenAPIJSONObject(openAPIBrief, httpServletRequest), toolName);
-
-		Map<String, String> headers = _getHeaders(httpServletRequest);
-
-		if (options.getHeaders() != null) {
-			headers.putAll(options.getHeaders());
-		}
-
-		options.setHeaders(headers);
-		options.setTimeout(60000);
-
-		return options;
-	}
-
 	private static Response _getResponse(Object value) throws Exception {
 		ObjectMapper objectMapper = ObjectMapperProviderUtil.getObjectMapper();
 
 		return Response.ok(
 			objectMapper.writeValueAsString(value), ContentTypes.TEXT_PLAIN_UTF8
 		).build();
+	}
+
+	private static ServletContext _getServletContext() {
+		ServletContext servletContext = _servletContext;
+
+		if (servletContext != null) {
+			return servletContext;
+		}
+
+		servletContext = ServletContextPool.get(StringPool.BLANK);
+
+		_servletContext = servletContext;
+
+		return servletContext;
 	}
 
 	private static Map<String, String> _getToolSetDescriptions() {
@@ -480,6 +471,19 @@ public class ToolSetUtil {
 			ToolSetUtil.class, JaxrsServiceRuntime.class);
 	private static final Map<String, JSONObject> _openAPIJSONObjectCache =
 		new ConcurrentHashMap<>();
+	private static volatile ServletContext _servletContext;
+
+	private static class DispatchResult {
+
+		private DispatchResult(int status, String body) {
+			_status = status;
+			_body = body;
+		}
+
+		private final String _body;
+		private final int _status;
+
+	}
 
 	private static class OpenAPIBrief {
 
