@@ -21,6 +21,87 @@ function _all_ports_free_for_offset {
 	return 0
 }
 
+function _bring_master_feature_flags {
+	[[ ${LIFERAY_BRING_MASTER_FLAGS:-} == yes ]] || return 0
+
+	local main_worktree
+
+	main_worktree="$(_resolve_main_worktree_dir)"
+
+	[[ -n ${main_worktree} && ${main_worktree} != "${WORKTREE_DIR}" ]] || return 0
+
+	local main_bundles
+
+	main_bundles="$(_find_app_server_parent_dir "${main_worktree}" 2>/dev/null)" || return 0
+
+	local source_file="${main_bundles}/portal-ext.properties"
+
+	[[ -f ${source_file} ]] || return 0
+
+	local target_file="${BUNDLES_DIR}/portal-ext.properties"
+
+	touch "${target_file}"
+
+	local extracted
+
+	extracted="$(awk '
+		NR == FNR {
+			if (/^[[:space:]]*feature\.flag\.[^=]+=/) {
+				key = $0
+
+				sub(/=.*/, "", key)
+				sub(/^[[:space:]]+/, "", key)
+
+				existing[key] = 1
+			}
+
+			next
+		}
+
+		/^[[:space:]]*#/ {
+			if (comment_buf == "") {
+				comment_buf = $0
+			}
+			else {
+				comment_buf = comment_buf "\n" $0
+			}
+
+			next
+		}
+
+		/^feature\.flag\.[^=]+=true$/ {
+			key = $0
+
+			sub(/=.*/, "", key)
+
+			if (!(key in existing)) {
+				if (comment_buf != "") {
+					print comment_buf
+				}
+
+				print $0
+			}
+
+			comment_buf = ""
+
+			next
+		}
+
+		{
+			comment_buf = ""
+		}
+	' "${target_file}" "${source_file}")"
+
+	[[ -n ${extracted} ]] || return 0
+
+	if [[ -s ${target_file} ]] && [[ -n $(tail --bytes=1 "${target_file}") ]]
+	then
+		echo "" >> "${target_file}"
+	fi
+
+	echo "${extracted}" >> "${target_file}"
+}
+
 function _bundle_exists {
 	local bundles_dir="${1}"
 
@@ -39,7 +120,7 @@ function _collect_claimed_offsets {
 
 	repo_dir="$(git -C "${WORKTREE_DIR}" rev-parse --show-toplevel)"
 
-	local line worktree_path bundles offset_file
+	local line worktree_path offset_file
 
 	while IFS= read -r line
 	do
@@ -49,9 +130,16 @@ function _collect_claimed_offsets {
 
 		[[ ${worktree_path} != "${WORKTREE_DIR}" ]] || continue
 
-		bundles="$(_find_app_server_parent_dir "${worktree_path}" 2>/dev/null)" || continue
+		offset_file="${worktree_path}/.worktree-port-offset"
 
-		offset_file="${bundles}/.worktree-port-offset"
+		if [[ ! -f ${offset_file} ]]
+		then
+			local bundles
+
+			bundles="$(_find_app_server_parent_dir "${worktree_path}" 2>/dev/null)" || continue
+
+			offset_file="${bundles}/.worktree-port-offset"
+		fi
 
 		[[ -f ${offset_file} ]] || continue
 
@@ -79,6 +167,13 @@ function _create_worktree {
 		else
 			git -C "${cwd}" worktree add -b "${name}" "${target_path}" HEAD >&2
 		fi
+	fi
+
+	if [[ ${LIFERAY_WORKTREE_REFRESH_BASE:-false} == true ]]
+	then
+		git -C "${cwd}" fetch --no-tags upstream master >&2
+
+		(cd "${target_path}" && git rebase upstream/master >&2) || _die "Failed to rebase ${name} onto upstream/master."
 	fi
 
 	WORKTREE_DIR="${target_path}"
@@ -132,6 +227,8 @@ function _reuse_worktree {
 
 		_bundle_exists "${BUNDLES_DIR}" || _die "Bundle copy finished but no tomcat-* directory exists under ${BUNDLES_DIR}."
 	fi
+
+	(cd "${WORKTREE_DIR}" && ANT_OPTS="-Xmx2560m" ant setup-sdk >&2) || _die "ant setup-sdk failed under ${WORKTREE_DIR}."
 }
 
 function _sed_inplace {
@@ -196,18 +293,35 @@ function _set_database {
 	_set_property "${file}" jdbc.default.username "${existing_user}"
 	_set_property "${file}" jdbc.default.password "${existing_password}"
 
-	command -v mysql >/dev/null 2>&1 || return 0
+	local main_worktree
 
-	local mysql_args=()
+	main_worktree="$(_resolve_main_worktree_dir)"
 
-	if [[ -n ${existing_password} ]]
+	local container=
+	local root_password=
+
+	if [[ -n ${main_worktree} ]]
 	then
-		mysql_args+=(--password="${existing_password}")
+		container="$(_get_property "${main_worktree}/app.server.${USER}.properties" "worktree\.mysql\.container")"
+		root_password="$(_get_property "${main_worktree}/app.server.${USER}.properties" "worktree\.mysql\.root\.password")"
 	fi
 
-	mysql_args+=(--user "${existing_user}")
+	local mysql_command=()
 
-	mysql "${mysql_args[@]}" --execute "CREATE DATABASE IF NOT EXISTS ${db_name} CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;" >&2 || true
+	if [[ -n ${container} ]]
+	then
+		command -v docker >/dev/null 2>&1 || return 0
+
+		docker container inspect "${container}" >/dev/null 2>&1 || return 0
+
+		mysql_command=(docker exec --env "MYSQL_PWD=${root_password}" "${container}" mysql)
+	else
+		command -v mysql >/dev/null 2>&1 || return 0
+
+		mysql_command=(env "MYSQL_PWD=${root_password}" mysql)
+	fi
+
+	"${mysql_command[@]}" --user root --execute "CREATE DATABASE IF NOT EXISTS ${db_name} CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci; GRANT ALL ON ${db_name}.* TO '${existing_user}'@'%';" >&2 || true
 }
 
 function _set_debug_port {
@@ -229,7 +343,7 @@ function _set_elasticsearch_ports {
 
 	mkdir --parents "${configs_dir}"
 
-	local es_version=elasticsearch8
+	local es_version=
 
 	if [[ -f ${configs_dir}/com.liferay.portal.search.elasticsearch7.configuration.ElasticsearchConfiguration.config ]]
 	then
@@ -239,16 +353,78 @@ function _set_elasticsearch_ports {
 		es_version=elasticsearch8
 	fi
 
-	local file="${configs_dir}/com.liferay.portal.search.${es_version}.configuration.ElasticsearchConfiguration.config"
-	local sidecar=$((9201 + OFFSET))
-	local transport=$((9301 + OFFSET))
+	if [[ -z ${es_version} ]]
+	then
+		local branch
 
-	_atomic_write "${file}" <<EOF
+		branch="$(git -C "${WORKTREE_DIR}" rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
+
+		if [[ ${branch} == master ]]
+		then
+			es_version=elasticsearch8
+		elif [[ ${branch} =~ ^release-([0-9]{4})\.q([1-4])$ ]]
+		then
+			local year="${BASH_REMATCH[1]}"
+			local quarter="${BASH_REMATCH[2]}"
+
+			if (( year > 2025 )) || (( year == 2025 && quarter >= 3 ))
+			then
+				es_version=elasticsearch8
+			else
+				es_version=elasticsearch7
+			fi
+		fi
+	fi
+
+	if [[ -z ${es_version} ]]
+	then
+		if [[ -d ${WORKTREE_DIR}/modules/apps/portal-search-elasticsearch7 ]]
+		then
+			es_version=elasticsearch7
+		elif [[ -d ${WORKTREE_DIR}/modules/apps/portal-search-elasticsearch8 ]]
+		then
+			es_version=elasticsearch8
+		fi
+	fi
+
+	es_version="${es_version:-elasticsearch8}"
+
+	local file="${configs_dir}/com.liferay.portal.search.${es_version}.configuration.ElasticsearchConfiguration.config"
+
+	local main_worktree
+
+	main_worktree="$(_resolve_main_worktree_dir)"
+
+	local endpoint=
+
+	if [[ -n ${main_worktree} ]]
+	then
+		endpoint="$(_get_property "${main_worktree}/app.server.${USER}.properties" "worktree\.elasticsearch\.endpoint")"
+	fi
+
+	local prefix
+
+	prefix="$(_derive_es_index_prefix "$(basename "${WORKTREE_DIR}")")"
+
+	if [[ -n ${endpoint} ]]
+	then
+		_atomic_write "${file}" <<EOF
+indexNamePrefix="${prefix}"
+networkHostAddresses=["${endpoint}"]
+productionModeEnabled=B"true"
+EOF
+	else
+		local sidecar=$((9201 + OFFSET))
+		local transport=$((9301 + OFFSET))
+
+		_atomic_write "${file}" <<EOF
+indexNamePrefix="${prefix}"
 sidecarHttpPort="${sidecar}"
 transportTcpPort="${transport}"
 networkBindHost="127.0.0.1"
 networkPublishHost="127.0.0.1"
 EOF
+	fi
 }
 
 function _set_glowroot_port {
@@ -323,11 +499,20 @@ EOF
 }
 
 function _set_port_offset {
-	local offset_file="${BUNDLES_DIR}/.worktree-port-offset"
+	local offset_file="${WORKTREE_DIR}/.worktree-port-offset"
+	local legacy_file="${BUNDLES_DIR}/.worktree-port-offset"
 
 	if [[ -f ${offset_file} ]]
 	then
 		OFFSET="$(cat "${offset_file}")"
+
+		return
+	fi
+
+	if [[ -f ${legacy_file} ]]
+	then
+		OFFSET="$(cat "${legacy_file}")"
+		echo "${OFFSET}" > "${offset_file}"
 
 		return
 	fi
@@ -368,6 +553,13 @@ function _set_portal_http_address {
 	_set_property "${BUNDLES_DIR}/portal-ext.properties" portal.instance.inet.socket.address "localhost:${http_port}"
 }
 
+function _set_poshi_portal_url {
+	local file="${WORKTREE_DIR}/test.${USER}.properties"
+	local http_port=$((8080 + OFFSET))
+
+	_set_property "${file}" default.portal.url "http://localhost:${http_port}"
+}
+
 function _set_property {
 	local file="${1}"
 	local key="${2}"
@@ -385,6 +577,39 @@ function _set_property {
 	fi
 
 	echo "${key}=${value}" >> "${file}"
+}
+
+function _set_test_auto_deploy_dir {
+	local source_file="${WORKTREE_DIR}/portal-impl/src/portal.properties"
+
+	[[ -f ${source_file} ]] || _die "${source_file} is missing."
+
+	local current_value
+
+	current_value="$(awk '
+		/^[[:space:]]*module\.framework\.auto\.deploy\.dirs=/ {
+			in_block = 1
+
+			sub(/^[[:space:]]*module\.framework\.auto\.deploy\.dirs=/, "")
+		}
+
+		in_block {
+			gsub(/[[:space:]]/, "")
+
+			if (sub(/\\$/, "")) {
+				printf "%s", $0
+			}
+			else {
+				print $0
+
+				exit
+			}
+		}
+	' "${source_file}")"
+
+	[[ -n ${current_value} ]] || _die "Unable to read module.framework.auto.deploy.dirs from ${source_file}."
+
+	_set_property "${BUNDLES_DIR}/portal-ext.properties" module.framework.auto.deploy.dirs "${current_value},\${module.framework.base.dir}/test"
 }
 
 function _set_test_integration_port {
@@ -457,7 +682,7 @@ function main {
 
 	if [[ ${LIFERAY_PROVISION:-} == fresh ]]
 	then
-		(cd "${WORKTREE_DIR}" && ANT_OPTS="-Xmx2560m" ant all >&2) || _die "ant all failed under ${WORKTREE_DIR}."
+		(cd "${WORKTREE_DIR}" && ANT_OPTS="-Xmx2560m" ant all > "${WORKTREE_DIR}/.worktree-ant-all.log" 2>&1) || _die "ant all failed under ${WORKTREE_DIR}. See ${WORKTREE_DIR}/.worktree-ant-all.log."
 	else
 		_reuse_worktree
 	fi
@@ -475,8 +700,12 @@ function main {
 	_set_playwright_port
 	_set_portal_home
 	_set_portal_http_address
+	_set_poshi_portal_url
+	_set_test_auto_deploy_dir
 	_set_test_integration_port
 	_set_tomcat_ports
+
+	_bring_master_feature_flags
 
 	[[ -z ${LIFERAY_PROVISION_SKIP_TOMCAT:-} ]] && "$(_find_tomcat_dir "${BUNDLES_DIR}")/bin/catalina.sh" jpda start >&2
 
