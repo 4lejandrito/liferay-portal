@@ -76,6 +76,15 @@ public interface DynamicRegistrationConfiguration {
 	public String anonymousServiceAccountScreenName();
 
 	@Meta.AD(
+		deflt = "false",
+		description = "dynamic-registration-anonymous-trust-proxy-headers-description",
+		id = "dynamic.registration.anonymous.trust.proxy.headers",
+		name = "dynamic-registration-anonymous-trust-proxy-headers",
+		required = false
+	)
+	public boolean anonymousTrustProxyHeaders();
+
+	@Meta.AD(
 		deflt = "true",
 		description = "dynamic-registration-require-initial-access-token-description",
 		id = "dynamic.registration.require.initial.access.token",
