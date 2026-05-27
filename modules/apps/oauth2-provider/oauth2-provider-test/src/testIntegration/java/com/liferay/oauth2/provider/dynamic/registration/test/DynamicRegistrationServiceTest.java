@@ -308,6 +308,72 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 
 	@FeatureFlag("LPD-63416")
 	@Test
+	public void testPostAnonymousBlankScopePinnedToAllowlist()
+		throws Exception {
+
+		long companyId = TestPropsValues.getCompanyId();
+
+		WebTarget registerWebTarget = getRegisterWebTarget();
+
+		String body = JSONUtil.put(
+			_FIELD_CLIENT_NAME, RandomTestUtil.randomString()
+		).put(
+			_FIELD_GRANT_TYPES,
+			new String[] {OAuthConstants.AUTHORIZATION_CODE_GRANT}
+		).put(
+			_FIELD_REDIRECT_URIS,
+			new String[] {"https://client.example.org/callback"}
+		).put(
+			_FIELD_RESPONSE_TYPES,
+			new String[] {OAuthConstants.CODE_RESPONSE_TYPE}
+		).toString();
+
+		try (CompanyConfigurationTemporarySwapper
+				companyConfigurationTemporarySwapper =
+					new CompanyConfigurationTemporarySwapper(
+						companyId,
+						"com.liferay.oauth2.provider.rest.internal." +
+							"configuration.DynamicRegistrationConfiguration",
+						HashMapDictionaryBuilder.<String, Object>put(
+							_PROPERTY_ANONYMOUS_ALLOWED_GRANT_TYPES,
+							new String[] {"*"}
+						).put(
+							_PROPERTY_ANONYMOUS_ALLOWED_HOSTS,
+							new String[] {"*"}
+						).put(
+							_PROPERTY_ANONYMOUS_ALLOWED_REDIRECT_URI_PATTERNS,
+							new String[] {"*"}
+						).put(
+							_PROPERTY_ANONYMOUS_ALLOWED_SCOPES,
+							new String[] {
+								"Liferay.Headless.Delivery.everything"
+							}
+						).put(
+							_PROPERTY_ANONYMOUS_REGISTRATIONS_PER_HOUR, 0
+						).put(
+							_PROPERTY_REQUIRE_INITIAL_ACCESS_TOKEN, false
+						).build())) {
+
+			Invocation.Builder invocationBuilder = registerWebTarget.request();
+
+			Response response = invocationBuilder.method(
+				"post", Entity.json(body));
+
+			Assert.assertEquals(201, response.getStatus());
+
+			JSONObject responseJSONObject = parseJSONObject(response);
+
+			Assert.assertTrue(
+				responseJSONObject.getString(
+					"scope"
+				).contains(
+					"Liferay.Headless.Delivery.everything"
+				));
+		}
+	}
+
+	@FeatureFlag("LPD-63416")
+	@Test
 	public void testPostAnonymousRateLimitDisabled() throws Exception {
 		long companyId = TestPropsValues.getCompanyId();
 
@@ -602,60 +668,6 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 
 	@FeatureFlag("LPD-63416")
 	@Test
-	public void testPostAnonymousRejectsRedirectURICrossingPathBoundary()
-		throws Exception {
-
-		long companyId = TestPropsValues.getCompanyId();
-
-		WebTarget registerWebTarget = getRegisterWebTarget();
-
-		String body = JSONUtil.put(
-			_FIELD_CLIENT_NAME, RandomTestUtil.randomString()
-		).put(
-			_FIELD_GRANT_TYPES,
-			new String[] {OAuthConstants.AUTHORIZATION_CODE_GRANT}
-		).put(
-			_FIELD_REDIRECT_URIS,
-			new String[] {"https://attacker.test/foo.example.org/callback"}
-		).put(
-			_FIELD_RESPONSE_TYPES,
-			new String[] {OAuthConstants.CODE_RESPONSE_TYPE}
-		).toString();
-
-		try (CompanyConfigurationTemporarySwapper
-				companyConfigurationTemporarySwapper =
-					new CompanyConfigurationTemporarySwapper(
-						companyId,
-						"com.liferay.oauth2.provider.rest.internal." +
-							"configuration.DynamicRegistrationConfiguration",
-						HashMapDictionaryBuilder.<String, Object>put(
-							_PROPERTY_ANONYMOUS_ALLOWED_GRANT_TYPES,
-							new String[] {"*"}
-						).put(
-							_PROPERTY_ANONYMOUS_ALLOWED_HOSTS, new String[] {"*"}
-						).put(
-							_PROPERTY_ANONYMOUS_ALLOWED_REDIRECT_URI_PATTERNS,
-							new String[] {"https://*.example.org/*"}
-						).put(
-							_PROPERTY_ANONYMOUS_ALLOWED_SCOPES, new String[] {"*"}
-						).put(
-							_PROPERTY_ANONYMOUS_REGISTRATIONS_PER_HOUR, 0
-						).put(
-							_PROPERTY_REQUIRE_INITIAL_ACCESS_TOKEN, false
-						).build())) {
-
-			Invocation.Builder invocationBuilder = registerWebTarget.request();
-
-			Response response = invocationBuilder.method(
-				"post", Entity.json(body));
-
-			Assert.assertEquals(400, response.getStatus());
-			Assert.assertEquals("invalid_redirect_uri", parseError(response));
-		}
-	}
-
-	@FeatureFlag("LPD-63416")
-	@Test
 	public void testPostAnonymousRejectsDisallowedScope() throws Exception {
 		long companyId = TestPropsValues.getCompanyId();
 
@@ -704,6 +716,62 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 			Assert.assertEquals(400, response.getStatus());
 			Assert.assertEquals(
 				OAuthConstants.INVALID_SCOPE, parseError(response));
+		}
+	}
+
+	@FeatureFlag("LPD-63416")
+	@Test
+	public void testPostAnonymousRejectsRedirectURICrossingPathBoundary()
+		throws Exception {
+
+		long companyId = TestPropsValues.getCompanyId();
+
+		WebTarget registerWebTarget = getRegisterWebTarget();
+
+		String body = JSONUtil.put(
+			_FIELD_CLIENT_NAME, RandomTestUtil.randomString()
+		).put(
+			_FIELD_GRANT_TYPES,
+			new String[] {OAuthConstants.AUTHORIZATION_CODE_GRANT}
+		).put(
+			_FIELD_REDIRECT_URIS,
+			new String[] {"https://attacker.test/foo.example.org/callback"}
+		).put(
+			_FIELD_RESPONSE_TYPES,
+			new String[] {OAuthConstants.CODE_RESPONSE_TYPE}
+		).toString();
+
+		try (CompanyConfigurationTemporarySwapper
+				companyConfigurationTemporarySwapper =
+					new CompanyConfigurationTemporarySwapper(
+						companyId,
+						"com.liferay.oauth2.provider.rest.internal." +
+							"configuration.DynamicRegistrationConfiguration",
+						HashMapDictionaryBuilder.<String, Object>put(
+							_PROPERTY_ANONYMOUS_ALLOWED_GRANT_TYPES,
+							new String[] {"*"}
+						).put(
+							_PROPERTY_ANONYMOUS_ALLOWED_HOSTS,
+							new String[] {"*"}
+						).put(
+							_PROPERTY_ANONYMOUS_ALLOWED_REDIRECT_URI_PATTERNS,
+							new String[] {"https://*.example.org/*"}
+						).put(
+							_PROPERTY_ANONYMOUS_ALLOWED_SCOPES,
+							new String[] {"*"}
+						).put(
+							_PROPERTY_ANONYMOUS_REGISTRATIONS_PER_HOUR, 0
+						).put(
+							_PROPERTY_REQUIRE_INITIAL_ACCESS_TOKEN, false
+						).build())) {
+
+			Invocation.Builder invocationBuilder = registerWebTarget.request();
+
+			Response response = invocationBuilder.method(
+				"post", Entity.json(body));
+
+			Assert.assertEquals(400, response.getStatus());
+			Assert.assertEquals("invalid_redirect_uri", parseError(response));
 		}
 	}
 

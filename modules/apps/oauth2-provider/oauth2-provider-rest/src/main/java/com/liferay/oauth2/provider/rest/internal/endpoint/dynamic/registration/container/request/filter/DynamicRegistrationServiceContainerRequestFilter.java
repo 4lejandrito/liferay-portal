@@ -153,7 +153,7 @@ public class DynamicRegistrationServiceContainerRequestFilter
 
 					_auditRejection(
 						httpServletRequest, companyId, clientHost, "anonymous",
-						"invalid_token", "Initial access token required");
+						"invalid_token", "Initial access token is required");
 
 					throw ExceptionUtils.toNotAuthorizedException(null, null);
 				}
@@ -593,7 +593,7 @@ public class DynamicRegistrationServiceContainerRequestFilter
 						continue;
 					}
 
-					normalizedAllowedHosts.add(line);
+					normalizedAllowedHosts.add(StringUtil.toLowerCase(line));
 				}
 			}
 		}
@@ -603,7 +603,8 @@ public class DynamicRegistrationServiceContainerRequestFilter
 		}
 
 		if (normalizedAllowedHosts.isEmpty() ||
-			!normalizedAllowedHosts.contains(clientHost)) {
+			!normalizedAllowedHosts.contains(
+				StringUtil.toLowerCase(clientHost))) {
 
 			_auditRejection(
 				httpServletRequest, companyId, clientHost, "anonymous",
