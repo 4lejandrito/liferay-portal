@@ -203,6 +203,7 @@ Field rules:
 - **steps** — one entry per step only when the case bundles more than one step or condition; otherwise an empty array `[]`. `passed` is a boolean; `result` is a single line.
 - **defects** — one entry per defect, each carrying at least one fix. Be specific about *why* it is a defect, never just that something failed: say what about the response was the actual problem (not "got a 400" but "the error named no valid scope, so the user must guess which scopes the tool set accepts"). For a clean success with no defects, set `defects` to `[]`.
 - **happyPathNote** — for a clean success, one short observation worth keeping (e.g. that a friendly key worked, or that pagination mapped cleanly). Set it to `null` whenever `defects` is non-empty.
+- **Inline emphasis** — the `flow` entries and the `result`, `description`, `detail`, and `happyPathNote` text render lightweight inline markup: wrap a phrase in `**double asterisks**` for bold and in `` `backticks` `` for code. Bold the one phrase that carries the point — the actual problem, the verdict-driving outcome — so the reader is not parsing a wall of even-weight prose. Do not bold whole sentences, and keep each text field to one or two crisp sentences rather than a paragraph.
 
 Each fix is a solution object with a `surface` drawn from this set, which the renderer prefers in the order listed:
 

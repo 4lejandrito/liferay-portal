@@ -16,96 +16,108 @@
   * { box-sizing: border-box; }
   body {
     margin: 0; background: var(--page-bg); color: var(--ink);
-    font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font: 17px/1.62 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
-  header.top { background: #0b1f33; color: #fff; padding: 22px 32px; }
-  header.top h1 { margin: 0 0 4px; font-size: 20px; font-weight: 650; }
-  header.top .meta { color: #9fb3c8; font-size: 13px; }
+  header.top { background: #0b1f33; color: #fff; padding: 30px 56px; }
+  header.top h1 { margin: 0 0 6px; font-size: 28px; font-weight: 650; }
+  header.top .meta { color: #9fb3c8; font-size: 15px; }
   header.top .tally { margin-left: 6px; }
   header.top .tally b { color: #fff; }
-  main { max-width: 940px; margin: 0 auto; padding: 20px 20px 64px; }
+  main { max-width: 1280px; margin: 0 auto; padding: 30px 32px 96px; }
 
-  .case { background: var(--card-bg); border: 1px solid var(--line); border-left: 5px solid #999;
-          border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+  /* Inline emphasis shared across body text */
+  .case-body strong, .happy strong { font-weight: 700; color: var(--ink); }
+  .case-body code, .happy code {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .9em;
+    background: #eef2f7; color: #33425b; padding: 1px 6px; border-radius: 5px;
+  }
+
+  .case { background: var(--card-bg); border: 1px solid var(--line); border-left: 6px solid #999;
+          border-radius: 12px; margin-bottom: 14px; overflow: hidden; }
   .case.ok { border-left-color: var(--ok); }
   .case.partial { border-left-color: var(--partial); }
   .case.fail { border-left-color: var(--fail); }
-  .case-head { display: flex; align-items: center; gap: 12px; padding: 13px 16px; cursor: pointer; }
+  .case-head { display: flex; align-items: center; gap: 16px; padding: 18px 24px; cursor: pointer; }
   .case-head:hover { background: #fafbfd; }
-  .case-num { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 13px; font-weight: 600; }
-  .case-title { font-weight: 600; flex: 1; }
-  .badge { font-size: 11px; font-weight: 700; letter-spacing: .03em; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+  .case-num { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 15px; font-weight: 600; }
+  .case-title { font-weight: 600; flex: 1; font-size: 18px; }
+  .badge { font-size: 13px; font-weight: 700; letter-spacing: .03em; padding: 5px 13px; border-radius: 999px; white-space: nowrap; }
   .badge.ok { background: var(--ok-bg); color: var(--ok); }
   .badge.partial { background: var(--partial-bg); color: var(--partial); }
   .badge.fail { background: var(--fail-bg); color: var(--fail); }
-  .strikes { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .strikes { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
   .chev { color: var(--muted); transition: transform .15s; display: inline-block; }
   .collapsed > .case-head .chev,
   .collapsed > .solution-head .chev { transform: rotate(-90deg); }
   .case.collapsed .case-body { display: none; }
-  .case-body { padding: 4px 16px 16px; border-top: 1px solid var(--line); }
+  .case-body { padding: 8px 24px 22px; border-top: 1px solid var(--line); }
 
-  .field { margin-top: 14px; }
-  .field h3 { margin: 0 0 6px; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-  .tools { display: flex; flex-wrap: wrap; gap: 6px; }
-  .tool { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 12px;
-          background: #eef2f7; color: #33425b; padding: 3px 8px; border-radius: 6px; }
-  table.steps { width: 100%; border-collapse: collapse; font-size: 14px; }
-  table.steps td { padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
-  table.steps td.mark { width: 26px; text-align: center; font-weight: 700; }
+  .field { margin-top: 20px; }
+  .field h3 { margin: 0 0 9px; font-size: 12.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  /* Collapsible Steps / Defects sections */
+  .field.collapsible > h3 { cursor: pointer; user-select: none; display: flex; align-items: center; gap: 8px; }
+  .field.collapsible > h3 .chev { font-size: 11px; }
+  .field.collapsed > h3 .chev { transform: rotate(-90deg); }
+  .field.collapsed > .field-body { display: none; }
+  .tools { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tool { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13.5px;
+          background: #eef2f7; color: #33425b; padding: 4px 10px; border-radius: 6px; }
+  table.steps { width: 100%; border-collapse: collapse; font-size: 16px; }
+  table.steps td { padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.steps td.mark { width: 30px; text-align: center; font-weight: 700; font-size: 18px; }
   td.mark.pass { color: var(--ok); }
   td.mark.no { color: var(--fail); }
-  table.steps td.desc { font-weight: 600; width: 34%; }
+  table.steps td.desc { font-weight: 600; width: 30%; }
 
   /* Flow — the path taken to reach the verdict */
   .flow { list-style: none; margin: 0; padding: 0; counter-reset: flow; }
-  .flow li { position: relative; padding: 1px 0 12px 28px; font-size: 14px; }
+  .flow li { position: relative; padding: 2px 0 15px 34px; font-size: 16px; }
   .flow li::before {
     counter-increment: flow; content: counter(flow); position: absolute; left: 0; top: 0;
-    width: 19px; height: 19px; border-radius: 50%; background: #eef2f7; color: var(--muted);
-    font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+    width: 23px; height: 23px; border-radius: 50%; background: #eef2f7; color: var(--muted);
+    font-size: 12.5px; font-weight: 700; display: flex; align-items: center; justify-content: center;
   }
   .flow li:not(:last-child)::after {
-    content: ""; position: absolute; left: 9px; top: 21px; bottom: -1px; width: 2px; background: var(--line);
+    content: ""; position: absolute; left: 11px; top: 25px; bottom: -1px; width: 2px; background: var(--line);
   }
   .flow code {
-    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; font-weight: 600;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 14px; font-weight: 600;
     background: #e4ecf7; color: #1d4e6f; padding: 1px 6px; border-radius: 5px;
   }
 
-  .defect { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-top: 10px; background: #fcfdff; }
-  .tag { font-size: 11px; font-weight: 700; letter-spacing: .03em; padding: 2px 8px; border-radius: 6px;
+  .defect { border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; margin-top: 12px; background: #fcfdff; }
+  .tag { font-size: 13px; font-weight: 700; letter-spacing: .03em; padding: 3px 10px; border-radius: 6px;
          background: #eceff3; color: #33425b; margin-right: 8px; }
-  .defect .desc { margin-top: 6px; }
+  .defect .desc { margin-top: 8px; }
 
   /* Solution groups — alternatives vs complementary */
-  .sol-group { margin-top: 14px; }
-  .sol-group-label { display: flex; align-items: baseline; gap: 8px; margin: 0 0 7px; padding-left: 2px; }
-  .sol-group-label .name { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--ink); }
-  .sol-group-label .hint { font-size: 12px; color: var(--muted); }
-  .solutions { display: flex; flex-direction: column; gap: 8px; }
+  .sol-group { margin-top: 18px; }
+  .sol-group-label { display: flex; align-items: baseline; gap: 8px; margin: 0 0 9px; padding-left: 2px; }
+  .sol-group-label .name { font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--ink); }
+  .sol-group-label .hint { font-size: 13px; color: var(--muted); }
+  .solutions { display: flex; flex-direction: column; gap: 10px; }
 
   /* Solution — each its own collapsible section */
-  .solution { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; }
-  .solution-head { display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; }
+  .solution { border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: #fff; }
+  .solution-head { display: flex; align-items: center; gap: 12px; padding: 13px 15px; cursor: pointer; }
   .solution-head:hover { background: #f7f9fc; }
-  .solution-title { flex: 1; font-weight: 600; font-size: 14px; }
-  .surface { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11px; font-weight: 600;
-             padding: 2px 7px; border-radius: 5px; color: var(--muted); background: #eef2f7; white-space: nowrap; }
+  .solution-title { flex: 1; font-weight: 600; font-size: 16px; }
+  .surface { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12.5px; font-weight: 600;
+             padding: 3px 9px; border-radius: 5px; color: var(--muted); background: #eef2f7; white-space: nowrap; }
   .solution.collapsed .solution-body { display: none; }
-  .solution-body { padding: 0 12px 12px; border-top: 1px solid var(--line); }
-  .solution-body .detail { margin: 10px 0; font-size: 14px; }
+  .solution-body { padding: 0 15px 15px; border-top: 1px solid var(--line); }
+  .solution-body .detail { margin: 12px 0; font-size: 16px; }
 
-  .diff { margin: 0; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px;
-          line-height: 1.5; border: 1px solid var(--line); border-radius: 6px; overflow-x: auto; white-space: pre; }
-  .diff span { display: block; padding: 0 10px; }
+  .diff { margin: 0; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13.5px;
+          line-height: 1.55; border: 1px solid var(--line); border-radius: 6px; overflow-x: auto; white-space: pre; }
+  .diff span { display: block; padding: 0 12px; }
   .diff .meta { color: #6a737d; background: #f6f8fa; }
   .diff .hunk { color: #005cc5; background: #f1f8ff; }
   .diff .add  { color: #22863a; background: #e6ffed; }
   .diff .del  { color: #b31d28; background: #ffeef0; }
   .diff .ctx  { color: #24292e; }
 
-  .happy { margin-top: 14px; padding: 10px 14px; background: var(--ok-bg); color: #1b5e20; border-radius: 8px; font-size: 14px; }
+  .happy { margin-top: 18px; padding: 13px 16px; background: var(--ok-bg); color: #1b5e20; border-radius: 8px; font-size: 16px; }
 </style>
 </head>
 <body>
@@ -133,6 +145,29 @@ __CASE_DATA__
     if (v === "PARTIAL") return "partial";
     return "fail";
   }
+  // Escape, then apply lightweight inline markup: **bold** and `code`.
+  function fmt(s) {
+    return esc(s)
+      .replace(/`([^`]+)`/g, "<code>$1</code>")
+      .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  }
+  // A collapsible "field" section (used for Steps and Defects).
+  function makeField(title, collapsible, startCollapsed) {
+    const f = document.createElement("div");
+    f.className = "field" + (collapsible ? " collapsible" : "") + (startCollapsed ? " collapsed" : "");
+    const h = document.createElement("h3");
+    if (collapsible) {
+      h.innerHTML = `<span class="chev">▾</span>${esc(title)}`;
+      h.addEventListener("click", () => f.classList.toggle("collapsed"));
+    } else {
+      h.textContent = title;
+    }
+    const body = document.createElement("div");
+    body.className = "field-body";
+    f.appendChild(h);
+    f.appendChild(body);
+    return { field: f, body };
+  }
 
   const tally = { ok: 0, partial: 0, fail: 0 };
   cases.forEach(c => tally[baseVerdict(c.verdict)]++);
@@ -152,7 +187,7 @@ __CASE_DATA__
   }
 
   function renderSolution(s) {
-    const detail = s.detail ? `<p class="detail">${esc(s.detail)}</p>` : "";
+    const detail = s.detail ? `<p class="detail">${fmt(s.detail)}</p>` : "";
     const diff = s.diff ? `<pre class="diff">${renderDiff(s.diff)}</pre>` : "";
     const el = document.createElement("div");
     el.className = "solution collapsed";
@@ -182,7 +217,7 @@ __CASE_DATA__
   function renderDefect(d) {
     const el = document.createElement("div");
     el.className = "defect";
-    el.innerHTML = `<span class="tag">${esc(d.tag)}</span><span class="desc">${esc(d.description)}</span>`;
+    el.innerHTML = `<span class="tag">${esc(d.tag)}</span><span class="desc">${fmt(d.description)}</span>`;
 
     const alts = d.alternatives || [];
     const adds = d.additional || [];
@@ -199,21 +234,6 @@ __CASE_DATA__
     const bv = baseVerdict(c.verdict);
     const tools = c.toolsTried.map(t => `<span class="tool">${esc(t)}</span>`).join("");
 
-    let flow = "";
-    if (c.flow && c.flow.length) {
-      const items = c.flow.map(f =>
-        `<li>${esc(f).replace(/`([^`]+)`/g, "<code>$1</code>")}</li>`).join("");
-      flow = `<div class="field"><h3>Flow</h3><ol class="flow">${items}</ol></div>`;
-    }
-
-    let steps = "";
-    if (c.steps && c.steps.length) {
-      const rows = c.steps.map(s =>
-        `<tr><td class="mark ${s.passed ? "pass" : "no"}">${s.passed ? "✓" : "✗"}</td>` +
-        `<td class="desc">${esc(s.description)}</td><td>${esc(s.result)}</td></tr>`).join("");
-      steps = `<div class="field"><h3>Steps</h3><table class="steps">${rows}</table></div>`;
-    }
-
     const el = document.createElement("div");
     el.className = "case " + bv + " collapsed";
     el.innerHTML =
@@ -224,22 +244,41 @@ __CASE_DATA__
          <span class="strikes">${c.strikesUsed}/${c.strikesMax} strikes</span>
          <span class="badge ${bv}">${esc(c.verdict)}</span>
        </div>
-       <div class="case-body">
-         <div class="field"><h3>Tools Tried</h3><div class="tools">${tools}</div></div>
-         ${flow}${steps}
-       </div>`;
-
+       <div class="case-body"></div>`;
     const cbody = el.querySelector(".case-body");
+
+    // Tools Tried — always shown, not collapsible.
+    const toolsField = makeField("Tools Tried", false, false);
+    toolsField.body.innerHTML = `<div class="tools">${tools}</div>`;
+    cbody.appendChild(toolsField.field);
+
+    // Flow — the path to the verdict, not collapsible.
+    if (c.flow && c.flow.length) {
+      const items = c.flow.map(f => `<li>${fmt(f)}</li>`).join("");
+      const flowField = makeField("Flow", false, false);
+      flowField.body.innerHTML = `<ol class="flow">${items}</ol>`;
+      cbody.appendChild(flowField.field);
+    }
+
+    // Steps — collapsible.
+    if (c.steps && c.steps.length) {
+      const rows = c.steps.map(s =>
+        `<tr><td class="mark ${s.passed ? "pass" : "no"}">${s.passed ? "✓" : "✗"}</td>` +
+        `<td class="desc">${fmt(s.description)}</td><td>${fmt(s.result)}</td></tr>`).join("");
+      const stepsField = makeField("Steps", true, false);
+      stepsField.body.innerHTML = `<table class="steps">${rows}</table>`;
+      cbody.appendChild(stepsField.field);
+    }
+
+    // Defects — collapsible; or a happy-path note when there are none.
     if (c.defects && c.defects.length) {
-      const field = document.createElement("div");
-      field.className = "field";
-      field.innerHTML = `<h3>Defects</h3>`;
-      c.defects.forEach(d => field.appendChild(renderDefect(d)));
-      cbody.appendChild(field);
+      const defectsField = makeField("Defects", true, false);
+      c.defects.forEach(d => defectsField.body.appendChild(renderDefect(d)));
+      cbody.appendChild(defectsField.field);
     } else if (c.happyPathNote) {
       const happy = document.createElement("div");
       happy.className = "happy";
-      happy.textContent = c.happyPathNote;
+      happy.innerHTML = fmt(c.happyPathNote);
       cbody.appendChild(happy);
     }
 
