@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Liferay MCP Evaluation Report</title>
+<style>
+  :root {
+    --ok: #2e7d32; --ok-bg: #e8f5e9;
+    --partial: #ef6c00; --partial-bg: #fff3e0;
+    --fail: #c62828; --fail-bg: #ffebee;
+    --ink: #1a1a1a; --muted: #5f6b7a; --line: #e3e8ef;
+    --card-bg: #ffffff; --page-bg: #f4f6f9;
+    --openapi: #1565c0; --resource-impl: #00838f; --mcp-wrapper: #6a1b9a; --external: #546e7a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--page-bg); color: var(--ink);
+    font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  header.top { background: #0b1f33; color: #fff; padding: 22px 32px; }
+  header.top h1 { margin: 0 0 4px; font-size: 20px; font-weight: 650; }
+  header.top .meta { color: #9fb3c8; font-size: 13px; }
+  header.top .tally { margin-left: 6px; }
+  header.top .tally b { color: #fff; }
+  main { max-width: 940px; margin: 0 auto; padding: 20px 20px 64px; }
+
+  .case { background: var(--card-bg); border: 1px solid var(--line); border-left: 5px solid #999;
+          border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+  .case.ok { border-left-color: var(--ok); }
+  .case.partial { border-left-color: var(--partial); }
+  .case.fail { border-left-color: var(--fail); }
+  .case-head { display: flex; align-items: center; gap: 12px; padding: 13px 16px; cursor: pointer; }
+  .case-head:hover { background: #fafbfd; }
+  .case-num { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 13px; font-weight: 600; }
+  .case-title { font-weight: 600; flex: 1; }
+  .badge { font-size: 11px; font-weight: 700; letter-spacing: .03em; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+  .badge.ok { background: var(--ok-bg); color: var(--ok); }
+  .badge.partial { background: var(--partial-bg); color: var(--partial); }
+  .badge.fail { background: var(--fail-bg); color: var(--fail); }
+  .strikes { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .chev { color: var(--muted); transition: transform .15s; display: inline-block; }
+  .collapsed > .case-head .chev,
+  .collapsed > .solution-head .chev { transform: rotate(-90deg); }
+  .case.collapsed .case-body { display: none; }
+  .case-body { padding: 4px 16px 16px; border-top: 1px solid var(--line); }
+
+  .field { margin-top: 14px; }
+  .field h3 { margin: 0 0 6px; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .tools { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tool { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 12px;
+          background: #eef2f7; color: #33425b; padding: 3px 8px; border-radius: 6px; }
+  table.steps { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table.steps td { padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.steps td.mark { width: 26px; text-align: center; font-weight: 700; }
+  td.mark.pass { color: var(--ok); }
+  td.mark.no { color: var(--fail); }
+  table.steps td.desc { font-weight: 600; width: 34%; }
+
+  /* Flow — the path taken to reach the verdict */
+  .flow { list-style: none; margin: 0; padding: 0; counter-reset: flow; }
+  .flow li { position: relative; padding: 1px 0 12px 28px; font-size: 14px; }
+  .flow li::before {
+    counter-increment: flow; content: counter(flow); position: absolute; left: 0; top: 0;
+    width: 19px; height: 19px; border-radius: 50%; background: #eef2f7; color: var(--muted);
+    font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+  }
+  .flow li:not(:last-child)::after {
+    content: ""; position: absolute; left: 9px; top: 21px; bottom: -1px; width: 2px; background: var(--line);
+  }
+  .flow code {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; font-weight: 600;
+    background: #e4ecf7; color: #1d4e6f; padding: 1px 6px; border-radius: 5px;
+  }
+
+  .defect { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-top: 10px; background: #fcfdff; }
+  .tag { font-size: 11px; font-weight: 700; letter-spacing: .03em; padding: 2px 8px; border-radius: 6px;
+         background: #eceff3; color: #33425b; margin-right: 8px; }
+  .defect .desc { margin-top: 6px; }
+
+  /* Solution groups — alternatives vs complementary */
+  .sol-group { margin-top: 14px; }
+  .sol-group-label { display: flex; align-items: baseline; gap: 8px; margin: 0 0 7px; padding-left: 2px; }
+  .sol-group-label .name { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--ink); }
+  .sol-group-label .hint { font-size: 12px; color: var(--muted); }
+  .solutions { display: flex; flex-direction: column; gap: 8px; }
+
+  /* Solution — each its own collapsible section */
+  .solution { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; }
+  .solution-head { display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; }
+  .solution-head:hover { background: #f7f9fc; }
+  .solution-title { flex: 1; font-weight: 600; font-size: 14px; }
+  .surface { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11px; font-weight: 600;
+             padding: 2px 7px; border-radius: 5px; color: var(--muted); background: #eef2f7; white-space: nowrap; }
+  .solution.collapsed .solution-body { display: none; }
+  .solution-body { padding: 0 12px 12px; border-top: 1px solid var(--line); }
+  .solution-body .detail { margin: 10px 0; font-size: 14px; }
+
+  .diff { margin: 0; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px;
+          line-height: 1.5; border: 1px solid var(--line); border-radius: 6px; overflow-x: auto; white-space: pre; }
+  .diff span { display: block; padding: 0 10px; }
+  .diff .meta { color: #6a737d; background: #f6f8fa; }
+  .diff .hunk { color: #005cc5; background: #f1f8ff; }
+  .diff .add  { color: #22863a; background: #e6ffed; }
+  .diff .del  { color: #b31d28; background: #ffeef0; }
+  .diff .ctx  { color: #24292e; }
+
+  .happy { margin-top: 14px; padding: 10px 14px; background: var(--ok-bg); color: #1b5e20; border-radius: 8px; font-size: 14px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Liferay MCP Evaluation Report</h1>
+  <div class="meta" id="report-meta"></div>
+</header>
+<main>
+  <section id="cases"></section>
+</main>
+
+<script id="case-data" type="application/json">
+__CASE_DATA__
+</script>
+
+<script>
+(function () {
+  const cases = JSON.parse(document.getElementById("case-data").textContent);
+
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  function baseVerdict(v) {
+    if (v.startsWith("OK")) return "ok";
+    if (v === "PARTIAL") return "partial";
+    return "fail";
+  }
+
+  const tally = { ok: 0, partial: 0, fail: 0 };
+  cases.forEach(c => tally[baseVerdict(c.verdict)]++);
+  document.getElementById("report-meta").innerHTML =
+    cases.length + " use cases · generated " + new Date().toLocaleString() +
+    `<span class="tally"> · <b>${tally.ok}</b> OK · <b>${tally.partial}</b> partial · <b>${tally.fail}</b> fail</span>`;
+
+  function renderDiff(diff) {
+    return diff.split("\n").map(line => {
+      let cls = "ctx";
+      if (line.startsWith("+++") || line.startsWith("---")) cls = "meta";
+      else if (line.startsWith("@@")) cls = "hunk";
+      else if (line.startsWith("+")) cls = "add";
+      else if (line.startsWith("-")) cls = "del";
+      return `<span class="${cls}">${esc(line) || "&nbsp;"}</span>`;
+    }).join("");
+  }
+
+  function renderSolution(s) {
+    const detail = s.detail ? `<p class="detail">${esc(s.detail)}</p>` : "";
+    const diff = s.diff ? `<pre class="diff">${renderDiff(s.diff)}</pre>` : "";
+    const el = document.createElement("div");
+    el.className = "solution collapsed";
+    el.innerHTML =
+      `<div class="solution-head">
+         <span class="chev">▾</span>
+         <span class="solution-title">${esc(s.title)}</span>
+         <span class="surface">${esc(s.surface)}</span>
+       </div>
+       <div class="solution-body">${detail}${diff}</div>`;
+    el.querySelector(".solution-head").addEventListener("click", () => el.classList.toggle("collapsed"));
+    return el;
+  }
+
+  function renderGroup(name, hint, solutions) {
+    const g = document.createElement("div");
+    g.className = "sol-group";
+    g.innerHTML = `<div class="sol-group-label"><span class="name">${esc(name)}</span>` +
+                  (hint ? `<span class="hint">${esc(hint)}</span>` : "") + `</div>`;
+    const wrap = document.createElement("div");
+    wrap.className = "solutions";
+    solutions.forEach(s => wrap.appendChild(renderSolution(s)));
+    g.appendChild(wrap);
+    return g;
+  }
+
+  function renderDefect(d) {
+    const el = document.createElement("div");
+    el.className = "defect";
+    el.innerHTML = `<span class="tag">${esc(d.tag)}</span><span class="desc">${esc(d.description)}</span>`;
+
+    const alts = d.alternatives || [];
+    const adds = d.additional || [];
+
+    if (alts.length > 1) el.appendChild(renderGroup("Alternative fixes", "pick one", alts));
+    else if (alts.length === 1) el.appendChild(renderGroup("Fix", "", alts));
+
+    if (adds.length) el.appendChild(renderGroup("Also apply", "alongside the fix above", adds));
+
+    return el;
+  }
+
+  function renderCase(c) {
+    const bv = baseVerdict(c.verdict);
+    const tools = c.toolsTried.map(t => `<span class="tool">${esc(t)}</span>`).join("");
+
+    let flow = "";
+    if (c.flow && c.flow.length) {
+      const items = c.flow.map(f =>
+        `<li>${esc(f).replace(/`([^`]+)`/g, "<code>$1</code>")}</li>`).join("");
+      flow = `<div class="field"><h3>Flow</h3><ol class="flow">${items}</ol></div>`;
+    }
+
+    let steps = "";
+    if (c.steps && c.steps.length) {
+      const rows = c.steps.map(s =>
+        `<tr><td class="mark ${s.passed ? "pass" : "no"}">${s.passed ? "✓" : "✗"}</td>` +
+        `<td class="desc">${esc(s.description)}</td><td>${esc(s.result)}</td></tr>`).join("");
+      steps = `<div class="field"><h3>Steps</h3><table class="steps">${rows}</table></div>`;
+    }
+
+    const el = document.createElement("div");
+    el.className = "case " + bv + " collapsed";
+    el.innerHTML =
+      `<div class="case-head">
+         <span class="chev">▾</span>
+         <span class="case-num">#${c.caseNumber}</span>
+         <span class="case-title">${esc(c.title)}</span>
+         <span class="strikes">${c.strikesUsed}/${c.strikesMax} strikes</span>
+         <span class="badge ${bv}">${esc(c.verdict)}</span>
+       </div>
+       <div class="case-body">
+         <div class="field"><h3>Tools Tried</h3><div class="tools">${tools}</div></div>
+         ${flow}${steps}
+       </div>`;
+
+    const cbody = el.querySelector(".case-body");
+    if (c.defects && c.defects.length) {
+      const field = document.createElement("div");
+      field.className = "field";
+      field.innerHTML = `<h3>Defects</h3>`;
+      c.defects.forEach(d => field.appendChild(renderDefect(d)));
+      cbody.appendChild(field);
+    } else if (c.happyPathNote) {
+      const happy = document.createElement("div");
+      happy.className = "happy";
+      happy.textContent = c.happyPathNote;
+      cbody.appendChild(happy);
+    }
+
+    el.querySelector(".case-head").addEventListener("click", () => el.classList.toggle("collapsed"));
+    return el;
+  }
+
+  const container = document.getElementById("cases");
+  cases.forEach(c => container.appendChild(renderCase(c)));
+})();
+</script>
+</body>
+</html>
