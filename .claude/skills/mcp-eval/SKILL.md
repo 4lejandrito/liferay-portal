@@ -12,22 +12,9 @@ Drive the Liferay MCP through a list of user-supplied use cases and report how d
 
 ## Core Principle: MCP-Only
 
-The entire point of this evaluation is to prove that the MCP, on its own, is enough to accomplish realistic Liferay tasks. The moment work leaks out to any non-MCP channel, the result stops measuring the MCP and starts measuring your ingenuity at routing around it.
+The point of this evaluation is to prove the MCP, on its own, is enough to accomplish realistic Liferay tasks. The moment work leaks out to any non-MCP channel — `curl`, the Liferay UI, a client JAR, the database, the repo's OpenAPI YAML — the result stops measuring the MCP and starts measuring your ingenuity at routing around it. So the constraint is **hard**, not aspirational: every operation a case needs, from discovery through verification, goes through a `mcp__liferay-mcp__*` tool, and when a case cannot be completed that way, **that is the finding** — record it and move on, never reach for a workaround.
 
-So this constraint is **hard**, not aspirational. Every operation in a use case — discovery, read, write, verification — must go through a `mcp__liferay-mcp__*` tool. The following are all out of bounds, even when they would make the case faster or cleaner:
-
-- `curl`, `wget`, `httpie`, or any direct HTTP request against `/o/...`, `/api/...`, `/c/portal/...`, or any other Liferay endpoint.
-- The Liferay UI (Site Administration, Forms, Workflow Designer, Object Builder, etc.) in any browser, including Playwright.
-- Java client JARs (`com.liferay.*.rest.client`), Liferay CLI tools, `cliferay`, Blade, or Gogo shell.
-- Direct database access, file-system access under `<bundles>`, or log scraping as a means of accomplishing or verifying a case.
-- Reading Liferay REST documentation, the OpenAPI YAML in the repo, JSPs, or service interfaces to "know" what to call. Discovery must come from `getToolSets` / `getToolSummaries` / `getTool` — that is the surface under test.
-- Recalled facts from prior conversations or auto-memory about specific Liferay endpoints, scope keys, or tool sets. Start cold.
-
-The only allowed exceptions are bookkeeping tools that do not touch Liferay: `TaskCreate` / `TaskUpdate` / `TaskList` for tracking, `Bash` for trivial local operations like `grep` on a saved tool-result file, and `Read` / `Write` to produce the final report.
-
-When a case cannot be completed under this constraint, **that is the finding**. Record it as a roadblock and move on. Do not reach for a workaround — the workaround would erase the data point the evaluation exists to collect.
-
-This constraint governs the **attempt** — every step taken to accomplish or verify the use case. It does not govern the post-mortem. Once a case has been scored **FAIL**, reading the bundle logs at `<bundles>/logs/liferay.<yyyy-MM-dd>.log` becomes available for a single purpose: diagnosing *why* the attempt failed so the report can name a root cause instead of guessing at one. This is the only exception, and it is narrow: it applies to log reading only (database and file-system access stay out of bounds throughout), it opens only after the verdict is already fixed at **FAIL**, and it may never be used to retroactively complete the case or change the verdict. The logs sharpen the report; they do not rescue the attempt.
+This constraint binds the sub-agent that runs each case, not the orchestrator (which never touches Liferay). The exact out-of-bounds list, the bookkeeping tools that stay allowed, and the one narrow post-FAIL log-reading exception all live in the **Sub-Agent Prompt Template** — the single source of truth for everything a case applies.
 
 ## Input
 
@@ -41,19 +28,13 @@ Treat each item as one case in full, however many lines it occupies — do not a
 
 When the user asks for an evaluation without providing cases, ask them for the list before proceeding. Do not invent cases.
 
-## Case Isolation
-
-Each use case runs in its own fresh `general-purpose` sub-agent, spawned one at a time via the `Agent` tool. A fresh sub-agent gives the cold-start isolation the evaluation needs: no leaked tool sets, no remembered IDs, no shortcut from "the previous case found this in `c-mcpevalcustomers`".
-
-The orchestrator — the agent running this skill — never invokes Liferay MCP tools itself. For each case it spawns one sub-agent, waits for the per-case JSON object to come back, collects that object into the running array, then starts the next case.
-
-Run the cases sequentially, never in parallel: each sub-agent's MCP traffic is independently rate-limited, and the runtime does not currently support parallel sub-agent spawning. Spawn the next sub-agent only after the previous one has returned.
-
 ## Workflow
 
-The evaluation runs through two layers: an **orchestrator** — the agent running this skill — and a **sub-agent** spawned per case. The orchestrator never calls Liferay MCP tools itself. Its job is to spawn one sub-agent per case, in order, collect the per-case JSON object each sub-agent returns, and render those objects into a single self-contained HTML report.
+The evaluation runs through two layers. The **orchestrator** — the agent running this skill — never invokes Liferay MCP tools; it spawns one **sub-agent** per case, waits for the per-case JSON object to come back, collects it into the running array, and finally renders those objects into a single self-contained HTML report.
 
-The complete rulebook the sub-agent runs from — the MCP-only constraint, the three-issue budget, steps and conditions, the discovery loop, scoring, prerequisite handling, the roadblock taxonomy, the output format, and the anti-patterns — lives in full inside the **Sub-Agent Prompt Template** below. That template is the single source of truth: the sub-agent sees only that prompt, never this orchestrator-facing half of the file, so the template must stay self-sufficient. The orchestrator does not score, classify, or format defects itself; it only spawns sub-agents and collects the JSON objects they return. To review or change any sub-agent rule, edit the template.
+Each case runs in its own fresh `general-purpose` sub-agent, spawned via the `Agent` tool, for the cold-start isolation the evaluation needs: no leaked tool sets, no remembered IDs, no shortcut from "the previous case found this in `c-mcpevalcustomers`". Run the cases sequentially, never in parallel — each sub-agent's MCP traffic is independently rate-limited, and the runtime does not support parallel sub-agent spawning — so spawn the next sub-agent only after the previous one has returned.
+
+The complete rulebook the sub-agent runs from — the MCP-only constraint, the three-issue budget, steps and conditions, the discovery loop, scoring, prerequisite handling, the roadblock taxonomy, the output format, and the anti-patterns — lives in full inside the **Sub-Agent Prompt Template** below. That template is the single source of truth: the sub-agent sees only that prompt, never this orchestrator-facing half of the file, so the template must stay self-sufficient. The orchestrator does not score, classify, or format defects itself; to review or change any sub-agent rule, edit the template.
 
 ### Orchestrator Steps
 
@@ -105,13 +86,7 @@ The budget caps issues, not calls. Work the case through as many steps as it leg
 
 Your case may bundle several steps or named conditions — a complex case especially. Do not collapse them prematurely. Evaluate each step or condition on its own: invoke it, observe the result, and note whether it held. An issue attaches to the specific step that misbehaved, not to the case as a whole.
 
-The case's single verdict is the rollup of its steps:
-
-- **OK** — every required step succeeded.
-- **PARTIAL** — at least one step succeeded and at least one did not.
-- **FAIL** — no step produced a recognisable success before the third issue.
-
-When the case has more than one step or condition, list them under a `Steps:` line in the output (format below), so the reader sees which part held and which broke instead of one opaque verdict.
+The case carries a single verdict, the rollup of its steps, defined under **Scoring** below. When the case has more than one step or condition, also list them under a `Steps:` line in the output (format below), so the reader sees which part held and which broke instead of one opaque verdict.
 
 # Prerequisite Handling
 
@@ -138,7 +113,7 @@ Late discovery is the most expensive kind: the user already invested steps befor
 
 # Scoring
 
-Pick one verdict for the case. For a multi-step case, this is the rollup defined under **Steps And Conditions**.
+Pick one verdict for the case. For a multi-step case, roll the steps up: **OK** only when every required step succeeded, **PARTIAL** when at least one succeeded and at least one did not, **FAIL** when none produced a recognisable success before the third issue.
 
 - **OK** — the operation completed and the response confirms it: an entity ID, a `status: "Approved"` field, a 200 or 201 payload.
 - **OK (with wrapper bug)** — the underlying REST call succeeded (a real ID or success payload came back) but the MCP wrapper returned an error.
