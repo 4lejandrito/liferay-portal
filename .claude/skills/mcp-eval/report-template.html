@@ -45,7 +45,7 @@
   .badge.ok { background: var(--ok-bg); color: var(--ok); }
   .badge.partial { background: var(--partial-bg); color: var(--partial); }
   .badge.fail { background: var(--fail-bg); color: var(--fail); }
-  .strikes { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .issues { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
   .chev { color: var(--muted); transition: transform .15s; display: inline-block; }
   .collapsed > .case-head .chev,
   .collapsed > .solution-head .chev { transform: rotate(-90deg); }
@@ -241,7 +241,7 @@ __CASE_DATA__
          <span class="chev">▾</span>
          <span class="case-num">#${c.caseNumber}</span>
          <span class="case-title">${esc(c.title)}</span>
-         <span class="strikes">${c.strikesUsed}/${c.strikesMax} strikes</span>
+         <span class="issues">${c.issuesUsed}/${c.issuesMax} issues</span>
          <span class="badge ${bv}">${esc(c.verdict)}</span>
        </div>
        <div class="case-body"></div>`;

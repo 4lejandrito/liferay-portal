@@ -1,7 +1,7 @@
 ---
 
 allowed-tools: [Agent, AskUserQuestion, Bash, Read, TaskCreate, TaskList, TaskUpdate, Write]
-description: Evaluate Liferay MCP discoverability and usability by attempting a list of user-supplied use cases against a live Liferay instance, with a bounded three-strike budget per case. Produces a per-case verdict (OK / PARTIAL / FAIL), the roadblocks hit (discovery cost, scope ambiguity, missing prerequisites, schema confusion, MCP wrapper bugs, missing endpoints, auth or permission), and a concrete fix for each defect tagged by the surface that owns the change (OpenAPI spec, resource impl, MCP wrapper, external), rendered as a self-contained HTML report. Use when the user asks to evaluate the Liferay MCP, test its discoverability, or report on how well an AI can accomplish typical Liferay operations through it.
+description: Evaluate Liferay MCP discoverability and usability by attempting a list of user-supplied use cases against a live Liferay instance, with a bounded three-issue budget per case. Produces a per-case verdict (OK / PARTIAL / FAIL), the roadblocks hit (discovery cost, scope ambiguity, missing prerequisites, schema confusion, MCP wrapper bugs, missing endpoints, auth or permission), and a concrete fix for each defect tagged by the surface that owns the change (OpenAPI spec, resource impl, MCP wrapper, external), rendered as a self-contained HTML report. Use when the user asks to evaluate the Liferay MCP, test its discoverability, or report on how well an AI can accomplish typical Liferay operations through it.
 name: mcp-eval
 
 ---
@@ -53,7 +53,7 @@ Run the cases sequentially, never in parallel: each sub-agent's MCP traffic is i
 
 The evaluation runs through two layers: an **orchestrator** — the agent running this skill — and a **sub-agent** spawned per case. The orchestrator never calls Liferay MCP tools itself. Its job is to spawn one sub-agent per case, in order, collect the per-case JSON object each sub-agent returns, and render those objects into a single self-contained HTML report.
 
-The complete rulebook the sub-agent runs from — the MCP-only constraint, the three-strike budget, steps and conditions, the discovery loop, scoring, prerequisite handling, the roadblock taxonomy, the output format, and the anti-patterns — lives in full inside the **Sub-Agent Prompt Template** below. That template is the single source of truth: the sub-agent sees only that prompt, never this orchestrator-facing half of the file, so the template must stay self-sufficient. The orchestrator does not score, classify, or format defects itself; it only spawns sub-agents and collects the JSON objects they return. To review or change any sub-agent rule, edit the template.
+The complete rulebook the sub-agent runs from — the MCP-only constraint, the three-issue budget, steps and conditions, the discovery loop, scoring, prerequisite handling, the roadblock taxonomy, the output format, and the anti-patterns — lives in full inside the **Sub-Agent Prompt Template** below. That template is the single source of truth: the sub-agent sees only that prompt, never this orchestrator-facing half of the file, so the template must stay self-sufficient. The orchestrator does not score, classify, or format defects itself; it only spawns sub-agents and collects the JSON objects they return. To review or change any sub-agent rule, edit the template.
 
 ### Orchestrator Steps
 
@@ -69,7 +69,7 @@ The complete rulebook the sub-agent runs from — the MCP-only constraint, the t
 
 	1. Collect the sub-agent's final message — a single per-case JSON object — into the running array, in case order. Keep it verbatim; do not reformat, rescore, or reword it.
 
-	1. Mark the case's task `completed` via `TaskUpdate` with a one-line internal summary (verdict, strikes used, tools tried, roadblock tags). This is bookkeeping, not the report.
+	1. Mark the case's task `completed` via `TaskUpdate` with a one-line internal summary (verdict, issues used, tools tried, roadblock tags). This is bookkeeping, not the report.
 
 	1. Only after the sub-agent has returned, move to the next case. Never spawn two sub-agents at the same time.
 
@@ -97,19 +97,19 @@ When the case cannot be completed under this constraint, that is the finding. Re
 
 This constraint governs the attempt only. The one exception is post-mortem log reading: see `Post-FAIL Diagnosis` below.
 
-# Budget: Three Strikes
+# Budget: Three Issues
 
-The budget caps strikes, not calls. Work the case through as many steps as it legitimately needs. A strike is any moment the MCP fails to behave the way its own surface advertised: a POST rejected for a missing field the schema never marked `required`, a tool set whose name promised a scope it then refuses, a "success" response that produced no entity, a wrapper error on a call that should have succeeded. Each strike is also a defect to record. Steps that behave as documented cost nothing, and discovery (`getToolSets`, `getToolSummaries`, `getTool`) never strikes on its own. After the third strike, stop and score the case.
+The budget caps issues, not calls. Work the case through as many steps as it legitimately needs. An issue is any moment the MCP fails to behave the way its own surface advertised: a POST rejected for a missing field the schema never marked `required`, a tool set whose name promised a scope it then refuses, a "success" response that produced no entity, a wrapper error on a call that should have succeeded. Each issue is also a defect to record. Steps that behave as documented cost nothing, and discovery (`getToolSets`, `getToolSummaries`, `getTool`) never counts as an issue on its own. After the third issue, stop and score the case.
 
 # Steps And Conditions
 
-Your case may bundle several steps or named conditions — a complex case especially. Do not collapse them prematurely. Evaluate each step or condition on its own: invoke it, observe the result, and note whether it held. A strike attaches to the specific step that misbehaved, not to the case as a whole.
+Your case may bundle several steps or named conditions — a complex case especially. Do not collapse them prematurely. Evaluate each step or condition on its own: invoke it, observe the result, and note whether it held. An issue attaches to the specific step that misbehaved, not to the case as a whole.
 
 The case's single verdict is the rollup of its steps:
 
 - **OK** — every required step succeeded.
 - **PARTIAL** — at least one step succeeded and at least one did not.
-- **FAIL** — no step produced a recognisable success before the third strike.
+- **FAIL** — no step produced a recognisable success before the third issue.
 
 When the case has more than one step or condition, list them under a `Steps:` line in the output (format below), so the reader sees which part held and which broke instead of one opaque verdict.
 
@@ -117,11 +117,11 @@ When the case has more than one step or condition, list them under a `Steps:` li
 
 Many cases need entities that must already exist — a site, a role, a content structure, a workflow definition. How you treat the prerequisite depends on where it comes from:
 
-- **Part of the natural workflow, and the MCP exposes the setup path.** Do it through the MCP. "Create a custom object entry" naturally entails *define → publish → insert*; that is one case, not three, and none of those steps strikes as long as each behaves as documented.
+- **Part of the natural workflow, and the MCP exposes the setup path.** Do it through the MCP. "Create a custom object entry" naturally entails *define → publish → insert*; that is one case, not three, and none of those steps counts as an issue as long as each behaves as documented.
 
 - **Environmental** — a workflow engine, an SMTP relay, a feature flag, anything the MCP cannot reasonably bootstrap. Stop and tag the case `missing-prerequisite`.
 
-Also tag `missing-prerequisite` when the requirement only surfaces mid-case, and treat each as a strike because the surface did not behave as advertised:
+Also tag `missing-prerequisite` when the requirement only surfaces mid-case, and treat each as an issue because the surface did not behave as advertised:
 
 - The `getTool` schema named a `required` field (`contentStructureId`, `workflowDefinitionId`, `accountId`, `objectDefinitionId`) that resolves to nothing in the instance.
 - An error response named an entity that does not exist.
@@ -142,8 +142,8 @@ Pick one verdict for the case. For a multi-step case, this is the rollup defined
 
 - **OK** — the operation completed and the response confirms it: an entity ID, a `status: "Approved"` field, a 200 or 201 payload.
 - **OK (with wrapper bug)** — the underlying REST call succeeded (a real ID or success payload came back) but the MCP wrapper returned an error.
-- **PARTIAL** — partial completion (e.g. created a draft but could not publish), or a read-only variant succeeded while the write variant did not, or the API was reachable but produced no observable side effect before the third strike.
-- **FAIL** — no attempt produced a recognisable success response before the third strike.
+- **PARTIAL** — partial completion (e.g. created a draft but could not publish), or a read-only variant succeeded while the write variant did not, or the API was reachable but produced no observable side effect before the third issue.
+- **FAIL** — no attempt produced a recognisable success response before the third issue.
 
 # Post-FAIL Diagnosis
 
@@ -171,8 +171,8 @@ Return exactly one JSON object and nothing else: no Markdown, no code fence, no 
   "caseNumber": <<CASE_NUMBER>>,
   "title": "<Use Case in Title Case>",
   "verdict": "OK" | "OK (with wrapper bug)" | "PARTIAL" | "FAIL",
-  "strikesUsed": <integer 0-3>,
-  "strikesMax": 3,
+  "issuesUsed": <integer 0-3>,
+  "issuesMax": 3,
   "toolsTried": ["toolSet/toolName", "..."],
   "flow": ["<terse step on the path to the verdict>", "..."],
   "steps": [
@@ -199,7 +199,7 @@ Field rules:
 - **title** — the use case in Title Case, not the verbatim input.
 - **verdict** — one of the four strings exactly; the renderer keys its color off the `OK` / `PARTIAL` / `FAIL` prefix.
 - **toolsTried** — every `toolSet/toolName` invoked or schema-fetched, in the order tried.
-- **flow** — the ordered path to the verdict, three to five terse entries. Wrap tool and code names in backticks; the renderer turns them into inline code. Mark where a strike landed inline, e.g. `"Invoked \`getRolesPage\` with the filter → full list came back, filter ignored (strike 1)."` This is the only place a brief narration belongs; keep it to the decisive moves, not a transcript.
+- **flow** — the ordered path to the verdict, three to five terse entries. Wrap tool and code names in backticks; the renderer turns them into inline code. Mark where an issue landed inline, e.g. `"Invoked \`getRolesPage\` with the filter → full list came back, filter ignored (issue 1)."` This is the only place a brief narration belongs; keep it to the decisive moves, not a transcript.
 - **steps** — one entry per step only when the case bundles more than one step or condition; otherwise an empty array `[]`. `passed` is a boolean; `result` is a single line.
 - **defects** — one entry per defect, each carrying at least one fix. Be specific about *why* it is a defect, never just that something failed: say what about the response was the actual problem (not "got a 400" but "the error named no valid scope, so the user must guess which scopes the tool set accepts"). For a clean success with no defects, set `defects` to `[]`.
 - **happyPathNote** — for a clean success, one short observation worth keeping (e.g. that a friendly key worked, or that pagination mapped cleanly). Set it to `null` whenever `defects` is non-empty.
