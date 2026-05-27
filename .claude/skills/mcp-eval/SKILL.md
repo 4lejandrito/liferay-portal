@@ -41,27 +41,7 @@ Treat each item as one case in full, however many lines it occupies — do not a
 
 When the user asks for an evaluation without providing cases, ask them for the list before proceeding. Do not invent cases.
 
-## Constraints
-
-### Three Strikes
-
-Work the case through its natural flow — discover, read the schema, invoke, verify — for as many steps as the operation legitimately needs. The budget does not cap how many calls you make. It caps **strikes**.
-
-A strike is any moment the MCP fails to behave the way its own surface advertised. For example:
-
-- A POST rejected for a missing field that the schema never marked `required`.
-
-- A tool set whose name promised a scope it then refuses.
-
-- A "success" response that produced no entity.
-
-- A wrapper error on a call that should have succeeded.
-
-Every strike is also a defect to record. Steps that behave as documented cost nothing, however many a case needs, and discovery (`getToolSets`, `getToolSummaries`, `getTool`) never strikes on its own.
-
-After the third strike, stop, score the case, and move on. Three things that did not add up is itself the finding.
-
-### Case Isolation
+## Case Isolation
 
 Each use case runs in its own fresh `general-purpose` sub-agent, spawned one at a time via the `Agent` tool. A fresh sub-agent gives the cold-start isolation the evaluation needs: no leaked tool sets, no remembered IDs, no shortcut from "the previous case found this in `c-mcpevalcustomers`".
 
@@ -69,27 +49,11 @@ The orchestrator — the agent running this skill — never invokes Liferay MCP 
 
 Run the cases sequentially, never in parallel: each sub-agent's MCP traffic is independently rate-limited, and the runtime does not currently support parallel sub-agent spawning. Spawn the next sub-agent only after the previous one has returned.
 
-### Prerequisite Handling
-
-Many cases need entities that must already exist — a site, a role, a content structure, a workflow definition. How you treat the prerequisite depends on where it comes from:
-
-- **Part of the natural workflow, and the MCP exposes the setup path.** Do it through the MCP. "Create a custom object entry" naturally entails *define → publish → insert*; that is one case, not three, and none of those steps strikes as long as each behaves as documented.
-
-- **Environmental** — a workflow engine, an SMTP relay, a feature flag, anything the MCP cannot reasonably bootstrap. Stop and tag the case `missing-prerequisite`.
-
-Also tag `missing-prerequisite` when the requirement only surfaces **mid-case**:
-
-- The `getTool` schema named a `required` field (`contentStructureId`, `workflowDefinitionId`, `accountId`, `objectDefinitionId`) that resolves to nothing in the instance.
-
-- An error response named an entity that does not exist.
-
-- A "successful" response left the entity in a non-functional state (status `draft`, `inactive`, `pending`), needing a follow-up activation step the schema never mentioned.
-
-Each of these is a strike, because the surface did not behave as advertised. Late discovery is the most expensive kind: the user already invested steps before learning the prerequisite even applied. Record that the discovery was late, not just that the prerequisite was missing.
-
 ## Workflow
 
 The evaluation runs through two layers: an **orchestrator** — the agent running this skill — and a **sub-agent** spawned per case. The orchestrator never calls Liferay MCP tools itself. Its job is to spawn one sub-agent per case, in order, and assemble the per-case blocks the sub-agents return into the final report.
+
+The complete rulebook the sub-agent runs from — the MCP-only constraint, the three-strike budget, steps and conditions, the discovery loop, scoring, prerequisite handling, the roadblock taxonomy, the output format, and the anti-patterns — lives in full inside the **Sub-Agent Prompt Template** below. That template is the single source of truth: the sub-agent sees only that prompt, never this orchestrator-facing half of the file, so the template must stay self-sufficient. The orchestrator does not score, classify, or format defects itself; it only spawns sub-agents and concatenates what they return. To review or change any sub-agent rule, edit the template.
 
 ### Orchestrator Steps
 
@@ -109,41 +73,11 @@ The evaluation runs through two layers: an **orchestrator** — the agent runnin
 
 	1. Only after the sub-agent has returned, move to the next case. Never spawn two sub-agents at the same time.
 
-1. **Emit the final report.** Concatenate the per-case blocks in case order. Do not add a summary table, cross-cutting observations, or any other aggregate section.
-
-### Sub-Agent Steps
-
-Each sub-agent owns exactly one use case. Its job:
-
-1. Follow the four-step discovery pattern documented by the MCP server itself: `getToolSets` → `getToolSummaries` → `getTool` → `invokeTool`. Discovery never strikes on its own.
-
-1. Record every misstep along the way (see **Roadblock Taxonomy**). When the first candidate tool set or tool turns out to be wrong, that is itself a finding and a strike — log it, then try the next one. After the third strike, stop.
-
-1. When the case bundles several steps or conditions, evaluate each on its own and note whether it held — do not collapse them into a single judgment prematurely. A strike attaches to the step that misbehaved. The full per-step rules the sub-agent runs from live in **Steps And Conditions** inside the **Sub-Agent Prompt Template**.
-
-1. Score the case (see **Score the Case**). For a multi-step case, the case verdict is the rollup of its steps.
-
-1. When — and only when — the verdict is **FAIL**, optionally read the bundle logs at `<bundles>/logs/liferay.<yyyy-MM-dd>.log` to diagnose the root cause and sharpen the defect bullets. This happens after the verdict is fixed; it never reopens the attempt or changes the score.
-
-1. Return the per-case block (see **Output**) as the sub-agent's final message. The orchestrator pastes it directly into the report, so it must be valid Markdown ready to render.
-
-### Score the Case
-
-Pick one verdict:
-
-- **OK** — the operation completed and the response confirms it (an entity ID, a `status: "Approved"` field, a 200 or 201 payload).
-
-- **PARTIAL** — the operation partially completed (e.g. created a draft object but could not publish), a read-only variant of the operation succeeded while the write variant did not, or the API was reachable but produced no observable side effect before the third strike.
-
-- **FAIL** — no attempt produced a recognisable success response before the third strike.
-
-Append `(with wrapper bug)` to **OK** when the underlying REST call succeeded but the MCP wrapper returned an error.
-
-For a multi-step case, the verdict is the rollup of the individual steps: **OK** when every required step succeeded, **PARTIAL** when some succeeded and some did not, **FAIL** when none did.
+1. **Emit the final report.** Concatenate the per-case blocks in case order, exactly as the sub-agents returned them. Do not add a summary table, cross-cutting observations, or any other aggregate section — each case's block stands alone.
 
 ### Sub-Agent Prompt Template
 
-The orchestrator passes this prompt to every sub-agent, with `<<CASE_NUMBER>>` replaced by the 1-based index of the case and `<<CASE_TEXT>>` replaced by the verbatim use-case text from the user's list. The sub-agent sees **only** this prompt — never the orchestrator's half of this file — so the template must stay self-sufficient: every rule the sub-agent applies (constraint, budget, steps-and-conditions, scoring, taxonomy, output) is embedded here in full, not referenced. When you change the taxonomy, the scoring, or the output format in the body sections below, mirror the change here, or the sub-agent runs on a stale rulebook.
+The orchestrator passes this prompt to every sub-agent, with `<<CASE_NUMBER>>` replaced by the 1-based index of the case and `<<CASE_TEXT>>` replaced by the verbatim use-case text from the user's list. This template is self-contained: it carries every rule the sub-agent applies, because the sub-agent sees nothing else from this file.
 
 ```text
 You are running case <<CASE_NUMBER>> of a Liferay MCP evaluation. Your only output is a single Markdown per-case block (format below). You have no memory of any prior case; assume nothing about the state of the Liferay instance beyond what the live MCP tools tell you.
@@ -171,6 +105,22 @@ The case's single verdict is the rollup of its steps:
 - **FAIL** — no step produced a recognisable success before the third strike.
 
 When the case has more than one step or condition, list them under a `Steps:` line in the output (format below), so the reader sees which part held and which broke instead of one opaque verdict.
+
+# Prerequisite Handling
+
+Many cases need entities that must already exist — a site, a role, a content structure, a workflow definition. How you treat the prerequisite depends on where it comes from:
+
+- **Part of the natural workflow, and the MCP exposes the setup path.** Do it through the MCP. "Create a custom object entry" naturally entails *define → publish → insert*; that is one case, not three, and none of those steps strikes as long as each behaves as documented.
+
+- **Environmental** — a workflow engine, an SMTP relay, a feature flag, anything the MCP cannot reasonably bootstrap. Stop and tag the case `missing-prerequisite`.
+
+Also tag `missing-prerequisite` when the requirement only surfaces mid-case, and treat each as a strike because the surface did not behave as advertised:
+
+- The `getTool` schema named a `required` field (`contentStructureId`, `workflowDefinitionId`, `accountId`, `objectDefinitionId`) that resolves to nothing in the instance.
+- An error response named an entity that does not exist.
+- A "successful" response left the entity in a non-functional state (status `draft`, `inactive`, `pending`), needing a follow-up activation step the schema never mentioned.
+
+Late discovery is the most expensive kind: the user already invested steps before learning the prerequisite even applied. Record that the discovery was late, not just that the prerequisite was missing.
 
 # Discovery Loop
 
@@ -219,93 +169,24 @@ When the case has more than one step or condition, add a `Steps:` line after the
 
 For every defect, a bullet under a `Defects:` line. Lead with the taxonomy tag in bold, em dash, then the specific defect — concrete enough to file as a ticket without further context. Be specific about *why* it is a defect, never just that something failed: say what about the response was the actual problem (not "got a 400" but "the error named no valid scope, so the user must guess which scopes the tool set accepts"). Every defect carries at least one `Fix` sub-bullet stating the concrete change that would remove the friction, tagged by surface:
 
-- **`[openapi]`** — fix lives in a `rest-openapi.yaml` or its annotations / `EntityModel`.
+- **`[openapi]`** — fix lives in a `rest-openapi.yaml` or its annotations / `EntityModel`. Prefer this whenever the spec can express the fix; most defects translate into spec edits that ripple through `getToolSets`, `getToolSummaries`, and `getTool` for free.
 - **`[resource-impl]`** — fix lives in a `*ResourceImpl` Java class.
 - **`[mcp-wrapper]`** — fix lives in `mcp-server` or `mcp-server-rest-impl`.
 - **`[external]`** — fix lives outside Liferay.
 
-Prefer `[openapi]` whenever the spec can express the fix. When a defect has multiple sub-bullets, lead each with `Fix`, `Also`, or `Or` to make the relationship explicit:
+When a defect has multiple sub-bullets, the leading word makes the relationship explicit. Order them so the recommended path reads top-down:
 
-- `Fix [tag]` — primary fix.
-- `Also [tag]` — complementary, apply together with the `Fix`.
-- `Or [tag]` — alternative, pick instead of the `Fix`.
+- `Fix [tag]` — the primary fix, listed first.
+- `Also [tag]` — a complementary change that applies together with the `Fix`. Apply both.
+- `Or [tag]` — an alternative path. Pick this instead of the `Fix`; do not apply both.
 
-For a clean success with no defects, omit the `Defects:` line and write one short happy-path observation worth keeping.
+For a clean success with no defects, omit the `Defects:` line and write one short happy-path observation worth keeping (e.g. that a friendly key worked, or that pagination mapped cleanly). Do not narrate the steps.
 
-# Case to Evaluate
-
-<<CASE_TEXT>>
-```
-
-## Roadblock Taxonomy
-
-This is the orchestrator-facing reference; the sub-agent runs from the copy embedded in the **Sub-Agent Prompt Template**. Keep the two in sync.
-
-Classify each roadblock under one of these categories. When something does not fit, invent a new category — flag it explicitly in the case's defect bullet so future runs know to consider it.
-
-- **discovery-cost** — finding the right tool set or tool consumed disproportionate effort: empty descriptions on tool sets, oversized `getToolSummaries` payloads, names that do not hint at scope.
-- **scope-ambiguity** — multiple tool sets appear to fit the same operation but target different scopes (site vs. asset library vs. depot vs. company), and the names do not disambiguate.
-- **missing-prerequisite** — the call shape is right but the instance lacks required seed data (Content Structures, Forms, Object Definitions, workflow definitions, etc.).
-- **dynamic-toolset** — a tool set that the operation needs only exists after a separate publishing or activation step, and is not visible in the initial `getToolSets` call.
-- **schema-confusion** — the input schema is technically valid but practically misleading: a `required` field with no documented default, enum values that are not enumerated, or a `body` shape that nests differently from comparable tools.
-- **mcp-wrapper-bug** — the underlying REST call likely succeeded but the MCP layer returned an error (e.g. `-32603 "text must not be null"` on a 204 No Content response).
-- **missing-endpoint** — the operation a user would expect (e.g. "create a Form definition") is not exposed by any MCP tool set, even though it exists in the product.
-- **auth-or-permission** — the call failed with a 401/403 or an "operation not permitted" message under the MCP server's effective identity.
-
-A case can carry multiple roadblock tags. Record all of them.
-
-## Output
-
-This section is the orchestrator-facing reference for the report shape; the per-case block format the sub-agent emits is the copy embedded in the **Sub-Agent Prompt Template**. Keep the two in sync.
-
-End with a single report containing one block per case. Do not add a summary table, cross-cutting observations, or any other aggregate section — each case's block stands alone.
-
-### Per-Case Block
-
-One block per case. The block heading is `### Case <#> — <Use Case in Title Case>`. Inside the block, render this metadata as a tight bullet list:
-
-- **Verdict:** `OK`, `OK (with wrapper bug)`, `PARTIAL`, or `FAIL`.
-
-- **Strikes:** `<used> of 3`.
-
-- **Tools tried:** comma-separated `toolSet/toolName` entries.
-
-When the case has more than one step or condition, follow the metadata with a `Steps:` line — one bullet per step, each carrying a `✓` or `✗` and a one-line result — so the reader sees which part held and which broke. Omit the `Steps:` line for a single-step case.
-
-After the metadata (and the `Steps:` line, when present), list defects as bullets under a `Defects:` line. Each defect bullet leads with the taxonomy tag in bold, followed by an em dash, followed by the specific defect — concrete enough to file as a ticket without further context. Capture what the MCP server team would need to change to remove the friction next time, not what you did and not what failed.
-
-**Every defect must include at least one `Fix` sub-bullet** stating the concrete change that would remove the friction, tagged by the surface that owns the change. The discipline is to **prefer OpenAPI-level fixes whenever the friction can be solved by editing a `rest-openapi.yaml` or its surrounding annotations**, falling back to resource-impl or wrapper changes only when the spec cannot express the fix. The MCP surface is driven by what the OpenAPI documents say, so most defects translate into spec edits that ripple through `getToolSets`, `getToolSummaries`, and `getTool` for free.
-
-When a defect has multiple fix sub-bullets, **the bullet's leading word makes the relationship explicit**:
-
-- **`Fix [tag]`** — the primary fix, listed first.
-
-- **`Also [tag]`** — a complementary change that applies together with the `Fix` above. Apply both.
-
-- **`Or [tag]`** — an alternative path. Pick this instead of the `Fix` above; do not apply both.
-
-Order the bullets so the recommended path reads top-down: `Fix` first, then any `Also`s that go with it, then any `Or` alternatives. A reader scanning the block should be able to draw the dependency from the leading words alone, without parsing the prose.
-
-Fix-surface tags:
-
-- **`[openapi]`** — the fix lives in a `rest-openapi.yaml` (or the annotations and `EntityModel` declarations that feed it). Adding an `info.description`, populating a parameter's `description` / `example` / `enum` / `pattern`, `$ref`-ing a nested schema instead of inlining it, exposing a missing listing path, adding an `x-liferay-*` extension, or aligning a generated schema with what the resource actually accepts. Regenerated via `buildREST`.
-
-- **`[resource-impl]`** — the fix lives in a `*ResourceImpl` Java class: making a required parameter optional with a default, accepting an additional identifier form, returning a 400 on unsupported filter fields, exposing a higher-level helper endpoint that bundles a common multi-step flow.
-
-- **`[mcp-wrapper]`** — the fix lives in `mcp-server` or `mcp-server-rest-impl`: how the MCP layer translates a REST response into a tool result (e.g. 204 handling), how `getTool` collapses or paginates large schemas, or what fields the `ToolSet` / `Tool` DTOs expose.
-
-- **`[external]`** — the fix lives outside Liferay (auto-mode classifiers, harness behaviour, third-party agents). Record the defect but make it clear Liferay cannot resolve it.
-
-When a case has no defects (a clean success), omit the `Defects:` line entirely and write one short line under the metadata stating the happy-path observation worth keeping (e.g. that a friendly key worked, or that pagination mapped cleanly). Do not narrate the steps.
-
-Anti-patterns to avoid in defect bullets:
+Anti-patterns in defect bullets:
 
 - "The tool was hard to find." Say *why*: "Tool set `X` has an empty description and a misleading name (`cms-*` implies CMS-wide reach but only accepts asset library scopes)."
-
 - "Got a 400." Say *what about the response was the actual problem*: "The error `Group ID 20127 is not valid for scope 'depot'` did not indicate which scopes the tool set accepts; the user has to infer it from the error."
-
 - "The case is complex." Say *which step* is the friction: "The case completes in three calls, but step 2 (`publish`) is undocumented — nothing in step 1's response mentions it is required."
-
 - "The wrapper should accept 204 as success." Without a `Fix` tag, a reader cannot tell which module owns the change. Always state the surface and, when useful, the file or DTO that would be edited.
 
 Good defect bullets, for reference:
@@ -326,12 +207,13 @@ Good defect bullets, for reference:
 	- **Fix `[openapi]`** — restructure `headless-admin-site-impl/rest-openapi.yaml` so each large nested type is declared once under `components.schemas` and `$ref`-d everywhere it is reused.
 	- **Or `[mcp-wrapper]`** — have `getTool` replace deep nested schemas with `{"$ref": "..."}` and let agents fetch nested types on demand via a new `getSchema` endpoint.
 
-## Anti-Patterns
+# Conduct
 
-- **Do not** summarise what you did. The report is about what got in the way, not about the happy path. A clean success gets only its metadata plus one happy-path observation; do not narrate the steps.
+- Do not summarise what you did. The report is about what got in the way, not about the happy path. A clean success gets only its metadata plus one happy-path observation; do not narrate the steps.
+- Do not retry a tool with the same input hoping for a different result. Each retry must change something — different tool set, different scope key, different body shape — and the change is itself a finding.
+- Do not read prior memory entries about Liferay endpoints. The evaluation must reflect cold-start discoverability.
 
-- **Do not** retry a tool with the same input hoping for a different result. Each retry must change something — different tool set, different scope key, different body shape — and the change is itself a finding.
+# Case to Evaluate
 
-- **Do** use the Agent tool to delegate each case to its own sub-agent. Cold-start isolation is the only way to keep cross-case context leakage out of the signal. The orchestrator runs no Liferay MCP calls; the sub-agents do all the work.
-
-- **Do not** read prior memory entries about Liferay endpoints. The evaluation must reflect cold-start discoverability.
+<<CASE_TEXT>>
+```
