@@ -145,7 +145,11 @@ Inspect the test source to discover which feature flags it depends on. Mirror th
 
 #### Run the Test
 
-Run the test, deploying first when the type requires it. For `Java Semantic Versioning`, the "test" is `<gradlew> baseline` from the failing module — strictly an API contract check, not a behavioral test. For test types that exercise the runtime (`Java Integration`, `Playwright`, `Poshi`), also read the server log after the run; it captures portal-side exceptions, deployment errors, and stack traces that never reach **errorTrace**, and frequently names the real failure. Then compare the local outcome with **errorTrace**:
+Run the test, deploying first when the type requires it. For `Java Semantic Versioning`, the "test" is `<gradlew> baseline` from the failing module — strictly an API contract check, not a behavioral test. For test types that exercise the runtime (`Java Integration`, `Playwright`, `Poshi`), also read the server log after the run; it captures portal-side exceptions, deployment errors, and stack traces that never reach **errorTrace**, and frequently names the real failure.
+
+For `Poshi`, run against the current checkout's Tomcat by following [`references/poshi-local-run.md`](references/poshi-local-run.md). It resolves the bundle's HTTP port and passes the URL overrides the runner needs — mandatory when the checkout is a `claude --worktree` whose Tomcat is not on `8080`, since without them Poshi resolves its `companyId` from whichever bundle owns `8080` and the setup aborts with `NoSuchUserException`.
+
+Then compare the local outcome with **errorTrace**:
 
 - **Test passes** → check whether a commit between `${FIRST_FAIL_SHA}` and `HEAD` already addresses the failure. When one does, exit with `Verdict: No fix needed`. Otherwise, reason about why the test failed in CI (the test may be flaky or fail for environmental reasons). Try to fix it and rerun to confirm. When no plausible cause surfaces, exit with `Verdict: No fix needed`. Skip **Identify Suspect Commits** and **Iterate Through Suspects** in either case.
 - **Same failure** → continue to **Identify Suspect Commits**.
