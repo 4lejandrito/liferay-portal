@@ -388,8 +388,11 @@ public class DynamicRegistrationServiceContainerRequestFilter
 
 		int count;
 
-		synchronized (_portalCache) {
-			RateLimitBucket bucket = _portalCache.get(key);
+		synchronized (_rateLimitLock) {
+			PortalCache<String, RateLimitBucket> portalCache =
+				_getPortalCache();
+
+			RateLimitBucket bucket = portalCache.get(key);
 
 			if ((bucket == null) || (bucket.windowStart != windowStart)) {
 				bucket = new RateLimitBucket(windowStart);
@@ -397,7 +400,7 @@ public class DynamicRegistrationServiceContainerRequestFilter
 
 			count = bucket.count.incrementAndGet();
 
-			_portalCache.put(key, bucket, _RATE_LIMIT_TTL_SECONDS);
+			portalCache.put(key, bucket, _RATE_LIMIT_TTL_SECONDS);
 		}
 
 		if (count <= registrationsPerHour) {
@@ -531,6 +534,17 @@ public class DynamicRegistrationServiceContainerRequestFilter
 		return jwsJwtCompactConsumer.getJwtToken();
 	}
 
+	private PortalCache<String, RateLimitBucket> _getPortalCache() {
+		if (_portalCache == null) {
+			_portalCache = PortalCacheHelperUtil.getPortalCache(
+				PortalCacheManagerNames.SINGLE_VM,
+				DynamicRegistrationServiceContainerRequestFilter.class.
+					getName());
+		}
+
+		return _portalCache;
+	}
+
 	private String _normalizeHost(String host) {
 		if (Validator.isBlank(host)) {
 			return StringPool.BLANK;
@@ -652,10 +666,6 @@ public class DynamicRegistrationServiceContainerRequestFilter
 		new Snapshot<>(
 			DynamicRegistrationServiceContainerRequestFilter.class,
 			AuditRouter.class, null, true);
-	private static final PortalCache<String, RateLimitBucket> _portalCache =
-		PortalCacheHelperUtil.getPortalCache(
-			PortalCacheManagerNames.SINGLE_VM,
-			DynamicRegistrationServiceContainerRequestFilter.class.getName());
 
 	@Reference
 	private ConfigurationProvider _configurationProvider;
@@ -677,6 +687,9 @@ public class DynamicRegistrationServiceContainerRequestFilter
 
 	@Reference
 	private Portal _portal;
+
+	private volatile PortalCache<String, RateLimitBucket> _portalCache;
+	private final Object _rateLimitLock = new Object();
 
 	@Reference
 	private UserLocalService _userLocalService;
