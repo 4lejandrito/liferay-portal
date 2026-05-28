@@ -64,7 +64,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.cxf.jaxrs.utils.ExceptionUtils;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
@@ -407,7 +406,7 @@ public class DynamicRegistrationServiceContainerRequestFilter
 				bucket = new RateLimitBucket(windowStart);
 			}
 
-			count = bucket.count.incrementAndGet();
+			count = ++bucket.count;
 
 			portalCache.put(key, bucket, _RATE_LIMIT_TTL_SECONDS);
 		}
@@ -547,10 +546,14 @@ public class DynamicRegistrationServiceContainerRequestFilter
 
 	private PortalCache<String, RateLimitBucket> _getPortalCache() {
 		if (_portalCache == null) {
-			_portalCache = PortalCacheHelperUtil.getPortalCache(
-				PortalCacheManagerNames.SINGLE_VM,
-				DynamicRegistrationServiceContainerRequestFilter.class.
-					getName());
+			synchronized (_rateLimitLock) {
+				if (_portalCache == null) {
+					_portalCache = PortalCacheHelperUtil.getPortalCache(
+						PortalCacheManagerNames.SINGLE_VM,
+						DynamicRegistrationServiceContainerRequestFilter.class.
+							getName());
+				}
+			}
 		}
 
 		return _portalCache;
@@ -726,7 +729,7 @@ public class DynamicRegistrationServiceContainerRequestFilter
 			this.windowStart = windowStart;
 		}
 
-		public final AtomicInteger count = new AtomicInteger();
+		public int count;
 		public final long windowStart;
 
 		private static final long serialVersionUID = 1L;
