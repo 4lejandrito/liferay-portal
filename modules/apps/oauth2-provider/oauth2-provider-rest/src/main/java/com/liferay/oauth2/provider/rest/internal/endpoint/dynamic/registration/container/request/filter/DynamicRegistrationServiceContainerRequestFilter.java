@@ -392,6 +392,15 @@ public class DynamicRegistrationServiceContainerRequestFilter
 			PortalCache<String, RateLimitBucket> portalCache =
 				_getPortalCache();
 
+			if (portalCache == null) {
+				if (_log.isWarnEnabled()) {
+					_log.warn(
+						"Portal cache is unavailable; skipping rate limit");
+				}
+
+				return;
+			}
+
 			RateLimitBucket bucket = portalCache.get(key);
 
 			if ((bucket == null) || (bucket.windowStart != windowStart)) {
@@ -521,9 +530,11 @@ public class DynamicRegistrationServiceContainerRequestFilter
 			Date accessTokenExpirationDate =
 				oAuth2Authorization.getAccessTokenExpirationDate();
 
-			jwtClaims.setExpiryTime(
-				TimeUnit.MILLISECONDS.toSeconds(
-					accessTokenExpirationDate.getTime()));
+			if (accessTokenExpirationDate != null) {
+				jwtClaims.setExpiryTime(
+					TimeUnit.MILLISECONDS.toSeconds(
+						accessTokenExpirationDate.getTime()));
+			}
 
 			return new JwtToken(jwtClaims);
 		}
