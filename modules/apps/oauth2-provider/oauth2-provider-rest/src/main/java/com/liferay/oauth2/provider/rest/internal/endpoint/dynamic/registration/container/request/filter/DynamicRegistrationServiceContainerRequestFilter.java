@@ -57,6 +57,7 @@ import java.security.Principal;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -391,21 +392,25 @@ public class DynamicRegistrationServiceContainerRequestFilter
 
 		String key = companyId + StringPool.COLON + clientHost;
 
+		if (!_rateLimitBuckets.containsKey(key) &&
+			(_rateLimitBuckets.size() >= _MAX_RATE_LIMIT_BUCKETS)) {
+
+			Iterator<String> iterator = _rateLimitBuckets.keySet(
+			).iterator();
+
+			if (iterator.hasNext()) {
+				_rateLimitBuckets.remove(iterator.next());
+			}
+		}
+
 		int[] countHolder = new int[1];
 
 		_rateLimitBuckets.compute(
 			key,
 			(unusedKey, currentBucket) -> {
-				if (currentBucket == null) {
-					if (_rateLimitBuckets.size() >= _MAX_RATE_LIMIT_BUCKETS) {
-						countHolder[0] = registrationsPerHour + 1;
+				if ((currentBucket == null) ||
+					(currentBucket.windowStart != windowStart)) {
 
-						return null;
-					}
-
-					currentBucket = new RateLimitBucket(windowStart);
-				}
-				else if (currentBucket.windowStart != windowStart) {
 					currentBucket = new RateLimitBucket(windowStart);
 				}
 
