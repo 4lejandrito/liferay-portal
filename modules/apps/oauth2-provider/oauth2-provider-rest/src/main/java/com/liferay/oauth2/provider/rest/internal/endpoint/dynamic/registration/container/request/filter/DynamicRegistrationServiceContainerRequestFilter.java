@@ -140,10 +140,11 @@ public class DynamicRegistrationServiceContainerRequestFilter
 					dynamicRegistrationConfiguration =
 						_getDynamicRegistrationConfiguration(companyId);
 
-				String clientHost = _getClientHost(
-					httpServletRequest,
-					dynamicRegistrationConfiguration.
-						anonymousTrustProxyHeaders());
+				String clientHost = _normalizeHost(
+					_getClientHost(
+						httpServletRequest,
+						dynamicRegistrationConfiguration.
+							anonymousTrustProxyHeaders()));
 
 				httpServletRequest.setAttribute(
 					REQUEST_PROPERTY_CLIENT_HOST, clientHost);
@@ -183,7 +184,7 @@ public class DynamicRegistrationServiceContainerRequestFilter
 			else {
 				httpServletRequest.setAttribute(
 					REQUEST_PROPERTY_CLIENT_HOST,
-					_getClientHost(httpServletRequest, false));
+					_normalizeHost(_getClientHost(httpServletRequest, false)));
 
 				user = _authorizeWithBearer(httpServletRequest, method);
 			}
@@ -213,7 +214,7 @@ public class DynamicRegistrationServiceContainerRequestFilter
 				GetterUtil.getString(
 					httpServletRequest.getAttribute(
 						REQUEST_PROPERTY_CLIENT_HOST),
-					_getClientHost(httpServletRequest, false)),
+					_normalizeHost(_getClientHost(httpServletRequest, false))),
 				hasBearer ? "authenticated" : "anonymous",
 				hasBearer ? "invalid_token" : "server_error",
 				hasBearer ? "Bearer token authorization failed" :
@@ -364,17 +365,11 @@ public class DynamicRegistrationServiceContainerRequestFilter
 		HttpServletRequest httpServletRequest, long companyId,
 		String clientHost, int registrationsPerHour) {
 
-		if (registrationsPerHour <= 0) {
-			return;
-		}
-
 		long currentTimeMillis = System.currentTimeMillis();
 
 		long windowStart =
 			(currentTimeMillis / _RATE_LIMIT_WINDOW_MILLIS) *
 				_RATE_LIMIT_WINDOW_MILLIS;
-
-		String key = companyId + StringPool.COLON + clientHost;
 
 		long lastCleanup = _lastRateLimitCleanup.get();
 
@@ -391,14 +386,27 @@ public class DynamicRegistrationServiceContainerRequestFilter
 				});
 		}
 
+		if (registrationsPerHour <= 0) {
+			return;
+		}
+
+		String key = companyId + StringPool.COLON + clientHost;
+
 		int[] countHolder = new int[1];
 
 		_rateLimitBuckets.compute(
 			key,
 			(unusedKey, currentBucket) -> {
-				if ((currentBucket == null) ||
-					(currentBucket.windowStart != windowStart)) {
+				if (currentBucket == null) {
+					if (_rateLimitBuckets.size() >= _MAX_RATE_LIMIT_BUCKETS) {
+						countHolder[0] = registrationsPerHour + 1;
 
+						return null;
+					}
+
+					currentBucket = new RateLimitBucket(windowStart);
+				}
+				else if (currentBucket.windowStart != windowStart) {
 					currentBucket = new RateLimitBucket(windowStart);
 				}
 
@@ -540,6 +548,24 @@ public class DynamicRegistrationServiceContainerRequestFilter
 		return jwsJwtCompactConsumer.getJwtToken();
 	}
 
+	private String _normalizeHost(String host) {
+		if (Validator.isBlank(host)) {
+			return StringPool.BLANK;
+		}
+
+		String stripped = host.trim();
+
+		if (stripped.startsWith("[")) {
+			int closeBracketIndex = stripped.indexOf(']');
+
+			if (closeBracketIndex > 1) {
+				stripped = stripped.substring(1, closeBracketIndex);
+			}
+		}
+
+		return StringUtil.toLowerCase(stripped);
+	}
+
 	private void _setSecurityContext(
 		ContainerRequestContext containerRequestContext,
 		HttpServletRequest httpServletRequest, User user) {
@@ -593,7 +619,7 @@ public class DynamicRegistrationServiceContainerRequestFilter
 						continue;
 					}
 
-					normalizedAllowedHosts.add(StringUtil.toLowerCase(line));
+					normalizedAllowedHosts.add(_normalizeHost(line));
 				}
 			}
 		}
@@ -603,8 +629,7 @@ public class DynamicRegistrationServiceContainerRequestFilter
 		}
 
 		if (normalizedAllowedHosts.isEmpty() ||
-			!normalizedAllowedHosts.contains(
-				StringUtil.toLowerCase(clientHost))) {
+			!normalizedAllowedHosts.contains(clientHost)) {
 
 			_auditRejection(
 				httpServletRequest, companyId, clientHost, "anonymous",
@@ -621,6 +646,8 @@ public class DynamicRegistrationServiceContainerRequestFilter
 
 	private static final String _EVENT_TYPE_DCR_REJECT =
 		"DYNAMIC_REGISTRATION_REJECT";
+
+	private static final int _MAX_RATE_LIMIT_BUCKETS = 10000;
 
 	private static final long _RATE_LIMIT_CLEANUP_INTERVAL_MILLIS =
 		TimeUnit.MINUTES.toMillis(5);

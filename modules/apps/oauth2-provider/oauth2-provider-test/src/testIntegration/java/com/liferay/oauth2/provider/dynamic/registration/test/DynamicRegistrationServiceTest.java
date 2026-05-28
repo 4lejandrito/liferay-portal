@@ -208,6 +208,13 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 		_testAnonymousEnforcesHostAllowlist(allowedHost, allowedHost, 201);
 		_testAnonymousEnforcesHostAllowlist(
 			allowedHost, "test-other-" + RandomTestUtil.randomString(), 403);
+
+		String bracketedHost = "test-bracket-" + RandomTestUtil.randomString();
+
+		_testAnonymousEnforcesHostAllowlist(
+			bracketedHost, "[" + bracketedHost + "]:8080", 201);
+		_testAnonymousEnforcesHostAllowlist(
+			"[" + bracketedHost + "]:8080", bracketedHost, 201);
 	}
 
 	@FeatureFlag("LPD-63416")
@@ -278,77 +285,20 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 	@FeatureFlag("LPD-63416")
 	@Test
 	public void testAnonymousRateLimitTriggers() throws Exception {
-		long companyId = TestPropsValues.getCompanyId();
-
 		String clientHost =
 			"test-rate-triggers-" + RandomTestUtil.randomString();
 
-		WebTarget registerWebTarget = getRegisterWebTarget();
+		_testAnonymousRateLimitTriggers(
+			new String[] {clientHost, clientHost, clientHost}, clientHost);
 
-		String body = JSONUtil.put(
-			_FIELD_CLIENT_NAME, RandomTestUtil.randomString()
-		).put(
-			_FIELD_GRANT_TYPES,
-			new String[] {OAuthConstants.AUTHORIZATION_CODE_GRANT}
-		).put(
-			_FIELD_REDIRECT_URIS,
+		String normalizedHost = "test-rl-key-" + RandomTestUtil.randomString();
+
+		_testAnonymousRateLimitTriggers(
 			new String[] {
-				"https://" + RandomTestUtil.randomString() + ".com/callback"
-			}
-		).put(
-			_FIELD_RESPONSE_TYPES,
-			new String[] {OAuthConstants.CODE_RESPONSE_TYPE}
-		).toString();
-
-		try (CompanyConfigurationTemporarySwapper
-				companyConfigurationTemporarySwapper =
-					new CompanyConfigurationTemporarySwapper(
-						companyId,
-						"com.liferay.oauth2.provider.rest.internal." +
-							"configuration.DynamicRegistrationConfiguration",
-						HashMapDictionaryBuilder.<String, Object>put(
-							_PROPERTY_ANONYMOUS_ALLOWED_GRANT_TYPES,
-							new String[] {"*"}
-						).put(
-							_PROPERTY_ANONYMOUS_ALLOWED_HOSTS,
-							new String[] {"*"}
-						).put(
-							_PROPERTY_ANONYMOUS_ALLOWED_REDIRECT_URI_PATTERNS,
-							new String[] {"*"}
-						).put(
-							_PROPERTY_ANONYMOUS_ALLOWED_SCOPES,
-							new String[] {"*"}
-						).put(
-							_PROPERTY_ANONYMOUS_REGISTRATIONS_PER_HOUR, 3
-						).put(
-							_PROPERTY_ANONYMOUS_TRUST_PROXY_HEADERS, true
-						).put(
-							_PROPERTY_REQUIRE_INITIAL_ACCESS_TOKEN, false
-						).build())) {
-
-			for (int i = 0; i < 3; i++) {
-				Invocation.Builder invocationBuilder =
-					registerWebTarget.request();
-
-				invocationBuilder.header("X-Forwarded-For", clientHost);
-
-				Response response = invocationBuilder.method(
-					"post", Entity.json(body));
-
-				Assert.assertEquals(201, response.getStatus());
-			}
-
-			Invocation.Builder invocationBuilder = registerWebTarget.request();
-
-			invocationBuilder.header("X-Forwarded-For", clientHost);
-
-			Response response = invocationBuilder.method(
-				"post", Entity.json(body));
-
-			Assert.assertEquals(429, response.getStatus());
-			Assert.assertEquals("rate_limited", parseError(response));
-			Assert.assertNotNull(response.getHeaderString("Retry-After"));
-		}
+				"[" + normalizedHost + "]:8080",
+				"[" + normalizedHost + "]:9090", normalizedHost
+			},
+			"[" + normalizedHost + "]");
 	}
 
 	@FeatureFlag("LPD-63416")
@@ -891,6 +841,81 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 			if (expectedStatus == 403) {
 				Assert.assertEquals("access_denied", parseError(response));
 			}
+		}
+	}
+
+	private void _testAnonymousRateLimitTriggers(
+			String[] acceptedHosts, String rejectedHost)
+		throws Exception {
+
+		long companyId = TestPropsValues.getCompanyId();
+
+		WebTarget registerWebTarget = getRegisterWebTarget();
+
+		String body = JSONUtil.put(
+			_FIELD_CLIENT_NAME, RandomTestUtil.randomString()
+		).put(
+			_FIELD_GRANT_TYPES,
+			new String[] {OAuthConstants.AUTHORIZATION_CODE_GRANT}
+		).put(
+			_FIELD_REDIRECT_URIS,
+			new String[] {
+				"https://" + RandomTestUtil.randomString() + ".com/callback"
+			}
+		).put(
+			_FIELD_RESPONSE_TYPES,
+			new String[] {OAuthConstants.CODE_RESPONSE_TYPE}
+		).toString();
+
+		try (CompanyConfigurationTemporarySwapper
+				companyConfigurationTemporarySwapper =
+					new CompanyConfigurationTemporarySwapper(
+						companyId,
+						"com.liferay.oauth2.provider.rest.internal." +
+							"configuration.DynamicRegistrationConfiguration",
+						HashMapDictionaryBuilder.<String, Object>put(
+							_PROPERTY_ANONYMOUS_ALLOWED_GRANT_TYPES,
+							new String[] {"*"}
+						).put(
+							_PROPERTY_ANONYMOUS_ALLOWED_HOSTS,
+							new String[] {"*"}
+						).put(
+							_PROPERTY_ANONYMOUS_ALLOWED_REDIRECT_URI_PATTERNS,
+							new String[] {"*"}
+						).put(
+							_PROPERTY_ANONYMOUS_ALLOWED_SCOPES,
+							new String[] {"*"}
+						).put(
+							_PROPERTY_ANONYMOUS_REGISTRATIONS_PER_HOUR,
+							acceptedHosts.length
+						).put(
+							_PROPERTY_ANONYMOUS_TRUST_PROXY_HEADERS, true
+						).put(
+							_PROPERTY_REQUIRE_INITIAL_ACCESS_TOKEN, false
+						).build())) {
+
+			for (String acceptedHost : acceptedHosts) {
+				Invocation.Builder invocationBuilder =
+					registerWebTarget.request();
+
+				invocationBuilder.header("X-Forwarded-For", acceptedHost);
+
+				Response response = invocationBuilder.method(
+					"post", Entity.json(body));
+
+				Assert.assertEquals(201, response.getStatus());
+			}
+
+			Invocation.Builder invocationBuilder = registerWebTarget.request();
+
+			invocationBuilder.header("X-Forwarded-For", rejectedHost);
+
+			Response response = invocationBuilder.method(
+				"post", Entity.json(body));
+
+			Assert.assertEquals(429, response.getStatus());
+			Assert.assertEquals("rate_limited", parseError(response));
+			Assert.assertNotNull(response.getHeaderString("Retry-After"));
 		}
 	}
 
