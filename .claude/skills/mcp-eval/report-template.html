@@ -47,6 +47,7 @@ main { max-width: 1280px; margin: 0 auto; padding: 30px 32px 96px; }
 .badge.partial { background: var(--partial-bg); color: var(--partial); }
 .badge.fail { background: var(--fail-bg); color: var(--fail); }
 .issues { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.issues.exceeded { color: var(--fail); font-weight: 600; }
 .chev { color: var(--muted); transition: transform .15s; display: inline-block; }
 .collapsed > .case-head .chev,
 .collapsed > .solution-head .chev { transform: rotate(-90deg); }
@@ -399,12 +400,17 @@ function renderCase(c) {
 
 	const el = document.createElement("div");
 	el.className = "case " + bv + " collapsed";
+	const overThreshold = c.issuesUsed > c.issuesMax;
+	const issuesText = overThreshold
+	  ? `${c.issuesUsed}/${c.issuesMax} issues · over threshold`
+	  : `${c.issuesUsed}/${c.issuesMax} issues`;
+	const issuesClass = overThreshold ? "issues exceeded" : "issues";
 	el.innerHTML =
 	  `<div class="case-head">
 		 <span class="chev">▾</span>
 		 <span class="case-num">#${c.caseNumber}</span>
 		 <span class="case-title">${esc(c.title)}</span>
-		 <span class="issues">${c.issuesUsed}/${c.issuesMax} issues</span>
+		 <span class="${issuesClass}">${issuesText}</span>
 		 <span class="badge ${bv}">${esc(c.verdict)}</span>
 	   </div>
 	   <div class="case-body"></div>`;

@@ -1,7 +1,7 @@
 ---
 
 allowed-tools: [Agent, AskUserQuestion, Bash, Read, TaskCreate, TaskList, TaskUpdate, Write]
-description: Evaluate Liferay MCP discoverability and usability by attempting a list of user-supplied use cases against a live Liferay instance, with a bounded three-issue budget per case. Produces a per-case verdict (OK / PARTIAL / FAIL), the roadblocks hit (discovery cost, scope ambiguity, missing prerequisites, schema confusion, MCP wrapper bugs, missing endpoints, auth or permission), and a concrete fix for each defect tagged by the surface that owns the change (OpenAPI spec, resource impl, MCP wrapper, external), rendered as a self-contained HTML report. Use when the user asks to evaluate the Liferay MCP, test its discoverability, or report on how well an AI can accomplish typical Liferay operations through it.
+description: Evaluate Liferay MCP discoverability and usability by attempting a list of user-supplied use cases against a live Liferay instance, flagging any case that crosses a three-issue threshold. Produces a per-case verdict (OK / PARTIAL / FAIL), the roadblocks hit (discovery cost, scope ambiguity, missing prerequisites, schema confusion, MCP wrapper bugs, missing endpoints, auth or permission), and a concrete fix for each defect tagged by the surface that owns the change (OpenAPI spec, resource impl, MCP wrapper, external), rendered as a self-contained HTML report. Use when the user asks to evaluate the Liferay MCP, test its discoverability, or report on how well an AI can accomplish typical Liferay operations through it.
 name: mcp-eval
 
 ---
@@ -94,15 +94,19 @@ When the case cannot be completed under this constraint, that is the finding. Re
 
 This constraint governs the attempt only. The one exception is post-mortem log reading: see `Post-FAIL Diagnosis` below.
 
-# Budget: Three Issues
+# Issue Threshold: Three
 
-The budget caps issues, not calls. Work the case through as many steps as it legitimately needs. An issue is any moment the MCP fails to behave the way its own surface advertised: a POST rejected for a missing field the schema never marked `required`, a tool set whose name promised a scope it then refuses, a "success" response that produced no entity, a wrapper error on a call that should have succeeded. Each issue is also a defect to record. Steps that behave as documented cost nothing, and discovery (`getToolSets`, `getToolSummaries`, `getTool`) never counts as an issue on its own. After the third issue, stop and score the case.
+Three issues is a flag, not a stop sign. Work the case through every step it legitimately needs and record each defect as it surfaces. An issue is any moment the MCP fails to behave the way its own surface advertised: a POST rejected for a missing field the schema never marked `required`, a tool set whose name promised a scope it then refuses, a "success" response that produced no entity, a wrapper error on a call that should have succeeded. Each issue is also a defect to record. Steps that behave as documented cost nothing, and discovery (`getToolSets`, `getToolSummaries`, `getTool`) never counts as an issue on its own.
+
+Keep going past the third issue. Finding the fourth, fifth, or sixth defect in the same case is exactly what tells the reader how broken a surface is, and stopping early hides that signal. When `issuesUsed > 3`, the report flags the case as having crossed the threshold; the verdict still rolls up from what actually happened (OK / PARTIAL / FAIL), independently of the issue count.
+
+Stop only when no remaining step has anything left to attempt — every dependency is missing, or the case has run to its natural end. That is a verdict, not a budget cutoff.
 
 # Steps And Conditions
 
 Your case may bundle several steps or named conditions — a complex case especially. Do not collapse them prematurely. Evaluate each step or condition on its own: invoke it, observe the result, and note whether it held. An issue attaches to the specific step that misbehaved, not to the case as a whole.
 
-The case carries a single verdict, the rollup of its steps, defined under **Scoring** below. When the case has more than one step or condition, give each step its own entry in the `flow` array (format below) so the reader sees which part held and which broke instead of one opaque verdict. A step the budget never reached is a `flow` entry with `outcome: "blocked"`; a step that surfaced an MCP defect is `outcome: "issue"`.
+The case carries a single verdict, the rollup of its steps, defined under **Scoring** below. When the case has more than one step or condition, give each step its own entry in the `flow` array (format below) so the reader sees which part held and which broke instead of one opaque verdict. A step that could not be attempted because of an unresolvable dependency is a `flow` entry with `outcome: "blocked"`; a step that surfaced an MCP defect is `outcome: "issue"`.
 
 # Prerequisite Handling
 
@@ -110,7 +114,7 @@ Many cases need entities that must already exist — a site, a role, a content s
 
 - **Part of the natural workflow, and the MCP exposes the setup path.** Do it through the MCP. "Create a custom object entry" naturally entails *define → publish → insert*; that is one case, not three, and none of those steps counts as an issue as long as each behaves as documented.
 
-- **Environmental** — a workflow engine, an SMTP relay, a feature flag, anything the MCP cannot reasonably bootstrap. Stop and tag the case `missing-prerequisite`.
+- **Environmental** — a workflow engine, an SMTP relay, a feature flag, anything the MCP cannot reasonably bootstrap. Tag the affected step `missing-prerequisite` and continue with any other steps that do not depend on it; the case fails only when nothing else can proceed.
 
 Also tag `missing-prerequisite` when the requirement only surfaces mid-case, and treat each as an issue because the surface did not behave as advertised:
 
@@ -129,16 +133,18 @@ Late discovery is the most expensive kind: the user already invested steps befor
 
 # Scoring
 
-Pick one verdict for the case. For a multi-step case, roll the steps up: **OK** only when every required step succeeded, **PARTIAL** when at least one succeeded and at least one did not, **FAIL** when none produced a recognisable success before the third issue.
+Pick one verdict for the case. For a multi-step case, roll the steps up: **OK** only when every required step succeeded, **PARTIAL** when at least one succeeded and at least one did not, **FAIL** when no required step produced a recognisable success.
 
-- **OK** — the operation completed and the response confirms it: an entity ID, a `status: "Approved"` field, a 200 or 201 payload.
-- **OK (with wrapper bug)** — the underlying REST call succeeded (a real ID or success payload came back) but the MCP wrapper returned an error.
-- **PARTIAL** — partial completion (e.g. created a draft but could not publish), or a read-only variant succeeded while the write variant did not, or the API was reachable but produced no observable side effect before the third issue.
-- **FAIL** — no attempt produced a recognisable success response before the third issue.
+- **OK** — every required step completed and the response confirms it: an entity ID, a `status: "Approved"` field, a 200 or 201 payload.
+- **OK (with wrapper bug)** — the underlying REST calls succeeded (real IDs or success payloads came back) but the MCP wrapper returned errors on one or more of them.
+- **PARTIAL** — at least one required step succeeded and at least one did not (e.g. created a draft but could not publish; the read-only variant succeeded while the write variant did not).
+- **FAIL** — no required step produced a recognisable success.
+
+The verdict is independent of `issuesUsed`. A case can finish OK with two issues (two surface complaints, but every step ultimately worked) or FAIL with one (the single issue blocked everything else).
 
 # Post-FAIL Diagnosis
 
-Only after you have fixed the verdict at **FAIL**, you may read the bundle logs at `<bundles>/logs/liferay.<yyyy-MM-dd>.log` to diagnose why the attempt failed and sharpen your defect bullets with a concrete root cause. This is the sole exception to the MCP-only constraint, and it is narrow: log reading only (no database, no other file-system access), available only once the verdict is **FAIL**, and never used to retroactively complete the case or change the score. If the verdict is not FAIL, do not read the logs.
+After the case has run to its end and the verdict has settled at **FAIL**, you may read the bundle logs at `<bundles>/logs/liferay.<yyyy-MM-dd>.log` to diagnose why the attempt failed and sharpen your defect bullets with a concrete root cause. This is the sole exception to the MCP-only constraint, and it is narrow: log reading only (no database, no other file-system access), available only once the verdict is **FAIL**, and never used to retroactively complete the case or change the score. If the verdict is not FAIL, do not read the logs.
 
 # Roadblock Taxonomy
 
@@ -163,7 +169,7 @@ Return exactly one JSON object and nothing else: no Markdown, no code fence, no 
   "caseNumber": <<CASE_NUMBER>>,
   "title": "<Use Case in Title Case>",
   "verdict": "OK" | "OK (with wrapper bug)" | "PARTIAL" | "FAIL",
-  "issuesUsed": <integer 0-3>,
+  "issuesUsed": <integer; may exceed issuesMax>,
   "issuesMax": 3,
   "flow": [
     {
