@@ -142,7 +142,7 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 
 	@FeatureFlag("LPD-63416")
 	@Test
-	public void testAnonymousBlankScopePinnedToAllowlist() throws Exception {
+	public void testAnonymousBlankScopeIsRejected() throws Exception {
 		long companyId = TestPropsValues.getCompanyId();
 
 		WebTarget registerWebTarget = getRegisterWebTarget();
@@ -193,16 +193,10 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 			Response response = invocationBuilder.method(
 				"post", Entity.json(body));
 
-			Assert.assertEquals(201, response.getStatus());
+			Assert.assertEquals(400, response.getStatus());
 
-			JSONObject responseJSONObject = parseJSONObject(response);
-
-			Assert.assertTrue(
-				responseJSONObject.getString(
-					_FIELD_SCOPE
-				).contains(
-					"Liferay.Headless.Delivery.everything"
-				));
+			Assert.assertEquals(
+				"invalid_client_metadata", parseError(response));
 		}
 	}
 
