@@ -191,6 +191,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>TAB</td>
+	<td>//button[@role='tab' and contains(.,'${tabEntity}')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>TABLE_LIST</td>
 	<td>xpath=(//div[contains(@class,'table-list-title')])[${index}]</td>
 	<td></td>

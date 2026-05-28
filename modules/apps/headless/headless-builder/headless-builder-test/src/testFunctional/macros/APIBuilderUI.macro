@@ -464,8 +464,8 @@ definition {
 		Click(locator1 = "APIBuilder#EDIT_BUTTON");
 
 		Click(
-			locator1 = "Button#BUTTON_WITH_VALUE",
-			value = ${tabEntity});
+			locator1 = "APIBuilder#TAB",
+			tabEntity = ${tabEntity});
 	}
 
 	@summary = "Default summary"
