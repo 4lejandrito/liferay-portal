@@ -882,7 +882,7 @@ public class LiferayDynamicRegistrationService
 		for (String redirectUri : redirectUris) {
 			if (Validator.isBlank(redirectUri)) {
 				OAuth2ErrorUtil.reportInvalidRequestError(
-					"Redirect URI cannot be blank", "invalid_redirect_uri",
+					"Redirect URI is blank", "invalid_redirect_uri",
 					Response.Status.BAD_REQUEST);
 			}
 

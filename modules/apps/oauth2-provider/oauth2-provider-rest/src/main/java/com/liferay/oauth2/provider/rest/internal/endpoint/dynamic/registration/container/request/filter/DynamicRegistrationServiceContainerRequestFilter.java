@@ -185,7 +185,8 @@ public class DynamicRegistrationServiceContainerRequestFilter
 					_log.info(
 						StringBundler.concat(
 							"Anonymous dynamic client registration accepted ",
-							"for company ", companyId, " from ", clientHost));
+							"for company ", companyId, " from \"", clientHost,
+							"\""));
 				}
 			}
 			else {
@@ -427,8 +428,8 @@ public class DynamicRegistrationServiceContainerRequestFilter
 			_log.warn(
 				StringBundler.concat(
 					"Anonymous dynamic client registration rate limit ",
-					"exceeded for company ", companyId, " from ", clientHost,
-					"; retry after ", retryAfterSeconds, " seconds"));
+					"exceeded for company ", companyId, " from \"", clientHost,
+					"\"; retry after ", retryAfterSeconds, " seconds"));
 		}
 
 		_auditRejection(
@@ -564,26 +565,26 @@ public class DynamicRegistrationServiceContainerRequestFilter
 			return StringPool.BLANK;
 		}
 
-		String stripped = host.trim();
+		String strippedHost = host.trim();
 
-		if (stripped.startsWith("[")) {
-			int closeBracketIndex = stripped.indexOf(']');
+		if (strippedHost.startsWith("[")) {
+			int closeBracketIndex = strippedHost.indexOf(']');
 
 			if (closeBracketIndex > 1) {
-				stripped = stripped.substring(1, closeBracketIndex);
+				strippedHost = strippedHost.substring(1, closeBracketIndex);
 			}
 		}
 		else {
-			int colonIndex = stripped.indexOf(':');
+			int colonIndex = strippedHost.indexOf(':');
 
 			if ((colonIndex > 0) &&
-				(stripped.indexOf(':', colonIndex + 1) < 0)) {
+				(strippedHost.indexOf(':', colonIndex + 1) < 0)) {
 
-				stripped = stripped.substring(0, colonIndex);
+				strippedHost = strippedHost.substring(0, colonIndex);
 			}
 		}
 
-		return StringUtil.toLowerCase(stripped);
+		return StringUtil.toLowerCase(strippedHost);
 	}
 
 	private void _setSecurityContext(
