@@ -81,8 +81,12 @@
   .flow-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
   .flow-tool {
     font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13.5px; font-weight: 600;
-    background: #e4ecf7; color: #1d4e6f; padding: 3px 9px; border-radius: 5px;
+    padding: 3px 9px; border-radius: 5px;
   }
+  .flow-tool-discovery-sets      { background: #f3e8ff; color: #6b21a8; }
+  .flow-tool-discovery-summaries { background: #fef3c7; color: #92400e; }
+  .flow-tool-discovery-schema    { background: #d1fae5; color: #065f46; }
+  .flow-tool-invocation          { background: #e4ecf7; color: #1d4e6f; }
   .flow-pill {
     font-size: 12px; font-weight: 700; letter-spacing: .03em;
     padding: 2px 9px; border-radius: 999px;
@@ -306,6 +310,14 @@ __CASE_DATA__
     return wrap;
   }
 
+  // Classify the `tool` field so the flow-tool pill picks a color per category.
+  function toolClass(name) {
+    if (name === "getToolSets") return "flow-tool-discovery-sets";
+    if (name === "getToolSummaries") return "flow-tool-discovery-summaries";
+    if (name === "getTool") return "flow-tool-discovery-schema";
+    return "flow-tool-invocation";
+  }
+
   // Lightweight JSON syntax highlighter — runs on the HTML-escaped string.
   function highlightJSON(escapedJson) {
     return escapedJson.replace(
@@ -351,7 +363,7 @@ __CASE_DATA__
     else marker = "•";
 
     const pieces = [];
-    if (entry.tool) pieces.push(`<span class="flow-tool">${esc(entry.tool)}</span>`);
+    if (entry.tool) pieces.push(`<span class="flow-tool ${toolClass(entry.tool)}">${esc(entry.tool)}</span>`);
     if (outcome === "issue") pieces.push(`<span class="flow-pill issue">Issue ${issueIndex}</span>`);
     else if (outcome === "blocked") pieces.push(`<span class="flow-pill blocked">Blocked</span>`);
 
