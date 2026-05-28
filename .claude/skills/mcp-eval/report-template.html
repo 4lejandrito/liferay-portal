@@ -122,6 +122,14 @@
   .diff .ctx  { color: #24292e; }
 
   .happy { margin-top: 18px; padding: 13px 16px; background: var(--ok-bg); color: #1b5e20; border-radius: 8px; font-size: 16px; }
+
+  /* Use Case — verbatim user-supplied prompt, collapsed by default */
+  .case-text {
+    white-space: pre-wrap; word-wrap: break-word;
+    font-size: 15px; line-height: 1.6; color: var(--ink);
+    background: #f7f9fc; border: 1px solid var(--line); border-radius: 8px;
+    padding: 14px 16px; max-height: 480px; overflow-y: auto;
+  }
 </style>
 </head>
 <body>
@@ -250,6 +258,13 @@ __CASE_DATA__
        </div>
        <div class="case-body"></div>`;
     const cbody = el.querySelector(".case-body");
+
+    // Use Case — verbatim user-supplied prompt, collapsible and collapsed by default.
+    if (c.caseText) {
+      const caseTextField = makeField("Use Case", true, true);
+      caseTextField.body.innerHTML = `<div class="case-text">${esc(c.caseText)}</div>`;
+      cbody.appendChild(caseTextField.field);
+    }
 
     // Tools Tried — always shown, not collapsible.
     const toolsField = makeField("Tools Tried", false, false);

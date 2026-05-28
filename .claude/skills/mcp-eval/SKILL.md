@@ -48,7 +48,7 @@ The complete rulebook the sub-agent runs from — the MCP-only constraint, the t
 
 	1. Spawn a sub-agent via the `Agent` tool with `subagent_type: general-purpose`. Pass the prompt from **Sub-Agent Prompt Template** below, with `<<CASE_NUMBER>>` and `<<CASE_TEXT>>` substituted. Do not set `run_in_background`; the orchestrator must block on the sub-agent's return so the next case starts cold.
 
-	1. Collect the sub-agent's final message — a single per-case JSON object — into the running array, in case order. Keep it verbatim; do not reformat, rescore, or reword it.
+	1. Collect the sub-agent's final message — a single per-case JSON object — into the running array, in case order. Keep it verbatim; do not reformat, rescore, or reword it. Then enrich the object with a `caseText` field set to the verbatim use-case text from the user's list (the same string substituted for `<<CASE_TEXT>>` in the sub-agent prompt) so the report can show the original input next to the verdict. This is the only orchestrator-side mutation of the per-case object.
 
 	1. Mark the case's task `completed` via `TaskUpdate` with a one-line internal summary (verdict, issues used, tools tried, roadblock tags). This is bookkeeping, not the report.
 
@@ -139,7 +139,7 @@ Tag every defect with one or more of these. A defect can carry several tags — 
 
 # Required Output
 
-Return exactly one JSON object and nothing else: no Markdown, no code fence, no preamble or postscript. It must parse with a single `JSON.parse`. The object has this shape:
+Return exactly one JSON object and nothing else: no Markdown, no code fence, no preamble or postscript. It must parse with a single `JSON.parse`. The object has this shape (the orchestrator adds a `caseText` field afterwards with the verbatim use-case text; do not include it yourself):
 
 ```json
 {
