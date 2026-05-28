@@ -300,7 +300,7 @@ public class DynamicRegistrationServiceContainerRequestFilter
 
 		long expirationTime = GetterUtil.getLong(jwtToken.getClaim("exp"));
 
-		if (currentTime > expirationTime) {
+		if ((expirationTime > 0) && (currentTime > expirationTime)) {
 			throw ExceptionUtils.toNotAuthorizedException(null, null);
 		}
 
