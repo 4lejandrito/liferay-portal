@@ -173,6 +173,12 @@ public class DynamicRegistrationServiceContainerRequestFilter
 					companyId,
 					dynamicRegistrationConfiguration.
 						anonymousServiceAccountScreenName());
+
+				if (!user.isActive()) {
+					throw new NoSuchUserException(
+						"Anonymous service account user is inactive");
+				}
+
 				anonymous = true;
 
 				if (_log.isInfoEnabled()) {
@@ -202,8 +208,9 @@ public class DynamicRegistrationServiceContainerRequestFilter
 				if (_log.isWarnEnabled()) {
 					_log.warn(
 						StringBundler.concat(
-							"Anonymous service account screen name does not ",
-							"resolve to a user for company ", companyId));
+							"Anonymous service account is unavailable for ",
+							"company ", companyId, ": ",
+							exception.getMessage()));
 				}
 			}
 			else if (_log.isDebugEnabled()) {
