@@ -406,6 +406,7 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 			"https://attacker.test/callback");
 		_testAnonymousRejectsDisallowedRedirectURI(
 			"https://attacker.test/foo.example.org/callback");
+		_testAnonymousRejectsDisallowedRedirectURI("");
 	}
 
 	@FeatureFlag("LPD-63416")
