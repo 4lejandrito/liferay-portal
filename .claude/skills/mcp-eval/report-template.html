@@ -124,10 +124,24 @@
     white-space: pre;
   }
 
-  .defect { border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; margin-top: 12px; background: #fcfdff; }
-  .tag { font-size: 13px; font-weight: 700; letter-spacing: .03em; padding: 3px 10px; border-radius: 6px;
-         background: #eceff3; color: #33425b; margin-right: 8px; }
-  .defect .desc { margin-top: 8px; }
+  /* Defect payload — same shell as request/response, but with a typography-rich body */
+  .flow-payload-defect summary { background: #fff4f3; color: var(--fail); }
+  .flow-payload-defect[open] summary { border-bottom-color: #f5c6c0; }
+  .flow-payload-defect summary .defect-tag {
+    display: inline-block; margin-left: 4px;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 11px; font-weight: 700; letter-spacing: .02em;
+    padding: 1px 7px; border-radius: 4px;
+    background: #fff; color: var(--fail);
+    text-transform: none;
+  }
+  .flow-payload-defect .defect-body { padding: 13px 15px 15px; background: #fff; }
+  .flow-payload-defect .defect-desc { font-size: 15.5px; line-height: 1.6; color: var(--ink); }
+  .flow-payload-defect .defect-desc strong { font-weight: 700; }
+  .flow-payload-defect .defect-desc code {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .9em;
+    background: #eef2f7; color: #33425b; padding: 1px 6px; border-radius: 5px;
+  }
 
   /* Solution groups — alternatives vs complementary */
   .sol-group { margin-top: 18px; }
@@ -265,20 +279,26 @@ __CASE_DATA__
     return g;
   }
 
-  function renderDefect(d) {
-    const el = document.createElement("div");
-    el.className = "defect";
-    el.innerHTML = `<span class="tag">${esc(d.tag)}</span><span class="desc">${fmt(d.description)}</span>`;
+  function renderDefectPayload(d) {
+    const wrap = document.createElement("details");
+    wrap.className = "flow-payload flow-payload-defect";
+
+    const summary = document.createElement("summary");
+    summary.innerHTML = `Defect <span class="defect-tag">${esc(d.tag)}</span>`;
+    wrap.appendChild(summary);
+
+    const body = document.createElement("div");
+    body.className = "defect-body";
+    body.innerHTML = `<div class="defect-desc">${fmt(d.description)}</div>`;
 
     const alts = d.alternatives || [];
     const adds = d.additional || [];
+    if (alts.length > 1) body.appendChild(renderGroup("Alternative fixes", "pick one", alts));
+    else if (alts.length === 1) body.appendChild(renderGroup("Fix", "", alts));
+    if (adds.length) body.appendChild(renderGroup("Also apply", "alongside the fix above", adds));
 
-    if (alts.length > 1) el.appendChild(renderGroup("Alternative fixes", "pick one", alts));
-    else if (alts.length === 1) el.appendChild(renderGroup("Fix", "", alts));
-
-    if (adds.length) el.appendChild(renderGroup("Also apply", "alongside the fix above", adds));
-
-    return el;
+    wrap.appendChild(body);
+    return wrap;
   }
 
   function renderPayload(label, content) {
@@ -312,20 +332,23 @@ __CASE_DATA__
     const intent = entry.intent ? `<div class="flow-intent">${fmt(entry.intent)}</div>` : "";
     const result = entry.result ? `<div class="flow-result">${fmt(entry.result)}</div>` : "";
 
-    const payloads = [];
-    if (entry.request !== undefined && entry.request !== null) {
-      payloads.push(renderPayload("Request", entry.request));
-    }
-    if (entry.response !== undefined && entry.response !== null) {
-      payloads.push(renderPayload("Response", entry.response));
-    }
-    const payloadsHTML = payloads.length
-      ? `<div class="flow-payloads">${payloads.join("")}</div>`
-      : "";
-
     const li = document.createElement("li");
     li.className = "flow-entry " + outcome;
-    li.innerHTML = `<div class="flow-marker">${marker}</div>${head}${intent}${result}${payloadsHTML}`;
+    li.innerHTML = `<div class="flow-marker">${marker}</div>${head}${intent}${result}`;
+
+    // Payloads — Request, Response, Defect (each its own collapsed details block).
+    const hasRequest = entry.request !== undefined && entry.request !== null;
+    const hasResponse = entry.response !== undefined && entry.response !== null;
+    const hasDefect = !!entry.defect;
+    if (hasRequest || hasResponse || hasDefect) {
+      const wrap = document.createElement("div");
+      wrap.className = "flow-payloads";
+      if (hasRequest) wrap.insertAdjacentHTML("beforeend", renderPayload("Request", entry.request));
+      if (hasResponse) wrap.insertAdjacentHTML("beforeend", renderPayload("Response", entry.response));
+      if (hasDefect) wrap.appendChild(renderDefectPayload(entry.defect));
+      li.appendChild(wrap);
+    }
+
     return li;
   }
 
@@ -366,12 +389,9 @@ __CASE_DATA__
       cbody.appendChild(flowField.field);
     }
 
-    // Defects — collapsible; or a happy-path note when there are none.
-    if (c.defects && c.defects.length) {
-      const defectsField = makeField("Defects", true, false);
-      c.defects.forEach(d => defectsField.body.appendChild(renderDefect(d)));
-      cbody.appendChild(defectsField.field);
-    } else if (c.happyPathNote) {
+    // Happy-path note — shown only when no flow entry carried a defect.
+    const anyDefect = (c.flow || []).some(e => e && e.defect);
+    if (!anyDefect && c.happyPathNote) {
       const happy = document.createElement("div");
       happy.className = "happy";
       happy.innerHTML = fmt(c.happyPathNote);

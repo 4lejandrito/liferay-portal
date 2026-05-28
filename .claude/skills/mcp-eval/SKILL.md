@@ -155,19 +155,17 @@ Return exactly one JSON object and nothing else: no Markdown, no code fence, no 
       "result": "<what happened>",
       "outcome": "ok" | "issue" | "blocked" | "note",
       "request": <JSON arguments passed to invokeTool, optional>,
-      "response": <JSON body returned by the tool, optional>
-    }
-  ],
-  "defects": [
-    {
-      "tag": "<roadblock-taxonomy tag>",
-      "description": "<why it is a defect, concrete enough to file as a ticket>",
-      "alternatives": [
-        {"title": "<fix title>", "surface": "openapi", "detail": "<one or two sentences>", "diff": "<unified diff, optional>"}
-      ],
-      "additional": [
-        {"title": "<complementary fix title>", "surface": "resource-impl", "detail": "<one or two sentences>", "diff": "<unified diff, optional>"}
-      ]
+      "response": <JSON body returned by the tool, optional>,
+      "defect": {
+        "tag": "<roadblock-taxonomy tag>",
+        "description": "<why it is a defect, concrete enough to file as a ticket>",
+        "alternatives": [
+          {"title": "<fix title>", "surface": "openapi", "detail": "<one or two sentences>", "diff": "<unified diff, optional>"}
+        ],
+        "additional": [
+          {"title": "<complementary fix title>", "surface": "resource-impl", "detail": "<one or two sentences>", "diff": "<unified diff, optional>"}
+        ]
+      }
     }
   ],
   "happyPathNote": "<one-line keeper>" | null
@@ -178,13 +176,18 @@ Field rules:
 
 - **title** — the use case in Title Case, not the verbatim input.
 - **verdict** — one of the four strings exactly; the renderer keys its color off the `OK` / `PARTIAL` / `FAIL` prefix.
-- **flow** — the unified timeline of MCP interactions, from discovery through the verdict. Each entry is an object with four fields:
+- **flow** — the unified timeline of MCP interactions, from discovery through the verdict. Each entry is an object with the following fields:
 	- `tool` — the `toolSet/toolName` invoked (string), or `null` for an entry that is not a tool call (a planning decision, a high-level "blocked" summary of unreached scope, the post-FAIL log read).
 	- `intent` — what the agent tried to accomplish at this step, written as a short imperative or noun phrase. Inline markup applies.
 	- `result` — one or two sentences on what actually happened. Inline markup applies. Reference other tools or fields inline with backticks.
-	- `outcome` — one of `ok` (the action behaved as documented), `issue` (an MCP defect surfaced — this entry counts toward `issuesUsed` and must have a matching `defects` entry), `blocked` (the agent could not attempt this part because of a prior issue), `note` (a planning step, a decision, or an observation that does not pass or fail).
+	- `outcome` — one of `ok` (the action behaved as documented), `issue` (an MCP defect surfaced — this entry counts toward `issuesUsed` and must carry a `defect` object, described below), `blocked` (the agent could not attempt this part because of a prior issue), `note` (a planning step, a decision, or an observation that does not pass or fail).
 	- `request` — the JSON arguments passed to `invokeTool` for this step, captured verbatim as a JSON object. Omit when `tool` is `null` or the call genuinely sends no arguments. The renderer pretty-prints it inside a collapsed **Request** section under the flow entry so a reader can replay the call.
 	- `response` — the JSON body returned by the tool, captured verbatim as a JSON object. Omit when `tool` is `null`. For a response whose payload is large (a page of hundreds of items, an export blob), keep the top-level structure but truncate arrays with a `"...truncated (N items)..."` placeholder so the report stays scannable; never paraphrase the error or schema information, which is exactly what the reader needs to see. The renderer pretty-prints it inside a collapsed **Response** section under the flow entry.
+	- `defect` — present only on `outcome: "issue"` entries; absent everywhere else. Describes the MCP defect this step surfaced and the fix(es). Be specific about *why* it is a defect, never just that something failed: say what about the response was the actual problem (not "got a 400" but "the error named no valid scope, so the user must guess which scopes the tool set accepts"). The renderer pretty-prints it inside a collapsed **Defect** section under Request and Response. Fields:
+		- `tag` — one tag from the roadblock taxonomy above.
+		- `description` — one or two sentences explaining the defect.
+		- `alternatives` — array of solution objects (described under **Solutions** below), mutually exclusive; every defect needs at least one entry. One entry renders as "Fix"; more than one renders as "Alternative fixes — pick one".
+		- `additional` — array of complementary solution objects that apply alongside the chosen alternative. Renders as "Also apply — alongside the fix above". Leave as `[]` when there are none.
 
 	Aim for 5 to 10 entries — enough to tell the story end-to-end without becoming a call transcript. Group a tight discovery loop (`getToolSets → getToolSummaries → getTool`) into one entry with the entry-point tool on `tool` and the rest mentioned inline in `result`, unless one of them surfaces an issue. The number of `outcome: "issue"` entries must equal `issuesUsed`. Each subsequent flow entry naturally shows the agent's response to the prior step: a retry with a different tool, a fall-back to a read to isolate the layer, a give-up decision after the budget is spent. A well-formed entry, for reference:
 
@@ -195,25 +198,27 @@ Field rules:
 	  "result": "**HTTP 415 Unsupported Media Type** before any field validation.",
 	  "outcome": "issue",
 	  "request": {"name": "Conference", "label": {"en_US": "Conference"}, "objectFields": [{"name": "name", "businessType": "Text", "required": true}]},
-	  "response": {"status": 415, "title": "Unsupported Media Type"}
+	  "response": {"status": 415, "title": "Unsupported Media Type"},
+	  "defect": {
+	    "tag": "mcp-wrapper-bug",
+	    "description": "The wrapper rejected the call with **415** before forwarding to the resource, even though the schema documents `application/json` as the only accepted media type. The caller has no way to override Content-Type, so the surface contradicts the schema.",
+	    "alternatives": [
+	      {"title": "Inject `Content-Type: application/json` in `invokeTool`", "surface": "mcp-wrapper", "detail": "The wrapper should set Content-Type from the OpenAPI operation's request body content type instead of leaving it unset."}
+	    ],
+	    "additional": []
+	  }
 	}
 	```
 
-- **defects** — one entry per defect, each carrying at least one fix. Be specific about *why* it is a defect, never just that something failed: say what about the response was the actual problem (not "got a 400" but "the error named no valid scope, so the user must guess which scopes the tool set accepts"). For a clean success with no defects, set `defects` to `[]`.
-- **happyPathNote** — for a clean success, one short observation worth keeping (e.g. that a friendly key worked, or that pagination mapped cleanly). Set it to `null` whenever `defects` is non-empty.
+- **happyPathNote** — for a clean success, one short observation worth keeping (e.g. that a friendly key worked, or that pagination mapped cleanly). Set it to `null` whenever any flow entry carries a `defect`.
 - **Inline emphasis** — the `intent`, `result`, `description`, `detail`, and `happyPathNote` text render lightweight inline markup: wrap a phrase in `**double asterisks**` for bold and in `` `backticks` `` for code. Bold the one phrase that carries the point — the actual problem, the verdict-driving outcome — so the reader is not parsing a wall of even-weight prose. Do not bold whole sentences, and keep each text field to one or two crisp sentences rather than a paragraph.
 
-Each fix is a solution object with a `surface` drawn from this set, which the renderer prefers in the order listed:
+**Solutions.** Each entry in `defect.alternatives` and `defect.additional` is an object with `title`, `surface`, `detail`, and an optional `diff`. The `surface` selects where the fix lives, and the renderer color-codes it:
 
 - **`openapi`** — fix lives in a `rest-openapi.yaml` or its annotations / `EntityModel`. Prefer this whenever the spec can express the fix; most defects translate into spec edits that ripple through `getToolSets`, `getToolSummaries`, and `getTool` for free.
 - **`resource-impl`** — fix lives in a `*ResourceImpl` Java class.
 - **`mcp-wrapper`** — fix lives in `mcp-server` or `mcp-server-rest-impl`.
 - **`external`** — fix lives outside Liferay.
-
-Sort each fix into the right array — the relationship is what the renderer labels:
-
-- **alternatives** — mutually exclusive paths; pick one. Put the recommended fix first, then any pick-this-instead options. One entry renders as "Fix"; more than one renders as "Alternative fixes — pick one". Every defect needs at least one `alternatives` entry.
-- **additional** — complementary changes that apply alongside the chosen alternative. Renders as "Also apply — alongside the fix above". Leave as `[]` when there are none.
 
 `detail` states the concrete change in one or two sentences. `diff` is optional but encouraged when the fix is a small, nameable patch: a real unified diff (`--- a/...`, `+++ b/...`, `@@`, `+`/`-` lines) that the renderer syntax-highlights. Omit `diff` entirely when the change is too diffuse to patch in a few lines.
 
@@ -223,25 +228,9 @@ Anti-patterns in `description` and `detail`:
 - "Got a 400." Say *what about the response was the actual problem*: "The error `Group ID 20127 is not valid for scope 'depot'` did not indicate which scopes the tool set accepts; the user has to infer it from the error."
 - "The case is complex." Say *which step* is the friction: "The case completes in three calls, but step 2 (`publish`) is undocumented — nothing in step 1's response mentions it is required."
 
-A well-formed defect, for reference:
-
-```json
-{
-  "tag": "schema-confusion",
-  "description": "getRolesPage advertises filter as an input but ignores filter: \"name eq 'Site Member'\" and returns the full role list. The schema shows a filter slot the server does not honor, so the caller cannot tell the filter was dropped rather than matching nothing.",
-  "alternatives": [
-    {"title": "Register `name` as a filterable field on the Role EntityModel", "surface": "openapi", "detail": "The fix to reach for first. The OData EntityModel backing the Role resource never declares name, so the filter parser silently drops it; adding it makes the filter resolve."},
-    {"title": "Stop advertising a filter the collection cannot honor", "surface": "openapi", "detail": "Choose this instead only if filtering Roles by name is out of scope: remove the filter parameter from getRolesPage so the schema no longer promises it."}
-  ],
-  "additional": [
-    {"title": "Reject unknown filter fields with a 400 instead of dropping them", "surface": "resource-impl", "detail": "Independent of which option above you pick. A guard in the base resource keeps the spec and server from silently diverging again."}
-  ]
-}
-```
-
 # Conduct
 
-- The report is about what got in the way, not a transcript. The `flow` field carries the timeline of the path to the verdict; everything else (`defects`, `happyPathNote`) is about friction and fixes. Do not pad `flow` into a blow-by-blow log of every call, and do not restate flow entries inside the defects.
+- The report is about what got in the way, not a transcript. The `flow` field carries the timeline; each `outcome: "issue"` entry carries its own `defect` with the why and the fix(es); `happyPathNote` captures keepers from clean runs. Do not pad `flow` into a blow-by-blow log of every call, and do not restate the `intent` or `result` text inside `defect.description` — the defect should add what the entry does not already say.
 - Do not retry a tool with the same input hoping for a different result. Each retry must change something — different tool set, different scope key, different body shape — and the change is itself a finding.
 - Do not read prior memory entries about Liferay endpoints. The evaluation must reflect cold-start discoverability.
 
