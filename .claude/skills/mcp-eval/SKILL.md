@@ -205,7 +205,21 @@ Field rules:
 		- `alternatives` — array of solution objects (described under **Solutions** below), mutually exclusive; every defect needs at least one entry. One entry renders as "Fix"; more than one renders as "Alternative fixes — pick one".
 		- `additional` — array of complementary solution objects that apply alongside the chosen alternative. Renders as "Also apply — alongside the fix above". Leave as `[]` when there are none.
 
-	Aim for 5 to 10 entries — enough to tell the story end-to-end without becoming a call transcript. Group a tight discovery loop (`getToolSets → getToolSummaries → getTool`) into one entry with the entry-point tool on `tool` and the rest mentioned inline in `result`, unless one of them surfaces an issue. The number of `outcome: "issue"` entries must equal `issuesUsed`. Each subsequent flow entry naturally shows the agent's response to the prior step: a retry with a different tool, a fall-back to a read to isolate the layer, a give-up decision after the budget is spent. A well-formed entry, for reference:
+	**One flow entry per MCP call.** A `getToolSets` to find a candidate, a `getToolSummaries` to drill down, a `getTool` to fetch the schema, and an `invokeTool` to execute land as four separate entries — the value of the report is in watching the MCP get navigated step by step, not in a summary of the navigation. Keep each `result` short (usually one sentence) so a long case stays scannable. A retry with a different tool, a fall-back to a read to isolate the layer, a give-up decision after the budget is spent — each gets its own entry. The number of `outcome: "issue"` entries must equal `issuesUsed`.
+
+	A discovery call has `outcome: "note"`; the `result` says what the call returned that pushed the next step:
+
+	```json
+	{
+	  "tool": "getToolSets",
+	  "intent": "Find a tool set that exposes **object definition** create operations",
+	  "result": "Returned **47 tool sets**; `object-admin-v1.0` is the only candidate whose name mentions objects.",
+	  "outcome": "note",
+	  "response": {"toolSets": ["...truncated (47 items)..."]}
+	}
+	```
+
+	An `invokeTool` call has one of `ok`, `issue`, or `blocked`. An `issue` example, with its `defect` attached:
 
 	```json
 	{
