@@ -373,17 +373,16 @@ public class DynamicRegistrationServiceContainerRequestFilter
 
 		long lastCleanup = _lastRateLimitCleanup.get();
 
-		if (((currentTimeMillis - lastCleanup) >
-				_RATE_LIMIT_CLEANUP_INTERVAL_MILLIS) &&
+		if ((((currentTimeMillis - lastCleanup) >
+				_RATE_LIMIT_CLEANUP_INTERVAL_MILLIS) ||
+			 (_rateLimitBuckets.size() >= _MAX_RATE_LIMIT_BUCKETS)) &&
 			_lastRateLimitCleanup.compareAndSet(
 				lastCleanup, currentTimeMillis)) {
 
-			_rateLimitBuckets.forEach(
-				(bucketKey, bucket) -> {
-					if (bucket.windowStart < windowStart) {
-						_rateLimitBuckets.remove(bucketKey, bucket);
-					}
-				});
+			_rateLimitBuckets.values(
+			).removeIf(
+				bucket -> bucket.windowStart < windowStart
+			);
 		}
 
 		if (registrationsPerHour <= 0) {
@@ -560,6 +559,15 @@ public class DynamicRegistrationServiceContainerRequestFilter
 
 			if (closeBracketIndex > 1) {
 				stripped = stripped.substring(1, closeBracketIndex);
+			}
+		}
+		else {
+			int colonIndex = stripped.indexOf(':');
+
+			if ((colonIndex > 0) &&
+				(stripped.indexOf(':', colonIndex + 1) < 0)) {
+
+				stripped = stripped.substring(0, colonIndex);
 			}
 		}
 

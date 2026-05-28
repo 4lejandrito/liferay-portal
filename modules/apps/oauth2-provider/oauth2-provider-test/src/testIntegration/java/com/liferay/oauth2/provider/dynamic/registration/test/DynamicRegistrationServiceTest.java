@@ -215,6 +215,10 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 			bracketedHost, "[" + bracketedHost + "]:8080", 201);
 		_testAnonymousEnforcesHostAllowlist(
 			"[" + bracketedHost + "]:8080", bracketedHost, 201);
+
+		String portHost = "test-port-" + RandomTestUtil.randomString();
+
+		_testAnonymousEnforcesHostAllowlist(portHost, portHost + ":8080", 201);
 	}
 
 	@FeatureFlag("LPD-63416")
