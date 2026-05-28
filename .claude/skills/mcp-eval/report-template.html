@@ -123,6 +123,11 @@
     max-height: 360px; overflow-y: auto;
     white-space: pre;
   }
+  .flow-payload .json-key     { color: #d73a49; }
+  .flow-payload .json-string  { color: #032f62; }
+  .flow-payload .json-number  { color: #005cc5; }
+  .flow-payload .json-boolean { color: #6f42c1; }
+  .flow-payload .json-null    { color: #6a737d; font-style: italic; }
 
   /* Defect payload — same shell as request/response, but with a typography-rich body */
   .flow-payload-defect summary { background: #fff4f3; color: var(--fail); }
@@ -301,18 +306,40 @@ __CASE_DATA__
     return wrap;
   }
 
+  // Lightweight JSON syntax highlighter — runs on the HTML-escaped string.
+  function highlightJSON(escapedJson) {
+    return escapedJson.replace(
+      /("(?:\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*")(\s*:)?|\b(true|false|null)\b|(-?\d+(?:\.\d+)?(?:[eE][+\-]?\d+)?)/g,
+      (match, stringTok, colonTok, keywordTok, numberTok) => {
+        if (stringTok !== undefined) {
+          const cls = colonTok ? "json-key" : "json-string";
+          return `<span class="${cls}">${stringTok}</span>${colonTok || ""}`;
+        }
+        if (keywordTok !== undefined) {
+          const cls = keywordTok === "null" ? "json-null" : "json-boolean";
+          return `<span class="${cls}">${keywordTok}</span>`;
+        }
+        return `<span class="json-number">${numberTok}</span>`;
+      }
+    );
+  }
+
   function renderPayload(label, content) {
     let formatted;
+    let isJSON = true;
     if (typeof content === "string") {
       try {
         formatted = JSON.stringify(JSON.parse(content), null, 2);
       } catch (e) {
         formatted = content;
+        isJSON = false;
       }
     } else {
       formatted = JSON.stringify(content, null, 2);
     }
-    return `<details class="flow-payload"><summary>${esc(label)}</summary><pre>${esc(formatted)}</pre></details>`;
+    const escaped = esc(formatted);
+    const body = isJSON ? highlightJSON(escaped) : escaped;
+    return `<details class="flow-payload"><summary>${esc(label)}</summary><pre>${body}</pre></details>`;
   }
 
   function renderFlowEntry(entry, issueIndex) {
