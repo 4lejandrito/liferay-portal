@@ -18,6 +18,9 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.module.configuration.ConfigurationProvider;
 import com.liferay.portal.kernel.audit.AuditMessage;
 import com.liferay.portal.kernel.audit.AuditRouter;
+import com.liferay.portal.kernel.cache.PortalCache;
+import com.liferay.portal.kernel.cache.PortalCacheHelperUtil;
+import com.liferay.portal.kernel.cache.PortalCacheManagerNames;
 import com.liferay.portal.kernel.exception.NoSuchUserException;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.json.JSONUtil;
@@ -53,17 +56,15 @@ import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.Provider;
 
+import java.io.Serializable;
+
 import java.security.Principal;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.cxf.jaxrs.utils.ExceptionUtils;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
@@ -373,59 +374,27 @@ public class DynamicRegistrationServiceContainerRequestFilter
 		HttpServletRequest httpServletRequest, long companyId,
 		String clientHost, int registrationsPerHour) {
 
+		if (registrationsPerHour <= 0) {
+			return;
+		}
+
 		long currentTimeMillis = System.currentTimeMillis();
 
 		long windowStart =
 			(currentTimeMillis / _RATE_LIMIT_WINDOW_MILLIS) *
 				_RATE_LIMIT_WINDOW_MILLIS;
 
-		long lastCleanup = _lastRateLimitCleanup.get();
-
-		if (((currentTimeMillis - lastCleanup) >
-				_RATE_LIMIT_CLEANUP_INTERVAL_MILLIS) &&
-			_lastRateLimitCleanup.compareAndSet(
-				lastCleanup, currentTimeMillis)) {
-
-			_rateLimitBuckets.values(
-			).removeIf(
-				bucket -> bucket.windowStart < windowStart
-			);
-		}
-
-		if (registrationsPerHour <= 0) {
-			return;
-		}
-
 		String key = companyId + StringPool.COLON + clientHost;
 
-		if (!_rateLimitBuckets.containsKey(key) &&
-			(_rateLimitBuckets.size() >= _MAX_RATE_LIMIT_BUCKETS)) {
+		RateLimitBucket bucket = _portalCache.get(key);
 
-			Iterator<String> iterator = _rateLimitBuckets.keySet(
-			).iterator();
-
-			if (iterator.hasNext()) {
-				_rateLimitBuckets.remove(iterator.next());
-			}
+		if ((bucket == null) || (bucket.windowStart != windowStart)) {
+			bucket = new RateLimitBucket(windowStart);
 		}
 
-		int[] countHolder = new int[1];
+		int count = bucket.count.incrementAndGet();
 
-		_rateLimitBuckets.compute(
-			key,
-			(unusedKey, currentBucket) -> {
-				if ((currentBucket == null) ||
-					(currentBucket.windowStart != windowStart)) {
-
-					currentBucket = new RateLimitBucket(windowStart);
-				}
-
-				countHolder[0] = currentBucket.count.incrementAndGet();
-
-				return currentBucket;
-			});
-
-		int count = countHolder[0];
+		_portalCache.put(key, bucket, _RATE_LIMIT_TTL_SECONDS);
 
 		if (count <= registrationsPerHour) {
 			return;
@@ -666,10 +635,8 @@ public class DynamicRegistrationServiceContainerRequestFilter
 	private static final String _EVENT_TYPE_DCR_REJECT =
 		"DYNAMIC_REGISTRATION_REJECT";
 
-	private static final int _MAX_RATE_LIMIT_BUCKETS = 10000;
-
-	private static final long _RATE_LIMIT_CLEANUP_INTERVAL_MILLIS =
-		TimeUnit.MINUTES.toMillis(5);
+	private static final int _RATE_LIMIT_TTL_SECONDS =
+		(int)TimeUnit.HOURS.toSeconds(1);
 
 	private static final long _RATE_LIMIT_WINDOW_MILLIS =
 		TimeUnit.HOURS.toMillis(1);
@@ -681,9 +648,10 @@ public class DynamicRegistrationServiceContainerRequestFilter
 		new Snapshot<>(
 			DynamicRegistrationServiceContainerRequestFilter.class,
 			AuditRouter.class, null, true);
-	private static final AtomicLong _lastRateLimitCleanup = new AtomicLong(0);
-	private static final Map<String, RateLimitBucket> _rateLimitBuckets =
-		new ConcurrentHashMap<>();
+	private static final PortalCache<String, RateLimitBucket> _portalCache =
+		PortalCacheHelperUtil.getPortalCache(
+			PortalCacheManagerNames.SINGLE_VM,
+			DynamicRegistrationServiceContainerRequestFilter.class.getName());
 
 	@Reference
 	private ConfigurationProvider _configurationProvider;
@@ -724,7 +692,7 @@ public class DynamicRegistrationServiceContainerRequestFilter
 
 	}
 
-	private static final class RateLimitBucket {
+	private static final class RateLimitBucket implements Serializable {
 
 		public RateLimitBucket(long windowStart) {
 			this.windowStart = windowStart;
@@ -732,6 +700,8 @@ public class DynamicRegistrationServiceContainerRequestFilter
 
 		public final AtomicInteger count = new AtomicInteger();
 		public final long windowStart;
+
+		private static final long serialVersionUID = 1L;
 
 	}
 
