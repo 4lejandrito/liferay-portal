@@ -374,9 +374,8 @@ public class DynamicRegistrationServiceContainerRequestFilter
 
 		long lastCleanup = _lastRateLimitCleanup.get();
 
-		if ((((currentTimeMillis - lastCleanup) >
-				_RATE_LIMIT_CLEANUP_INTERVAL_MILLIS) ||
-			 (_rateLimitBuckets.size() >= _MAX_RATE_LIMIT_BUCKETS)) &&
+		if (((currentTimeMillis - lastCleanup) >
+				_RATE_LIMIT_CLEANUP_INTERVAL_MILLIS) &&
 			_lastRateLimitCleanup.compareAndSet(
 				lastCleanup, currentTimeMillis)) {
 
