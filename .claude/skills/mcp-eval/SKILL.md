@@ -38,6 +38,22 @@ The complete rulebook the sub-agent runs from — the MCP-only constraint, the t
 
 ### Orchestrator Steps
 
+1. **Resolve the output directory.** Outputs must land outside the repository working tree so the working copy stays clean between runs. At the start of every run, call `AskUserQuestion` with the question "Where should I write the evaluation report?" (header "Output path"). Offer these options:
+
+	- `~/Desktop` — visible and easy to find. Recommended.
+	- `~/Documents/mcp-eval` — dedicated folder for repeat runs.
+	- `/tmp/mcp-eval` — ephemeral, cleared on reboot.
+
+	The "Other" choice the prompt always adds lets the user type a custom absolute path. Normalize the chosen value via a single `Bash` call that expands `~`, ensures the directory exists, and prints the absolute path:
+
+	```bash
+	python3 \
+		-c "import os, sys; p = os.path.abspath(os.path.expanduser(sys.argv[1])); os.makedirs(p, exist_ok=True); print(p)" \
+		"<user-input>"
+	```
+
+	The printed line is `<output-dir>` — reuse it as the target for every subsequent `Write` and the render step.
+
 1. **Confirm the input.** When the user has not supplied a list of use cases, ask for one. Do not invent cases.
 
 1. **Create one task per case.** Call `TaskCreate` once for each case at the start so the user has a visible checklist.
@@ -54,14 +70,14 @@ The complete rulebook the sub-agent runs from — the MCP-only constraint, the t
 
 	1. Only after the sub-agent has returned, move to the next case. Never spawn two sub-agents at the same time.
 
-1. **Render the HTML report.** Assemble the collected per-case JSON objects, in case order, into a single JSON array. Write that array to `mcp-eval-report.data.json` with the `Write` tool, then splice it into the shipped template and write the final report:
+1. **Render the HTML report.** Assemble the collected per-case JSON objects, in case order, into a single JSON array. Write that array to `<output-dir>/mcp-eval-report.data.json` with the `Write` tool, then splice it into the shipped template and write the final report to `<output-dir>/mcp-eval-report.html`:
 
 	```bash
 	python3 \
-		-c "import pathlib; t = pathlib.Path('<skill-dir>/report-template.html').read_text(); d = pathlib.Path('mcp-eval-report.data.json').read_text(); pathlib.Path('mcp-eval-report.html').write_text(t.replace('__CASE_DATA__', d))"
+		-c "import pathlib; out = pathlib.Path('<output-dir>'); t = pathlib.Path('<skill-dir>/report-template.html').read_text(); d = (out / 'mcp-eval-report.data.json').read_text(); (out / 'mcp-eval-report.html').write_text(t.replace('__CASE_DATA__', d))"
 	```
 
-	`<skill-dir>` is this skill's base directory, supplied at invocation. The template carries all styling and rendering logic and computes the OK/partial/fail tally in its header automatically, so the orchestrator authors no aggregate prose, summary table, or cross-cutting section — it only supplies the data array. Report the absolute path of the written `mcp-eval-report.html` to the user.
+	`<skill-dir>` is this skill's base directory, supplied at invocation. `<output-dir>` is the absolute path resolved in Step 1. The template carries all styling and rendering logic and computes the OK/partial/fail tally in its header automatically, so the orchestrator authors no aggregate prose, summary table, or cross-cutting section — it only supplies the data array. Report the absolute path of the written `mcp-eval-report.html` to the user.
 
 ### Sub-Agent Prompt Template
 
