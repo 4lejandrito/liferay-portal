@@ -158,6 +158,7 @@ Tag every defect with one or more of these. A defect can carry several tags — 
 Return exactly one JSON object and nothing else: no Markdown, no code fence, no preamble or postscript. It must parse with a single `JSON.parse`. The object has this shape (the orchestrator adds a `caseText` field afterwards with the verbatim use-case text; do not include it yourself):
 
 ```json
+
 {
   "caseNumber": <<CASE_NUMBER>>,
   "title": "<Use Case in Title Case>",
@@ -186,6 +187,7 @@ Return exactly one JSON object and nothing else: no Markdown, no code fence, no 
   ],
   "happyPathNote": "<one-line keeper>" | null
 }
+
 ```
 
 Field rules:
@@ -217,6 +219,7 @@ Field rules:
 	  "outcome": "note",
 	  "response": {"toolSets": ["...truncated (47 items)..."]}
 	}
+
 	```
 
 	An `invokeTool` call has one of `ok`, `issue`, or `blocked`. An `issue` example, with its `defect` attached:
@@ -238,6 +241,7 @@ Field rules:
 	    "additional": []
 	  }
 	}
+
 	```
 
 - **happyPathNote** — for a clean success, one short observation worth keeping (e.g. that a friendly key worked, or that pagination mapped cleanly). Set it to `null` whenever any flow entry carries a `defect`.
