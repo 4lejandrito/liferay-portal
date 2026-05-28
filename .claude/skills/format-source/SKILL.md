@@ -1000,3 +1000,93 @@ The same applies when renaming a method or its parameter to match the vocabulary
 ```
 
 When you rename a local, propagate the new name to every call site, every parameter that passes it on, and every private helper that receives it.
+
+### Rule 48: Consolidate Multi-Scenario Tests into a Single Method
+
+**Why:** When a single method has multiple behavioral paths (success, failure, boundary), grouping them in one `@Test` method with `//`-labeled scenario blocks keeps all related assertions together, makes the test easier to scan, and matches the convention used across the codebase (e.g., `CTRemoteModelResourcePermissionTest`). Separate method names force the reader to search across multiple methods to understand the full contract.
+
+**Examples:**
+
+```diff
+-@Test(expected = SomeException.class)
+-public void testFooWhenBarIsInvalid() throws Exception {
+-	foo.doSomething(invalidBar);
+-}
+-
+-@Test
+-public void testFooWhenBarIsValid() throws Exception {
+-	foo.doSomething(validBar);
+-}
++@Test
++public void testFoo() throws Exception {
++
++	// Invalid bar
++
++	try {
++		foo.doSomething(invalidBar);
++
++		Assert.fail();
++	}
++	catch (SomeException someException) {
++		Assert.assertEquals(expectedField, someException.field);
++	}
++
++	// Valid bar
++
++	foo.doSomething(validBar);
++}
+```
+
+### Rule 49: Mock Interfaces Directly Instead of Subclassing Abstract Implementations
+
+**Why:** Subclassing an abstract class (e.g., `SimplePermissionChecker`) to override one or two methods pulls in the full class hierarchy, requires satisfying unrelated abstract contracts, and adds extra imports and fields. `Mockito.mock(Interface.class)` stubs only what the test needs and signals clearly which methods are under test.
+
+**Examples:**
+
+```diff
+-private PermissionChecker _mockPermissionChecker(long userId) {
+-	return new SimplePermissionChecker() {
+-
+-		@Override
+-		public long getUserId() {
+-			return userId;
+-		}
+-
+-	};
+-}
++PermissionChecker permissionChecker = Mockito.mock(PermissionChecker.class);
++
++Mockito.when(
++	permissionChecker.getUserId()
++).thenReturn(
++	userId
++);
+```
+
+Remove the helper method and any imports it required (e.g., `SimplePermissionChecker`, `User`) when they are no longer used.
+
+### Rule 50: Use try/catch with Field Assertions Instead of @Test(expected) for Exception Tests
+
+**Why:** `@Test(expected = SomeException.class)` passes whenever the exception is thrown from *anywhere* in the method — a guard earlier in the call stack could throw the same type and the test would still pass, masking a regression. A `try/catch` block with assertions on the exception's fields (e.g., `resourceName`, `resourceId`) proves that the *specific* code path under test threw the exception with the expected context.
+
+**Examples:**
+
+```diff
+-@Test(expected = PrincipalException.MustHavePermission.class)
+-public void testAssignWorkflowTaskToUserThrowsException() throws Exception {
+-	_service.assignWorkflowTaskToUser(companyId, userId, taskId, assigneeId, ...);
+-}
++@Test
++public void testAssignWorkflowTaskToUser() throws Exception {
++	try {
++		_service.assignWorkflowTaskToUser(
++			companyId, userId, taskId, assigneeId, null, null, null);
++
++		Assert.fail();
++	}
++	catch (PrincipalException.MustHavePermission principalException) {
++		Assert.assertEquals(User.class.getName(), principalException.resourceName);
++		Assert.assertEquals(assigneeId, principalException.resourceId);
++	}
++}
+```
