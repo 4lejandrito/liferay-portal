@@ -386,15 +386,19 @@ public class DynamicRegistrationServiceContainerRequestFilter
 
 		String key = companyId + StringPool.COLON + clientHost;
 
-		RateLimitBucket bucket = _portalCache.get(key);
+		int count;
 
-		if ((bucket == null) || (bucket.windowStart != windowStart)) {
-			bucket = new RateLimitBucket(windowStart);
+		synchronized (_portalCache) {
+			RateLimitBucket bucket = _portalCache.get(key);
+
+			if ((bucket == null) || (bucket.windowStart != windowStart)) {
+				bucket = new RateLimitBucket(windowStart);
+			}
+
+			count = bucket.count.incrementAndGet();
+
+			_portalCache.put(key, bucket, _RATE_LIMIT_TTL_SECONDS);
 		}
-
-		int count = bucket.count.incrementAndGet();
-
-		_portalCache.put(key, bucket, _RATE_LIMIT_TTL_SECONDS);
 
 		if (count <= registrationsPerHour) {
 			return;
