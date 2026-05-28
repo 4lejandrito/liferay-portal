@@ -181,14 +181,18 @@ public class LiferayDynamicRegistrationService
 
 		MessageContext messageContext = getMessageContext();
 
-		HttpServletRequest httpServletRequest =
-			messageContext.getHttpServletRequest();
+		HttpServletRequest httpServletRequest = null;
 
-		Object anonymous = httpServletRequest.getAttribute(
-			DynamicRegistrationServiceContainerRequestFilter.
-				REQUEST_PROPERTY_ANONYMOUS_REGISTRATION);
+		if (messageContext != null) {
+			httpServletRequest = messageContext.getHttpServletRequest();
+		}
 
-		if (Boolean.TRUE.equals(anonymous)) {
+		if ((httpServletRequest != null) &&
+			Boolean.TRUE.equals(
+				httpServletRequest.getAttribute(
+					DynamicRegistrationServiceContainerRequestFilter.
+						REQUEST_PROPERTY_ANONYMOUS_REGISTRATION))) {
+
 			Map<String, String> clientProperties = client.getProperties();
 
 			clientProperties.put(
