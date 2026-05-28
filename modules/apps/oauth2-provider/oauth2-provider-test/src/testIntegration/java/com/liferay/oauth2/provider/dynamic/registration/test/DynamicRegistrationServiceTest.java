@@ -342,6 +342,61 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 
 	@FeatureFlag("LPD-63416")
 	@Test
+	public void testAnonymousRejectsDefaultGrantTypeWhenDisallowed()
+		throws Exception {
+
+		long companyId = TestPropsValues.getCompanyId();
+
+		WebTarget registerWebTarget = getRegisterWebTarget();
+
+		String body = JSONUtil.put(
+			_FIELD_CLIENT_NAME, RandomTestUtil.randomString()
+		).put(
+			_FIELD_REDIRECT_URIS,
+			new String[] {
+				"https://" + RandomTestUtil.randomString() + ".com/callback"
+			}
+		).toString();
+
+		try (CompanyConfigurationTemporarySwapper
+				companyConfigurationTemporarySwapper =
+					new CompanyConfigurationTemporarySwapper(
+						companyId,
+						"com.liferay.oauth2.provider.rest.internal." +
+							"configuration.DynamicRegistrationConfiguration",
+						HashMapDictionaryBuilder.<String, Object>put(
+							_PROPERTY_ANONYMOUS_ALLOWED_GRANT_TYPES,
+							new String[] {
+								OAuthConstants.CLIENT_CREDENTIALS_GRANT
+							}
+						).put(
+							_PROPERTY_ANONYMOUS_ALLOWED_HOSTS,
+							new String[] {"*"}
+						).put(
+							_PROPERTY_ANONYMOUS_ALLOWED_REDIRECT_URI_PATTERNS,
+							new String[] {"*"}
+						).put(
+							_PROPERTY_ANONYMOUS_ALLOWED_SCOPES,
+							new String[] {"*"}
+						).put(
+							_PROPERTY_ANONYMOUS_REGISTRATIONS_PER_HOUR, 0
+						).put(
+							_PROPERTY_REQUIRE_INITIAL_ACCESS_TOKEN, false
+						).build())) {
+
+			Invocation.Builder invocationBuilder = registerWebTarget.request();
+
+			Response response = invocationBuilder.method(
+				"post", Entity.json(body));
+
+			Assert.assertEquals(400, response.getStatus());
+			Assert.assertEquals(
+				"invalid_client_metadata", parseError(response));
+		}
+	}
+
+	@FeatureFlag("LPD-63416")
+	@Test
 	public void testAnonymousRejectsDisallowedRedirectURI() throws Exception {
 		_testAnonymousRejectsDisallowedRedirectURI(
 			"https://attacker.test/callback");
