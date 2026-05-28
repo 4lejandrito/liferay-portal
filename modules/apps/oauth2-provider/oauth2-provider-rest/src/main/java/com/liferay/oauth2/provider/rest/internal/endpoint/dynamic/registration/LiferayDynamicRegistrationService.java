@@ -283,7 +283,7 @@ public class LiferayDynamicRegistrationService
 		}
 
 		liferayClientRegistrationResponse.setGrantTypes(
-			_toWireGrantTypes(client.getAllowedGrantTypes()));
+			_toResponseGrantTypes(client.getAllowedGrantTypes()));
 		liferayClientRegistrationResponse.setLogoUri(
 			client.getApplicationLogoUri());
 		liferayClientRegistrationResponse.setRedirectUris(
@@ -678,28 +678,29 @@ public class LiferayDynamicRegistrationService
 		return jsonArray;
 	}
 
-	private List<String> _toWireGrantTypes(List<String> allowedGrantTypes) {
+	private List<String> _toResponseGrantTypes(List<String> allowedGrantTypes) {
 		if (allowedGrantTypes == null) {
 			return null;
 		}
 
-		List<String> wireGrantTypes = new ArrayList<>(allowedGrantTypes.size());
+		List<String> responseGrantTypes = new ArrayList<>(
+			allowedGrantTypes.size());
 
 		for (String allowedGrantType : allowedGrantTypes) {
-			String wireGrantType = allowedGrantType;
+			String responseGrantType = allowedGrantType;
 
 			if (OAuth2ProviderRESTEndpointConstants.
 					AUTHORIZATION_CODE_PKCE_GRANT.equals(allowedGrantType)) {
 
-				wireGrantType = OAuthConstants.AUTHORIZATION_CODE_GRANT;
+				responseGrantType = OAuthConstants.AUTHORIZATION_CODE_GRANT;
 			}
 
-			if (!wireGrantTypes.contains(wireGrantType)) {
-				wireGrantTypes.add(wireGrantType);
+			if (!responseGrantTypes.contains(responseGrantType)) {
+				responseGrantTypes.add(responseGrantType);
 			}
 		}
 
-		return wireGrantTypes;
+		return responseGrantTypes;
 	}
 
 	private void _validate(
@@ -904,12 +905,6 @@ public class LiferayDynamicRegistrationService
 		String scope = clientRegistration.getScope();
 
 		if (Validator.isBlank(scope)) {
-
-			// A blank scope leaves the client with no registered scopes,
-			// which the OAuth2 provider treats as unrestricted. Pin the
-			// registered scopes to the allowlist so an anonymous client
-			// cannot later request a scope outside it.
-
 			client.setRegisteredScopes(
 				new ArrayList<>(normalizedAllowedScopes));
 
