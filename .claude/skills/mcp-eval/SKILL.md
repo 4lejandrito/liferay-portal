@@ -86,7 +86,7 @@ The budget caps issues, not calls. Work the case through as many steps as it leg
 
 Your case may bundle several steps or named conditions — a complex case especially. Do not collapse them prematurely. Evaluate each step or condition on its own: invoke it, observe the result, and note whether it held. An issue attaches to the specific step that misbehaved, not to the case as a whole.
 
-The case carries a single verdict, the rollup of its steps, defined under **Scoring** below. When the case has more than one step or condition, also list them under a `Steps:` line in the output (format below), so the reader sees which part held and which broke instead of one opaque verdict.
+The case carries a single verdict, the rollup of its steps, defined under **Scoring** below. When the case has more than one step or condition, give each step its own entry in the `flow` array (format below) so the reader sees which part held and which broke instead of one opaque verdict. A step the budget never reached is a `flow` entry with `outcome: "blocked"`; a step that surfaced an MCP defect is `outcome: "issue"`.
 
 # Prerequisite Handling
 
@@ -148,10 +148,15 @@ Return exactly one JSON object and nothing else: no Markdown, no code fence, no 
   "verdict": "OK" | "OK (with wrapper bug)" | "PARTIAL" | "FAIL",
   "issuesUsed": <integer 0-3>,
   "issuesMax": 3,
-  "toolsTried": ["toolSet/toolName", "..."],
-  "flow": ["<terse step on the path to the verdict>", "..."],
-  "steps": [
-    {"description": "<short step name>", "passed": true, "result": "<one-line outcome>"}
+  "flow": [
+    {
+      "tool": "<toolSet/toolName>" | null,
+      "intent": "<what the agent tried at this step>",
+      "result": "<what happened>",
+      "outcome": "ok" | "issue" | "blocked" | "note",
+      "request": <JSON arguments passed to invokeTool, optional>,
+      "response": <JSON body returned by the tool, optional>
+    }
   ],
   "defects": [
     {
@@ -173,12 +178,30 @@ Field rules:
 
 - **title** — the use case in Title Case, not the verbatim input.
 - **verdict** — one of the four strings exactly; the renderer keys its color off the `OK` / `PARTIAL` / `FAIL` prefix.
-- **toolsTried** — every `toolSet/toolName` invoked or schema-fetched, in the order tried.
-- **flow** — the ordered path to the verdict, three to five terse entries. Wrap tool and code names in backticks; the renderer turns them into inline code. Mark where an issue landed inline, e.g. `"Invoked \`getRolesPage\` with the filter → full list came back, filter ignored (issue 1)."` This is the only place a brief narration belongs; keep it to the decisive moves, not a transcript.
-- **steps** — one entry per step only when the case bundles more than one step or condition; otherwise an empty array `[]`. `passed` is a boolean; `result` is a single line.
+- **flow** — the unified timeline of MCP interactions, from discovery through the verdict. Each entry is an object with four fields:
+	- `tool` — the `toolSet/toolName` invoked (string), or `null` for an entry that is not a tool call (a planning decision, a high-level "blocked" summary of unreached scope, the post-FAIL log read).
+	- `intent` — what the agent tried to accomplish at this step, written as a short imperative or noun phrase. Inline markup applies.
+	- `result` — one or two sentences on what actually happened. Inline markup applies. Reference other tools or fields inline with backticks.
+	- `outcome` — one of `ok` (the action behaved as documented), `issue` (an MCP defect surfaced — this entry counts toward `issuesUsed` and must have a matching `defects` entry), `blocked` (the agent could not attempt this part because of a prior issue), `note` (a planning step, a decision, or an observation that does not pass or fail).
+	- `request` — the JSON arguments passed to `invokeTool` for this step, captured verbatim as a JSON object. Omit when `tool` is `null` or the call genuinely sends no arguments. The renderer pretty-prints it inside a collapsed **Request** section under the flow entry so a reader can replay the call.
+	- `response` — the JSON body returned by the tool, captured verbatim as a JSON object. Omit when `tool` is `null`. For a response whose payload is large (a page of hundreds of items, an export blob), keep the top-level structure but truncate arrays with a `"...truncated (N items)..."` placeholder so the report stays scannable; never paraphrase the error or schema information, which is exactly what the reader needs to see. The renderer pretty-prints it inside a collapsed **Response** section under the flow entry.
+
+	Aim for 5 to 10 entries — enough to tell the story end-to-end without becoming a call transcript. Group a tight discovery loop (`getToolSets → getToolSummaries → getTool`) into one entry with the entry-point tool on `tool` and the rest mentioned inline in `result`, unless one of them surfaces an issue. The number of `outcome: "issue"` entries must equal `issuesUsed`. Each subsequent flow entry naturally shows the agent's response to the prior step: a retry with a different tool, a fall-back to a read to isolate the layer, a give-up decision after the budget is spent. A well-formed entry, for reference:
+
+	```json
+	{
+	  "tool": "object-admin-v1.0/postObjectDefinition",
+	  "intent": "Create the **Conference** object definition with a schema-valid body",
+	  "result": "**HTTP 415 Unsupported Media Type** before any field validation.",
+	  "outcome": "issue",
+	  "request": {"name": "Conference", "label": {"en_US": "Conference"}, "objectFields": [{"name": "name", "businessType": "Text", "required": true}]},
+	  "response": {"status": 415, "title": "Unsupported Media Type"}
+	}
+	```
+
 - **defects** — one entry per defect, each carrying at least one fix. Be specific about *why* it is a defect, never just that something failed: say what about the response was the actual problem (not "got a 400" but "the error named no valid scope, so the user must guess which scopes the tool set accepts"). For a clean success with no defects, set `defects` to `[]`.
 - **happyPathNote** — for a clean success, one short observation worth keeping (e.g. that a friendly key worked, or that pagination mapped cleanly). Set it to `null` whenever `defects` is non-empty.
-- **Inline emphasis** — the `flow` entries and the `result`, `description`, `detail`, and `happyPathNote` text render lightweight inline markup: wrap a phrase in `**double asterisks**` for bold and in `` `backticks` `` for code. Bold the one phrase that carries the point — the actual problem, the verdict-driving outcome — so the reader is not parsing a wall of even-weight prose. Do not bold whole sentences, and keep each text field to one or two crisp sentences rather than a paragraph.
+- **Inline emphasis** — the `intent`, `result`, `description`, `detail`, and `happyPathNote` text render lightweight inline markup: wrap a phrase in `**double asterisks**` for bold and in `` `backticks` `` for code. Bold the one phrase that carries the point — the actual problem, the verdict-driving outcome — so the reader is not parsing a wall of even-weight prose. Do not bold whole sentences, and keep each text field to one or two crisp sentences rather than a paragraph.
 
 Each fix is a solution object with a `surface` drawn from this set, which the renderer prefers in the order listed:
 
@@ -218,7 +241,7 @@ A well-formed defect, for reference:
 
 # Conduct
 
-- The report is about what got in the way, not a transcript. The `flow` field carries the terse path to the verdict; everything else (`defects`, `happyPathNote`) is about friction and fixes. Do not pad `flow` into a blow-by-blow log, and do not restate it in the defects.
+- The report is about what got in the way, not a transcript. The `flow` field carries the timeline of the path to the verdict; everything else (`defects`, `happyPathNote`) is about friction and fixes. Do not pad `flow` into a blow-by-blow log of every call, and do not restate flow entries inside the defects.
 - Do not retry a tool with the same input hoping for a different result. Each retry must change something — different tool set, different scope key, different body shape — and the change is itself a finding.
 - Do not read prior memory entries about Liferay endpoints. The evaluation must reflect cold-start discoverability.
 

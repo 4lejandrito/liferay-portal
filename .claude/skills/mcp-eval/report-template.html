@@ -59,30 +59,69 @@
   .field.collapsible > h3 .chev { font-size: 11px; }
   .field.collapsed > h3 .chev { transform: rotate(-90deg); }
   .field.collapsed > .field-body { display: none; }
-  .tools { display: flex; flex-wrap: wrap; gap: 8px; }
-  .tool { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13.5px;
-          background: #eef2f7; color: #33425b; padding: 4px 10px; border-radius: 6px; }
-  table.steps { width: 100%; border-collapse: collapse; font-size: 16px; }
-  table.steps td { padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
-  table.steps td.mark { width: 30px; text-align: center; font-weight: 700; font-size: 18px; }
-  td.mark.pass { color: var(--ok); }
-  td.mark.no { color: var(--fail); }
-  table.steps td.desc { font-weight: 600; width: 30%; }
-
-  /* Flow — the path taken to reach the verdict */
-  .flow { list-style: none; margin: 0; padding: 0; counter-reset: flow; }
-  .flow li { position: relative; padding: 2px 0 15px 34px; font-size: 16px; }
-  .flow li::before {
-    counter-increment: flow; content: counter(flow); position: absolute; left: 0; top: 0;
-    width: 23px; height: 23px; border-radius: 50%; background: #eef2f7; color: var(--muted);
-    font-size: 12.5px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+  /* Flow — the unified timeline of MCP interactions, results, issues, and agent responses */
+  .flow { list-style: none; margin: 0; padding: 0; }
+  .flow-entry { position: relative; padding: 0 0 18px 44px; }
+  .flow-entry:last-child { padding-bottom: 2px; }
+  .flow-marker {
+    position: absolute; left: 0; top: 1px;
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+    font-variant-numeric: tabular-nums;
   }
-  .flow li:not(:last-child)::after {
-    content: ""; position: absolute; left: 11px; top: 25px; bottom: -1px; width: 2px; background: var(--line);
+  .flow-entry:not(:last-child)::after {
+    content: ""; position: absolute; left: 13px; top: 30px; bottom: -1px; width: 2px;
+    background: var(--line);
   }
-  .flow code {
+  .flow-entry.ok      .flow-marker { background: var(--ok-bg);      color: var(--ok); }
+  .flow-entry.issue   .flow-marker { background: var(--fail-bg);    color: var(--fail); }
+  .flow-entry.blocked .flow-marker { background: #eef2f7;           color: var(--muted); }
+  .flow-entry.note    .flow-marker { background: #eef2f7;           color: var(--muted); }
+  .flow-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+  .flow-tool {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13.5px; font-weight: 600;
+    background: #e4ecf7; color: #1d4e6f; padding: 3px 9px; border-radius: 5px;
+  }
+  .flow-pill {
+    font-size: 12px; font-weight: 700; letter-spacing: .03em;
+    padding: 2px 9px; border-radius: 999px;
+  }
+  .flow-pill.issue   { background: var(--fail-bg); color: var(--fail); }
+  .flow-pill.blocked { background: #eef2f7;        color: var(--muted); }
+  .flow-intent { font-weight: 600; font-size: 16px; line-height: 1.5; }
+  .flow-result { color: #4a5566; font-size: 15.5px; line-height: 1.55; margin-top: 2px; }
+  .flow code, .flow-intent code, .flow-result code {
     font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 14px; font-weight: 600;
-    background: #e4ecf7; color: #1d4e6f; padding: 1px 6px; border-radius: 5px;
+    background: #eef2f7; color: #33425b; padding: 1px 6px; border-radius: 5px;
+  }
+
+  /* Per-step request/response payloads — native <details>, collapsed by default */
+  .flow-payloads { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+  .flow-payload {
+    border: 1px solid var(--line); border-radius: 6px;
+    overflow: hidden; background: #fcfdff;
+  }
+  .flow-payload summary {
+    cursor: pointer; padding: 5px 11px;
+    background: #f5f7fb; color: var(--muted);
+    font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+    font-size: 11px; list-style: none; user-select: none;
+  }
+  .flow-payload summary::-webkit-details-marker { display: none; }
+  .flow-payload summary::before {
+    content: "▸"; display: inline-block; margin-right: 6px;
+    font-size: 10px; transition: transform .15s;
+  }
+  .flow-payload[open] summary::before { transform: rotate(90deg); }
+  .flow-payload[open] summary { border-bottom: 1px solid var(--line); }
+  .flow-payload pre {
+    margin: 0; padding: 10px 12px;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12.5px; line-height: 1.55;
+    background: #fafbfd; overflow-x: auto;
+    max-height: 360px; overflow-y: auto;
+    white-space: pre;
   }
 
   .defect { border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; margin-top: 12px; background: #fcfdff; }
@@ -242,9 +281,56 @@ __CASE_DATA__
     return el;
   }
 
+  function renderPayload(label, content) {
+    let formatted;
+    if (typeof content === "string") {
+      try {
+        formatted = JSON.stringify(JSON.parse(content), null, 2);
+      } catch (e) {
+        formatted = content;
+      }
+    } else {
+      formatted = JSON.stringify(content, null, 2);
+    }
+    return `<details class="flow-payload"><summary>${esc(label)}</summary><pre>${esc(formatted)}</pre></details>`;
+  }
+
+  function renderFlowEntry(entry, issueIndex) {
+    const outcome = entry.outcome || "note";
+    let marker;
+    if (outcome === "ok") marker = "✓";
+    else if (outcome === "issue") marker = String(issueIndex);
+    else if (outcome === "blocked") marker = "−";
+    else marker = "•";
+
+    const pieces = [];
+    if (entry.tool) pieces.push(`<span class="flow-tool">${esc(entry.tool)}</span>`);
+    if (outcome === "issue") pieces.push(`<span class="flow-pill issue">Issue ${issueIndex}</span>`);
+    else if (outcome === "blocked") pieces.push(`<span class="flow-pill blocked">Blocked</span>`);
+
+    const head = pieces.length ? `<div class="flow-head">${pieces.join("")}</div>` : "";
+    const intent = entry.intent ? `<div class="flow-intent">${fmt(entry.intent)}</div>` : "";
+    const result = entry.result ? `<div class="flow-result">${fmt(entry.result)}</div>` : "";
+
+    const payloads = [];
+    if (entry.request !== undefined && entry.request !== null) {
+      payloads.push(renderPayload("Request", entry.request));
+    }
+    if (entry.response !== undefined && entry.response !== null) {
+      payloads.push(renderPayload("Response", entry.response));
+    }
+    const payloadsHTML = payloads.length
+      ? `<div class="flow-payloads">${payloads.join("")}</div>`
+      : "";
+
+    const li = document.createElement("li");
+    li.className = "flow-entry " + outcome;
+    li.innerHTML = `<div class="flow-marker">${marker}</div>${head}${intent}${result}${payloadsHTML}`;
+    return li;
+  }
+
   function renderCase(c) {
     const bv = baseVerdict(c.verdict);
-    const tools = c.toolsTried.map(t => `<span class="tool">${esc(t)}</span>`).join("");
 
     const el = document.createElement("div");
     el.className = "case " + bv + " collapsed";
@@ -266,27 +352,18 @@ __CASE_DATA__
       cbody.appendChild(caseTextField.field);
     }
 
-    // Tools Tried — always shown, not collapsible.
-    const toolsField = makeField("Tools Tried", false, false);
-    toolsField.body.innerHTML = `<div class="tools">${tools}</div>`;
-    cbody.appendChild(toolsField.field);
-
-    // Flow — the path to the verdict, not collapsible.
+    // Flow — unified timeline of tools, results, issues, and agent responses. Always shown.
     if (c.flow && c.flow.length) {
-      const items = c.flow.map(f => `<li>${fmt(f)}</li>`).join("");
       const flowField = makeField("Flow", false, false);
-      flowField.body.innerHTML = `<ol class="flow">${items}</ol>`;
+      const ul = document.createElement("ul");
+      ul.className = "flow";
+      let issueIndex = 0;
+      c.flow.forEach(entry => {
+        if (entry.outcome === "issue") issueIndex++;
+        ul.appendChild(renderFlowEntry(entry, issueIndex));
+      });
+      flowField.body.appendChild(ul);
       cbody.appendChild(flowField.field);
-    }
-
-    // Steps — collapsible.
-    if (c.steps && c.steps.length) {
-      const rows = c.steps.map(s =>
-        `<tr><td class="mark ${s.passed ? "pass" : "no"}">${s.passed ? "✓" : "✗"}</td>` +
-        `<td class="desc">${fmt(s.description)}</td><td>${fmt(s.result)}</td></tr>`).join("");
-      const stepsField = makeField("Steps", true, false);
-      stepsField.body.innerHTML = `<table class="steps">${rows}</table>`;
-      cbody.appendChild(stepsField.field);
     }
 
     // Defects — collapsible; or a happy-path note when there are none.
