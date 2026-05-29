@@ -113,12 +113,12 @@ function _find_app_server_parent_dir {
 
 	if [[ -f ${user_props} ]]
 	then
-		raw="$(grep --extended-regexp "^[[:space:]]*app\.server\.parent\.dir=" "${user_props}" | tail --lines=1 | _sed "s/^[[:space:]]*app\.server\.parent\.dir=//")"
+		raw="$(grep --extended-regexp "^[[:space:]]*app\.server\.parent\.dir=" "${user_props}" | tail -n 1 | _sed "s/^[[:space:]]*app\.server\.parent\.dir=//")"
 	fi
 
 	if [[ -z ${raw} && -f ${default_props} ]]
 	then
-		raw="$(grep --extended-regexp "^[[:space:]]*app\.server\.parent\.dir=" "${default_props}" | tail --lines=1 | _sed "s/^[[:space:]]*app\.server\.parent\.dir=//")"
+		raw="$(grep --extended-regexp "^[[:space:]]*app\.server\.parent\.dir=" "${default_props}" | tail -n 1 | _sed "s/^[[:space:]]*app\.server\.parent\.dir=//")"
 	fi
 
 	[[ -n ${raw} ]] || return 1
@@ -157,7 +157,7 @@ function _get_property {
 
 	if [[ -f ${file} ]] && grep --extended-regexp --quiet "^[[:space:]]*${key}=" "${file}"
 	then
-		value="$(grep --extended-regexp "^[[:space:]]*${key}=" "${file}" | tail --lines=1 | _sed --regexp-extended "s/^[[:space:]]*${key}=[[:space:]]*//; s/[[:space:]]+\$//")"
+		value="$(grep --extended-regexp "^[[:space:]]*${key}=" "${file}" | tail -n 1 | _sed --regexp-extended "s/^[[:space:]]*${key}=[[:space:]]*//; s/[[:space:]]+\$//")"
 	fi
 
 	echo "${value}"
@@ -175,7 +175,7 @@ function _get_property_from_files {
 	do
 		if [[ -f ${file} ]] && grep --extended-regexp --quiet "^[[:space:]]*${key}=" "${file}"
 		then
-			grep --extended-regexp "^[[:space:]]*${key}=" "${file}" | tail --lines=1 | sed --regexp-extended "s/^[[:space:]]*${key}=[[:space:]]*//; s/[[:space:]]+\$//"
+			grep --extended-regexp "^[[:space:]]*${key}=" "${file}" | tail -n 1 | _sed --regexp-extended "s/^[[:space:]]*${key}=[[:space:]]*//; s/[[:space:]]+\$//"
 
 			return
 		fi
