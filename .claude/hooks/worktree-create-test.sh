@@ -545,7 +545,7 @@ function main {
 		local output
 
 		output="$(
-			TEST_TMP="$(mktemp -d "${TMPDIR:-/tmp}/worktree-create-test.XXXXXX")"
+			TEST_TMP="$(cd "$(mktemp -d "${TMPDIR:-/tmp}/worktree-create-test.XXXXXX")" && pwd -P)"
 			export TEST_TMP
 
 			trap 'rm -rf "${TEST_TMP}"' EXIT
