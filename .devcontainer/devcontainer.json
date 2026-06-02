@@ -1,0 +1,75 @@
+{
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+	"containerEnv": {
+		"ANT_OPTS": "-Xmx2560m",
+		"GRADLE_OPTS": "-Xms8g -Xmx8g -XX:MaxMetaspaceSize=512m -XX:MetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError"
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"vscjava.vscode-java-pack",
+				"redhat.vscode-xml",
+				"esbenp.prettier-vscode"
+			],
+			"settings": {
+				"files.eol": "\n",
+				"java.configuration.runtimes": [
+					{
+						"default": true,
+						"name": "JavaSE-21",
+						"path": "/usr/local/sdkman/candidates/java/current"
+					}
+				]
+			}
+		}
+	},
+	"features": {
+		"ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {
+		},
+		"ghcr.io/devcontainers/features/git:1": {
+		},
+		"ghcr.io/devcontainers/features/java:1": {
+			"antVersion": "1.10.14",
+			"installAnt": true,
+			"installGradle": false,
+			"installMaven": false,
+			"jdkDistro": "zulu",
+			"version": "21"
+		},
+		"ghcr.io/devcontainers/features/node:1": {
+			"version": "20.12.2"
+		}
+	},
+	"forwardPorts": [
+		8080,
+		3306
+	],
+	"hostRequirements": {
+		"cpus": 4,
+		"memory": "16gb",
+		"storage": "64gb"
+	},
+	"mounts": [
+		{
+			"source": "${localWorkspaceFolder}/../liferay-binaries-cache-2020",
+			"target": "/workspaces/liferay-binaries-cache-2020",
+			"type": "bind"
+		},
+		{
+			"source": "${localEnv:HOME}/.gradle",
+			"target": "/home/vscode/.gradle",
+			"type": "bind"
+		},
+		{
+			"source": "liferay-portal-gradle",
+			"target": "/workspaces/liferay-portal/.gradle",
+			"type": "volume"
+		}
+	],
+	"name": "Liferay Portal",
+	"onCreateCommand": "corepack enable && corepack prepare yarn@1.22.22 --activate",
+	"postCreateCommand": ".devcontainer/setup-bundle.sh",
+	"postStartCommand": ".devcontainer/start-mysql.sh"
+}
