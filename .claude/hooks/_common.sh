@@ -13,10 +13,32 @@ function _atomic_write {
 }
 
 function _sed {
+	local arg in_place=0
+
+	for arg in "${@}"
+	do
+		[[ ${arg} == --in-place ]] && in_place=1
+	done
+
+	if [[ ${in_place} -eq 1 ]]
+	then
+		local file="${*: -1}"
+
+		if [[ -L ${file} ]]
+		then
+			local dereferenced="${file}.dereferenced"
+
+			cp "${file}" "${dereferenced}" 2>/dev/null || : > "${dereferenced}"
+
+			rm -f "${file}"
+
+			mv "${dereferenced}" "${file}"
+		fi
+	fi
+
 	if [[ $(uname) == Darwin ]]
 	then
 		local args=()
-		local arg
 
 		for arg in "${@}"
 		do
@@ -40,10 +62,6 @@ function _sed {
 	else
 		sed "${@}"
 	fi
-}
-
-function _sed_inplace {
-	_sed --in-place "${@}"
 }
 
 function _derive_db_name {

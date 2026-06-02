@@ -308,7 +308,7 @@ function _set_gradle_paths {
 
 	[[ -n ${main_bundles_literal} ]] || _die "Unable to read liferay.home from ${file}."
 
-	_sed_inplace \
+	_sed --in-place \
 		--expression "s|${main_bundles_literal}/|${BUNDLES_DIR}/|g" \
 		--expression "s|${main_bundles_literal}\$|${BUNDLES_DIR}|g" \
 		--expression "s|${main_worktree}/|${WORKTREE_DIR}/|g" \
@@ -426,7 +426,7 @@ function _set_property {
 
 	local escaped="${key//./\\.}"
 
-	_sed_inplace --regexp-extended --expression "/^[[:space:]]*${escaped}=/d" "${file}"
+	_sed --in-place --regexp-extended --expression "/^[[:space:]]*${escaped}=/d" "${file}"
 
 	if [[ -s ${file} ]] && [[ -n $(tail -c 1 "${file}") ]]
 	then
@@ -466,7 +466,7 @@ function _set_tomcat_ports {
 	local target_ajp=$((8009 + OFFSET))
 	local target_https=$((8443 + OFFSET))
 
-	_sed_inplace \
+	_sed --in-place \
 		--regexp-extended \
 		--expression "/<Server/s/port=\"[0-9]+\"/port=\"${target_shutdown}\"/" \
 		--expression "/protocol=\"HTTP\\/1\\.1\"/s/port=\"[0-9]+\"/port=\"${target_http}\"/" \
@@ -490,7 +490,7 @@ function _set_worktree_paths {
 
 	[[ -f ${file} ]] || return 0
 
-	_sed_inplace \
+	_sed --in-place \
 		--expression "s|${main_tomcat}/|$(_find_tomcat_dir "${BUNDLES_DIR}")/|g" \
 		--expression "s|${main_bundles}/|${BUNDLES_DIR}/|g" \
 		--expression "s|${main_worktree}/|${WORKTREE_DIR}/|g" \

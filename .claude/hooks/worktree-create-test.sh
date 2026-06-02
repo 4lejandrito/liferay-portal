@@ -4,6 +4,10 @@ set -o nounset -o pipefail
 
 HOOKS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+source "${HOOKS_DIR}/_common.sh"
+
+set +o errexit
+
 export GIT_CONFIG_GLOBAL=/dev/null
 export GIT_CONFIG_SYSTEM=/dev/null
 
@@ -196,9 +200,9 @@ function make_main_worktree {
 
 	FIXTURE_MAIN_TOMCAT="$(make_bundle "${FIXTURE_BUNDLES}")"
 
-	_sed_inplace "s|__MAIN_TOMCAT__|${FIXTURE_MAIN_TOMCAT}|g" \
+	_sed --in-place "s|__MAIN_TOMCAT__|${FIXTURE_MAIN_TOMCAT}|g" \
 		"${FIXTURE_MAIN_TOMCAT}/bin/setenv.sh"
-	_sed_inplace "s|__MAIN_WORKTREE__|${FIXTURE_MAIN_WORKTREE}|g" \
+	_sed --in-place "s|__MAIN_WORKTREE__|${FIXTURE_MAIN_WORKTREE}|g" \
 		"${FIXTURE_MAIN_TOMCAT}/bin/setenv.sh"
 
 	git -C "${worktree}" init --quiet --initial-branch=master
@@ -430,6 +434,37 @@ function test_main_reuse_uses_existing_elasticsearch7_config {
 		"${new_configs}/com.liferay.portal.search.elasticsearch8.configuration.ElasticsearchConfiguration.config"
 }
 
+function test_main_reuse_dereferences_symlinked_poshi_properties {
+	load_common
+	make_main_worktree
+	setup_mocks
+
+	unset LIFERAY_PROVISION
+	export LIFERAY_PROVISION_SKIP_TOMCAT=1
+
+	local shared="${TEST_TMP}/shared-test.properties"
+
+	printf 'shared.credential=secret\n' > "${shared}"
+
+	ln -s "${shared}" "${FIXTURE_MAIN_WORKTREE}/test.${USER}.properties"
+
+	run_create "${FIXTURE_MAIN_WORKTREE}" demo
+
+	local worktree="${FIXTURE_ROOT}/liferay-portal-demo"
+	local poshi="${worktree}/test.${USER}.properties"
+
+	assert_success "${CREATE_STATUS}" "${CREATE_STDERR}"
+
+	[[ -f ${poshi} && ! -L ${poshi} ]] ||
+		fail "expected ${poshi} to be a regular file, not a symlink"
+
+	assert_file_contains "${poshi}" "shared.credential=secret"
+	assert_file_has_line "${poshi}" "default.portal.url=http://localhost:8081"
+
+	assert_file_has_line "${shared}" "shared.credential=secret"
+	assert_file_not_contains "${shared}" "default.portal.url"
+}
+
 function test_main_reuse_checks_out_existing_branch {
 	load_common
 	make_main_worktree
@@ -568,7 +603,7 @@ function main {
 
 			if [[ -n ${output} ]]
 			then
-				echo "${output}" | sed "s/^/     ${dim}|${reset} /"
+				echo "${output}" | _sed "s/^/     ${dim}|${reset} /"
 			fi
 		fi
 	done
