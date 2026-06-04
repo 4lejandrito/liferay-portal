@@ -33,24 +33,30 @@ The ticket key follows the pattern `LPD-12345`, `LCD-12345`, `LRCI-1234`, and si
 
 Collect every distinct ticket key from the subjects of the branch's commits relative to `master`. Each subject is prefixed with its ticket (`LPD-12345 <subject>`); extract every distinct key, in commit order (oldest first). When no commit carries a ticket, prompt the user for one.
 
+### Teams
+
+Each team fork maps to the Jira team user that owns its work. This mapping drives both the target repository choice and the ticket reassignment:
+
+| Target Fork | Jira Team User |
+| --- | --- |
+| `liferay-ac` | PT User Analytics Cloud |
+| `liferay-appsec` | PT User Application Security |
+| `liferay-bpm` | PT User Business Process Management |
+| `liferay-commerce` | PT User Commerce |
+| `liferay-content-management` | PT User Content Management |
+| `liferay-core-infra` | PT User Core Infrastructure |
+| `liferay-database-infra` | PT User Database Infrastructure |
+| `liferay-devtools` | PT User Developer Experience |
+| `liferay-frontend` | PT User Frontend Infrastructure |
+| `liferay-headless` | PT User Headless |
+| `liferay-page-management` | PT User Page Management |
+| `liferay-platform-experience` | PT User Platform Experience |
+| `liferay-search` | PT User Search |
+| `liferay-site-management` | PT User Site Management |
+
 ### Target Repository
 
-The target repository defaults to `<fork-owner>/liferay-portal`. When `${ARGUMENTS}` names a different `org/repo`, use that; when it matches an alias below, expand the alias; otherwise, ask the user to choose `<fork-owner>` from one of the team forks:
-
-- `liferay-ac`
-- `liferay-appsec`
-- `liferay-bpm`
-- `liferay-commerce`
-- `liferay-content-management`
-- `liferay-core-infra`
-- `liferay-database-infra`
-- `liferay-devtools`
-- `liferay-frontend`
-- `liferay-headless`
-- `liferay-page-management`
-- `liferay-platform-experience`
-- `liferay-search`
-- `liferay-site-management`
+The target repository defaults to `<fork-owner>/liferay-portal`. When `${ARGUMENTS}` names a different `org/repo`, use that; when it matches an alias below, expand the alias; otherwise, ask the user to choose `<fork-owner>` from one of the team forks listed in **Teams**.
 
 The following short aliases resolve to a target repository:
 
@@ -120,9 +126,9 @@ Then transition it to review:
 | Bug | In Review | `71` |
 | Technical Task | In Peer Review | `31` |
 
-When the review transition fails (for example, because the ticket is already in a later status), still proceed to record the PR URL.
+When the review transition fails (for example, because the ticket is already in a later status), still proceed with the remaining steps.
 
-Set the **Git Pull Request** field (`customfield_10201`) on the target ticket to the new PR URL.
+Set the **Git Pull Request** field (`customfield_10201`) on the target ticket to the new PR URL, and reassign it to the Jira team user that owns the target fork, looked up in **Teams**. When the target fork is not listed there (an alias such as `brian`, or an arbitrary `org/repo`), ask the user which Jira user to assign.
 
 ### Existing Pull Request
 
@@ -146,5 +152,5 @@ When the user chooses **add**:
 
 Report back to the user with:
 
-- Each ticket in the set, with its resulting status and link.
+- Each ticket in the set, with its resulting status, assignee, and link.
 - The PR URL.
