@@ -374,12 +374,15 @@ public class OpenAPIUtil {
 
 		try {
 			for (Map.Entry<String, String> entry : parts.entrySet()) {
-				_writeASCII(byteArrayOutputStream, "--", boundary, _CRLF);
+				_writeASCII(
+					byteArrayOutputStream, "--", boundary,
+					StringPool.RETURN_NEW_LINE);
 				_writeASCII(
 					byteArrayOutputStream,
 					"Content-Disposition: form-data; name=\"", entry.getKey(),
-					"\"", _CRLF, "Content-Type: ", ContentTypes.TEXT_PLAIN_UTF8,
-					_CRLF, _CRLF);
+					"\"", StringPool.RETURN_NEW_LINE, "Content-Type: ",
+					ContentTypes.TEXT_PLAIN_UTF8, StringPool.RETURN_NEW_LINE,
+					StringPool.RETURN_NEW_LINE);
 
 				byteArrayOutputStream.write(
 					entry.getValue(
@@ -387,23 +390,29 @@ public class OpenAPIUtil {
 						StandardCharsets.UTF_8
 					));
 
-				_writeASCII(byteArrayOutputStream, _CRLF);
+				_writeASCII(byteArrayOutputStream, StringPool.RETURN_NEW_LINE);
 			}
 
 			for (FilePart filePart : fileParts) {
-				_writeASCII(byteArrayOutputStream, "--", boundary, _CRLF);
+				_writeASCII(
+					byteArrayOutputStream, "--", boundary,
+					StringPool.RETURN_NEW_LINE);
 				_writeASCII(
 					byteArrayOutputStream,
 					"Content-Disposition: form-data; name=\"", filePart._name,
-					"\"; filename=\"", filePart._fileName, "\"", _CRLF,
-					"Content-Type: ", filePart._contentType, _CRLF, _CRLF);
+					"\"; filename=\"", filePart._fileName, "\"",
+					StringPool.RETURN_NEW_LINE, "Content-Type: ",
+					filePart._contentType, StringPool.RETURN_NEW_LINE,
+					StringPool.RETURN_NEW_LINE);
 
 				byteArrayOutputStream.write(filePart._bytes);
 
-				_writeASCII(byteArrayOutputStream, _CRLF);
+				_writeASCII(byteArrayOutputStream, StringPool.RETURN_NEW_LINE);
 			}
 
-			_writeASCII(byteArrayOutputStream, "--", boundary, "--", _CRLF);
+			_writeASCII(
+				byteArrayOutputStream, "--", boundary, "--",
+				StringPool.RETURN_NEW_LINE);
 		}
 		catch (IOException ioException) {
 			throw new RuntimeException(ioException);
@@ -1000,8 +1009,6 @@ public class OpenAPIUtil {
 				string.getBytes(StandardCharsets.UTF_8));
 		}
 	}
-
-	private static final String _CRLF = "\r\n";
 
 	private static final String[] _METHODS = {
 		"delete", "get", "head", "options", "patch", "post", "put"
