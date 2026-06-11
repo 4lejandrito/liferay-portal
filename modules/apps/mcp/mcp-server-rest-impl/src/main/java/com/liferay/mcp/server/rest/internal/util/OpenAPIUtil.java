@@ -358,7 +358,7 @@ public class OpenAPIUtil {
 			Map<String, Object> partSchema =
 				(Map<String, Object>)entry.getValue();
 
-			if (Objects.equals(partSchema.get("format"), "binary")) {
+			if (_isBinaryPartSchema(partSchema)) {
 				fileParts.add(_getFilePart(partName, value));
 			}
 			else {
