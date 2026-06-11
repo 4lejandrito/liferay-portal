@@ -72,23 +72,12 @@ public class OpenAPIUtil {
 				"multipart/form-data; boundary=" + boundary, body);
 		}
 
-		if (inputJSONObject.has("body")) {
-			Object bodyValue = inputJSONObject.get("body");
+		String body = _getBody(inputJSONObject);
 
-			String body = null;
-
-			if (bodyValue instanceof JSONObject) {
-				body = bodyValue.toString();
-			}
-			else if (bodyValue != null) {
-				body = String.valueOf(bodyValue);
-			}
-
-			if (Validator.isNotNull(body)) {
-				return new Request(
-					method, pathWithQuery, ContentTypes.APPLICATION_JSON,
-					body.getBytes(StandardCharsets.UTF_8));
-			}
+		if (Validator.isNotNull(body)) {
+			return new Request(
+				method, pathWithQuery, ContentTypes.APPLICATION_JSON,
+				body.getBytes(StandardCharsets.UTF_8));
 		}
 
 		return new Request(method, pathWithQuery, null, null);
@@ -555,6 +544,19 @@ public class OpenAPIUtil {
 		return LinkedHashMapBuilder.<String, Object>put(
 			"oneOf", oneOfList
 		).build();
+	}
+
+	private static String _getBody(JSONObject jsonObject) {
+		Object body = jsonObject.get("body");
+
+		if (body instanceof JSONObject) {
+			return body.toString();
+		}
+		else if (body != null) {
+			return String.valueOf(body);
+		}
+
+		return null;
 	}
 
 	private static JSONObject _getBodySchemaJSONObject(
