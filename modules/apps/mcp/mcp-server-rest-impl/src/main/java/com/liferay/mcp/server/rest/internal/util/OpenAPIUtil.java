@@ -47,6 +47,8 @@ public class OpenAPIUtil {
 
 		Operation operation = _getOperation(openAPIJSONObject, toolName);
 
+		String method = StringUtil.toUpperCase(operation._method);
+
 		String path = _getPath(inputJSONObject, operation);
 
 		String queryString = _getQueryString(inputJSONObject, operation);
@@ -55,33 +57,12 @@ public class OpenAPIUtil {
 			path = path + StringPool.QUESTION + queryString;
 		}
 
-		String method = StringUtil.toUpperCase(operation._method);
-
 		if (_isMultipartRequest(operation._operationJSONObject)) {
-			String boundary = String.valueOf(UUID.randomUUID());
-
-			byte[] body = _buildMultipartBody(
-				boundary, inputJSONObject, openAPIJSONObject, operation);
-
-			if (body == null) {
-				return new Request(method, path, null, null);
-			}
-
-			return new Request(
-				method, path,
-				ContentTypes.MULTIPART_FORM_DATA + "; boundary=" + boundary,
-				body);
+			return _getMultipartRequest(
+				inputJSONObject, method, openAPIJSONObject, operation, path);
 		}
 
-		String body = _getBody(inputJSONObject);
-
-		if (Validator.isNotNull(body)) {
-			return new Request(
-				method, path, ContentTypes.APPLICATION_JSON,
-				body.getBytes(StandardCharsets.UTF_8));
-		}
-
-		return new Request(method, path, null, null);
+		return _getJSONRequest(inputJSONObject, method, path);
 	}
 
 	public static Tool getTool(JSONObject openAPIJSONObject, String toolName) {
@@ -712,6 +693,39 @@ public class OpenAPIUtil {
 		).put(
 			"type", "object"
 		).build();
+	}
+
+	private static Request _getJSONRequest(
+		JSONObject inputJSONObject, String method, String path) {
+
+		String body = _getBody(inputJSONObject);
+
+		if (Validator.isNotNull(body)) {
+			return new Request(
+				method, path, ContentTypes.APPLICATION_JSON,
+				body.getBytes(StandardCharsets.UTF_8));
+		}
+
+		return new Request(method, path, null, null);
+	}
+
+	private static Request _getMultipartRequest(
+		JSONObject inputJSONObject, String method, JSONObject openAPIJSONObject,
+		Operation operation, String path) {
+
+		String boundary = String.valueOf(UUID.randomUUID());
+
+		byte[] multipartBody = _buildMultipartBody(
+			boundary, inputJSONObject, openAPIJSONObject, operation);
+
+		if (multipartBody != null) {
+			return new Request(
+				method, path,
+				ContentTypes.MULTIPART_FORM_DATA + "; boundary=" + boundary,
+				multipartBody);
+		}
+
+		return new Request(method, path, null, null);
 	}
 
 	private static Operation _getOperation(
