@@ -375,10 +375,10 @@ public class OpenAPIUtil {
 
 		try {
 			for (Map.Entry<String, String> entry : parts.entrySet()) {
-				_writeASCII(
+				_write(
 					byteArrayOutputStream, "--", boundary,
 					StringPool.RETURN_NEW_LINE);
-				_writeASCII(
+				_write(
 					byteArrayOutputStream,
 					"Content-Disposition: form-data; name=\"", entry.getKey(),
 					"\"", StringPool.RETURN_NEW_LINE, "Content-Type: ",
@@ -391,14 +391,14 @@ public class OpenAPIUtil {
 						StandardCharsets.UTF_8
 					));
 
-				_writeASCII(byteArrayOutputStream, StringPool.RETURN_NEW_LINE);
+				_write(byteArrayOutputStream, StringPool.RETURN_NEW_LINE);
 			}
 
 			for (FilePart filePart : fileParts) {
-				_writeASCII(
+				_write(
 					byteArrayOutputStream, "--", boundary,
 					StringPool.RETURN_NEW_LINE);
-				_writeASCII(
+				_write(
 					byteArrayOutputStream,
 					"Content-Disposition: form-data; name=\"", filePart._name,
 					"\"; filename=\"", filePart._fileName, "\"",
@@ -408,10 +408,10 @@ public class OpenAPIUtil {
 
 				byteArrayOutputStream.write(filePart._bytes);
 
-				_writeASCII(byteArrayOutputStream, StringPool.RETURN_NEW_LINE);
+				_write(byteArrayOutputStream, StringPool.RETURN_NEW_LINE);
 			}
 
-			_writeASCII(
+			_write(
 				byteArrayOutputStream, "--", boundary, "--",
 				StringPool.RETURN_NEW_LINE);
 		}
@@ -1001,7 +1001,7 @@ public class OpenAPIUtil {
 		return value;
 	}
 
-	private static void _writeASCII(
+	private static void _write(
 			ByteArrayOutputStream byteArrayOutputStream, String... strings)
 		throws IOException {
 
