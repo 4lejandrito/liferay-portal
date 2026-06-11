@@ -348,10 +348,6 @@ public class OpenAPIUtil {
 		for (Map.Entry<String, Object> entry : partProperties.entrySet()) {
 			String partName = entry.getKey();
 
-			if (!inputJSONObject.has(partName)) {
-				continue;
-			}
-
 			Object value = inputJSONObject.get(partName);
 
 			if (value == null) {
