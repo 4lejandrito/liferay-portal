@@ -184,13 +184,10 @@ public class ToolSetUtil {
 		RequestDispatcher requestDispatcher =
 			servletContext.getRequestDispatcher(Portal.PATH_MODULE + path);
 
-		UnsyncStringWriter unsyncStringWriter = new UnsyncStringWriter();
-
 		MCPServerHttpServletResponse mcpServerHttpServletResponse =
 			new MCPServerHttpServletResponse();
 
-		PipingServletResponse pipingServletResponse = new PipingServletResponse(
-			mcpServerHttpServletResponse, unsyncStringWriter);
+		UnsyncStringWriter unsyncStringWriter = new UnsyncStringWriter();
 
 		AccessControlContext accessControlContext =
 			AccessControlUtil.getAccessControlContext();
@@ -203,18 +200,17 @@ public class ToolSetUtil {
 			requestDispatcher.forward(
 				new MCPServerHttpServletRequestWrapper(
 					httpServletRequest, method, path, contentType, body),
-				pipingServletResponse);
+				new PipingServletResponse(
+					mcpServerHttpServletResponse, unsyncStringWriter));
 		}
 		finally {
 			AccessControlUtil.setAccessControlContext(accessControlContext);
 			PermissionThreadLocal.setPermissionChecker(permissionChecker);
 		}
 
-		String responseBody = unsyncStringWriter.toString();
-
 		return new DispatchResult(
 			mcpServerHttpServletResponse.getStatus(),
-			Validator.isNull(responseBody) ? null : responseBody);
+			unsyncStringWriter.toString());
 	}
 
 	private static String _getContent(String content) {
