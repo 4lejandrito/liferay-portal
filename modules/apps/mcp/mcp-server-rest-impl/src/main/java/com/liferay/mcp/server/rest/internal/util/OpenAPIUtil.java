@@ -58,8 +58,7 @@ public class OpenAPIUtil {
 		String method = StringUtil.toUpperCase(operation._method);
 
 		if (_isMultipartRequest(operation._operationJSONObject)) {
-			String boundary = UUID.randomUUID(
-			).toString();
+			String boundary = String.valueOf(UUID.randomUUID());
 
 			byte[] body = _buildMultipartBody(
 				boundary, inputJSONObject, openAPIJSONObject, operation);
