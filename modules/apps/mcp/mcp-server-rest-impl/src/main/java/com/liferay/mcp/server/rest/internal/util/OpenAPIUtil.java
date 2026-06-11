@@ -47,12 +47,12 @@ public class OpenAPIUtil {
 
 		Operation operation = _getOperation(openAPIJSONObject, toolName);
 
-		String pathWithQuery = _getPath(inputJSONObject, operation);
+		String path = _getPath(inputJSONObject, operation);
 
 		String queryString = _getQueryString(inputJSONObject, operation);
 
-		if (!queryString.isEmpty()) {
-			pathWithQuery = pathWithQuery + StringPool.QUESTION + queryString;
+		if (!Validator.isBlank(queryString)) {
+			path = path + StringPool.QUESTION + queryString;
 		}
 
 		String method = StringUtil.toUpperCase(operation._method);
@@ -64,23 +64,24 @@ public class OpenAPIUtil {
 				boundary, inputJSONObject, openAPIJSONObject, operation);
 
 			if (body == null) {
-				return new Request(method, pathWithQuery, null, null);
+				return new Request(method, path, null, null);
 			}
 
 			return new Request(
-				method, pathWithQuery,
-				"multipart/form-data; boundary=" + boundary, body);
+				method, path,
+				ContentTypes.MULTIPART_FORM_DATA + "; boundary=" + boundary,
+				body);
 		}
 
 		String body = _getBody(inputJSONObject);
 
 		if (Validator.isNotNull(body)) {
 			return new Request(
-				method, pathWithQuery, ContentTypes.APPLICATION_JSON,
+				method, path, ContentTypes.APPLICATION_JSON,
 				body.getBytes(StandardCharsets.UTF_8));
 		}
 
-		return new Request(method, pathWithQuery, null, null);
+		return new Request(method, path, null, null);
 	}
 
 	public static Tool getTool(JSONObject openAPIJSONObject, String toolName) {
