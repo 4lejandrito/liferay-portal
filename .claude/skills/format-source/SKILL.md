@@ -106,11 +106,18 @@ These files are overwritten on the next build, so manual edits are lost and only
 
 **Examples:**
 
-Strings and other reference types like `Date`, `JSONObject` get a type suffix.
+A `String` suffix is required only when the variable name is too generic to convey its type on its own — for example, a single-word name like `foo`, `result`, or `value` that could equally be any type. Descriptive names like `viewMode`, `title`, `structureKey`, or `className` are already self-explanatory and do not need a `String` suffix. The same logic applies to other reference types like `Date` and `JSONObject`: add the suffix when the name is ambiguous, not by default.
 
 ```diff
 -String foo = result.toString();
 +String fooString = result.toString();
+```
+
+A descriptive name needs no suffix:
+
+```java
+String viewMode = ParamUtil.getString(request, "p_l_mode", VIEW);
+String title = assetRenderer.getTitle(locale);
 ```
 
 `int`, `long`, `boolean` keep descriptive names without a type suffix.
@@ -286,9 +293,11 @@ Anonymous classes follow the same rule.
 +method.invoke(new FooDelegate() {});
 ```
 
-### Rule 13: Drop Narrative Assertion Messages
+### Rule 13: Drop Assertion Messages
 
-**Why:** A verbose explanatory message on `Assert.assertTrue` or `Assert.assertFalse` mostly restates what the predicate already shows; removing it lets the failing line and stack frame carry the diagnostic, and shortens the test.
+**Why:** Do not add a message argument to any `Assert.*` call. JUnit already reports the expected and actual values plus the line number; an ad-hoc description adds noise and drifts as the test evolves. Descriptive sub-case labels belong in the test method name or a `_test*` helper (see **Rule 48**), not in an assert argument.
+
+**Exception — source formatter requires one:** `AssertEqualsCheck` requires `Assert.assertEquals(actual.toString(), expected, actual.size())` (with `actual.toString()` as the leading message) when the actual side is a scalar derived from a collection or map (`.size()`, etc.) — the leading message ensures the failure prints the collection contents. Add the message only when the formatter flags it.
 
 **Examples:**
 
@@ -299,6 +308,15 @@ Anonymous classes follow the same rule.
 -		". Actual filter was: ", filterString),
 -	filterString.contains("(id=" + id + ")"));
 +Assert.assertTrue(filterString.contains("(id=" + id + ")"));
+```
+
+```diff
+-Assert.assertEquals("content field -> view action", ACTION_VIEW, ...);
+-Assert.assertEquals(
+-	"type is full class name for non-ObjectDefinition",
+-	_CLASS_NAME_JOURNAL_ARTICLE, ...);
++Assert.assertEquals(ACTION_VIEW, ...);
++Assert.assertEquals(_CLASS_NAME_JOURNAL_ARTICLE, ...);
 ```
 
 ### Rule 14: Declare Locals Next to First Use
@@ -512,12 +530,28 @@ Update the call sites at the same time.
 
 **Examples:**
 
-Paired declarations:
+Paired **local** declarations of the same type at the top of a method body form a homogeneous preamble — no blank line within the cluster. Elsewhere **Rule 14** takes precedence; this applies only when the locals read as a single setup step. The exception is scoped to method-local declarations: class-level fields and constants always sit one declaration per group, separated by a blank line, even when consecutive declarations share the same type.
 
 ```diff
  Foo first = create("first");
 -
  Foo second = create("second");
+```
+
+```diff
+ FragmentCollection fragmentCollection1 = ...;
+-
+ FragmentCollection fragmentCollection2 = ...;
+```
+
+Class-level fields and constants stay separated:
+
+```diff
+ private static final int _COUNT = 7;
++
+ private static final int _COUNT_BY_TYPE = 3;
++
+ private static final int _END = 10;
 ```
 
 Paired assertions on parallel results:
@@ -709,6 +743,20 @@ Separate must-be-first or must-be-last items from the sorted block:
 -long[] currentAndAncestorGroupIds = getReferencedGroupIds();
 +long[] referencedGroupIds = getReferencedGroupIds();
 ```
+
+The same principle applies when the right-hand side is a constructor call: use the type's camelCased form rather than a single-word shortening that drops the qualifier.
+
+```diff
+-AssetAnalyticsAttributesProvider provider =
++AssetAnalyticsAttributesProvider assetAnalyticsAttributesProvider =
+ 	new AssetAnalyticsAttributesProvider(
+ 		assetEntry, renderer, locale, Constants.VIEW);
+
+-return provider.buildAttributes(action);
++return assetAnalyticsAttributesProvider.buildAttributes(action);
+```
+
+When several locals of the same type coexist, Rule 61 governs the disambiguation instead.
 
 ### Rule 34: Add `@Override` on Every Overriding Method
 
@@ -961,6 +1009,30 @@ In Mockito-based tests the same rule applies: declare all mocks first in outer-t
 
 This is the complement of Rule 14: intermediate input variables move down (next to first use), while output and wrapping variables move up (declared before the code that feeds them).
 
+**Source-formatter enforcement in private helpers.** In a private helper named `_get*`, `_create*`, `_fetch*`, or `_generate*`, `ReturnVariableDeclarationAsUsedCheck` requires the return variable to be the **first statement** when its initializer is `new Type()` with no constructor arguments. This is the formatter-enforced specific case of the output-first principle:
+
+```diff
+ private Foo _getFoo(String name) {
++	Foo foo = new Foo();
++
+ 	Bar bar = Mockito.mock(Bar.class);
+
+ 	Mockito.when(
+ 		bar.getName()
+ 	).thenReturn(
+ 		name
+ 	);
+
+-	Foo foo = new Foo();
+-
+ 	foo.setBar(bar);
+
+ 	return foo;
+ }
+```
+
+The check fires only when all of these hold: the method name matches the pattern; the return variable name case-insensitively matches the verb suffix (e.g. `_getFoo` → `foo`); the initializer is `new Type()` with no constructor arguments; no other method calls appear before the declaration in the same scope. When the constructor takes arguments or preceding calls block the move, Rule 14 applies as normal.
+
 ### Rule 47: Parameter-Aligned Variable Naming
 
 **Why:** When a local variable carries a value directly into a method call, naming it after the method's parameter makes the call site self-documenting and eliminates the translation overhead for the reader who must otherwise reconcile a synonym with the method signature.
@@ -1004,7 +1076,611 @@ The same applies when renaming a method or its parameter to match the vocabulary
 
 When you rename a local, propagate the new name to every call site, every parameter that passes it on, and every private helper that receives it.
 
-### Rule 48: Chicago Title Case for Titles in Language Properties
+### Rule 48: Consolidate Test Cases via Private Helpers
+
+**Why:** A single `@Test` per scenario fragments the JUnit surface and duplicates fixture setup. Consolidating related cases into one `@Test` matches Liferay convention; when the consolidated body is too long to scan inline, extract each case into a private `_test<MethodName><Scenario>` helper that the single `@Test` driver calls in sequence. The driver method stays under one `@Test` annotation, and each helper reads as a self-contained scenario.
+
+**Examples:**
+
+The simple case — short inline scenarios stay inline.
+
+```diff
+ @Test
+ public void testGetFoo() {
+     Assert.assertEquals(1, FooUtil.getFoo(_buildBar(1)));
+     Assert.assertEquals(2, FooUtil.getFoo(_buildBar(2)));
+     Assert.assertEquals(0, FooUtil.getFoo(null));
+ }
+```
+
+**A single `for` over simple values is fine; nested loops are not.** When a one-dimensional sweep over simple values reads more clearly as a loop, keep the `for` — it is easier to understand than repeating near-identical calls. But never nest loops to enumerate input combinations (a "loop of loops"): the body stops being scannable and a failure cannot name the combination that broke. Replace nested loops with a private helper called once per case with explicit arguments instead.
+
+```diff
+-for (boolean featureFlagEnabled : new boolean[] {false, true}) {
+-    for (int widgetPageTemplateEntriesCount : new int[] {0, 1}) {
+-        // ... stub getLayoutPageTemplateEntriesCountByType + assert ...
+-    }
+-}
++_testIsShowWidgetPageTemplates(false, 0, false);
++_testIsShowWidgetPageTemplates(
++    false, RandomTestUtil.randomInt(1, Integer.MAX_VALUE), true);
++_testIsShowWidgetPageTemplates(true, 0, true);
+```
+
+When each scenario needs multi-line setup or distinct fixtures, extract helpers.
+
+```diff
+-@Test
+-public void testGetFooBelowLimit() { ... long body ... }
+-
+-@Test
+-public void testGetFooAtLimit() { ... long body ... }
+-
+-@Test
+-public void testGetFooKeepsNewest() { ... long body ... }
++@Test
++public void testGetFoo() {
++    _testGetFooBelowLimit();
++    _testGetFooAtLimit();
++    _testGetFooKeepsNewest();
++}
++
++private void _testGetFooBelowLimit() { ... long body ... }
++
++private void _testGetFooAtLimit() { ... long body ... }
++
++private void _testGetFooKeepsNewest() { ... long body ... }
+```
+
+The helper name mirrors the original `@Test` name with a leading underscore.
+
+**Trade-off:** consolidation collapses failure reporting too — if helper A fails, helpers B and C never run, and the runner reports the umbrella method name rather than the specific scenario. Apply when the scenarios are tightly related and per-scenario reporting is not required; keep separate `@Test` methods when each scenario benefits from running and reporting independently (regression catalog, flake triage, parallelization).
+
+**When sub-helpers share most of their body — fold them inline.** Sub-helpers you extracted above can themselves accumulate duplication: same fixture parameters, same stub shape, same assertion shape — differing only in stubbed values and expected outputs. When that happens the extraction inverts: the duplicated body becomes the noise and the case-by-case values become the signal. Inline the sub-helpers into the orchestrator, re-stub between cases (Mockito overwrites prior stubs), and extract one small `_assert*` helper for the only fragment that genuinely repeats. Name the extracted helper for what it holds: `_assert*` when it is purely an assertion (as below), but `_test*` when the repeated fragment is itself a full sub-scenario — mirror the `@Test` name (`testFoo` → `_testFoo`) and pass a parameter for each test case. Either way the goal is to reuse both the code and the fixture — initialize expensive resources once in the orchestrator and reuse them across cases instead of re-creating them per call.
+
+```diff
+-private void _testFooForCmsObjectDefinition(SystemUnderTest sut, ...) {
+-    Mockito.when(service.fetch(...)).thenReturn(definition);
+-    Mockito.when(definition.isCMS()).thenReturn(true);
+-    String result = sut.compute(...);
+-    Assert.assertTrue(result.contains("version=\"2.0\""));
+-}
+-private void _testFooForNoncmsObjectDefinition(...) { ... }
+-private void _testFooWithoutObjectDefinition(...) { ... }
+
++private void _assertVersion(SystemUnderTest sut, String expectedVersion) {
++    String result = sut.compute(...);
++    Assert.assertTrue(
++        result.contains("version=\"" + expectedVersion + "\""));
++}
+
+ private void _testFoo() {
+     // ... fixture setup ...
+
++    Mockito.when(service.fetch(...)).thenReturn(definition);
++
++    Mockito.when(definition.isCMS()).thenReturn(true);
++    _assertVersion(sut, "2.0");
++
++    Mockito.when(definition.isCMS()).thenReturn(false);
++    _assertVersion(sut, "1.0");
++
++    Mockito.when(service.fetch(...)).thenReturn(null);
++    _assertVersion(sut, "1.0");
+ }
+```
+
+**Recognize the candidate** when the sub-helpers take the same parameter list, share the first N lines of stub setup, and end with an assertion of the same shape against the same key. Re-stubbing the same mock method between cases overwrites the previous return value, so a single mock can serve every case.
+
+**When NOT to inline**: sub-helpers with distinct fixtures (different mocks, different system-under-test construction, different attribute keys asserted) — those are real scenarios and the extraction guidance above stays.
+
+### Rule 49: Use `RandomTestUtil` for Test Data Values
+
+**Why:** When a test only cares that a value exists — not its exact contents — randomizing the value prevents accidental coupling to specific literals (a test passing only because `"Fragment Collection"` happens to appear in setup data elsewhere), surfaces test-isolation bugs earlier (different seeds shake loose hidden dependencies), and matches existing Liferay convention. Keep the literal when the assertion depends on its specific value: class name strings (`"com.liferay.journal.model.JournalArticle"`), attribute keys (`"data-analytics-asset-id"`), enum-like constants (`"basic-web-content"`), action labels (`"impression"`), case-sensitive or format-sensitive code paths, and locale comparisons that need to differ.
+
+For small ID values in unit-test mocks, hardcoded numbers add noise without value, but `RandomTestUtil.randomLong()` is still cheap and preferable.
+
+**Examples:**
+
+```diff
+ _fragmentCollectionLocalService.addFragmentCollection(
+-	"ERC-12345", TestPropsValues.getUserId(),
+-	_group.getGroupId(), "Fragment Collection", null,
++	RandomTestUtil.randomString(), TestPropsValues.getUserId(),
++	_group.getGroupId(), RandomTestUtil.randomString(), null,
+ 	ServiceContextTestUtil.getServiceContext(_group.getGroupId()));
+```
+
+```diff
+-themeDisplay.setDoAsUserId("abcdef1234567890");
+-themeDisplay.setScopeGroupId(20126L);
++themeDisplay.setDoAsUserId(RandomTestUtil.randomString());
++themeDisplay.setScopeGroupId(RandomTestUtil.randomLong());
+```
+
+### Rule 50: Use Liferay's Constants and Utility Methods
+
+**Why:** Liferay ships a constant or utility for most common values and checks. Using it documents what a value means and keeps code consistent with the rest of the codebase; for `StringPool` it also avoids churn against the source formatter, which rewrites those literals automatically.
+
+**`StringPool` for common single-char and short-string literals.** Frequently hit constants:
+
+| Literal | Use |
+| --- | --- |
+| `""` | `StringPool.BLANK` |
+| `" "` | `StringPool.SPACE` |
+| `"."` | `StringPool.PERIOD` |
+| `","` | `StringPool.COMMA` |
+| `":"` | `StringPool.COLON` |
+| `";"` | `StringPool.SEMICOLON` |
+| `"/"` | `StringPool.SLASH` |
+| `"_"` | `StringPool.UNDERLINE` |
+| `"-"` | `StringPool.DASH` |
+| `"="` | `StringPool.EQUAL` |
+| `"\""` | `StringPool.QUOTE` |
+| `"'"` | `StringPool.APOSTROPHE` |
+| `"@"` | `StringPool.AT` |
+
+Leave the literal alone in OSGi annotation arrays such as `@Component(property = …)` (Liferay convention uses literals there so the source-formatter can scan them; this is a convention, not a compiler requirement — `static final String` constants would otherwise satisfy JLS §15.28), inside multi-character strings (`"hello world"` is not decomposed), and in string concatenations where the surrounding text is a semantic label rather than a delimiter.
+
+**Examples:**
+
+```diff
+-Assert.assertEquals("", someCall());
++Assert.assertEquals(StringPool.BLANK, someCall());
+```
+
+```diff
+-sb.append(" ");
+-sb.append(".");
++sb.append(StringPool.SPACE);
++sb.append(StringPool.PERIOD);
+```
+
+**An existing named constant for a meaningful number or value.** When Liferay already defines a constant for a value, use it instead of the raw literal — `WorkflowConstants.STATUS_APPROVED` over the int, `QueryUtil.ALL_POS` over `-1` — so the call site says what the number means. Use an *existing* constant; do not extract a new single-use constant (see **Rule 12**).
+
+```diff
+-objectEntry.setStatus(0);
++objectEntry.setStatus(WorkflowConstants.STATUS_APPROVED);
+```
+
+**A Liferay `*Util` method for null and empty checks.** Prefer `Validator.isNull` / `Validator.isBlank`, `MapUtil.isEmpty`, `ListUtil.isEmpty`, and `SetUtil.isEmpty` over hand-rolled `== null` or `.isEmpty()` checks — they read as intent and handle null in one call.
+
+```diff
+-if (contributedURLEntries != null) {
++if (!SetUtil.isEmpty(contributedURLEntries)) {
+ 	disallowURLEntries.addAll(contributedURLEntries);
+ }
+```
+
+### Rule 51: Extract a Nested Multi-Call Expression Into a Named Local Before Passing It as an Argument
+
+**Why:** When a method or constructor argument is itself a multi-call nested expression (`X.call(Y.call(Z.call(...)))`), pull the inner expression out into a named local and pass the local instead. Cascading an unnamed nested expression inline forces the reader to parse it twice — once to find the seams, once to understand the outer call — and buries what the value is under the machinery of how it was obtained.
+
+Apply when any of these hold: the expression is two or more method calls deep; the outer call already has three or more arguments; the local name captures a concept the raw expression does not (`viewMode`, `errorMessages`, `fragmentCollection`). If none hold, **Rule 12** wins — inline the trivial call.
+
+**Examples:**
+
+```diff
++String viewMode = ParamUtil.getString(
++	PortalUtil.getOriginalServletRequest(request), "p_l_mode",
++	Constants.VIEW);
++
+ AssetAnalyticsAttributesProvider assetAnalyticsAttributesProvider =
+ 	new AssetAnalyticsAttributesProvider(
+-		assetEntry, assetRenderer, locale,
+-		ParamUtil.getString(
+-			PortalUtil.getOriginalServletRequest(request), "p_l_mode",
+-			Constants.VIEW));
++		assetEntry, assetRenderer, locale, viewMode);
+```
+
+The outer call now reads as "construct a Provider from (entry, renderer, locale, viewMode)" — four named pieces.
+
+**Counter-example — Rule 12 wins, not Rule 23:** when the expression is one trivial call and the local name would just re-state what the call already says, inline rather than extract.
+
+```java
+Group group = GroupLocalServiceUtil.fetchGroup(assetEntry.getGroupId());
+```
+
+No need to introduce `long groupId = assetEntry.getGroupId();` first — `getGroupId()` already names the value.
+
+### Rule 52: Avoid Chaining When Not Building
+
+**Why:** A builder or fluent chain is appropriate when the chain is actually building something. For a plain getter whose result is then asserted against or used in an expression, extract the getter into a local with a meaningful name — do not chain `.getX().length > 0` inside an assert. The local makes the value's role explicit and lets the assertion line read as one comparison rather than as a two-step navigation plus comparison. The same applies to cascading getter chains (`a.getB().getC()`): assign the meaningful endpoint to a named local before using it.
+
+This rule complements **Rule 1** (which orders calls inside a legitimate builder chain) and **Rule 51** (which extracts nested expressions used as arguments). Rule 52 governs whether to chain at all when the chain is not a build.
+
+**Examples:**
+
+```diff
+-Assert.assertTrue(validationResponse.getErrorMessages().length > 0);
++String[] errorMessages = validationResponse.getErrorMessages();
++
++Assert.assertTrue(errorMessages.length > 0);
+```
+
+```diff
+-if (entry.getCategory().getName().startsWith("draft-")) {
++Category category = entry.getCategory();
++
++if (category.getName().startsWith("draft-")) {
+```
+
+The same principle covers index/key access — `.get(1).get("deprecated")` is a non-builder chain, not a fluent API.
+
+```diff
+ if (featureFlagEnabled) {
++	DropdownItem primaryDropdownItem = primaryDropdownItems.get(1);
++
+ 	Assert.assertEquals(
+-		Boolean.TRUE,
+-		primaryDropdownItems.get(
+-			1
+-		).get(
+-			"deprecated"
+-		));
++		Boolean.TRUE, primaryDropdownItem.get("deprecated"));
+ }
+```
+
+### Rule 53: Keep Persistence Mutations Out of Model Classes
+
+**Why:** A `*Impl` class under `model/impl` is the entity, not a service. Modifying the database from a model — calling `delete*`, `update*`, `add*` on a `LocalService`, or otherwise persisting state — couples data shape to business logic, makes transactions implicit, and bypasses the service tier where permission checks, indexing, and side effects belong. Database modifications must happen in `*LocalServiceImpl` or `*ServiceImpl` instead. The model exposes the data; the service mutates it.
+
+A model method may *read* derived state (computed properties, lookups via `LocalServiceUtil` getters) when needed, but write paths belong on the service.
+
+**Examples:**
+
+```diff
+ // model/impl/ObjectImpl.java
+
+-public void deleteOrphanedRelations() {
+-	List<Relation> relations = getRelations();
+-
+-	if (relations.isEmpty()) {
+-		return;
+-	}
+-
+-	RelationLocalServiceUtil.deleteRelations(relations);
+-}
+```
+
+```diff
+ // service/impl/ObjectLocalServiceImpl.java
+
++public void deleteOrphanedRelations(Object object) throws PortalException {
++	List<Relation> relations = object.getRelations();
++
++	if (relations.isEmpty()) {
++		return;
++	}
++
++	_relationLocalService.deleteRelations(relations);
++}
+```
+
+The caller now goes through `ObjectLocalServiceUtil.deleteOrphanedRelations(object)` instead of `object.deleteOrphanedRelations()`. Permission checks, transaction boundaries, and indexer notifications can be wired in alongside the delete; none of that is reachable from a method on the entity.
+
+### Rule 54: Hoist Locals Out of `try` When `catch`/`finally` Needs Them
+
+**Why:** Rule 14 says a local used only inside a `try` belongs inside the `try`. The complement: when `catch` or `finally` references the local — to log it, clean it up, or include it in a rethrown message — the declaration must live before the `try` so both branches can reach it. Declare it with a safe initial value (`null`, `0`, `false`) that the `catch` can test or log without a `NullPointerException`.
+
+**Examples:**
+
+```diff
++Foo foo = null;
++
+ try {
+-	Foo foo = makeFoo();
++	foo = makeFoo();
+
+ 	foo.consume();
+ }
+ catch (Exception exception) {
+-	_log.error("Failed", exception);
++	_log.error("Failed for " + foo, exception);
+ }
+```
+
+### Rule 55: Sort Independent Boolean Operands Alphabetically When Logic Allows
+
+**Why:** Sorting alphabetically gives the reader a predictable order and matches the convention already established for setters (Rule 17), constants (Rule 32), and declarations (Rule 28). The sort applies only when the new order preserves behavior — that is, when no operand short-circuits another. Correctness outranks convention; verify the rewrite is semantically equivalent before applying it.
+
+**When to sort.** Both operands are pure, side-effect free, and safe to evaluate in either order. Reordering changes nothing observable.
+
+```diff
+-if (widgetPageFFEnabled || !deprecatedType) {
++if (!deprecatedType || widgetPageFFEnabled) {
+```
+
+The leading `!` does not affect sort position; `deprecatedType` (`d`) precedes `widgetPageFFEnabled` (`w`).
+
+**When to leave the order alone.** Whenever swapping would change behavior, throw, or perform extra work. The protective order outranks alphabetical sort.
+
+- Null guard before dereference: `obj != null && obj.isReady()` — swapping throws on null.
+- Cheap test before expensive call: `cached || compute()` — swapping always evaluates `compute()`.
+- Existence check before lookup: `map.containsKey(key) && map.get(key).isValid()`.
+- Earlier operand sets state read by the later: `parse(input) && consume()`.
+
+If in doubt, leave the order as the author wrote it.
+
+### Rule 56: Keep Log and Exception Messages Short
+
+**Why:** A log or exception message has one job: tell the reader what happened and which entity it happened to. Verbose context — "the X system tried to Y but Z; consult the docs and migrate to W" — adds noise, scrolls past the eye when grep'ing logs, and translates poorly. State the action and the key identifier; let the stack frame, the file path, and the surrounding documentation carry the rest. Short messages also fit on one line with `+`, where verbose ones force `StringBundler.concat`; the prevailing style across the codebase is `+` for one to three fragments, `StringBundler.concat` only when the assembled message would otherwise wrap awkwardly.
+
+**Examples:**
+
+Drop the verbose context. State the action and the identifier:
+
+```diff
+-_log.warn(
+-	StringBundler.concat(
+-		"Layout ", layout.getPlid(),
+-		" is a deprecated portlet page (type=portlet). ",
+-		"Use a content page instead."));
++_log.warn("Layout " + layout.getPlid() + " has a deprecated type");
+```
+
+Short messages with up to three fragments use `+`:
+
+```diff
+-_log.warn(
+-	StringBundler.concat(
+-		"Unable to import attachment for file entry ",
+-		fileEntry.getFileEntryId()));
++_log.warn(
++	"Unable to import attachment for file entry " +
++		fileEntry.getFileEntryId());
+```
+
+Reserve `StringBundler.concat` for messages whose fragment count makes `+` wrap awkwardly — typically four or more fragments, often structured key/value contexts:
+
+```java
+throw new NoSuchArticleException(
+	StringBundler.concat(
+		"No JournalArticle exists with the key {groupId=", groupId,
+		", urlTitle=", urlTitle, "}"));
+```
+
+**When to keep `StringBundler` regardless of length:** loop accumulation, branching assembly across `if` paths, and any builder that crosses methods or scopes — these are the cases `StringBundler` was designed for.
+
+### Rule 57: Use Sentence Case in Description Prose
+
+**Why:** Feature-flag descriptions, command help text, and similar long-form property values read as English prose, not as labels. Sentence case — only the first word capitalized, plus proper nouns — is the dominant convention across `Language.properties`; Title Case in the body of a description treats common nouns as proper names and reads inconsistently with the rest of the file. Reserve Title Case for `*.title` values and other label-style strings.
+
+**Examples:**
+
+```diff
+-feature.flag.LPD-76864.description=Widget Pages are deprecated and will be removed in a future major release. Use Content Pages instead.
++feature.flag.LPD-76864.description=Widget pages are deprecated and will be removed in a future major release. Use content pages instead.
+ feature.flag.LPD-76864.title=Widget Pages
+```
+
+The `.title` value stays Title Case; the `.description` value uses sentence case.
+
+### Rule 58: Use `@Reference` in OSGi Components; Reserve `Snapshot` for Non-Components
+
+**Why:** In an OSGi `@Component` class, `@Reference` is the canonical mechanism for service injection — the framework wires the dependency at activation time, fails the component if the dependency is missing, and re-binds if the service is swapped. `Snapshot` is the escape hatch for classes that are not OSGi-managed (utility classes with static methods, instances created with `new`, helpers passed across module boundaries) where field injection is not available. Reaching for `Snapshot` inside a `@Component` mixes two service-acquisition strategies in one class for no benefit; the resulting code carries a redundant null check, leaks the "service may not be there" concern into the call site, and diverges from the dominant pattern across the codebase.
+
+**Examples:**
+
+In a `@Component` class, drop the `Snapshot` field and inject via `@Reference`:
+
+```diff
+ @Component(
+     property = "...",
+     service = TemplateHandler.class
+ )
+ public class FooHandler extends BaseFooHandler {
+
++    @Reference
++    protected AnalyticsSettingsManager analyticsSettingsManager;
++
+     @Reference
+     protected Portal portal;
+
+     private boolean _isEnabled(long companyId) {
+-        AnalyticsSettingsManager analyticsSettingsManager =
+-            _analyticsSettingsManagerSnapshot.get();
+-
+-        if (analyticsSettingsManager == null) {
+-            return false;
+-        }
+-
+         try {
+             return analyticsSettingsManager.isAnalyticsEnabled(companyId);
+         }
+         catch (Exception exception) {
+             // ...
+         }
+     }
+
+-    private static final Snapshot<AnalyticsSettingsManager>
+-        _analyticsSettingsManagerSnapshot = new Snapshot<>(
+-            FooHandler.class, AnalyticsSettingsManager.class);
+
+ }
+```
+
+**Recognize the candidate:** a `private static final Snapshot<T>` field in a class that already carries `@Component` and has other `@Reference` fields. The null-check guard right after `Snapshot.get()` is the second telltale — `@Reference` injection makes that branch unreachable.
+
+**When to keep `Snapshot`:** the class is not an OSGi `@Component`. Plain helpers instantiated with `new`, utility classes with static methods, value objects passed across module boundaries, and similar non-managed code use `Snapshot` because `@Reference` field injection is unavailable.
+
+### Rule 59: Keep Tests in Separate Commits From Production Code
+
+**Why:** Reviewers read a change in two passes — first the production code (does this do the right thing?), then the test (does the assertion cover the new behavior?). Squashing a test change into a logic commit forces those passes to interleave, obscures whether a test edit was added to assert new behavior or merely updated to match a refactor, and makes `git bisect` noisier: a regression in the production change cannot be isolated from a coincidental test edit. Keep the production commit pure; the test commit sits on top with the assertions.
+
+This applies even when the test change looks mechanical (a renamed import, an updated expected value to match a refactored return type, a restructured fixture). A test edit is still a test edit and belongs with the test commit.
+
+**Examples:**
+
+Don't combine them:
+
+```
+abc123 LPD-12345 Add FooService and its unit test
+```
+
+Split into production-first, test-on-top:
+
+```
+def456 LPD-12345 Add unit test for FooService
+abc123 LPD-12345 Add FooService
+```
+
+When applying review feedback that touches both production and tests, create two separate `git commit --fixup` commits — one targeting the production commit, one targeting the test commit — and let `git rebase --autosquash` fold each into its target.
+
+**When to combine:** never. Even a single-line assertion adjustment that "obviously" belongs with the logic change still goes in its own commit; the cost of one extra commit is far smaller than the cost of breaking the production-vs-test review boundary.
+
+### Rule 60: Prefer One Method Signature Over Overloads
+
+**Why:** Two overloads of the same method name multiply the API surface a reader has to learn, obscure which path a call site actually takes, and almost always exist because the shorter overload delegates to the longer one with a default value. A single method signature is easier to grep for, easier to refactor, and easier to test. When a caller does not care about a parameter's value, `RandomTestUtil.randomLong()`, `RandomTestUtil.randomString()`, `null`, `false`, or another don't-care sentinel works — the parameter is still passed, the method has one signature, and the intent at the call site is explicit.
+
+**Examples:**
+
+A two-overload helper where the shorter form just adds a default:
+
+```diff
+-private AssetEntry _mockAssetEntry(String className, long classPK) {
+-    AssetEntry assetEntry = Mockito.mock(AssetEntry.class);
+-
+-    Mockito.when(assetEntry.getClassName()).thenReturn(className);
+-    Mockito.when(assetEntry.getClassPK()).thenReturn(classPK);
+-
+-    return assetEntry;
+-}
+-
+-private AssetEntry _mockAssetEntry(
+-    String className, long classPK, long companyId) {
+-
+-    AssetEntry assetEntry = _mockAssetEntry(className, classPK);
+-
+-    Mockito.when(assetEntry.getCompanyId()).thenReturn(companyId);
+-
+-    return assetEntry;
+-}
+
++private AssetEntry _mockAssetEntry(
++    String className, long classPK, long companyId) {
++
++    AssetEntry assetEntry = Mockito.mock(AssetEntry.class);
++
++    Mockito.when(assetEntry.getClassName()).thenReturn(className);
++    Mockito.when(assetEntry.getClassPK()).thenReturn(classPK);
++    Mockito.when(assetEntry.getCompanyId()).thenReturn(companyId);
++
++    return assetEntry;
++}
+```
+
+Callers that previously used the shorter form pass a don't-care value for the new parameter:
+
+```diff
+-_mockAssetEntry(
+-    "com.liferay.blogs.model.BlogsEntry", RandomTestUtil.randomLong());
++_mockAssetEntry(
++    "com.liferay.blogs.model.BlogsEntry", RandomTestUtil.randomLong(),
++    RandomTestUtil.randomLong());
+```
+
+**When overloads are necessary:** the overloads have genuinely different semantics — different argument types, different code paths, or different operation modes — not just "one passes a default value to the other". `Arrays.asList(T... a)` versus `Arrays.asList(Collection<? extends T>)` is a legitimate overload pair; `Foo.bar(String s)` that calls `Foo.bar(s, null)` is not.
+
+### Rule 61: Avoid Numeric Suffixes on Local Variable Names
+
+**Why:** Names like `provider1`, `attributes2`, `result3` carry no semantic content — the digit indicates only the order in which the variable was declared, not what makes it different from its siblings. A reader has to scroll back to each declaration to figure out what each numeric variant represents. Numeric suffixes are only acceptable when several locals genuinely need to coexist in the same scope; when they don't (each is used immediately after construction and never referenced again), the digit is just noise.
+
+**Decision order when you see `foo1`, `foo2`, ...:**
+
+1. If the variables never coexist (each is fully consumed before the next is declared), **reassign one local** between scenarios.
+2. If they coexist but the scenarios are distinct enough to read as separate concerns, **split into focused helpers**.
+3. If they coexist and the variation has a name, **give each local a meaningful name** (`firstFoo` / `secondFoo`, `leftFoo` / `rightFoo`, etc.).
+4. Numbered suffixes (`foo1` / `foo2`) are the last-resort fallback — only when locals must coexist and no meaningful distinction reads naturally.
+
+**Examples:**
+
+Reassign the same local — preferred when scenarios never coexist (each is constructed, consumed, then replaced):
+
+```diff
+-Foo foo1 = new Foo(null, null);
+-String result1 = foo1.render();
+-Assert.assertEquals(BLANK, result1);
+-
+-Foo foo2 = new Foo(bar, null);
+-String result2 = foo2.render();
+-Assert.assertEquals(BLANK, result2);
+-
+-Foo foo3 = new Foo(bar, baz);
+-String result3 = foo3.render();
+-Assert.assertEquals(EXPECTED, result3);
+
++Foo foo = new Foo(null, null);
++
++String result = foo.render();
++
++Assert.assertEquals(BLANK, result);
++
++foo = new Foo(bar, null);
++
++result = foo.render();
++
++Assert.assertEquals(BLANK, result);
++
++foo = new Foo(bar, baz);
++
++result = foo.render();
++
++Assert.assertEquals(EXPECTED, result);
+```
+
+Split into focused helpers — when each scenario has distinct setup and a single concern:
+
+```diff
+-private void _testFooWithNullInputs() {
+-    Foo foo1 = new Foo(null, null);
+-    Assert.assertEquals(BLANK, foo1.render());
+-
+-    Foo foo2 = new Foo(bar, null);
+-    Assert.assertEquals(BLANK, foo2.render());
+-
+-    Foo foo3 = new Foo(bar, baz);
+-    Assert.assertEquals(EXPECTED, foo3.render());
+-}
+
++private void _testFooWithoutBar() {
++    Foo foo = new Foo(null, null);
++
++    Assert.assertEquals(BLANK, foo.render());
++}
++
++private void _testFooWithoutBaz() {
++    Foo foo = new Foo(bar, null);
++
++    Assert.assertEquals(BLANK, foo.render());
++}
++
++private void _testFooWithBarAndBaz() {
++    Foo foo = new Foo(bar, baz);
++
++    Assert.assertEquals(EXPECTED, foo.render());
++}
+```
+
+Give each local a meaningful name when both must stay in scope at once:
+
+```diff
+-Foo foo1 = create("first");
+-Foo foo2 = create("second");
+-
+-bar.consume(foo1, foo2);
+
++Foo firstFoo = create("first");
++Foo secondFoo = create("second");
++
++bar.consume(firstFoo, secondFoo);
+```
+
+**Recognize the candidate:** any local whose name ends in a digit. Three or more sibling locals with the same base name and ascending numeric suffix is almost always a refactoring opportunity per one of the patterns above.
+
+### Rule 62: Chicago Title Case for Titles in Language Properties
 
 **Why:** Titles in `Language.properties` — labels, headings, button text, dropdown options, filter values — follow the Chicago Manual of Style: capitalize the first word, the last word, and every major word (nouns, verbs, adjectives, adverbs, pronouns), and keep articles, coordinating conjunctions, and prepositions lowercase. Sentences and inline phrases stay in sentence case; full sentences fall under Rule 18.
 
