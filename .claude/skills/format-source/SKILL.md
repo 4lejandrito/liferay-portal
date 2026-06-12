@@ -293,6 +293,18 @@ Anonymous classes follow the same rule.
 +method.invoke(new FooDelegate() {});
 ```
 
+A use-once value that is conditionally overridden inlines as a ternary at the single call site, rather than the `if`-reassign-then-use form. Contrast **Rule 16**, which keeps the override adjacent to the declaration when the value is named or reused.
+
+```diff
+-if (MapUtil.isEmpty(nameMap)) {
+-	nameMap = layout.getNameMap();
+-}
+-
+-layoutContentVersion.setNameMap(nameMap);
++layoutContentVersion.setNameMap(
++	MapUtil.isEmpty(nameMap) ? layout.getNameMap() : nameMap);
+```
+
 ### Rule 13: Drop Assertion Messages
 
 **Why:** Do not add a message argument to any `Assert.*` call. JUnit already reports the expected and actual values plus the line number; an ad-hoc description adds noise and drifts as the test evolves. Descriptive sub-case labels belong in the test method name or a `_test*` helper (see **Rule 48**), not in an assert argument.
