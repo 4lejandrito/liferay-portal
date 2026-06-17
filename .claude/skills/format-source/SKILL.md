@@ -1281,7 +1281,7 @@ Consecutive assertions in the same verification block:
 
 This is a clarification of Rule 23: the blank-line rule that separates paragraphs does not apply inside a single setter or assertion block.
 
-### Rule 61: A String Variable Holding JSON Drops the "String" Suffix
+### Rule 61: A String Variable Holding JSON, HTML, or XML Drops the "String" Suffix
 
 **Why:** When a variable name already ends in `JSON`, `HTML`, or `XML`, the content type is fully expressed; appending `String` restates what the declared type already conveys.
 
