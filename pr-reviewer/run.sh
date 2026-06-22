@@ -149,6 +149,79 @@ function _acquire_pr_lock {
 	pr_locked=true
 }
 
+function _build_review_diff {
+	local diff_range=${1}
+	local generated_ref=${2}
+
+	local diff_file
+	local generated_files=""
+
+	for diff_file in $(git diff --name-only ${diff_range} || true)
+	do
+		if git grep --ignore-case --quiet "@generated" ${generated_ref} -- ":(top)${diff_file}" 2> /dev/null
+		then
+			generated_files+="|${diff_file}"
+		fi
+	done
+
+	git diff --unified=1 ${diff_range} | awk \
+		-v generated_files="${generated_files}|" \
+		-v ignored_filenames="${_IGNORED_FILENAMES}" \
+		-v ignored_patterns="${_IGNORED_PATTERNS}" \
+		-v ignored_suffixes="${_IGNORED_SUFFIXES}" \
+		-v name_only_suffixes="${_NAME_ONLY_SUFFIXES}" '
+		BEGIN {
+			split(ignored_filenames, filenames, " ")
+			split(ignored_patterns, patterns, " ")
+			split(ignored_suffixes, suffixes, " ")
+			split(name_only_suffixes, name_only_list, " ")
+		}
+		/^diff --git / {
+
+			#
+			# Match the b/ destination, not the a/ source, since a rename makes the two
+			# differ and generated_files holds the destination reported by --name-only
+			#
+
+			file = substr($4, 3)
+
+			skip = index(generated_files, "|" file "|") > 0
+			name_only = 0
+
+			for (i in filenames) {
+				if (file ~ ("(^|/)" filenames[i] "$")) {
+					skip = 1
+				}
+			}
+
+			for (i in patterns) {
+				if (file ~ patterns[i]) {
+					skip = 1
+				}
+			}
+
+			for (i in suffixes) {
+				if (file ~ ("[.]" suffixes[i] "$")) {
+					skip = 1
+				}
+			}
+
+			for (i in name_only_list) {
+				if (file ~ ("[.]" name_only_list[i] "$")) {
+					name_only = 1
+				}
+			}
+
+			if (! skip) {
+				print
+			}
+
+			next
+		}
+		! skip && ! name_only
+	'
+}
+
 function _check_pr {
 	pr_closed=false
 
@@ -542,8 +615,6 @@ function _get_automatic_code_review_json {
 		return 1
 	fi
 
-	local diff_file
-
 	local diff_range=refs/pr-reviewer/${pr_number}..refs/pr-reviewer/${pr_number}
 
 	local from_commit=$(git merge-base master refs/pr-reviewer/${pr_number} 2> /dev/null)
@@ -553,111 +624,9 @@ function _get_automatic_code_review_json {
 		diff_range="${from_commit}..refs/pr-reviewer/${pr_number}"
 	fi
 
-	local generated_files=""
-
-	for diff_file in $(git diff --name-only ${diff_range} || true)
-	do
-		if git grep --ignore-case --quiet "@generated" refs/pr-reviewer/${pr_number} -- ":(top)${diff_file}" 2> /dev/null
-		then
-			generated_files+="|${diff_file}"
-		fi
-	done
-
 	rm --force ${pr_dir}/*
 
-	git diff --unified=1 ${diff_range} | awk \
-		-v generated_files="${generated_files}|" \
-		-v ignored_filenames="${_IGNORED_FILENAMES}" \
-		-v ignored_patterns="${_IGNORED_PATTERNS}" \
-		-v ignored_suffixes="${_IGNORED_SUFFIXES}" \
-		-v name_only_suffixes="${_NAME_ONLY_SUFFIXES}" '
-		BEGIN {
-			split(ignored_filenames, filenames, " ")
-			split(ignored_patterns, patterns, " ")
-			split(ignored_suffixes, suffixes, " ")
-			split(name_only_suffixes, name_only_list, " ")
-		}
-		/^diff --git / {
-
-			#
-			# Match the b/ destination, not the a/ source, since a rename makes the two
-			# differ and generated_files holds the destination reported by --name-only
-			#
-
-			file = substr($4, 3)
-
-			skip = index(generated_files, "|" file "|") > 0
-			name_only = 0
-
-			for (i in filenames) {
-				if (file ~ ("(^|/)" filenames[i] "$")) {
-					skip = 1
-				}
-			}
-
-			for (i in patterns) {
-				if (file ~ patterns[i]) {
-					skip = 1
-				}
-			}
-
-			for (i in suffixes) {
-				if (file ~ ("[.]" suffixes[i] "$")) {
-					skip = 1
-				}
-			}
-
-			for (i in name_only_list) {
-				if (file ~ ("[.]" name_only_list[i] "$")) {
-					name_only = 1
-				}
-			}
-
-			if (! skip) {
-				print
-			}
-
-			next
-		}
-		! skip && ! name_only
-	' > ${pr_dir}/pr.diff
-
-	if [ ! -s ${pr_dir}/pr.diff ]
-	then
-		echo "[]"
-
-		return 0
-	fi
-
-	local pids=()
-
-	for model in "${_MODELS[@]}"
-	do
-		_write_model_json_file ${model} &
-
-		pids+=($!)
-	done
-
-	for pid in "${pids[@]}"
-	do
-		wait "${pid}" || true
-	done
-
-	local automatic_code_review_json="[]"
-
-	for model in "${_MODELS[@]}"
-	do
-		local model_json=$(cat ${pr_dir}/${model}.json 2> /dev/null) || model_json=""
-
-		if [[ -z ${model_json} ]] || ! echo "${model_json}" | jq . > /dev/null 2>&1
-		then
-			model_json="{\"chance\": 0, \"seconds\": 0, \"violations\": []}"
-		fi
-
-		automatic_code_review_json=$(echo "${automatic_code_review_json}" | jq --arg model "${model}" --argjson model_json "${model_json}" ". + [\$model_json + {model: \$model}]")
-	done
-
-	echo "${automatic_code_review_json}"
+	_run_review "${diff_range}" "refs/pr-reviewer/${pr_number}"
 }
 
 function _get_indefinite_article_for_number {
@@ -721,7 +690,7 @@ function _review_in_sandbox {
 		\
 		bwrap \
 			--as-pid-1 \
-			--bind /home/me/.ai_sandbox/home /home/me \
+			--bind "${_REVIEW_HOME_DIR}" "${_REVIEW_HOME}" \
 			--chdir /tmp \
 			--clearenv \
 			--dev /dev \
@@ -731,15 +700,15 @@ function _review_in_sandbox {
 			--ro-bind "$(pwd)/STYLE.md" /review/STYLE.md \
 			--ro-bind "$(pwd)/rules" /review/rules \
 			--ro-bind "$(pwd)/sandbox-bin" /review/sandbox-bin \
-			--ro-bind /home/me/dev/projects/liferay-portal /review/liferay-portal \
-			--ro-bind "$(pwd)/${pr_dir}/pr.diff" /review/pr.diff \
+			--ro-bind "${_REVIEW_LIFERAY}" /review/liferay-portal \
+			--ro-bind ${pr_dir}/pr.diff /review/pr.diff \
 			--ro-bind /etc /etc \
 			--ro-bind /usr /usr \
-			--setenv HOME /home/me \
+			--setenv HOME "${_REVIEW_HOME}" \
 			--setenv LANG en_US.UTF-8 \
-			--setenv PATH /review/sandbox-bin:/home/me/.local/bin:/home/me/.npm-global/bin:/usr/bin:/bin \
+			--setenv PATH "${_REVIEW_PATH}" \
 			--setenv TERM xterm-256color \
-			--setenv USER me \
+			--setenv USER "${_REVIEW_USER}" \
 			--symlink usr/bin /bin \
 			--symlink usr/lib /lib \
 			--symlink usr/lib64 /lib64 \
@@ -752,6 +721,50 @@ function _review_in_sandbox {
 			--unshare-pid \
 			--unshare-uts \
 			"$@"
+}
+
+function _run_review {
+	local diff_range=${1}
+	local generated_ref=${2}
+
+	_build_review_diff "${diff_range}" "${generated_ref}" > ${pr_dir}/pr.diff
+
+	if [ ! -s ${pr_dir}/pr.diff ]
+	then
+		echo "[]"
+
+		return 0
+	fi
+
+	local pids=()
+
+	for model in "${_MODELS[@]}"
+	do
+		_write_model_json_file ${model} &
+
+		pids+=($!)
+	done
+
+	for pid in "${pids[@]}"
+	do
+		wait "${pid}" || true
+	done
+
+	local automatic_code_review_json="[]"
+
+	for model in "${_MODELS[@]}"
+	do
+		local model_json=$(cat ${pr_dir}/${model}.json 2> /dev/null) || model_json=""
+
+		if [[ -z ${model_json} ]] || ! echo "${model_json}" | jq . > /dev/null 2>&1
+		then
+			model_json="{\"chance\": 0, \"seconds\": 0, \"violations\": []}"
+		fi
+
+		automatic_code_review_json=$(echo "${automatic_code_review_json}" | jq --arg model "${model}" --argjson model_json "${model_json}" ". + [\$model_json + {model: \$model}]")
+	done
+
+	echo "${automatic_code_review_json}"
 }
 
 function _salvage_chance {
@@ -851,16 +864,13 @@ Output ONLY valid JSON, with no Markdown code fence and no surrounding prose: {"
 	if [ ${model} = sonnet-4.6 ]
 	then
 		raw=$(_review_in_sandbox \
-			env \
-				HTTPS_PROXY=localhost:8118 \
-				HTTP_PROXY=localhost:8118 \
-				\
-				claude \
-					--add-dir /review \
-					--dangerously-skip-permissions \
-					--model sonnet \
-					--output-format json \
-					--print "Read the PR diff at /review/pr.diff, every rule file under /review/rules, and the style guide /review/STYLE.md, then review the diff against every rule. ${prompt}" || true)
+			"${_REVIEW_ENV[@]}" \
+			claude \
+				--add-dir /review \
+				--dangerously-skip-permissions \
+				--model sonnet \
+				--output-format json \
+				--print "Read the PR diff at /review/pr.diff, every rule file under /review/rules, and the style guide /review/STYLE.md, then review the diff against every rule. ${prompt}" || true)
 
 		response=$(echo "${raw}" | jq --raw-output ".result // empty" 2> /dev/null || true)
 		input_tokens=$(echo "${raw}" | jq --raw-output "(.usage.input_tokens // 0) + (.usage.cache_creation_input_tokens // 0)" 2> /dev/null || echo 0)
@@ -942,7 +952,13 @@ _IGNORED_SUFFIXES="css js jsx lock lockfile macro path scss snap testcase ts tsx
 _MODELS=(sonnet-4.6)
 _NAME_ONLY_SUFFIXES="bmp gif ico jpeg jpg png svg webp"
 _REPO=brianchandotcom/liferay-portal
+_REVIEW_ENV=(env HTTPS_PROXY=localhost:8118 HTTP_PROXY=localhost:8118)
+_REVIEW_HOME=/home/me
+_REVIEW_HOME_DIR=/home/me/.ai_sandbox/home
+_REVIEW_LIFERAY=/home/me/dev/projects/liferay-portal
+_REVIEW_PATH=/review/sandbox-bin:/home/me/.local/bin:/home/me/.npm-global/bin:/usr/bin:/bin
 _REVIEW_TIMEOUT_MINUTES=40
+_REVIEW_USER=me
 
 if [[ ${BASH_SOURCE[0]} == "${0}" ]]
 then

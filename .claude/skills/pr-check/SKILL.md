@@ -68,6 +68,8 @@ The procedure runs in two passes over the validations, in the order below. The o
 
 1. [JavaScript Unit Tests](validations/javascript-unit-test.md)
 
+1. [Review](validations/review.md)
+
 Process each validation in a subagent.
 
 ### Pass 1: Estimate
