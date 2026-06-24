@@ -17,11 +17,15 @@ import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 
 import jakarta.ws.rs.core.MultivaluedMap;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import org.apache.cxf.rs.security.oauth2.common.Client;
 import org.apache.cxf.rs.security.oauth2.common.ServerAccessToken;
@@ -51,6 +55,40 @@ public abstract class BaseAccessTokenGrantHandler
 		}
 
 		return doCreateAccessToken(client, params);
+	}
+
+	protected ServerAccessToken bridgeResourceToAudience(
+		Client client, MultivaluedMap<String, String> params,
+		Supplier<ServerAccessToken> delegate) {
+
+		List<String> resources = params.get("resource");
+
+		if (ListUtil.isEmpty(resources)) {
+			return delegate.get();
+		}
+
+		params.put("audience", resources);
+
+		List<String> originalRegisteredAudiences =
+			client.getRegisteredAudiences();
+
+		try {
+			List<String> mutableAudiences = new ArrayList<>(
+				originalRegisteredAudiences);
+
+			for (String resource : resources) {
+				if (!mutableAudiences.contains(resource)) {
+					mutableAudiences.add(resource);
+				}
+			}
+
+			client.setRegisteredAudiences(mutableAudiences);
+
+			return delegate.get();
+		}
+		finally {
+			client.setRegisteredAudiences(originalRegisteredAudiences);
+		}
 	}
 
 	protected boolean clientsMatch(Client client1, Client client2) {
