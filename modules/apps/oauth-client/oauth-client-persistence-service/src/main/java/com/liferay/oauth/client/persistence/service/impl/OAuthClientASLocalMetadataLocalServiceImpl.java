@@ -630,7 +630,10 @@ public class OAuthClientASLocalMetadataLocalServiceImpl
 		try {
 			URL url = new URL(urlString);
 
-			if (!Http.HTTPS.equalsIgnoreCase(url.getProtocol())) {
+			if (!Http.HTTPS.equalsIgnoreCase(url.getProtocol()) &&
+				!Objects.equals(url.getHost(), "localhost") &&
+				!Objects.equals(url.getHost(), "127.0.0.1")) {
+
 				throw new OAuthClientASLocalMetadataLocalWellKnownURIException(
 					urlString);
 			}
