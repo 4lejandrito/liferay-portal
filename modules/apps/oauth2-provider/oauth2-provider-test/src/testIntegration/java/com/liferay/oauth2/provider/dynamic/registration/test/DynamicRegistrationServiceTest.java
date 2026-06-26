@@ -212,13 +212,13 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 		String bracketedHost = "test-bracket-" + RandomTestUtil.randomString();
 
 		_testAnonymousEnforcesHostAllowlist(
-			bracketedHost, "[" + bracketedHost + "]:8080", 201);
+			bracketedHost, "[" + bracketedHost + "]:1234", 201);
 		_testAnonymousEnforcesHostAllowlist(
-			"[" + bracketedHost + "]:8080", bracketedHost, 201);
+			"[" + bracketedHost + "]:1234", bracketedHost, 201);
 
 		String portHost = "test-port-" + RandomTestUtil.randomString();
 
-		_testAnonymousEnforcesHostAllowlist(portHost, portHost + ":8080", 201);
+		_testAnonymousEnforcesHostAllowlist(portHost, portHost + ":1234", 201);
 	}
 
 	@FeatureFlag("LPD-63416")
@@ -299,7 +299,7 @@ public class DynamicRegistrationServiceTest extends BaseClientTestCase {
 
 		_testAnonymousRateLimitTriggers(
 			new String[] {
-				"[" + normalizedHost + "]:8080",
+				"[" + normalizedHost + "]:1234",
 				"[" + normalizedHost + "]:9090", normalizedHost
 			},
 			"[" + normalizedHost + "]");
