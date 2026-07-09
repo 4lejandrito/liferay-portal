@@ -11,16 +11,22 @@ import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ResourceActionLocalService;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
 import com.liferay.portal.kernel.service.RoleLocalService;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
 import com.liferay.portal.vulcan.crud.VulcanCRUDItemDelegate;
 import com.liferay.portal.vulcan.crud.VulcanCRUDItemDelegateBuilder;
+import com.liferay.portal.vulcan.internal.jaxrs.serializer.EmbeddedNestedFieldsSerializer;
 import com.liferay.portal.vulcan.jaxrs.context.ContextDataInjector;
 import com.liferay.portal.vulcan.jaxrs.context.ContextDataInjectorBuilder;
+import com.liferay.portal.vulcan.pagination.Pagination;
+import com.liferay.portal.vulcan.util.NestedFieldsContextUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import jakarta.ws.rs.core.UriInfo;
+
+import java.util.List;
 
 /**
  * @author Carlos Correa
@@ -84,8 +90,15 @@ public class VulcanCRUDItemDelegateBuilderImpl
 				_user
 			).build();
 
-		return (VulcanCRUDItemDelegate)contextDataInjector.inject(
-			_vulcanCRUDItemDelegate);
+		VulcanCRUDItemDelegate vulcanCRUDItemDelegate =
+			(VulcanCRUDItemDelegate)contextDataInjector.inject(
+				_vulcanCRUDItemDelegate);
+
+		if (ListUtil.isNotEmpty(_nestedFields)) {
+			return _withNestedFields(vulcanCRUDItemDelegate);
+		}
+
+		return vulcanCRUDItemDelegate;
 	}
 
 	@Override
@@ -111,6 +124,16 @@ public class VulcanCRUDItemDelegateBuilderImpl
 		httpServletResponse(HttpServletResponse httpServletResponse) {
 
 		_httpServletResponse = httpServletResponse;
+
+		return this;
+	}
+
+	@Override
+	public ResourceActionLocalServiceStepVulcanCRUDItemDelegateBuilder
+		nestedFields(List<String> nestedFields, int nestedFieldsDepth) {
+
+		_nestedFields = nestedFields;
+		_nestedFieldsDepth = nestedFieldsDepth;
 
 		return this;
 	}
@@ -176,12 +199,59 @@ public class VulcanCRUDItemDelegateBuilderImpl
 		_vulcanCRUDItemDelegate = vulcanCRUDItemDelegate;
 	}
 
+	private VulcanCRUDItemDelegate _withNestedFields(
+		VulcanCRUDItemDelegate vulcanCRUDItemDelegate) {
+
+		return id -> {
+			Object item = vulcanCRUDItemDelegate.getItem(id);
+
+			if (item == null) {
+				return null;
+			}
+
+			return new EmbeddedNestedFieldsSerializer.EmbeddedNestedFields(
+				NestedFieldsContextUtil.getAPIVersion(vulcanCRUDItemDelegate),
+				_contextDataInjectorBuilder.acceptLanguage(
+					_acceptLanguage
+				).fallbackContextValueFunction(
+					contextClass -> {
+						if (contextClass == Pagination.class) {
+							return Pagination.of(-1, -1);
+						}
+
+						return null;
+					}
+				).groupLocalService(
+					_groupLocalService
+				).httpServletRequest(
+					_httpServletRequest
+				).httpServletResponse(
+					_httpServletResponse
+				).resourceActionLocalService(
+					_resourceActionLocalService
+				).resourcePermissionLocalService(
+					_resourcePermissionLocalService
+				).roleLocalService(
+					_roleLocalService
+				).scopeChecker(
+					_scopeChecker
+				).uriInfo(
+					_uriInfo
+				).user(
+					_user
+				).build(),
+				item, _nestedFields, _nestedFieldsDepth);
+		};
+	}
+
 	private AcceptLanguage _acceptLanguage;
 	private final Company _company;
 	private final ContextDataInjectorBuilder _contextDataInjectorBuilder;
 	private GroupLocalService _groupLocalService;
 	private HttpServletRequest _httpServletRequest;
 	private HttpServletResponse _httpServletResponse;
+	private List<String> _nestedFields;
+	private int _nestedFieldsDepth;
 	private ResourceActionLocalService _resourceActionLocalService;
 	private ResourcePermissionLocalService _resourcePermissionLocalService;
 	private RoleLocalService _roleLocalService;

@@ -17,6 +17,8 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import jakarta.ws.rs.core.UriInfo;
 
+import java.util.List;
+
 import org.osgi.annotation.versioning.ProviderType;
 
 /**
@@ -62,6 +64,9 @@ public interface VulcanCRUDItemDelegateBuilder {
 	@ProviderType
 	public interface
 		ResourceActionLocalServiceStepVulcanCRUDItemDelegateBuilder {
+
+		public ResourceActionLocalServiceStepVulcanCRUDItemDelegateBuilder
+			nestedFields(List<String> nestedFields, int nestedFieldsDepth);
 
 		public ResourcePermissionLocalServiceStepVulcanCRUDItemDelegateBuilder
 			resourceActionLocalService(
