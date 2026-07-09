@@ -60,6 +60,7 @@ import com.liferay.portal.vulcan.dto.converter.DTOConverter;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterRegistry;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
+import com.liferay.portal.vulcan.util.NestedFieldsContextUtil;
 
 import jakarta.ws.rs.core.MultivaluedMap;
 
@@ -521,6 +522,14 @@ public class SearchResultResourceImpl extends BaseSearchResultResourceImpl {
 							contextHttpServletRequest
 						).httpServletResponse(
 							contextHttpServletResponse
+						).nestedFields(
+							NestedFieldsContextUtil.toList(
+								ParamUtil.getString(
+									contextHttpServletRequest,
+									"embeddedNestedFields")),
+							ParamUtil.getInteger(
+								contextHttpServletRequest,
+								"embeddedNestedFieldsDepth")
 						).resourceActionLocalService(
 							resourceActionLocalService
 						).resourcePermissionLocalService(
