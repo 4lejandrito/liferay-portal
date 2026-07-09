@@ -10,11 +10,12 @@ import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.vulcan.dto.converter.DTOConverter;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterRegistry;
 
-import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 
 import org.osgi.framework.BundleContext;
@@ -22,6 +23,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 /**
  * @author Rubén Pulido
@@ -37,20 +39,20 @@ public class DTOConverterRegistryImpl implements DTOConverterRegistry {
 
 	@Override
 	public DTOConverter<?, ?> getDTOConverter(String dtoClassName) {
-		return _serviceTrackerMap.getService(dtoClassName);
+		return _getDTOConverter(dtoClassName);
 	}
 
 	@Override
 	public DTOConverter<?, ?> getDTOConverter(
 		String applicationName, String dtoClassName, String version) {
 
-		return _serviceTrackerMap.getService(
+		return _getDTOConverter(
 			_getKey(applicationName, dtoClassName, version));
 	}
 
 	@Activate
 	protected void activate(BundleContext bundleContext) {
-		_serviceTrackerMap = ServiceTrackerMapFactory.openSingleValueMap(
+		_serviceTrackerMap = ServiceTrackerMapFactory.openMultiValueMap(
 			bundleContext,
 			(Class<DTOConverter<?, ?>>)(Class<?>)DTOConverter.class,
 			"(dto.class.name=*)",
@@ -72,12 +74,43 @@ public class DTOConverterRegistryImpl implements DTOConverterRegistry {
 						_getKey(applicationName, dtoClassName, version));
 				}
 			},
-			_defaultDTOConverterServiceReferenceComparator);
+			new DTOConverterServiceTrackerCustomizer(bundleContext));
 	}
 
 	@Deactivate
 	protected void deactivate() {
 		_serviceTrackerMap.close();
+	}
+
+	private DTOConverter<?, ?> _getDTOConverter(String key) {
+		List<DTOConverterHolder> dtoConverterHolders =
+			_serviceTrackerMap.getService(key);
+
+		if (ListUtil.isEmpty(dtoConverterHolders)) {
+			return null;
+		}
+
+		if (dtoConverterHolders.size() == 1) {
+			DTOConverterHolder dtoConverterHolder = dtoConverterHolders.get(0);
+
+			return dtoConverterHolder.getDTOConverter();
+		}
+
+		DTOConverter<?, ?> defaultDTOConverter = null;
+
+		for (DTOConverterHolder dtoConverterHolder : dtoConverterHolders) {
+			if (!dtoConverterHolder.isDefault()) {
+				continue;
+			}
+
+			if (defaultDTOConverter != null) {
+				return null;
+			}
+
+			defaultDTOConverter = dtoConverterHolder.getDTOConverter();
+		}
+
+		return defaultDTOConverter;
 	}
 
 	private String _getKey(
@@ -88,21 +121,66 @@ public class DTOConverterRegistryImpl implements DTOConverterRegistry {
 			version);
 	}
 
-	private static final Comparator<ServiceReference<DTOConverter<?, ?>>>
-		_defaultDTOConverterServiceReferenceComparator =
-			(serviceReference1, serviceReference2) -> {
-				boolean defaultDTOConverter1 = GetterUtil.getBoolean(
-					serviceReference1.getProperty("default"));
-				boolean defaultDTOConverter2 = GetterUtil.getBoolean(
-					serviceReference2.getProperty("default"));
+	private ServiceTrackerMap<String, List<DTOConverterHolder>>
+		_serviceTrackerMap;
 
-				if (defaultDTOConverter1 != defaultDTOConverter2) {
-					return defaultDTOConverter1 ? -1 : 1;
-				}
+	private static class DTOConverterHolder {
 
-				return serviceReference2.compareTo(serviceReference1);
-			};
+		public DTOConverterHolder(
+			DTOConverter<?, ?> dtoConverter, boolean defaultDTOConverter) {
 
-	private ServiceTrackerMap<String, DTOConverter<?, ?>> _serviceTrackerMap;
+			_dtoConverter = dtoConverter;
+			_defaultDTOConverter = defaultDTOConverter;
+		}
+
+		public DTOConverter<?, ?> getDTOConverter() {
+			return _dtoConverter;
+		}
+
+		public boolean isDefault() {
+			return _defaultDTOConverter;
+		}
+
+		private final boolean _defaultDTOConverter;
+		private final DTOConverter<?, ?> _dtoConverter;
+
+	}
+
+	private static class DTOConverterServiceTrackerCustomizer
+		implements ServiceTrackerCustomizer
+			<DTOConverter<?, ?>, DTOConverterHolder> {
+
+		public DTOConverterServiceTrackerCustomizer(
+			BundleContext bundleContext) {
+
+			_bundleContext = bundleContext;
+		}
+
+		@Override
+		public DTOConverterHolder addingService(
+			ServiceReference<DTOConverter<?, ?>> serviceReference) {
+
+			return new DTOConverterHolder(
+				_bundleContext.getService(serviceReference),
+				GetterUtil.getBoolean(serviceReference.getProperty("default")));
+		}
+
+		@Override
+		public void modifiedService(
+			ServiceReference<DTOConverter<?, ?>> serviceReference,
+			DTOConverterHolder dtoConverterHolder) {
+		}
+
+		@Override
+		public void removedService(
+			ServiceReference<DTOConverter<?, ?>> serviceReference,
+			DTOConverterHolder dtoConverterHolder) {
+
+			_bundleContext.ungetService(serviceReference);
+		}
+
+		private final BundleContext _bundleContext;
+
+	}
 
 }

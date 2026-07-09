@@ -147,6 +147,38 @@ public class DTOConverterRegistryTest {
 		}
 	}
 
+	@Test
+	public void testGetDTOConverterWithMultipleConvertersAndMultipleDefaults()
+		throws Exception {
+
+		String dtoClassName = RandomTestUtil.randomString();
+
+		try (AutoCloseable autoCloseable1 = _registerDefaultDTOConverter(
+				dtoClassName, new TestDTOConverter());
+			AutoCloseable autoCloseable2 = _registerDefaultDTOConverter(
+				dtoClassName, new TestDTOConverter())) {
+
+			Assert.assertNull(
+				_dtoConverterRegistry.getDTOConverter(dtoClassName));
+		}
+	}
+
+	@Test
+	public void testGetDTOConverterWithMultipleConvertersAndNoDefault()
+		throws Exception {
+
+		String dtoClassName = RandomTestUtil.randomString();
+
+		try (AutoCloseable autoCloseable1 = _registerDTOConverter(
+				null, dtoClassName, new TestDTOConverter(), null);
+			AutoCloseable autoCloseable2 = _registerDTOConverter(
+				null, dtoClassName, new TestDTOConverter(), null)) {
+
+			Assert.assertNull(
+				_dtoConverterRegistry.getDTOConverter(dtoClassName));
+		}
+	}
+
 	private AutoCloseable _registerDefaultDTOConverter(
 		String dtoClassName, DTOConverter<?, ?> dtoConverter) {
 
