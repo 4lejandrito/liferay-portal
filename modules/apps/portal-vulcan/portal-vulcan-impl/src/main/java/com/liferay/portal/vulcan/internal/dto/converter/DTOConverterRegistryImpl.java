@@ -127,10 +127,10 @@ public class DTOConverterRegistryImpl implements DTOConverterRegistry {
 	private static class DTOConverterHolder {
 
 		public DTOConverterHolder(
-			DTOConverter<?, ?> dtoConverter, boolean defaultDTOConverter) {
+			boolean defaultDTOConverter, DTOConverter<?, ?> dtoConverter) {
 
-			_dtoConverter = dtoConverter;
 			_defaultDTOConverter = defaultDTOConverter;
+			_dtoConverter = dtoConverter;
 		}
 
 		public DTOConverter<?, ?> getDTOConverter() {
@@ -161,8 +161,8 @@ public class DTOConverterRegistryImpl implements DTOConverterRegistry {
 			ServiceReference<DTOConverter<?, ?>> serviceReference) {
 
 			return new DTOConverterHolder(
-				_bundleContext.getService(serviceReference),
-				GetterUtil.getBoolean(serviceReference.getProperty("default")));
+				GetterUtil.getBoolean(serviceReference.getProperty("default")),
+				_bundleContext.getService(serviceReference));
 		}
 
 		@Override
