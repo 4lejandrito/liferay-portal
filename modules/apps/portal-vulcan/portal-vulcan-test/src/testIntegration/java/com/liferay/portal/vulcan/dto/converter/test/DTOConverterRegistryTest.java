@@ -13,7 +13,6 @@ import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.vulcan.dto.converter.DTOConverter;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterRegistry;
 
-import java.util.Hashtable;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -218,15 +217,15 @@ public class DTOConverterRegistryTest {
 		String dtoClassName, DTOConverter<?, ?> dtoConverter,
 		int serviceRanking) {
 
-		Hashtable<String, Object> properties = new Hashtable<>();
-
-		properties.put("dto.class.name", dtoClassName);
-		properties.put("service.ranking", serviceRanking);
-
 		ServiceRegistration<DTOConverter<?, ?>> serviceRegistration =
 			_bundleContext.registerService(
 				(Class<DTOConverter<?, ?>>)(Class<?>)DTOConverter.class,
-				dtoConverter, properties);
+				dtoConverter,
+				HashMapDictionaryBuilder.<String, Object>put(
+					"dto.class.name", dtoClassName
+				).put(
+					"service.ranking", serviceRanking
+				).build());
 
 		return serviceRegistration::unregister;
 	}
