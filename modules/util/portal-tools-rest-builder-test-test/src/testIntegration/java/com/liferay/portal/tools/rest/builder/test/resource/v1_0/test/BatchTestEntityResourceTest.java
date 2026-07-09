@@ -15,6 +15,7 @@ import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
 import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.tools.rest.builder.test.client.dto.v1_0.BatchTestEntity;
 import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
@@ -83,8 +84,9 @@ public class BatchTestEntityResourceTest
 					public StringBuffer getRequestURL() {
 						return new StringBuffer(
 							StringBundler.concat(
-								"http://localhost:8080/o/v1.0/",
-								RandomTestUtil.randomString(), "/",
+								"http://localhost:",
+								PortalUtil.getPortalServerPort(false),
+								"/o/v1.0/", RandomTestUtil.randomString(), "/",
 								RandomTestUtil.randomString()));
 					}
 
