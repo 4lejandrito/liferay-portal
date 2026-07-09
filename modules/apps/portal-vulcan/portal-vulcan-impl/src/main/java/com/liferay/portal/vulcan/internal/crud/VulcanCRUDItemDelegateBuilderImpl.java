@@ -202,45 +202,63 @@ public class VulcanCRUDItemDelegateBuilderImpl
 	private VulcanCRUDItemDelegate _withNestedFields(
 		VulcanCRUDItemDelegate vulcanCRUDItemDelegate) {
 
-		return id -> {
-			Object item = vulcanCRUDItemDelegate.getItem(id);
+		return new VulcanCRUDItemDelegate() {
 
-			if (item == null) {
-				return null;
+			@Override
+			public Object fetchItem(Long id) {
+				Object item = vulcanCRUDItemDelegate.fetchItem(id);
+
+				if (item == null) {
+					return null;
+				}
+
+				return _toEmbeddedNestedFields(item);
 			}
 
-			return new EmbeddedNestedFieldsSerializer.EmbeddedNestedFields(
-				NestedFieldsContextUtil.getAPIVersion(vulcanCRUDItemDelegate),
-				_contextDataInjectorBuilder.acceptLanguage(
-					_acceptLanguage
-				).fallbackContextValueFunction(
-					contextClass -> {
-						if (contextClass == Pagination.class) {
-							return Pagination.of(-1, -1);
-						}
+			@Override
+			public Object getItem(Long id) throws Exception {
+				return _toEmbeddedNestedFields(
+					vulcanCRUDItemDelegate.getItem(id));
+			}
 
-						return null;
-					}
-				).groupLocalService(
-					_groupLocalService
-				).httpServletRequest(
-					_httpServletRequest
-				).httpServletResponse(
-					_httpServletResponse
-				).resourceActionLocalService(
-					_resourceActionLocalService
-				).resourcePermissionLocalService(
-					_resourcePermissionLocalService
-				).roleLocalService(
-					_roleLocalService
-				).scopeChecker(
-					_scopeChecker
-				).uriInfo(
-					_uriInfo
-				).user(
-					_user
-				).build(),
-				item, _nestedFields, _nestedFieldsDepth);
+			private EmbeddedNestedFieldsSerializer.EmbeddedNestedFields
+				_toEmbeddedNestedFields(Object item) {
+
+				return new EmbeddedNestedFieldsSerializer.EmbeddedNestedFields(
+					NestedFieldsContextUtil.getAPIVersion(
+						vulcanCRUDItemDelegate),
+					_contextDataInjectorBuilder.acceptLanguage(
+						_acceptLanguage
+					).fallbackContextValueFunction(
+						contextClass -> {
+							if (contextClass == Pagination.class) {
+								return Pagination.of(-1, -1);
+							}
+
+							return null;
+						}
+					).groupLocalService(
+						_groupLocalService
+					).httpServletRequest(
+						_httpServletRequest
+					).httpServletResponse(
+						_httpServletResponse
+					).resourceActionLocalService(
+						_resourceActionLocalService
+					).resourcePermissionLocalService(
+						_resourcePermissionLocalService
+					).roleLocalService(
+						_roleLocalService
+					).scopeChecker(
+						_scopeChecker
+					).uriInfo(
+						_uriInfo
+					).user(
+						_user
+					).build(),
+					item, _nestedFields, _nestedFieldsDepth);
+			}
+
 		};
 	}
 
