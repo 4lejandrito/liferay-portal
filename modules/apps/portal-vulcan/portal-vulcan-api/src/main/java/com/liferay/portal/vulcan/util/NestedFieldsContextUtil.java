@@ -8,10 +8,6 @@ package com.liferay.portal.vulcan.util;
 import com.liferay.portal.kernel.util.PropsValues;
 import com.liferay.portal.kernel.util.Validator;
 
-import jakarta.ws.rs.Path;
-
-import java.lang.annotation.Annotation;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -20,26 +16,6 @@ import java.util.List;
  * @author Daniel Szimko
  */
 public class NestedFieldsContextUtil {
-
-	public static String getAPIVersion(Object resource) {
-		Class<?> resourceClass = resource.getClass();
-
-		Class<?> superClass = resourceClass.getSuperclass();
-
-		Annotation[] annotations = superClass.getAnnotations();
-
-		for (Annotation annotation : annotations) {
-			if (annotation instanceof Path) {
-				Path path = (Path)annotation;
-
-				String resourceVersion = path.value();
-
-				return resourceVersion.substring(1);
-			}
-		}
-
-		return null;
-	}
 
 	public static int limitDepth(int nestedFieldsDepth) {
 		return Math.max(

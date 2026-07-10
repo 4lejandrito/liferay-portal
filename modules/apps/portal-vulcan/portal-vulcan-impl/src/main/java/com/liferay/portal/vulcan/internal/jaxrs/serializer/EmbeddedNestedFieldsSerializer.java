@@ -48,13 +48,8 @@ public class EmbeddedNestedFieldsSerializer
 						embeddedNestedFields._apiVersion));
 
 			try {
-				ContextDataInjector contextDataInjector =
-					embeddedNestedFields._contextDataInjector;
-
-				if (contextDataInjector != null) {
-					NestedFieldsSetterUtil.setNestedFields(
-						item, contextDataInjector);
-				}
+				NestedFieldsSetterUtil.setNestedFields(
+					item, embeddedNestedFields._contextDataInjector);
 
 				JsonSerializer<Object> jsonSerializer =
 					serializerProvider.findValueSerializer(

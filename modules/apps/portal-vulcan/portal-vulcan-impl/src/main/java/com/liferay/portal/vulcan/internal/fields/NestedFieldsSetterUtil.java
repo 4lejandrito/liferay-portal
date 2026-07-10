@@ -21,8 +21,8 @@ import com.liferay.portal.vulcan.fields.NestedFieldsContext;
 import com.liferay.portal.vulcan.fields.NestedFieldsContextThreadLocal;
 import com.liferay.portal.vulcan.jaxrs.context.ContextDataInjector;
 import com.liferay.portal.vulcan.pagination.Page;
-import com.liferay.portal.vulcan.util.NestedFieldsContextUtil;
 
+import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
@@ -58,6 +58,26 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
  * @author Ivica Cardic
  */
 public class NestedFieldsSetterUtil {
+
+	public static String getAPIVersion(Object resource) {
+		Class<?> resourceClass = resource.getClass();
+
+		Class<?> superClass = resourceClass.getSuperclass();
+
+		Annotation[] annotations = superClass.getAnnotations();
+
+		for (Annotation annotation : annotations) {
+			if (annotation instanceof Path) {
+				Path path = (Path)annotation;
+
+				String resourceVersion = path.value();
+
+				return resourceVersion.substring(1);
+			}
+		}
+
+		return null;
+	}
 
 	public static void setNestedFields(
 			Object item, ContextDataInjector contextDataInjector)
@@ -347,8 +367,7 @@ public class NestedFieldsSetterUtil {
 				Class<?> parentClass = nestedField.parentClass();
 
 				FactoryKey factoryKey = new FactoryKey(
-					nestedField.value(), parentClass,
-					NestedFieldsContextUtil.getAPIVersion(resource));
+					nestedField.value(), parentClass, getAPIVersion(resource));
 
 				ServiceObjects<Object> serviceObjects =
 					_bundleContext.getServiceObjects(serviceReference);
