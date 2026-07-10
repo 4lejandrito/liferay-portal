@@ -114,6 +114,18 @@ public class BatchTestEntityResourceTest
 			JSONFactoryUtil.createJSONObject(
 				ObjectMapperProviderUtil.getObjectMapper(
 				).writeValueAsString(
+					vulcanCRUDItemDelegate.fetchItem(
+						postBatchTestEntity.getId())
+				)
+			).getString(
+				"nestedField"
+			));
+
+		Assert.assertEquals(
+			batchTestEntity.getNestedField(),
+			JSONFactoryUtil.createJSONObject(
+				ObjectMapperProviderUtil.getObjectMapper(
+				).writeValueAsString(
 					vulcanCRUDItemDelegate.getItem(postBatchTestEntity.getId())
 				)
 			).getString(
