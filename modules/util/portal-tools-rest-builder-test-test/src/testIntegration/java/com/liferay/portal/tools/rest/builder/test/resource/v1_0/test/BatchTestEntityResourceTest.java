@@ -8,7 +8,6 @@ package com.liferay.portal.tools.rest.builder.test.resource.v1_0.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.oauth2.provider.scope.ScopeChecker;
 import com.liferay.petra.string.StringBundler;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ResourceActionLocalService;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
@@ -21,7 +20,6 @@ import com.liferay.portal.tools.rest.builder.test.client.dto.v1_0.BatchTestEntit
 import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
 import com.liferay.portal.vulcan.crud.VulcanCRUDItemDelegate;
 import com.liferay.portal.vulcan.crud.VulcanCRUDItemDelegateBuilderRegistry;
-import com.liferay.portal.vulcan.jackson.databind.ObjectMapperProviderUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -109,28 +107,25 @@ public class BatchTestEntityResourceTest
 				testVulcanCRUDItemDelegate_getUser()
 			).build();
 
-		Assert.assertEquals(
-			batchTestEntity.getNestedField(),
-			JSONFactoryUtil.createJSONObject(
-				ObjectMapperProviderUtil.getObjectMapper(
-				).writeValueAsString(
-					vulcanCRUDItemDelegate.fetchItem(
-						postBatchTestEntity.getId())
-				)
-			).getString(
-				"nestedField"
-			));
+		com.liferay.portal.tools.rest.builder.test.dto.v1_0.BatchTestEntity
+			batchTestEntity1 =
+				(com.liferay.portal.tools.rest.builder.test.dto.v1_0.
+					BatchTestEntity)vulcanCRUDItemDelegate.fetchItem(
+						postBatchTestEntity.getId());
 
 		Assert.assertEquals(
 			batchTestEntity.getNestedField(),
-			JSONFactoryUtil.createJSONObject(
-				ObjectMapperProviderUtil.getObjectMapper(
-				).writeValueAsString(
-					vulcanCRUDItemDelegate.getItem(postBatchTestEntity.getId())
-				)
-			).getString(
-				"nestedField"
-			));
+			batchTestEntity1.getNestedField());
+
+		com.liferay.portal.tools.rest.builder.test.dto.v1_0.BatchTestEntity
+			batchTestEntity2 =
+				(com.liferay.portal.tools.rest.builder.test.dto.v1_0.
+					BatchTestEntity)vulcanCRUDItemDelegate.getItem(
+						postBatchTestEntity.getId());
+
+		Assert.assertEquals(
+			batchTestEntity.getNestedField(),
+			batchTestEntity2.getNestedField());
 	}
 
 	@Override
