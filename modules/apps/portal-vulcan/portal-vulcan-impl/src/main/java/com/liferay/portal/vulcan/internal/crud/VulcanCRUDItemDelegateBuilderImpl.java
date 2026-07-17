@@ -5,6 +5,9 @@
 
 package com.liferay.portal.vulcan.internal.crud;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.GroupLocalService;
@@ -15,11 +18,14 @@ import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
 import com.liferay.portal.vulcan.crud.VulcanCRUDItemDelegate;
 import com.liferay.portal.vulcan.crud.VulcanCRUDItemDelegateBuilder;
+import com.liferay.portal.vulcan.fields.NestedFieldsContext;
+import com.liferay.portal.vulcan.fields.NestedFieldsContextThreadLocal;
 import com.liferay.portal.vulcan.internal.fields.NestedFieldsSetterUtil;
-import com.liferay.portal.vulcan.internal.jaxrs.serializer.EmbeddedNestedFieldsSerializer;
+import com.liferay.portal.vulcan.jackson.databind.ObjectMapperProviderUtil;
 import com.liferay.portal.vulcan.jaxrs.context.ContextDataInjector;
 import com.liferay.portal.vulcan.jaxrs.context.ContextDataInjectorBuilder;
 import com.liferay.portal.vulcan.pagination.Pagination;
+import com.liferay.portal.vulcan.util.NestedFieldsContextUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -219,29 +225,51 @@ public class VulcanCRUDItemDelegateBuilderImpl
 
 			@Override
 			public Object fetchItem(Long id) {
-				Object item = vulcanCRUDItemDelegate.fetchItem(id);
-
-				if (item == null) {
-					return null;
-				}
-
-				return _toEmbeddedNestedFields(item);
+				return _setNestedFields(vulcanCRUDItemDelegate.fetchItem(id));
 			}
 
 			@Override
 			public Object getItem(Long id) throws Exception {
-				return _toEmbeddedNestedFields(
-					vulcanCRUDItemDelegate.getItem(id));
+				return _setNestedFields(vulcanCRUDItemDelegate.getItem(id));
 			}
 
-			private EmbeddedNestedFieldsSerializer.EmbeddedNestedFields
-				_toEmbeddedNestedFields(Object item) {
+			private Object _setNestedFields(Object item) {
+				if (item == null) {
+					return null;
+				}
 
-				return new EmbeddedNestedFieldsSerializer.EmbeddedNestedFields(
-					NestedFieldsSetterUtil.getAPIVersion(
-						vulcanCRUDItemDelegate),
-					contextDataInjector, item, _nestedFields,
-					_nestedFieldsDepth);
+				NestedFieldsContext nestedFieldsContext =
+					NestedFieldsContextThreadLocal.getAndSetNestedFieldsContext(
+						new NestedFieldsContext(
+							NestedFieldsContextUtil.limitDepth(
+								_nestedFieldsDepth),
+							_nestedFields,
+							NestedFieldsSetterUtil.getAPIVersion(
+								vulcanCRUDItemDelegate)));
+
+				try {
+					NestedFieldsSetterUtil.setNestedFields(
+						item, contextDataInjector);
+
+					// The generated DTO getters evaluate their pending
+					// nested field suppliers on first access, so they must
+					// run while the nested fields context is set. Serializing
+					// the item invokes every getter recursively.
+
+					ObjectMapper objectMapper =
+						ObjectMapperProviderUtil.getObjectMapper();
+
+					objectMapper.valueToTree(item);
+				}
+				catch (Exception exception) {
+					return ReflectionUtil.throwException(exception);
+				}
+				finally {
+					NestedFieldsContextThreadLocal.setNestedFieldsContext(
+						nestedFieldsContext);
+				}
+
+				return item;
 			}
 
 		};

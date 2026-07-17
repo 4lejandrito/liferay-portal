@@ -8,7 +8,6 @@ package com.liferay.portal.vulcan.internal.jaxrs.context.resolver;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-import com.liferay.portal.vulcan.internal.jaxrs.serializer.EmbeddedNestedFieldsSerializer;
 import com.liferay.portal.vulcan.internal.jaxrs.serializer.OpenAPIJsonSerializer;
 import com.liferay.portal.vulcan.jackson.databind.ObjectMapperProviderUtil;
 
@@ -41,9 +40,6 @@ public class ObjectMapperContextResolver
 
 	private final SimpleModule _simpleModule = new SimpleModule() {
 		{
-			addSerializer(
-				EmbeddedNestedFieldsSerializer.EmbeddedNestedFields.class,
-				new EmbeddedNestedFieldsSerializer());
 			addSerializer(OpenAPI.class, new OpenAPIJsonSerializer());
 		}
 	};
