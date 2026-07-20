@@ -33,7 +33,10 @@ function main {
 
 	_drop_database "${worktree_path}" "${bundles_dir}"
 
-	git worktree remove "${worktree_path}"
+	if git worktree list --porcelain | grep --fixed-strings --line-regexp --quiet "worktree ${worktree_path}"
+	then
+		git worktree remove "${worktree_path}"
+	fi
 }
 
 main "${@}"
