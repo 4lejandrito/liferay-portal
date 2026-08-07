@@ -182,9 +182,15 @@ public class OpenAPIUtil {
 				"OpenAPI document has no \"paths\" object");
 		}
 
+		List<ToolSummary> toolSummaries = new ArrayList<>();
+
 		String[] methods = _getMethods(intent);
 
-		List<ToolSummary> toolSummaries = new ArrayList<>();
+		// Referencing "toolSetName" directly inside the initializer below would
+		// resolve to the inherited ToolSummary field, which is still null at
+		// that point, instead of to this parameter
+
+		String currentToolSetName = toolSetName;
 
 		for (String path : pathsJSONObject.keySet()) {
 			JSONObject pathItemJSONObject = pathsJSONObject.getJSONObject(path);
@@ -197,19 +203,18 @@ public class OpenAPIUtil {
 					continue;
 				}
 
-				ToolSummary toolSummary = new ToolSummary() {
-					{
-						setDescription(
-							() -> _getDescription(
-								method, operationJSONObject, path));
-						setName(
-							() -> operationJSONObject.getString("operationId"));
-					}
-				};
-
-				toolSummary.setToolSetName(toolSetName);
-
-				toolSummaries.add(toolSummary);
+				toolSummaries.add(
+					new ToolSummary() {
+						{
+							setDescription(
+								() -> _getDescription(
+									method, operationJSONObject, path));
+							setName(
+								() -> operationJSONObject.getString(
+									"operationId"));
+							setToolSetName(() -> currentToolSetName);
+						}
+					});
 			}
 		}
 

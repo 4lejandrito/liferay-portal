@@ -156,9 +156,7 @@ public class ToolSearchUtilTest {
 		return names;
 	}
 
-	private List<String> _search(
-		String search, ToolSummary... toolSummaries) {
-
+	private List<String> _search(String search, ToolSummary... toolSummaries) {
 		return _search(search, Arrays.asList(toolSummaries));
 	}
 

@@ -843,8 +843,7 @@ public class MCPServerServletTest {
 		Assert.assertEquals(tools.toString(), 5, tools.size());
 
 		_assertTool(
-			tools.get(0), "getToolSummariesPage",
-			"search_tool_summaries.json");
+			tools.get(0), "getToolSummariesPage", "search_tool_summaries.json");
 		_assertTool(tools.get(1), "getToolSetsPage", "get_tool_sets.json");
 		_assertTool(
 			tools.get(2), "getToolSetToolSetNameToolSummariesPage",
@@ -917,8 +916,7 @@ public class MCPServerServletTest {
 			mcpSyncClient, "write", "mcp server profile");
 
 		Assert.assertTrue(
-			writeNames.toString(),
-			writeNames.contains("postMCPServerProfile"));
+			writeNames.toString(), writeNames.contains("postMCPServerProfile"));
 		Assert.assertFalse(
 			writeNames.toString(),
 			writeNames.contains("getMCPServerProfilesPage"));

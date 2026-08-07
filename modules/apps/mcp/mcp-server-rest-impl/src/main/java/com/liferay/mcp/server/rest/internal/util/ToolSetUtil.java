@@ -130,17 +130,18 @@ public class ToolSetUtil {
 				toolSummaries.addAll(
 					OpenAPIUtil.getToolSummaries(
 						intent,
-						_getOpenAPIJSONObject(
-							httpServletRequest, openAPIBrief),
+						_getOpenAPIJSONObject(httpServletRequest, openAPIBrief),
 						toolSetName));
 
-				toolSetDescriptions.put(
-					toolSetName, openAPIBrief._description);
+				toolSetDescriptions.put(toolSetName, openAPIBrief._description);
 			}
 			catch (Exception exception) {
-				_log.warn(
-					"Skipping tool set \"" + toolSetName + "\" while searching",
-					exception);
+				if (_log.isWarnEnabled()) {
+					_log.warn(
+						"Skipping tool set \"" + toolSetName +
+							"\" while searching",
+						exception);
+				}
 			}
 		}
 

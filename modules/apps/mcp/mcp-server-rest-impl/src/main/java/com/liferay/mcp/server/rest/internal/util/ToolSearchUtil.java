@@ -95,13 +95,14 @@ public class ToolSearchUtil {
 		Set<String> searchTokens, Set<String> toolSetTokens,
 		ToolSummary toolSummary) {
 
+		int score = 0;
+
 		Set<String> descriptionTokens = _tokenize(toolSummary.getDescription());
 		String name = _getName(toolSummary);
 		Set<String> nameTokens = _tokenize(
 			_splitCamelCase(toolSummary.getName()));
 
 		int matchedTokenCount = 0;
-		int score = 0;
 
 		for (String searchToken : searchTokens) {
 			int tokenScore = 0;
@@ -159,7 +160,7 @@ public class ToolSearchUtil {
 		for (String token :
 				_separatorPattern.split(StringUtil.toLowerCase(value))) {
 
-			if ((token.length() <= 1) || _STOP_WORDS.contains(token)) {
+			if ((token.length() <= 1) || _stopWords.contains(token)) {
 				continue;
 			}
 
@@ -187,14 +188,14 @@ public class ToolSearchUtil {
 
 	private static final int _SCORE_TOOL_SET_WORD = 1;
 
-	private static final Set<String> _STOP_WORDS = Set.of(
-		"an", "and", "are", "as", "at", "be", "but", "by", "for", "from", "how",
-		"in", "into", "is", "it", "of", "on", "or", "that", "the", "to", "with");
-
 	private static final Pattern _camelCasePattern = Pattern.compile(
 		"(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])");
 	private static final Pattern _separatorPattern = Pattern.compile(
 		"[^a-z0-9]+");
+	private static final Set<String> _stopWords = Set.of(
+		"an", "and", "are", "as", "at", "be", "but", "by", "for", "from", "how",
+		"in", "into", "is", "it", "of", "on", "or", "that", "the", "to",
+		"with");
 
 	private static class ScoredToolSummary {
 

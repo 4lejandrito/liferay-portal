@@ -339,8 +339,7 @@ public class OpenAPIUtilTest {
 				"postParent", "postUpload", "postItem", "postNoSchema"),
 			writeNames);
 
-		Assert.assertTrue(
-			Collections.disjoint(readNames, writeNames));
+		Assert.assertTrue(Collections.disjoint(readNames, writeNames));
 
 		List<String> readAndWriteNames = new ArrayList<>(readNames);
 
@@ -386,19 +385,6 @@ public class OpenAPIUtilTest {
 		throw new IllegalArgumentException(
 			StringBundler.concat(
 				"No part named \"", fieldName, "\" in ", fileItems));
-	}
-
-	private List<String> _getToolSummaryNames(String intent) {
-		List<String> names = new ArrayList<>();
-
-		for (ToolSummary toolSummary :
-				OpenAPIUtil.getToolSummaries(
-					intent, _openAPIJSONObject, "test-v1.0")) {
-
-			names.add(toolSummary.getName());
-		}
-
-		return names;
 	}
 
 	private List<FileItem> _getFileItems(VulcanRequestForwarder.Request request)
@@ -451,6 +437,19 @@ public class OpenAPIUtilTest {
 		Tool tool = OpenAPIUtil.getTool(true, openAPIJSONObject, toolName);
 
 		return tool.getInputSchema();
+	}
+
+	private List<String> _getToolSummaryNames(String intent) {
+		List<String> names = new ArrayList<>();
+
+		for (ToolSummary toolSummary :
+				OpenAPIUtil.getToolSummaries(
+					intent, _openAPIJSONObject, "test-v1.0")) {
+
+			names.add(toolSummary.getName());
+		}
+
+		return names;
 	}
 
 	private String _read(String fileName) throws Exception {
