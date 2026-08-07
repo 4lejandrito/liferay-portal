@@ -492,6 +492,10 @@ public abstract class BaseBatchEnginePortletDataHandlerTestCase
 
 	@Test
 	public void testUpdateResolvesEmptyEntry() throws Exception {
+		if (!supportsEmptyEntries()) {
+			return;
+		}
+
 		long groupId = _getGroupId(_getScope());
 
 		String externalReferenceCode = null;
@@ -540,8 +544,9 @@ public abstract class BaseBatchEnginePortletDataHandlerTestCase
 		return _targetUser;
 	}
 
-	protected abstract String addEmptyEntry(long groupId, long userId)
-		throws Exception;
+	protected String addEmptyEntry(long groupId, long userId) throws Exception {
+		throw new UnsupportedOperationException();
+	}
 
 	protected abstract String addEntry(
 			long groupId, long userId, Date dateModified)
@@ -646,8 +651,11 @@ public abstract class BaseBatchEnginePortletDataHandlerTestCase
 			long groupId, String externalReferenceCode)
 		throws Exception;
 
-	protected abstract int getStatus(long groupId, String externalReferenceCode)
-		throws Exception;
+	protected int getStatus(long groupId, String externalReferenceCode)
+		throws Exception {
+
+		throw new UnsupportedOperationException();
+	}
 
 	protected String getTargetModelClassName() {
 		ExportImportDescriptor<?> exportImportDescriptor =
@@ -657,6 +665,8 @@ public abstract class BaseBatchEnginePortletDataHandlerTestCase
 	}
 
 	protected abstract boolean supportsComments();
+
+	protected abstract boolean supportsEmptyEntries();
 
 	protected abstract void updateEntry(
 			long groupId, String externalReferenceCode)

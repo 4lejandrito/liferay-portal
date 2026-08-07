@@ -161,6 +161,11 @@ public class TaxonomyCategoryBatchEnginePortletDataHandlerTest
 	}
 
 	@Override
+	protected boolean supportsEmptyEntries() {
+		return true;
+	}
+
+	@Override
 	protected void updateEntry(long groupId, String externalReferenceCode)
 		throws Exception {
 
