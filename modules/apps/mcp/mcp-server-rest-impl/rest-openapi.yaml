@@ -47,12 +47,16 @@ components:
                     description:
                         Stable identifier of the tool within its tool-set. Pass this verbatim as `toolName` in subsequent calls.
                     type: string
+                toolSetName:
+                    description:
+                        Stable identifier of the tool-set that exposes this tool. Pass this verbatim as `toolSetName` in subsequent calls.
+                    type: string
             required:
                 -   name
             type: object
 info:
     description:
-        "Single entry point for an AI to discover, understand, and invoke any tool exposed by Liferay. When the user asks for something you do not already know how to do in Liferay, start with `getToolSetsPage` to find a tool-set matching their intent, then `getToolSetToolSetNameToolSummariesPage` to find the right tool in it, then `getToolSetToolSetNameTool` to fetch the tool's input schema, then `postToolSetToolSetNameToolInvoke` with an input map matching that schema to execute it. A Java client JAR is available for use with the group ID 'com.liferay', artifact ID 'com.liferay.mcp.server.rest.client', and version '1.0.4'."
+        "Single entry point for an AI to discover, understand, and invoke any tool exposed by Liferay. When the user asks for something you do not already know how to do in Liferay, start with `getToolSummariesPage` to search every tool-set at once for tools matching what the user wants, then `getToolSetToolSetNameTool` to fetch the tool's input schema, then `postToolSetToolSetNameToolInvoke` with an input map matching that schema to execute it. Only when that search returns nothing relevant, fall back to browsing: `getToolSetsPage` to list the tool-sets, then `getToolSetToolSetNameToolSummariesPage` to list every tool in one of them. A Java client JAR is available for use with the group ID 'com.liferay', artifact ID 'com.liferay.mcp.server.rest.client', and version '1.0.4'."
     license:
         name: Apache 2.0
         url: http://www.apache.org/licenses/LICENSE-2.0.html
@@ -63,7 +67,7 @@ paths:
     "/tool-sets":
         get:
             description:
-                Use this whenever you do not know which tool-set can fulfill the user's request — it is the first thing to try. Returns every tool-set exposed by Liferay, each with a curated description. Pick the tool-set whose description matches the user's intent and pass its `name` to `getToolSetToolSetNameToolSummariesPage` to see what tools it offers.
+                Use this only when `getToolSummariesPage` returns nothing relevant, or when you need to browse what Liferay offers. Searching with `getToolSummariesPage` is faster and does not require guessing a tool-set. Returns every tool-set exposed by Liferay, each with a curated description. Pick the tool-set whose description matches the user's intent and pass its `name` to `getToolSetToolSetNameToolSummariesPage` to see what tools it offers.
             operationId: getToolSetsPage
             responses:
                 200:
@@ -84,7 +88,7 @@ paths:
     "/tool-sets/{toolSetName}/tool-summaries":
         get:
             description:
-                Use this once you have identified a tool-set (via `getToolSetsPage`) and need to find which of its tools matches the user's request. Returns every tool in the tool-set, each with a `name` and a description. Pick the tool whose description matches the user's intent and pass its `name` to `getToolSetToolSetNameTool` to see its input schema.
+                Use this only to browse every tool in one tool-set, after `getToolSetsPage`, when `getToolSummariesPage` returned nothing relevant. It can return hundreds of tools, so prefer searching with `getToolSummariesPage`. Returns every tool in the tool-set, each with a `name` and a description. Pick the tool whose description matches the user's intent and pass its `name` to `getToolSetToolSetNameTool` to see its input schema.
             operationId: getToolSetToolSetNameToolSummariesPage
             parameters:
                 -   in: path
@@ -186,3 +190,39 @@ paths:
                     description:
                         The tool's response body.
             tags: ["Tool"]
+    "/tool-summaries":
+        get:
+            description:
+                Use this FIRST whenever you do not already know the exact tool for the user's request — it searches every tool-set at once, so you do not have to guess which tool-set to look in. Pass the user's own words as `search` and set `intent` to `read` or `write`. Returns the best-matching tools, ranked, each with the `toolSetName` that exposes it. Pass a hit's `toolSetName` and `name` to `getToolSetToolSetNameTool` to see its input schema. Only if this returns nothing relevant, fall back to `getToolSetsPage`.
+            operationId: getToolSummariesPage
+            parameters:
+                -   in: query
+                    description:
+                        Whether the user's request reads data or changes it. `read` searches only tools that read, `write` searches only tools that create, update, or delete. Always set this — it removes the largest source of wrong matches, such as a search for creating something matching the tool that lists it instead. Omitting it searches both.
+                    name: intent
+                    schema:
+                        enum: [read, write]
+                        type: string
+                -   in: query
+                    description:
+                        The user's intent as keywords, for example `create a blog post`. Pass the words the user actually used; they are matched against tool names, tool descriptions, and tool-set descriptions.
+                    name: search
+                    required: true
+                    schema:
+                        type: string
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/ToolSummary"
+                                type: array
+                        application/xml:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/ToolSummary"
+                                type: array
+                    description:
+                        The tools that best match the search terms, ranked best first.
+            tags: ["ToolSummary"]
