@@ -1,10 +1,6 @@
 {
 	"properties": {
 		"intent": {
-			"enum": [
-				"read",
-				"write"
-			],
 			"type": "string"
 		},
 		"search": {
