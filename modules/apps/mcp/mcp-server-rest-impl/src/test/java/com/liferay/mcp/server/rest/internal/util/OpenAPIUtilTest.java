@@ -26,10 +26,14 @@ import java.io.InputStream;
 
 import java.nio.charset.StandardCharsets;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeSet;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUpload;
@@ -276,7 +280,7 @@ public class OpenAPIUtilTest {
 	@Test
 	public void testGetToolSummaries() {
 		List<ToolSummary> toolSummaries = OpenAPIUtil.getToolSummaries(
-			_openAPIJSONObject);
+			null, _openAPIJSONObject, "test-v1.0");
 
 		Assert.assertEquals(toolSummaries.toString(), 15, toolSummaries.size());
 		_assertToolSummary(
@@ -316,7 +320,40 @@ public class OpenAPIUtilTest {
 			IllegalArgumentException.class,
 			"OpenAPI document has no \"paths\" object",
 			() -> OpenAPIUtil.getToolSummaries(
-				JSONFactoryUtil.createJSONObject()));
+				null, JSONFactoryUtil.createJSONObject(), "test-v1.0"));
+	}
+
+	@Test
+	public void testGetToolSummariesWithIntent() {
+		List<String> names = _getToolSummaryNames(null);
+
+		List<String> readNames = _getToolSummaryNames("read");
+		List<String> writeNames = _getToolSummaryNames("write");
+
+		Assert.assertEquals(
+			Arrays.asList("getItem", "getItems", "getItemsPage"), readNames);
+		Assert.assertEquals(
+			Arrays.asList(
+				"postDescribed", "postLevel", "postUndescribed", "patchItem",
+				"putItem", "postBinary", "postEmptyContent", "postNoContent",
+				"postParent", "postUpload", "postItem", "postNoSchema"),
+			writeNames);
+
+		Assert.assertTrue(
+			Collections.disjoint(readNames, writeNames));
+
+		List<String> readAndWriteNames = new ArrayList<>(readNames);
+
+		readAndWriteNames.addAll(writeNames);
+
+		Assert.assertEquals(
+			new TreeSet<>(names), new TreeSet<>(readAndWriteNames));
+
+		AssertUtils.assertFailure(
+			IllegalArgumentException.class,
+			"Intent must be \"read\" or \"write\", not \"sideways\"",
+			() -> OpenAPIUtil.getToolSummaries(
+				"sideways", _openAPIJSONObject, "test-v1.0"));
 	}
 
 	private void _assertMultipartContentType(
@@ -336,6 +373,7 @@ public class OpenAPIUtilTest {
 
 		Assert.assertEquals(expectedDescription, toolSummary.getDescription());
 		Assert.assertEquals(expectedName, toolSummary.getName());
+		Assert.assertEquals("test-v1.0", toolSummary.getToolSetName());
 	}
 
 	private FileItem _getFileItem(List<FileItem> fileItems, String fieldName) {
@@ -348,6 +386,19 @@ public class OpenAPIUtilTest {
 		throw new IllegalArgumentException(
 			StringBundler.concat(
 				"No part named \"", fieldName, "\" in ", fileItems));
+	}
+
+	private List<String> _getToolSummaryNames(String intent) {
+		List<String> names = new ArrayList<>();
+
+		for (ToolSummary toolSummary :
+				OpenAPIUtil.getToolSummaries(
+					intent, _openAPIJSONObject, "test-v1.0")) {
+
+			names.add(toolSummary.getName());
+		}
+
+		return names;
 	}
 
 	private List<FileItem> _getFileItems(VulcanRequestForwarder.Request request)

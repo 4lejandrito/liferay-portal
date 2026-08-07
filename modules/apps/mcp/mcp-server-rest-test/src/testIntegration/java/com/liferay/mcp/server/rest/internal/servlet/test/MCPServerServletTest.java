@@ -618,6 +618,35 @@ public class MCPServerServletTest {
 		return options.getResponse();
 	}
 
+	private List<String> _searchToolSummaryNames(
+			McpSyncClient mcpSyncClient, String intent, String search)
+		throws Exception {
+
+		McpSchema.CallToolResult callToolResult = mcpSyncClient.callTool(
+			new McpSchema.CallToolRequest(
+				"getToolSummariesPage",
+				HashMapBuilder.<String, Object>put(
+					"intent", intent
+				).put(
+					"search", search
+				).build()));
+
+		List<McpSchema.Content> contents = callToolResult.content();
+
+		McpSchema.TextContent textContent = (McpSchema.TextContent)contents.get(
+			0);
+
+		Assert.assertFalse(textContent.text(), callToolResult.isError());
+
+		return JSONUtil.toStringList(
+			JSONFactoryUtil.createJSONObject(
+				textContent.text()
+			).getJSONArray(
+				"items"
+			),
+			"name");
+	}
+
 	private void _testServiceWithDataMasks(String authorization)
 		throws Exception {
 
@@ -811,15 +840,18 @@ public class MCPServerServletTest {
 
 		List<McpSchema.Tool> tools = listToolsResult.tools();
 
-		Assert.assertEquals(tools.toString(), 4, tools.size());
+		Assert.assertEquals(tools.toString(), 5, tools.size());
 
-		_assertTool(tools.get(0), "getToolSetsPage", "get_tool_sets.json");
 		_assertTool(
-			tools.get(1), "getToolSetToolSetNameToolSummariesPage",
+			tools.get(0), "getToolSummariesPage",
+			"search_tool_summaries.json");
+		_assertTool(tools.get(1), "getToolSetsPage", "get_tool_sets.json");
+		_assertTool(
+			tools.get(2), "getToolSetToolSetNameToolSummariesPage",
 			"get_tool_summaries.json");
-		_assertTool(tools.get(2), "getToolSetToolSetNameTool", "get_tool.json");
+		_assertTool(tools.get(3), "getToolSetToolSetNameTool", "get_tool.json");
 		_assertTool(
-			tools.get(3), "postToolSetToolSetNameToolInvoke",
+			tools.get(4), "postToolSetToolSetNameToolInvoke",
 			"invoke_tool.json");
 
 		McpSchema.CallToolResult callToolResult = mcpSyncClient.callTool(
@@ -871,6 +903,25 @@ public class MCPServerServletTest {
 			).contains(
 				"getMCPServerProfilesPage"
 			));
+
+		List<String> readNames = _searchToolSummaryNames(
+			mcpSyncClient, "read", "mcp server profile");
+
+		Assert.assertTrue(
+			readNames.toString(),
+			readNames.contains("getMCPServerProfilesPage"));
+		Assert.assertFalse(
+			readNames.toString(), readNames.contains("postMCPServerProfile"));
+
+		List<String> writeNames = _searchToolSummaryNames(
+			mcpSyncClient, "write", "mcp server profile");
+
+		Assert.assertTrue(
+			writeNames.toString(),
+			writeNames.contains("postMCPServerProfile"));
+		Assert.assertFalse(
+			writeNames.toString(),
+			writeNames.contains("getMCPServerProfilesPage"));
 
 		callToolResult = mcpSyncClient.callTool(
 			new McpSchema.CallToolRequest(

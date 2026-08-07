@@ -1,0 +1,17 @@
+{
+	"properties": {
+		"intent": {
+			"enum": [
+				"read",
+				"write"
+			],
+			"type": "string"
+		},
+		"search": {
+			"type": "string"
+		}
+	},
+	"required": [
+	],
+	"type": "object"
+}

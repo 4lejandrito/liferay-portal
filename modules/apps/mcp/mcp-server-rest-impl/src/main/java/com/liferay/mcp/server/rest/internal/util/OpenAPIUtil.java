@@ -173,7 +173,7 @@ public class OpenAPIUtil {
 	}
 
 	public static List<ToolSummary> getToolSummaries(
-		JSONObject openAPIJSONObject) {
+		String intent, JSONObject openAPIJSONObject, String toolSetName) {
 
 		JSONObject pathsJSONObject = openAPIJSONObject.getJSONObject("paths");
 
@@ -182,12 +182,14 @@ public class OpenAPIUtil {
 				"OpenAPI document has no \"paths\" object");
 		}
 
+		String[] methods = _getMethods(intent);
+
 		List<ToolSummary> toolSummaries = new ArrayList<>();
 
 		for (String path : pathsJSONObject.keySet()) {
 			JSONObject pathItemJSONObject = pathsJSONObject.getJSONObject(path);
 
-			for (String method : _METHODS) {
+			for (String method : methods) {
 				JSONObject operationJSONObject =
 					pathItemJSONObject.getJSONObject(method);
 
@@ -195,17 +197,19 @@ public class OpenAPIUtil {
 					continue;
 				}
 
-				toolSummaries.add(
-					new ToolSummary() {
-						{
-							setDescription(
-								() -> _getDescription(
-									method, operationJSONObject, path));
-							setName(
-								() -> operationJSONObject.getString(
-									"operationId"));
-						}
-					});
+				ToolSummary toolSummary = new ToolSummary() {
+					{
+						setDescription(
+							() -> _getDescription(
+								method, operationJSONObject, path));
+						setName(
+							() -> operationJSONObject.getString("operationId"));
+					}
+				};
+
+				toolSummary.setToolSetName(toolSetName);
+
+				toolSummaries.add(toolSummary);
 			}
 		}
 
@@ -660,6 +664,23 @@ public class OpenAPIUtil {
 		).put(
 			"type", "object"
 		).build();
+	}
+
+	private static String[] _getMethods(String intent) {
+		if (Validator.isNull(intent)) {
+			return _METHODS;
+		}
+
+		if (Objects.equals(intent, "read")) {
+			return _METHODS_READ;
+		}
+
+		if (Objects.equals(intent, "write")) {
+			return _METHODS_WRITE;
+		}
+
+		throw new IllegalArgumentException(
+			"Intent must be \"read\" or \"write\", not \"" + intent + "\"");
 	}
 
 	private static HttpEntity _getMultipartHttpEntity(
@@ -1214,6 +1235,12 @@ public class OpenAPIUtil {
 
 	private static final String[] _METHODS = {
 		"delete", "get", "head", "options", "patch", "post", "put"
+	};
+
+	private static final String[] _METHODS_READ = {"get", "head", "options"};
+
+	private static final String[] _METHODS_WRITE = {
+		"delete", "patch", "post", "put"
 	};
 
 	private static final Set<String> _excludedSchemaKeys = Set.of(

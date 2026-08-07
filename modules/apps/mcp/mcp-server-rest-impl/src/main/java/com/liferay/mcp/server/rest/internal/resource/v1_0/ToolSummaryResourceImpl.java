@@ -9,6 +9,7 @@ import com.liferay.mcp.server.rest.dto.v1_0.ToolSummary;
 import com.liferay.mcp.server.rest.internal.util.ToolSetUtil;
 import com.liferay.mcp.server.rest.resource.v1_0.ToolSummaryResource;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.vulcan.pagination.Page;
 
 import org.osgi.service.component.annotations.Component;
@@ -34,8 +35,26 @@ public class ToolSummaryResourceImpl extends BaseToolSummaryResourceImpl {
 			throw new UnsupportedOperationException();
 		}
 
-		return ToolSetUtil.getToolSummariesPage(
+		return ToolSetUtil.getToolSetToolSummariesPage(
 			contextHttpServletRequest, toolSetName);
+	}
+
+	@Override
+	public Page<ToolSummary> getToolSummariesPage(String intent, String search)
+		throws Exception {
+
+		if (!FeatureFlagManagerUtil.isEnabled(
+				contextCompany.getCompanyId(), "LPD-63311")) {
+
+			throw new UnsupportedOperationException();
+		}
+
+		if (Validator.isNull(search)) {
+			throw new IllegalArgumentException("Search is null");
+		}
+
+		return ToolSetUtil.getToolSummariesPage(
+			contextHttpServletRequest, intent, search);
 	}
 
 }

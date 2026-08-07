@@ -31,6 +31,7 @@ import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.vulcan.http.VulcanRequestForwarder;
 import com.liferay.portal.vulcan.jackson.databind.ObjectMapperProviderUtil;
 import com.liferay.portal.vulcan.pagination.Page;
+import com.liferay.portal.vulcan.pagination.Pagination;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
@@ -39,6 +40,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import jakarta.ws.rs.core.Response;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,13 +102,54 @@ public class ToolSetUtil {
 				}));
 	}
 
-	public static Page<ToolSummary> getToolSummariesPage(
+	public static Page<ToolSummary> getToolSetToolSummariesPage(
 		HttpServletRequest httpServletRequest, String toolSetName) {
 
 		return Page.of(
 			OpenAPIUtil.getToolSummaries(
+				null,
 				_getOpenAPIJSONObject(
-					httpServletRequest, _getOpenAPIBrief(toolSetName))));
+					httpServletRequest, _getOpenAPIBrief(toolSetName)),
+				toolSetName));
+	}
+
+	public static Page<ToolSummary> getToolSummariesPage(
+		HttpServletRequest httpServletRequest, String intent, String search) {
+
+		Map<String, String> toolSetDescriptions = new HashMap<>();
+		List<ToolSummary> toolSummaries = new ArrayList<>();
+
+		for (Map.Entry<String, OpenAPIBrief> entry :
+				_getOpenAPIBriefs().entrySet()) {
+
+			String toolSetName = entry.getKey();
+
+			OpenAPIBrief openAPIBrief = entry.getValue();
+
+			try {
+				toolSummaries.addAll(
+					OpenAPIUtil.getToolSummaries(
+						intent,
+						_getOpenAPIJSONObject(
+							httpServletRequest, openAPIBrief),
+						toolSetName));
+
+				toolSetDescriptions.put(
+					toolSetName, openAPIBrief._description);
+			}
+			catch (Exception exception) {
+				_log.warn(
+					"Skipping tool set \"" + toolSetName + "\" while searching",
+					exception);
+			}
+		}
+
+		List<ToolSummary> results = ToolSearchUtil.search(
+			search, toolSetDescriptions, toolSummaries);
+
+		return Page.of(
+			results.subList(0, Math.min(_SEARCH_LIMIT, results.size())),
+			Pagination.of(1, _SEARCH_LIMIT), results.size());
 	}
 
 	public static Response invokeTool(
@@ -141,13 +184,20 @@ public class ToolSetUtil {
 					toolName, "getToolSetToolSetNameToolSummariesPage")) {
 
 				return _getResponse(
-					getToolSummariesPage(
+					getToolSetToolSummariesPage(
 						httpServletRequest,
 						inputJSONObject.getString("toolSetName")));
 			}
 
 			if (Objects.equals(toolName, "getToolSetsPage")) {
 				return _getResponse(getToolSetsPage());
+			}
+
+			if (Objects.equals(toolName, "getToolSummariesPage")) {
+				return _getResponse(
+					getToolSummariesPage(
+						httpServletRequest, inputJSONObject.getString("intent"),
+						inputJSONObject.getString("search")));
 			}
 
 			if (Objects.equals(toolName, "postToolSetToolSetNameToolInvoke")) {
@@ -454,6 +504,8 @@ public class ToolSetUtil {
 
 		return openAPIPath.substring(0, index);
 	}
+
+	private static final int _SEARCH_LIMIT = 20;
 
 	private static final String _TOOL_SET_NAME = "mcp-server-v1.0";
 
