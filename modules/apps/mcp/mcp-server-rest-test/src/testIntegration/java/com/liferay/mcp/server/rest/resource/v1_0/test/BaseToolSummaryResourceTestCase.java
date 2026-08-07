@@ -172,6 +172,7 @@ public abstract class BaseToolSummaryResourceTestCase {
 
 		toolSummary.setDescription(regex);
 		toolSummary.setName(regex);
+		toolSummary.setToolSetName(regex);
 
 		String json = ToolSummarySerDes.toJSON(toolSummary);
 
@@ -181,6 +182,7 @@ public abstract class BaseToolSummaryResourceTestCase {
 
 		Assert.assertEquals(regex, toolSummary.getDescription());
 		Assert.assertEquals(regex, toolSummary.getName());
+		Assert.assertEquals(regex, toolSummary.getToolSetName());
 	}
 
 	@Test
@@ -268,6 +270,45 @@ public abstract class BaseToolSummaryResourceTestCase {
 		return null;
 	}
 
+	@Test
+	public void testGetToolSummariesPage() throws Exception {
+		Page<ToolSummary> page = toolSummaryResource.getToolSummariesPage(
+			RandomTestUtil.randomString(), null);
+
+		long totalCount = page.getTotalCount();
+
+		ToolSummary toolSummary1 = testGetToolSummariesPage_addToolSummary(
+			randomToolSummary());
+
+		ToolSummary toolSummary2 = testGetToolSummariesPage_addToolSummary(
+			randomToolSummary());
+
+		page = toolSummaryResource.getToolSummariesPage(null, null);
+
+		Assert.assertEquals(totalCount + 2, page.getTotalCount());
+
+		assertContains(toolSummary1, (List<ToolSummary>)page.getItems());
+		assertContains(toolSummary2, (List<ToolSummary>)page.getItems());
+		assertValid(page, testGetToolSummariesPage_getExpectedActions());
+	}
+
+	protected Map<String, Map<String, String>>
+			testGetToolSummariesPage_getExpectedActions()
+		throws Exception {
+
+		Map<String, Map<String, String>> expectedActions = new HashMap<>();
+
+		return expectedActions;
+	}
+
+	protected ToolSummary testGetToolSummariesPage_addToolSummary(
+			ToolSummary toolSummary)
+		throws Exception {
+
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
+	}
+
 	protected void assertContains(
 		ToolSummary toolSummary, List<ToolSummary> toolSummaries) {
 
@@ -351,6 +392,14 @@ public abstract class BaseToolSummaryResourceTestCase {
 
 			if (Objects.equals("name", additionalAssertFieldName)) {
 				if (toolSummary.getName() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("toolSetName", additionalAssertFieldName)) {
+				if (toolSummary.getToolSetName() == null) {
 					valid = false;
 				}
 
@@ -489,6 +538,17 @@ public abstract class BaseToolSummaryResourceTestCase {
 			if (Objects.equals("name", additionalAssertFieldName)) {
 				if (!Objects.deepEquals(
 						toolSummary1.getName(), toolSummary2.getName())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
+			if (Objects.equals("toolSetName", additionalAssertFieldName)) {
+				if (!Objects.deepEquals(
+						toolSummary1.getToolSetName(),
+						toolSummary2.getToolSetName())) {
 
 					return false;
 				}
@@ -695,6 +755,52 @@ public abstract class BaseToolSummaryResourceTestCase {
 			return sb.toString();
 		}
 
+		if (entityFieldName.equals("toolSetName")) {
+			Object object = toolSummary.getToolSetName();
+
+			String value = String.valueOf(object);
+
+			if (operator.equals("contains")) {
+				sb = new StringBundler();
+
+				sb.append("contains(");
+				sb.append(entityFieldName);
+				sb.append(",'");
+
+				if ((object != null) && (value.length() > 2)) {
+					sb.append(value.substring(1, value.length() - 1));
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append("')");
+			}
+			else if (operator.equals("startswith")) {
+				sb = new StringBundler();
+
+				sb.append("startswith(");
+				sb.append(entityFieldName);
+				sb.append(",'");
+
+				if ((object != null) && (value.length() > 1)) {
+					sb.append(value.substring(0, value.length() - 1));
+				}
+				else {
+					sb.append(value);
+				}
+
+				sb.append("')");
+			}
+			else {
+				sb.append("'");
+				sb.append(value);
+				sb.append("'");
+			}
+
+			return sb.toString();
+		}
+
 		throw new IllegalArgumentException(
 			"Invalid entity field " + entityFieldName);
 	}
@@ -745,6 +851,8 @@ public abstract class BaseToolSummaryResourceTestCase {
 				description = StringUtil.toLowerCase(
 					RandomTestUtil.randomString());
 				name = StringUtil.toLowerCase(RandomTestUtil.randomString());
+				toolSetName = StringUtil.toLowerCase(
+					RandomTestUtil.randomString());
 			}
 		};
 	}
@@ -969,4 +1077,4 @@ public abstract class BaseToolSummaryResourceTestCase {
 		_toolSummaryResource;
 
 }
-// LIFERAY-REST-BUILDER-HASH:568890171
+// LIFERAY-REST-BUILDER-HASH:-1215713063

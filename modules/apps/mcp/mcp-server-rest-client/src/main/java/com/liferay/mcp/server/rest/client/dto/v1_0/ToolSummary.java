@@ -65,6 +65,27 @@ public class ToolSummary implements Cloneable, Serializable {
 
 	protected String name;
 
+	public String getToolSetName() {
+		return toolSetName;
+	}
+
+	public void setToolSetName(String toolSetName) {
+		this.toolSetName = toolSetName;
+	}
+
+	public void setToolSetName(
+		UnsafeSupplier<String, Exception> toolSetNameUnsafeSupplier) {
+
+		try {
+			toolSetName = toolSetNameUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected String toolSetName;
+
 	@Override
 	public ToolSummary clone() throws CloneNotSupportedException {
 		return (ToolSummary)super.clone();
@@ -97,4 +118,4 @@ public class ToolSummary implements Cloneable, Serializable {
 	}
 
 }
-// LIFERAY-REST-BUILDER-HASH:-978640542
+// LIFERAY-REST-BUILDER-HASH:-1538703188

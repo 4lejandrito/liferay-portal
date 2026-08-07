@@ -46,6 +46,9 @@ public interface ToolSummaryResource {
 			String toolSetName)
 		throws Exception;
 
+	public Page<ToolSummary> getToolSummariesPage(String intent, String search)
+		throws Exception;
+
 	public default void setContextAcceptLanguage(
 		AcceptLanguage contextAcceptLanguage) {
 	}
@@ -134,4 +137,4 @@ public interface ToolSummaryResource {
 	}
 
 }
-// LIFERAY-REST-BUILDER-HASH:1341799841
+// LIFERAY-REST-BUILDER-HASH:2068826407

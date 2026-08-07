@@ -74,6 +74,20 @@ public class ToolSummarySerDes {
 			sb.append("\"");
 		}
 
+		if (toolSummary.getToolSetName() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"toolSetName\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(toolSummary.getToolSetName()));
+
+			sb.append("\"");
+		}
+
 		sb.append("}");
 
 		return sb.toString();
@@ -108,6 +122,14 @@ public class ToolSummarySerDes {
 			map.put("name", String.valueOf(toolSummary.getName()));
 		}
 
+		if (toolSummary.getToolSetName() == null) {
+			map.put("toolSetName", null);
+		}
+		else {
+			map.put(
+				"toolSetName", String.valueOf(toolSummary.getToolSetName()));
+		}
+
 		return map;
 	}
 
@@ -132,6 +154,9 @@ public class ToolSummarySerDes {
 			else if (Objects.equals(jsonParserFieldName, "name")) {
 				return false;
 			}
+			else if (Objects.equals(jsonParserFieldName, "toolSetName")) {
+				return false;
+			}
 
 			return false;
 		}
@@ -149,6 +174,11 @@ public class ToolSummarySerDes {
 			else if (Objects.equals(jsonParserFieldName, "name")) {
 				if (jsonParserFieldValue != null) {
 					toolSummary.setName((String)jsonParserFieldValue);
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "toolSetName")) {
+				if (jsonParserFieldValue != null) {
+					toolSummary.setToolSetName((String)jsonParserFieldValue);
 				}
 			}
 		}
@@ -232,4 +262,4 @@ public class ToolSummarySerDes {
 	}
 
 }
-// LIFERAY-REST-BUILDER-HASH:1947396900
+// LIFERAY-REST-BUILDER-HASH:1592245422

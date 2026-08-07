@@ -50,7 +50,7 @@ public abstract class BaseToolSummaryResourceImpl
 	 * curl -X 'GET' 'http://localhost:8080/o/mcp-server/v1.0/tool-sets/{toolSetName}/tool-summaries'  -u 'test@liferay.com:test'
 	 */
 	@io.swagger.v3.oas.annotations.Operation(
-		description = "Use this once you have identified a tool-set (via `getToolSetsPage`) and need to find which of its tools matches the user's request. Returns every tool in the tool-set, each with a `name` and a description. Pick the tool whose description matches the user's intent and pass its `name` to `getToolSetToolSetNameTool` to see its input schema."
+		description = "Use this only to browse every tool in one tool-set, after `getToolSetsPage`, when `getToolSummariesPage` returned nothing relevant. It can return hundreds of tools, so prefer searching with `getToolSummariesPage`. Returns every tool in the tool-set, each with a `name` and a description. Pick the tool whose description matches the user's intent and pass its `name` to `getToolSetToolSetNameTool` to see its input schema."
 	)
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
@@ -73,6 +73,48 @@ public abstract class BaseToolSummaryResourceImpl
 			@jakarta.validation.constraints.NotNull
 			@jakarta.ws.rs.PathParam("toolSetName")
 			String toolSetName)
+		throws Exception {
+
+		return Page.of(Collections.emptyList());
+	}
+
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -X 'GET' 'http://localhost:8080/o/mcp-server/v1.0/tool-summaries'  -u 'test@liferay.com:test'
+	 */
+	@io.swagger.v3.oas.annotations.Operation(
+		description = "Use this FIRST whenever you do not already know the exact tool for the user's request — it searches every tool-set at once, so you do not have to guess which tool-set to look in. Pass the user's own words as `search` and set `intent` to `read` or `write`. Returns the best-matching tools, ranked, each with the `toolSetName` that exposes it. Pass a hit's `toolSetName` and `name` to `getToolSetToolSetNameTool` to see its input schema. Only if this returns nothing relevant, fall back to `getToolSetsPage`."
+	)
+	@io.swagger.v3.oas.annotations.Parameters(
+		value = {
+			@io.swagger.v3.oas.annotations.Parameter(
+				description = "Whether the user's request reads data or changes it. `read` searches only tools that read, `write` searches only tools that create, update, or delete. Always set this — it removes the largest source of wrong matches, such as a search for creating something matching the tool that lists it instead. Omitting it searches both.",
+				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
+				name = "intent"
+			),
+			@io.swagger.v3.oas.annotations.Parameter(
+				description = "The user's intent as keywords, for example `create a blog post`. Pass the words the user actually used; they are matched against tool names, tool descriptions, and tool-set descriptions.",
+				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
+				name = "search"
+			)
+		}
+	)
+	@io.swagger.v3.oas.annotations.tags.Tags(
+		value = {@io.swagger.v3.oas.annotations.tags.Tag(name = "ToolSummary")}
+	)
+	@jakarta.ws.rs.GET
+	@jakarta.ws.rs.Path("/tool-summaries")
+	@jakarta.ws.rs.Produces({"application/json", "application/xml"})
+	@Override
+	public Page<ToolSummary> getToolSummariesPage(
+			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
+			@jakarta.ws.rs.QueryParam("intent")
+			String intent,
+			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
+			@jakarta.validation.constraints.NotNull
+			@jakarta.ws.rs.QueryParam("search")
+			String search)
 		throws Exception {
 
 		return Page.of(Collections.emptyList());
@@ -523,4 +565,4 @@ public abstract class BaseToolSummaryResourceImpl
 		LogFactoryUtil.getLog(BaseToolSummaryResourceImpl.class);
 
 }
-// LIFERAY-REST-BUILDER-HASH:182064571
+// LIFERAY-REST-BUILDER-HASH:1349310787

@@ -144,6 +144,51 @@ public class ToolSummary implements Serializable {
 	@JsonIgnore
 	private Supplier<String> _nameSupplier;
 
+	@io.swagger.v3.oas.annotations.media.Schema(
+		description = "Stable identifier of the tool-set that exposes this tool. Pass this verbatim as `toolSetName` in subsequent calls."
+	)
+	public String getToolSetName() {
+		if (_toolSetNameSupplier != null) {
+			toolSetName = _toolSetNameSupplier.get();
+
+			_toolSetNameSupplier = null;
+		}
+
+		return toolSetName;
+	}
+
+	public void setToolSetName(String toolSetName) {
+		this.toolSetName = toolSetName;
+
+		_toolSetNameSupplier = null;
+	}
+
+	@JsonIgnore
+	public void setToolSetName(
+		UnsafeSupplier<String, Exception> toolSetNameUnsafeSupplier) {
+
+		_toolSetNameSupplier = () -> {
+			try {
+				return toolSetNameUnsafeSupplier.get();
+			}
+			catch (RuntimeException runtimeException) {
+				throw runtimeException;
+			}
+			catch (Exception exception) {
+				throw new RuntimeException(exception);
+			}
+		};
+	}
+
+	@GraphQLField(
+		description = "Stable identifier of the tool-set that exposes this tool. Pass this verbatim as `toolSetName` in subsequent calls."
+	)
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected String toolSetName;
+
+	@JsonIgnore
+	private Supplier<String> _toolSetNameSupplier;
+
 	@Override
 	public boolean equals(Object object) {
 		if (this == object) {
@@ -199,6 +244,22 @@ public class ToolSummary implements Serializable {
 			sb.append("\"");
 
 			sb.append(_escape(name));
+
+			sb.append("\"");
+		}
+
+		String toolSetName = getToolSetName();
+
+		if (toolSetName != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"toolSetName\": ");
+
+			sb.append("\"");
+
+			sb.append(_escape(toolSetName));
 
 			sb.append("\"");
 		}
@@ -304,4 +365,4 @@ public class ToolSummary implements Serializable {
 	private Map<String, Serializable> _extendedProperties;
 
 }
-// LIFERAY-REST-BUILDER-HASH:1815923544
+// LIFERAY-REST-BUILDER-HASH:170765712
