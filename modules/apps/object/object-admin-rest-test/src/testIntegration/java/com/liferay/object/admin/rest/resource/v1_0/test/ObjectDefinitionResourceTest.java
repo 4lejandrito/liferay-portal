@@ -425,6 +425,7 @@ public class ObjectDefinitionResourceTest
 	public void testPatchObjectDefinition() throws Exception {
 		super.testPatchObjectDefinition();
 
+		_testPatchObjectDefinitionWithObjectFields();
 		_testPatchObjectDefinitionWithPermissions();
 	}
 
@@ -3059,6 +3060,89 @@ public class ObjectDefinitionResourceTest
 					workflowDefinitionLink1, workflowDefinitionLink2)),
 			new HashSet<>(
 				Arrays.asList(objectDefinition.getWorkflowDefinitionLinks())));
+	}
+
+	@TestInfo("LPD-103018")
+	private void _testPatchObjectDefinitionWithObjectFields() throws Exception {
+		ObjectDefinition randomObjectDefinition = randomObjectDefinition();
+
+		String objectFieldName =
+			randomObjectDefinition.getObjectFields()[0].getName();
+
+		ObjectDefinition objectDefinition = _addObjectDefinition(
+			randomObjectDefinition);
+
+		String patchedObjectFieldName = StringUtil.randomId();
+
+		objectDefinitionResource.patchObjectDefinition(
+			objectDefinition.getId(),
+			new ObjectDefinition() {
+				{
+					objectFields = ArrayUtil.append(
+						objectDefinition.getObjectFields(),
+						new ObjectField() {
+							{
+								businessType = BusinessType.TEXT;
+								DBType = ObjectField.DBType.create("String");
+								indexed = false;
+								indexedAsKeyword = false;
+								label = Collections.singletonMap(
+									"en_US", patchedObjectFieldName);
+								localized = false;
+								name = patchedObjectFieldName;
+								readOnly = ReadOnly.FALSE;
+								required = false;
+								system = false;
+							}
+						});
+				}
+			});
+
+		ObjectDefinition getObjectDefinition =
+			objectDefinitionResource.getObjectDefinition(
+				objectDefinition.getId());
+
+		Assert.assertEquals(
+			Collections.singletonMap("en_US", patchedObjectFieldName),
+			_getObjectField(
+				getObjectDefinition, patchedObjectFieldName
+			).getLabel());
+		Assert.assertEquals(
+			Collections.singletonMap("en_US", "Column"),
+			_getObjectField(
+				getObjectDefinition, objectFieldName
+			).getLabel());
+
+		ObjectField[] objectFields = ArrayUtil.filter(
+			getObjectDefinition.getObjectFields(),
+			objectField -> !objectField.getSystem());
+
+		Assert.assertEquals(
+			Arrays.toString(objectFields), 2, objectFields.length);
+
+		String patchedLabel = RandomTestUtil.randomString();
+
+		objectDefinitionResource.patchObjectDefinition(
+			objectDefinition.getId(),
+			new ObjectDefinition() {
+				{
+					label = Collections.singletonMap("en_US", patchedLabel);
+				}
+			});
+
+		getObjectDefinition = objectDefinitionResource.getObjectDefinition(
+			objectDefinition.getId());
+
+		Assert.assertEquals(
+			Collections.singletonMap("en_US", patchedLabel),
+			getObjectDefinition.getLabel());
+
+		objectFields = ArrayUtil.filter(
+			getObjectDefinition.getObjectFields(),
+			objectField -> !objectField.getSystem());
+
+		Assert.assertEquals(
+			Arrays.toString(objectFields), 2, objectFields.length);
 	}
 
 	private void _testPatchObjectDefinitionWithPermissions() throws Exception {
