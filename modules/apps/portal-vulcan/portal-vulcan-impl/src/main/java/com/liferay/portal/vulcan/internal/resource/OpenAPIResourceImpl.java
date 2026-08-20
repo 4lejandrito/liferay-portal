@@ -27,6 +27,7 @@ import com.liferay.portal.vulcan.extension.ExtensionProviderRegistry;
 import com.liferay.portal.vulcan.extension.PropertyDefinition;
 import com.liferay.portal.vulcan.extension.util.ExtensionUtil;
 import com.liferay.portal.vulcan.internal.configuration.util.ConfigurationUtil;
+import com.liferay.portal.vulcan.internal.feature.flag.FeatureFlagUtil;
 import com.liferay.portal.vulcan.openapi.DTOProperty;
 import com.liferay.portal.vulcan.openapi.OpenAPIContext;
 import com.liferay.portal.vulcan.openapi.OpenAPISchemaFilter;
@@ -86,6 +87,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -667,6 +669,32 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 		return propertyDefinitions;
 	}
 
+	private String _getFeatureFlagKey(Operation operation) {
+		if (operation == null) {
+			return null;
+		}
+
+		Map<String, Object> extensions = operation.getExtensions();
+
+		if (MapUtil.isEmpty(extensions)) {
+			return null;
+		}
+
+		Object value = extensions.get(_FEATURE_FLAG_EXTENSION_NAME);
+
+		if (value instanceof Map) {
+			Map<?, ?> map = (Map<?, ?>)value;
+
+			value = map.get("key");
+		}
+
+		if (value == null) {
+			return null;
+		}
+
+		return GetterUtil.getString(value, null);
+	}
+
 	private Response _getOpenAPI(
 			HttpServletRequest httpServletRequest,
 			OpenAPIContributor openAPIContributor,
@@ -705,6 +733,8 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 			});
 
 		OpenAPI openAPI = openApiContext.read();
+
+		_removeFeatureFlaggedOperations(openAPI);
 
 		OpenAPISchemaFilter mergedOpenAPISchemaFilter =
 			_mergeOpenAPISchemaFilters(
@@ -829,6 +859,17 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 		};
 	}
 
+	private boolean _isFeatureFlagDisabled(Operation operation) {
+		String featureFlagKey = _getFeatureFlagKey(operation);
+
+		if (featureFlagKey == null) {
+			return false;
+		}
+
+		return !FeatureFlagUtil.isEnabled(
+			CompanyThreadLocal.getCompanyId(), featureFlagKey);
+	}
+
 	private OpenAPISchemaFilter _mergeOpenAPISchemaFilters(
 		OpenAPISchemaFilter openAPISchemaFilter1,
 		OpenAPISchemaFilter openAPISchemaFilter2) {
@@ -860,6 +901,40 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 		schemaMappings.putAll(openAPISchemaFilter2.getSchemaMappings());
 
 		return mergedOpenAPISchemaFilter;
+	}
+
+	private void _removeFeatureFlaggedOperations(OpenAPI openAPI) {
+		Paths paths = openAPI.getPaths();
+
+		if (MapUtil.isEmpty(paths)) {
+			return;
+		}
+
+		Iterator<Map.Entry<String, PathItem>> iterator = paths.entrySet(
+		).iterator();
+
+		while (iterator.hasNext()) {
+			Map.Entry<String, PathItem> entry = iterator.next();
+
+			PathItem pathItem = entry.getValue();
+
+			boolean removed = false;
+
+			for (Map.Entry<PathItem.HttpMethod, Operation> operationEntry :
+					pathItem.readOperationsMap(
+					).entrySet()) {
+
+				if (_isFeatureFlagDisabled(operationEntry.getValue())) {
+					pathItem.operation(operationEntry.getKey(), null);
+
+					removed = true;
+				}
+			}
+
+			if (removed && ListUtil.isEmpty(pathItem.readOperations())) {
+				iterator.remove();
+			}
+		}
 	}
 
 	private OpenAPISpecFilter _toOpenAPISpecFilter(
@@ -1440,6 +1515,8 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 			}
 		}
 	}
+
+	private static final String _FEATURE_FLAG_EXTENSION_NAME = "x-feature-flag";
 
 	private static final Pattern _pattern = Pattern.compile(
 		"\\{(.*)(:.*)(/?)\\}");

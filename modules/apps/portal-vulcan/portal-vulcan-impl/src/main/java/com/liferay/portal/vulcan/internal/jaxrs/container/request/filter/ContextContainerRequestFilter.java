@@ -14,6 +14,7 @@ import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
 import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.odata.filter.ExpressionConvert;
 import com.liferay.portal.odata.filter.FilterParserProvider;
 import com.liferay.portal.odata.sort.SortParserProvider;
@@ -21,6 +22,7 @@ import com.liferay.portal.vulcan.batch.engine.resource.VulcanBatchEngineExportTa
 import com.liferay.portal.vulcan.batch.engine.resource.VulcanBatchEngineImportTaskResourceFactory;
 import com.liferay.portal.vulcan.internal.accept.language.AcceptLanguageImpl;
 import com.liferay.portal.vulcan.internal.configuration.util.ConfigurationUtil;
+import com.liferay.portal.vulcan.internal.feature.flag.FeatureFlagUtil;
 import com.liferay.portal.vulcan.internal.jaxrs.context.provider.ContextProviderUtil;
 import com.liferay.portal.vulcan.jaxrs.context.ContextDataInjector;
 import com.liferay.portal.vulcan.jaxrs.context.ContextDataInjectorBuilderFactory;
@@ -169,6 +171,37 @@ public class ContextContainerRequestFilter
 		}
 	}
 
+	private void _filterFeatureFlags(
+			ContainerRequestContext containerRequestContext,
+			HttpServletRequest httpServletRequest, Object instance,
+			Message message)
+		throws Exception {
+
+		Method method = (Method)message.get("org.apache.cxf.resource.method");
+
+		if (method == null) {
+			return;
+		}
+
+		String featureFlagKey = FeatureFlagUtil.getFeatureFlagKey(
+			instance.getClass(), method);
+
+		if (Validator.isNull(featureFlagKey)) {
+			return;
+		}
+
+		Company company = _portal.getCompany(httpServletRequest);
+
+		if (!FeatureFlagUtil.isEnabled(
+				company.getCompanyId(), featureFlagKey)) {
+
+			containerRequestContext.abortWith(
+				Response.status(
+					Response.Status.NOT_FOUND
+				).build());
+		}
+	}
+
 	private void _handleMessage(
 			ContainerRequestContext containerRequestContext, Message message)
 		throws Exception {
@@ -184,6 +217,9 @@ public class ContextContainerRequestFilter
 
 		_filterExcludedOperationIds(
 			containerRequestContext, httpServletRequest, message);
+
+		_filterFeatureFlags(
+			containerRequestContext, httpServletRequest, instance, message);
 
 		ContextDataInjector contextDataInjector =
 			_contextDataInjectorBuilderFactory.builder(
