@@ -159,6 +159,10 @@ public abstract class BaseFeatureFlagMethodTestEntityResourceImpl
 	 *
 	 * curl -X 'GET' 'http://localhost:8080/o/portal-tools-rest-builder-test/v1.0/feature-flag-method-test-entities'  -u 'test@liferay.com:test'
 	 */
+	@com.liferay.portal.vulcan.feature.flag.FeatureFlag("FAKE-123")
+	@io.swagger.v3.oas.annotations.Operation(
+		extensions = @io.swagger.v3.oas.annotations.extensions.Extension(name = "feature-flag", properties = @io.swagger.v3.oas.annotations.extensions.ExtensionProperty(name = "key", value = "FAKE-123"))
+	)
 	@io.swagger.v3.oas.annotations.tags.Tags(
 		value = {
 			@io.swagger.v3.oas.annotations.tags.Tag(
@@ -1044,4 +1048,4 @@ public abstract class BaseFeatureFlagMethodTestEntityResourceImpl
 			BaseFeatureFlagMethodTestEntityResourceImpl.class);
 
 }
-// LIFERAY-REST-BUILDER-HASH:264682262
+// LIFERAY-REST-BUILDER-HASH:-1736827601
