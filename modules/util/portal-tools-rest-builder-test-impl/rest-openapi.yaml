@@ -1568,6 +1568,7 @@ paths:
                     description:
                         "OK"
             tags: ["FeatureFlagMethodTestEntity"]
+            x-feature-flag: FAKE-123
         post:
             operationId: postFeatureFlagMethodTestEntity
             requestBody:

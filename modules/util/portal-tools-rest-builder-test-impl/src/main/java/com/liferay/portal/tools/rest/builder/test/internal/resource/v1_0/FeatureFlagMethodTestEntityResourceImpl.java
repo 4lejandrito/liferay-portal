@@ -5,14 +5,7 @@
 
 package com.liferay.portal.tools.rest.builder.test.internal.resource.v1_0;
 
-import com.liferay.portal.tools.rest.builder.test.dto.v1_0.FeatureFlagMethodTestEntity;
 import com.liferay.portal.tools.rest.builder.test.resource.v1_0.FeatureFlagMethodTestEntityResource;
-import com.liferay.portal.vulcan.feature.flag.FeatureFlag;
-import com.liferay.portal.vulcan.pagination.Page;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.extensions.Extension;
-import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
@@ -27,17 +20,4 @@ import org.osgi.service.component.annotations.ServiceScope;
 )
 public class FeatureFlagMethodTestEntityResourceImpl
 	extends BaseFeatureFlagMethodTestEntityResourceImpl {
-
-	@FeatureFlag("FAKE-123")
-	@Operation(
-		extensions = @Extension(name = "feature-flag", properties = @ExtensionProperty(name = "key", value = "FAKE-123"))
-	)
-	@Override
-	public Page<FeatureFlagMethodTestEntity>
-			getFeatureFlagMethodTestEntitiesPage()
-		throws Exception {
-
-		return super.getFeatureFlagMethodTestEntitiesPage();
-	}
-
 }
