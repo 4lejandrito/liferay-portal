@@ -17,7 +17,8 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(
 	property = {
-		"liferay.jackson=false", "osgi.jaxrs.application.base=/mcp-server",
+		"feature.flag.key=LPD-63311", "liferay.jackson=false",
+		"osgi.jaxrs.application.base=/mcp-server",
 		"osgi.jaxrs.extension.select=(osgi.jaxrs.name=Liferay.Vulcan)",
 		"osgi.jaxrs.name=Liferay.MCP.Server"
 	},
@@ -26,4 +27,4 @@ import org.osgi.service.component.annotations.Component;
 @Generated("")
 public class MCPServerApplication extends Application {
 }
-// LIFERAY-REST-BUILDER-HASH:-904997413
+// LIFERAY-REST-BUILDER-HASH:-933310952

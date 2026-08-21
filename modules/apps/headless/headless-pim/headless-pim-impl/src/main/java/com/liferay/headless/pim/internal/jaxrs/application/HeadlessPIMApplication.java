@@ -17,7 +17,8 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(
 	property = {
-		"liferay.jackson=false", "osgi.jaxrs.application.base=/headless-pim",
+		"feature.flag.key=LPD-96666", "liferay.jackson=false",
+		"osgi.jaxrs.application.base=/headless-pim",
 		"osgi.jaxrs.extension.select=(osgi.jaxrs.name=Liferay.Vulcan)",
 		"osgi.jaxrs.name=Liferay.Headless.PIM"
 	},
@@ -26,4 +27,4 @@ import org.osgi.service.component.annotations.Component;
 @Generated("")
 public class HeadlessPIMApplication extends Application {
 }
-// LIFERAY-REST-BUILDER-HASH:805283560
+// LIFERAY-REST-BUILDER-HASH:1857372098

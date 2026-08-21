@@ -17,7 +17,8 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(
 	property = {
-		"liferay.jackson=false", "osgi.jaxrs.application.base=/ai-hub-cell",
+		"feature.flag.key=LPD-62272", "liferay.jackson=false",
+		"osgi.jaxrs.application.base=/ai-hub-cell",
 		"osgi.jaxrs.extension.select=(osgi.jaxrs.name=Liferay.Vulcan)",
 		"osgi.jaxrs.name=Liferay.AI.Hub.Cell.REST"
 	},
@@ -26,4 +27,4 @@ import org.osgi.service.component.annotations.Component;
 @Generated("")
 public class AIHubCellRESTApplication extends Application {
 }
-// LIFERAY-REST-BUILDER-HASH:1119156621
+// LIFERAY-REST-BUILDER-HASH:-1644176373

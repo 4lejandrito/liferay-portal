@@ -40,6 +40,7 @@ import java.util.Map;
  * @author Stefano Motta
  * @generated
  */
+@com.liferay.portal.vulcan.feature.flag.FeatureFlag("LPD-96666")
 @Generated("")
 @jakarta.ws.rs.Path("/v1.0")
 public abstract class BaseLinkReferenceResourceImpl
@@ -50,6 +51,10 @@ public abstract class BaseLinkReferenceResourceImpl
 	 *
 	 * curl -X 'GET' 'http://localhost:8080/o/headless-pim/v1.0/scopes/{scopeKey}/links'  -u 'test@liferay.com:test'
 	 */
+	@com.liferay.portal.vulcan.feature.flag.FeatureFlag("LPD-96666")
+	@io.swagger.v3.oas.annotations.Operation(
+		extensions = @io.swagger.v3.oas.annotations.extensions.Extension(name = "feature-flag", properties = @io.swagger.v3.oas.annotations.extensions.ExtensionProperty(name = "key", value = "LPD-96666"))
+	)
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -554,4 +559,4 @@ public abstract class BaseLinkReferenceResourceImpl
 		LogFactoryUtil.getLog(BaseLinkReferenceResourceImpl.class);
 
 }
-// LIFERAY-REST-BUILDER-HASH:-808733850
+// LIFERAY-REST-BUILDER-HASH:1233656481

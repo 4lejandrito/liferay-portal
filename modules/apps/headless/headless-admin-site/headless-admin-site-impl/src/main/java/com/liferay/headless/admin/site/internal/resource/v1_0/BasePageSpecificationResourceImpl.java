@@ -73,8 +73,10 @@ public abstract class BasePageSpecificationResourceImpl
 	 *
 	 * curl -X 'DELETE' 'http://localhost:8080/o/headless-admin-site/v1.0/sites/{siteExternalReferenceCode}/page-specifications/{pageSpecificationExternalReferenceCode}'  -u 'test@liferay.com:test'
 	 */
+	@com.liferay.portal.vulcan.feature.flag.FeatureFlag("LPD-74328")
 	@io.swagger.v3.oas.annotations.Operation(
-		description = "Deletes a page specification of a site page."
+		description = "Deletes a page specification of a site page.",
+		extensions = @io.swagger.v3.oas.annotations.extensions.Extension(name = "feature-flag", properties = @io.swagger.v3.oas.annotations.extensions.ExtensionProperty(name = "key", value = "LPD-74328"))
 	)
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
@@ -689,8 +691,10 @@ public abstract class BasePageSpecificationResourceImpl
 	 *
 	 * curl -X 'PUT' 'http://localhost:8080/o/headless-admin-site/v1.0/sites/{siteExternalReferenceCode}/page-specifications/{pageSpecificationExternalReferenceCode}' -d $'{"customFields": ___, "externalReferenceCode": ___, "siteTemplatePageSpecificationExternalReferenceCode": ___, "status": ___, "type": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
 	 */
+	@com.liferay.portal.vulcan.feature.flag.FeatureFlag("LPD-74328")
 	@io.swagger.v3.oas.annotations.Operation(
-		description = "Updates a page specification of a site page."
+		description = "Updates a page specification of a site page.",
+		extensions = @io.swagger.v3.oas.annotations.extensions.Extension(name = "feature-flag", properties = @io.swagger.v3.oas.annotations.extensions.ExtensionProperty(name = "key", value = "LPD-74328"))
 	)
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
@@ -1481,4 +1485,4 @@ public abstract class BasePageSpecificationResourceImpl
 		LogFactoryUtil.getLog(BasePageSpecificationResourceImpl.class);
 
 }
-// LIFERAY-REST-BUILDER-HASH:341539390
+// LIFERAY-REST-BUILDER-HASH:78612204

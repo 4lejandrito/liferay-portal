@@ -17,7 +17,7 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(
 	property = {
-		"liferay.jackson=false",
+		"feature.flag.key=LPD-49852", "liferay.jackson=false",
 		"osgi.jaxrs.application.base=/headless-admin-language-override",
 		"osgi.jaxrs.extension.select=(osgi.jaxrs.name=Liferay.Vulcan)",
 		"osgi.jaxrs.name=Liferay.Headless.Admin.Language.Override"
@@ -27,4 +27,4 @@ import org.osgi.service.component.annotations.Component;
 @Generated("")
 public class HeadlessAdminLanguageOverrideApplication extends Application {
 }
-// LIFERAY-REST-BUILDER-HASH:-456568206
+// LIFERAY-REST-BUILDER-HASH:-759794443

@@ -17,7 +17,7 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(
 	property = {
-		"liferay.jackson=false",
+		"feature.flag.key=LPD-65399", "liferay.jackson=false",
 		"osgi.jaxrs.application.base=/headless-admin-configuration",
 		"osgi.jaxrs.extension.select=(osgi.jaxrs.name=Liferay.Vulcan)",
 		"osgi.jaxrs.name=Liferay.Headless.Admin.Configuration"
@@ -27,4 +27,4 @@ import org.osgi.service.component.annotations.Component;
 @Generated("")
 public class HeadlessAdminConfigurationApplication extends Application {
 }
-// LIFERAY-REST-BUILDER-HASH:909949110
+// LIFERAY-REST-BUILDER-HASH:-467206313

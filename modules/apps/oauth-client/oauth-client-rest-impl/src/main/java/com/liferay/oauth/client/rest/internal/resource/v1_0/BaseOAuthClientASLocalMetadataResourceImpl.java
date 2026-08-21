@@ -74,6 +74,10 @@ public abstract class BaseOAuthClientASLocalMetadataResourceImpl
 	 *
 	 * curl -X 'DELETE' 'http://localhost:8080/o/oauth-client/v1.0/oauth-client-as-local-metadata/by-external-reference-code/{externalReferenceCode}'  -u 'test@liferay.com:test'
 	 */
+	@com.liferay.portal.vulcan.feature.flag.FeatureFlag("LPD-49855")
+	@io.swagger.v3.oas.annotations.Operation(
+		extensions = @io.swagger.v3.oas.annotations.extensions.Extension(name = "feature-flag", properties = @io.swagger.v3.oas.annotations.extensions.ExtensionProperty(name = "key", value = "LPD-49855"))
+	)
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -108,6 +112,10 @@ public abstract class BaseOAuthClientASLocalMetadataResourceImpl
 	 *
 	 * curl -X 'GET' 'http://localhost:8080/o/oauth-client/v1.0/oauth-client-as-local-metadata/by-external-reference-code/{externalReferenceCode}'  -u 'test@liferay.com:test'
 	 */
+	@com.liferay.portal.vulcan.feature.flag.FeatureFlag("LPD-49855")
+	@io.swagger.v3.oas.annotations.Operation(
+		extensions = @io.swagger.v3.oas.annotations.extensions.Extension(name = "feature-flag", properties = @io.swagger.v3.oas.annotations.extensions.ExtensionProperty(name = "key", value = "LPD-49855"))
+	)
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -145,6 +153,10 @@ public abstract class BaseOAuthClientASLocalMetadataResourceImpl
 	 *
 	 * curl -X 'GET' 'http://localhost:8080/o/oauth-client/v1.0/oauth-client-as-local-metadatas'  -u 'test@liferay.com:test'
 	 */
+	@com.liferay.portal.vulcan.feature.flag.FeatureFlag("LPD-49855")
+	@io.swagger.v3.oas.annotations.Operation(
+		extensions = @io.swagger.v3.oas.annotations.extensions.Extension(name = "feature-flag", properties = @io.swagger.v3.oas.annotations.extensions.ExtensionProperty(name = "key", value = "LPD-49855"))
+	)
 	@io.swagger.v3.oas.annotations.tags.Tags(
 		value = {
 			@io.swagger.v3.oas.annotations.tags.Tag(
@@ -167,6 +179,10 @@ public abstract class BaseOAuthClientASLocalMetadataResourceImpl
 	 *
 	 * curl -X 'POST' 'http://localhost:8080/o/oauth-client/v1.0/oauth-client-as-local-metadatas' -d $'{"dateCreated": ___, "dateModified": ___, "externalReferenceCode": ___, "issuer": ___, "localWellKnownEnabled": ___, "localWellKnownURI": ___, "metadataJSON": ___, "oAuthASLocalWellKnownURI": ___, "oAuthASMetadataJSON": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
 	 */
+	@com.liferay.portal.vulcan.feature.flag.FeatureFlag("LPD-49855")
+	@io.swagger.v3.oas.annotations.Operation(
+		extensions = @io.swagger.v3.oas.annotations.extensions.Extension(name = "feature-flag", properties = @io.swagger.v3.oas.annotations.extensions.ExtensionProperty(name = "key", value = "LPD-49855"))
+	)
 	@io.swagger.v3.oas.annotations.tags.Tags(
 		value = {
 			@io.swagger.v3.oas.annotations.tags.Tag(
@@ -191,6 +207,10 @@ public abstract class BaseOAuthClientASLocalMetadataResourceImpl
 	 *
 	 * curl -X 'POST' 'http://localhost:8080/o/oauth-client/v1.0/oauth-client-as-local-metadatas/batch'  -u 'test@liferay.com:test'
 	 */
+	@com.liferay.portal.vulcan.feature.flag.FeatureFlag("LPD-49855")
+	@io.swagger.v3.oas.annotations.Operation(
+		extensions = @io.swagger.v3.oas.annotations.extensions.Extension(name = "feature-flag", properties = @io.swagger.v3.oas.annotations.extensions.ExtensionProperty(name = "key", value = "LPD-49855"))
+	)
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -240,6 +260,10 @@ public abstract class BaseOAuthClientASLocalMetadataResourceImpl
 	 *
 	 * curl -X 'POST' 'http://localhost:8080/o/oauth-client/v1.0/oauth-client-as-local-metadatas/export-batch'  -u 'test@liferay.com:test'
 	 */
+	@com.liferay.portal.vulcan.feature.flag.FeatureFlag("LPD-49855")
+	@io.swagger.v3.oas.annotations.Operation(
+		extensions = @io.swagger.v3.oas.annotations.extensions.Extension(name = "feature-flag", properties = @io.swagger.v3.oas.annotations.extensions.ExtensionProperty(name = "key", value = "LPD-49855"))
+	)
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -305,6 +329,10 @@ public abstract class BaseOAuthClientASLocalMetadataResourceImpl
 	 *
 	 * curl -X 'PUT' 'http://localhost:8080/o/oauth-client/v1.0/oauth-client-as-local-metadata/by-external-reference-code/{externalReferenceCode}' -d $'{"dateCreated": ___, "dateModified": ___, "externalReferenceCode": ___, "issuer": ___, "localWellKnownEnabled": ___, "localWellKnownURI": ___, "metadataJSON": ___, "oAuthASLocalWellKnownURI": ___, "oAuthASMetadataJSON": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
 	 */
+	@com.liferay.portal.vulcan.feature.flag.FeatureFlag("LPD-49855")
+	@io.swagger.v3.oas.annotations.Operation(
+		extensions = @io.swagger.v3.oas.annotations.extensions.Extension(name = "feature-flag", properties = @io.swagger.v3.oas.annotations.extensions.ExtensionProperty(name = "key", value = "LPD-49855"))
+	)
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -1093,4 +1121,4 @@ public abstract class BaseOAuthClientASLocalMetadataResourceImpl
 		LogFactoryUtil.getLog(BaseOAuthClientASLocalMetadataResourceImpl.class);
 
 }
-// LIFERAY-REST-BUILDER-HASH:-57729632
+// LIFERAY-REST-BUILDER-HASH:1968794747

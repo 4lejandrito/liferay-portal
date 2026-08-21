@@ -38,6 +38,7 @@ import java.util.Map;
  * @author Alejandro Tardín
  * @generated
  */
+@com.liferay.portal.vulcan.feature.flag.FeatureFlag("LPD-63311")
 @Generated("")
 @jakarta.ws.rs.Path("/v1.0")
 public abstract class BaseToolResourceImpl implements ToolResource {
@@ -47,8 +48,10 @@ public abstract class BaseToolResourceImpl implements ToolResource {
 	 *
 	 * curl -X 'GET' 'http://localhost:8080/o/mcp-server/v1.0/tool-sets/{toolSetName}/tools/{toolName}'  -u 'test@liferay.com:test'
 	 */
+	@com.liferay.portal.vulcan.feature.flag.FeatureFlag("LPD-63311")
 	@io.swagger.v3.oas.annotations.Operation(
-		description = "Use this once you have identified a tool (via `getToolSetToolSetNameToolSummariesPage`) and need its input schema before invoking it. Returns the tool's `inputSchema`. Build an input map matching `inputSchema` and POST it to `invoke` under the same URL to execute the tool."
+		description = "Use this once you have identified a tool (via `getToolSetToolSetNameToolSummariesPage`) and need its input schema before invoking it. Returns the tool's `inputSchema`. Build an input map matching `inputSchema` and POST it to `invoke` under the same URL to execute the tool.",
+		extensions = @io.swagger.v3.oas.annotations.extensions.Extension(name = "feature-flag", properties = @io.swagger.v3.oas.annotations.extensions.ExtensionProperty(name = "key", value = "LPD-63311"))
 	)
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
@@ -90,8 +93,10 @@ public abstract class BaseToolResourceImpl implements ToolResource {
 	 *
 	 * curl -X 'POST' 'http://localhost:8080/o/mcp-server/v1.0/tool-sets/{toolSetName}/tools/{toolName}/invoke'  -u 'test@liferay.com:test'
 	 */
+	@com.liferay.portal.vulcan.feature.flag.FeatureFlag("LPD-63311")
 	@io.swagger.v3.oas.annotations.Operation(
 		description = "Invokes a tool. ALWAYS call `getToolSetToolSetNameTool` first to fetch the tool's `inputSchema`, then build the request `body` to match it exactly. Skipping `getToolSetToolSetNameTool` leads to malformed input and avoidable failures. Returns the tool's response body unchanged.",
+		extensions = @io.swagger.v3.oas.annotations.extensions.Extension(name = "feature-flag", properties = @io.swagger.v3.oas.annotations.extensions.ExtensionProperty(name = "key", value = "LPD-63311")),
 		operationId = "postToolSetToolSetNameToolInvoke",
 		requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json", schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = Object.class)), description = "The complete input map for the target tool, matching the `inputSchema` that `getToolSetToolSetNameTool` returns for this `toolName`. Use that schema's properties exactly as named: when the `inputSchema` declares a `body` property, it holds the request payload and must stay nested under `body` here rather than be flattened into this map; pass any path or query parameters as siblings of `body`. For example, a tool whose `inputSchema` has `body` and `itemId` properties is invoked with `{\"body\": {...}, \"itemId\": \"123\"}`.")
 	)
@@ -579,4 +584,4 @@ public abstract class BaseToolResourceImpl implements ToolResource {
 		LogFactoryUtil.getLog(BaseToolResourceImpl.class);
 
 }
-// LIFERAY-REST-BUILDER-HASH:355470292
+// LIFERAY-REST-BUILDER-HASH:-927161471

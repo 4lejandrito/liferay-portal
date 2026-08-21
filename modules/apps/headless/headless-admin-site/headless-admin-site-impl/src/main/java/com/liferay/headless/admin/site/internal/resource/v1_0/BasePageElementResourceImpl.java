@@ -71,8 +71,10 @@ public abstract class BasePageElementResourceImpl
 	 *
 	 * curl -X 'DELETE' 'http://localhost:8080/o/headless-admin-site/v1.0/sites/{siteExternalReferenceCode}/page-specifications/{pageSpecificationExternalReferenceCode}/page-experiences/{pageExperienceExternalReferenceCode}/page-elements/{pageElementExternalReferenceCode}'  -u 'test@liferay.com:test'
 	 */
+	@com.liferay.portal.vulcan.feature.flag.FeatureFlag("LPD-74328")
 	@io.swagger.v3.oas.annotations.Operation(
-		description = "Deletes a page element within an experience of a specific page specification of a site page within a site."
+		description = "Deletes a page element within an experience of a specific page specification of a site page within a site.",
+		extensions = @io.swagger.v3.oas.annotations.extensions.Extension(name = "feature-flag", properties = @io.swagger.v3.oas.annotations.extensions.ExtensionProperty(name = "key", value = "LPD-74328"))
 	)
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
@@ -128,8 +130,10 @@ public abstract class BasePageElementResourceImpl
 	 *
 	 * curl -X 'GET' 'http://localhost:8080/o/headless-admin-site/v1.0/sites/{siteExternalReferenceCode}/page-specifications/{pageSpecificationExternalReferenceCode}/page-experiences/{pageExperienceExternalReferenceCode}/page-elements/{pageElementExternalReferenceCode}'  -u 'test@liferay.com:test'
 	 */
+	@com.liferay.portal.vulcan.feature.flag.FeatureFlag("LPD-74328")
 	@io.swagger.v3.oas.annotations.Operation(
-		description = "Retrieves a page element within an experience of a specific page specification of a site page within a site."
+		description = "Retrieves a page element within an experience of a specific page specification of a site page within a site.",
+		extensions = @io.swagger.v3.oas.annotations.extensions.Extension(name = "feature-flag", properties = @io.swagger.v3.oas.annotations.extensions.ExtensionProperty(name = "key", value = "LPD-74328"))
 	)
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
@@ -199,8 +203,10 @@ public abstract class BasePageElementResourceImpl
 	 *
 	 * curl -X 'GET' 'http://localhost:8080/o/headless-admin-site/v1.0/sites/{siteExternalReferenceCode}/page-specifications/{pageSpecificationExternalReferenceCode}/page-experiences/{pageExperienceExternalReferenceCode}/page-elements/{pageElementExternalReferenceCode}/page-elements'  -u 'test@liferay.com:test'
 	 */
+	@com.liferay.portal.vulcan.feature.flag.FeatureFlag("LPD-74328")
 	@io.swagger.v3.oas.annotations.Operation(
-		description = "Retrieves all the descendant page elements of a page element within an experience in a page specification of a site page."
+		description = "Retrieves all the descendant page elements of a page element within an experience in a page specification of a site page.",
+		extensions = @io.swagger.v3.oas.annotations.extensions.Extension(name = "feature-flag", properties = @io.swagger.v3.oas.annotations.extensions.ExtensionProperty(name = "key", value = "LPD-74328"))
 	)
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
@@ -280,8 +286,10 @@ public abstract class BasePageElementResourceImpl
 	 *
 	 * curl -X 'GET' 'http://localhost:8080/o/headless-admin-site/v1.0/sites/{siteExternalReferenceCode}/page-specifications/{pageSpecificationExternalReferenceCode}/page-experiences/{pageExperienceExternalReferenceCode}/page-elements'  -u 'test@liferay.com:test'
 	 */
+	@com.liferay.portal.vulcan.feature.flag.FeatureFlag("LPD-74328")
 	@io.swagger.v3.oas.annotations.Operation(
-		description = "Retrieves all the page elements within an experience in a page specification of a site page."
+		description = "Retrieves all the page elements within an experience in a page specification of a site page.",
+		extensions = @io.swagger.v3.oas.annotations.extensions.Extension(name = "feature-flag", properties = @io.swagger.v3.oas.annotations.extensions.ExtensionProperty(name = "key", value = "LPD-74328"))
 	)
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
@@ -452,8 +460,10 @@ public abstract class BasePageElementResourceImpl
 	 *
 	 * curl -X 'POST' 'http://localhost:8080/o/headless-admin-site/v1.0/sites/{siteExternalReferenceCode}/page-specifications/{pageSpecificationExternalReferenceCode}/page-experiences/{pageExperienceExternalReferenceCode}/page-elements' -d $'{"externalReferenceCode": ___, "pageElementDefinition": ___, "pageElements": ___, "parentExternalReferenceCode": ___, "position": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
 	 */
+	@com.liferay.portal.vulcan.feature.flag.FeatureFlag("LPD-74328")
 	@io.swagger.v3.oas.annotations.Operation(
-		description = "Adds a new page element to an experience in a page specification in draft status of a site page."
+		description = "Adds a new page element to an experience in a page specification in draft status of a site page.",
+		extensions = @io.swagger.v3.oas.annotations.extensions.Extension(name = "feature-flag", properties = @io.swagger.v3.oas.annotations.extensions.ExtensionProperty(name = "key", value = "LPD-74328"))
 	)
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
@@ -517,8 +527,10 @@ public abstract class BasePageElementResourceImpl
 	 *
 	 * curl -X 'PUT' 'http://localhost:8080/o/headless-admin-site/v1.0/sites/{siteExternalReferenceCode}/page-specifications/{pageSpecificationExternalReferenceCode}/page-experiences/{pageExperienceExternalReferenceCode}/page-elements/{pageElementExternalReferenceCode}' -d $'{"externalReferenceCode": ___, "pageElementDefinition": ___, "pageElements": ___, "parentExternalReferenceCode": ___, "position": ___}' --header 'Content-Type: application/json' -u 'test@liferay.com:test'
 	 */
+	@com.liferay.portal.vulcan.feature.flag.FeatureFlag("LPD-74328")
 	@io.swagger.v3.oas.annotations.Operation(
-		description = "Updates a page element within an experience of a specific page specification of a site page within a site."
+		description = "Updates a page element within an experience of a specific page specification of a site page within a site.",
+		extensions = @io.swagger.v3.oas.annotations.extensions.Extension(name = "feature-flag", properties = @io.swagger.v3.oas.annotations.extensions.ExtensionProperty(name = "key", value = "LPD-74328"))
 	)
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
@@ -1248,4 +1260,4 @@ public abstract class BasePageElementResourceImpl
 		LogFactoryUtil.getLog(BasePageElementResourceImpl.class);
 
 }
-// LIFERAY-REST-BUILDER-HASH:1007731562
+// LIFERAY-REST-BUILDER-HASH:564522356
