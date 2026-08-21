@@ -16,10 +16,12 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.remote.jaxrs.whiteboard.lifecycle.JAXRSLifecycle;
 import com.liferay.portal.vulcan.application.HeadlessApplicationProvider;
+import com.liferay.portal.vulcan.internal.feature.flag.FeatureFlagUtil;
 
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -98,10 +100,12 @@ public class HeadlessApplicationProviderImpl
 		long companyId = CompanyThreadLocal.getCompanyId();
 
 		for (ApplicationImpl applicationImpl : applicationImpls) {
-			if (_isRegistered(
-					companyId,
-					_companyIdsServiceTrackerMap.getService(
-						applicationImpl._applicationDTO.serviceId))) {
+			ServiceReference<?> serviceReference =
+				_applicationServiceTrackerMap.getService(
+					applicationImpl._applicationDTO.serviceId);
+
+			if (_isRegistered(companyId, serviceReference) &&
+				_isEnabled(companyId, serviceReference)) {
 
 				applications.add(applicationImpl);
 			}
@@ -145,10 +149,10 @@ public class HeadlessApplicationProviderImpl
 
 			});
 
-		_companyIdsServiceTrackerMap =
+		_applicationServiceTrackerMap =
 			ServiceTrackerMapFactory.openSingleValueMap(
 				bundleContext, null,
-				"(&(objectClass=jakarta.ws.rs.core.Application)(companyId=*))",
+				"(objectClass=jakarta.ws.rs.core.Application)",
 				new PropertyServiceReferenceMapper<>(Constants.SERVICE_ID),
 				new ServiceTrackerCustomizer<>() {
 
@@ -184,7 +188,7 @@ public class HeadlessApplicationProviderImpl
 	@Deactivate
 	protected void deactivate() {
 		_jaxrsServiceRuntimeServiceTracker.close();
-		_companyIdsServiceTrackerMap.close();
+		_applicationServiceTrackerMap.close();
 		_openAPIResourceServiceTrackerMap.close();
 	}
 
@@ -297,6 +301,23 @@ public class HeadlessApplicationProviderImpl
 		};
 	}
 
+	private boolean _isEnabled(
+		long companyId, ServiceReference<?> serviceReference) {
+
+		if (serviceReference == null) {
+			return true;
+		}
+
+		String featureFlagKey = GetterUtil.getString(
+			serviceReference.getProperty("feature.flag.key"), null);
+
+		if (Validator.isNull(featureFlagKey)) {
+			return true;
+		}
+
+		return FeatureFlagUtil.isEnabled(companyId, featureFlagKey);
+	}
+
 	private boolean _isRegistered(
 		long companyId, ServiceReference<?> serviceReference) {
 
@@ -326,7 +347,7 @@ public class HeadlessApplicationProviderImpl
 
 	private volatile List<ApplicationImpl> _applicationImpls;
 	private ServiceTrackerMap<Long, ServiceReference<?>>
-		_companyIdsServiceTrackerMap;
+		_applicationServiceTrackerMap;
 
 	@Reference
 	private JAXRSLifecycle _jaxrsLifecycle;

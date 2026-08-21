@@ -234,6 +234,8 @@ public class RESTBuilder {
 		FreeMarkerTool freeMarkerTool = FreeMarkerTool.getInstance();
 
 		Map<String, Object> context = HashMapBuilder.<String, Object>put(
+			"applicationFeatureFlag", _getApplicationFeatureFlag()
+		).put(
 			"configYAML", _configYAML
 		).put(
 			"freeMarkerTool", freeMarkerTool
@@ -1997,6 +1999,31 @@ public class RESTBuilder {
 		}
 
 		return yamlString;
+	}
+
+	private String _getApplicationFeatureFlag() throws Exception {
+		for (File openAPIYAMLFile :
+				FileUtil.getFiles(_configDir, "rest-openapi", ".yaml")) {
+
+			String yamlString = FileUtil.read(openAPIYAMLFile);
+
+			if (!_validateOpenAPIYAML(
+					openAPIYAMLFile.getName(), yamlString, new ArrayList<>())) {
+
+				continue;
+			}
+
+			OpenAPIYAML openAPIYAML = OpenAPIParserUtil.loadOpenAPIYAML(
+				yamlString);
+
+			Info info = openAPIYAML.getInfo();
+
+			if ((info != null) && Validator.isNotNull(info.getFeatureFlag())) {
+				return info.getFeatureFlag();
+			}
+		}
+
+		return null;
 	}
 
 	private String _getClientMavenGroupId(String apiPackagePath) {

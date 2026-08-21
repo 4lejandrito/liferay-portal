@@ -13,6 +13,9 @@ import org.osgi.service.component.annotations.Component;
 @Component(
 	<#if configYAML.liferayEnterpriseApp>enabled = false,</#if>
 	property = {
+		<#if applicationFeatureFlag??>
+		"feature.flag.key=${applicationFeatureFlag}",
+		</#if>
 		"liferay.jackson=false",
 		"osgi.jaxrs.application.base=${configYAML.application.baseURI}",
 		"osgi.jaxrs.extension.select=(osgi.jaxrs.name=Liferay.Vulcan)",

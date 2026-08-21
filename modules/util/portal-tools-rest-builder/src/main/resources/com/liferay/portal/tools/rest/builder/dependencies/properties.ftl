@@ -8,13 +8,9 @@ api.version=${openAPIYAML.info.version}
 	javaMethodSignatures = freeMarkerTool.getResourceJavaMethodSignatures(configYAML, openAPIYAML, schemaName)
 	generateBatch = freeMarkerTool.generateBatch(configYAML, javaDataType, javaMethodSignatures, schemaName)
 	generateCRUD = freeMarkerTool.generateCRUD(configYAML, javaMethodSignatures, schemaName)
+	openAPISchema = stringUtil.equals(schemaName, "openapi")
 />
-<#if stringUtil.equals(schemaName, "openapi")>
-openapi.resource=true
-<#if configYAML.application??>
-openapi.resource.path=${configYAML.application.baseURI}
-</#if>
-<#elseif generateBatch>
+<#if !openAPISchema && generateBatch>
 batch.engine.entity.class.name=${javaDataType}
 batch.engine.task.item.delegate=true
 batch.planner.export.enabled=${freeMarkerTool.hasReadVulcanBatchImplementation(configYAML, javaMethodSignatures)?c}
@@ -26,6 +22,15 @@ crud.item.delegate=true
 </#if>
 <#if javaDataType?has_content>
 entity.class.name=${javaDataType}
+</#if>
+<#if openAPIYAML.info.featureFlag??>
+feature.flag.key=${openAPIYAML.info.featureFlag}
+</#if>
+<#if openAPISchema>
+openapi.resource=true
+<#if configYAML.application??>
+openapi.resource.path=${configYAML.application.baseURI}
+</#if>
 </#if>
 <#if configYAML.resourceApplicationSelect??>
 osgi.jaxrs.application.select=${configYAML.resourceApplicationSelect}
