@@ -771,6 +771,8 @@ public class ResourceOpenAPIParser {
 			batchOperation.setDeprecated(true);
 		}
 
+		batchOperation.setFeatureFlag(operation.getFeatureFlag());
+
 		batchOperation.setParameters(
 			_getBatchParameters(
 				batchOperationType, configYAML, operation, schemaName));
