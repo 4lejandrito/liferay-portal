@@ -19,7 +19,6 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.MapUtil;
-import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.TextFormatter;
 import com.liferay.portal.vulcan.extension.EntityExtensionHandler;
@@ -743,19 +742,17 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 					_getBasePath(null, uriInfo), _extensionProviderRegistry,
 					resourceClasses));
 
-		if (mergedOpenAPISchemaFilter != null) {
-			SpecFilter specFilter = new SpecFilter();
+		Map<String, List<String>> queryParameters = null;
 
-			Map<String, List<String>> queryParameters = null;
-
-			if (uriInfo != null) {
-				queryParameters = uriInfo.getQueryParameters();
-			}
-
-			openAPI = specFilter.filter(
-				openAPI, _toOpenAPISpecFilter(mergedOpenAPISchemaFilter),
-				queryParameters, null, null);
+		if (uriInfo != null) {
+			queryParameters = uriInfo.getQueryParameters();
 		}
+
+		SpecFilter specFilter = new SpecFilter();
+
+		openAPI = specFilter.filter(
+			openAPI, _toOpenAPISpecFilter(mergedOpenAPISchemaFilter),
+			queryParameters, null, null);
 
 		if (openAPI == null) {
 			return Response.status(
@@ -802,18 +799,12 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 			Set<Class<?>> resourceClasses)
 		throws Exception {
 
-		Set<String> classNames = _getDTOClassNames(resourceClasses);
-
-		if (SetUtil.isEmpty(classNames)) {
-			return null;
-		}
-
-		long companyId = CompanyThreadLocal.getCompanyId();
-
 		Map<String, List<PropertyDefinition>> propertyDefinitionsMap =
 			new HashMap<>();
 
-		for (String className : classNames) {
+		long companyId = CompanyThreadLocal.getCompanyId();
+
+		for (String className : _getDTOClassNames(resourceClasses)) {
 			List<PropertyDefinition> propertyDefinitions =
 				_getExtendedPropertyDefinitions(
 					className, companyId, extensionProviderRegistry);
@@ -823,11 +814,7 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 			}
 		}
 
-		if (MapUtil.isNotEmpty(propertyDefinitionsMap)) {
-			return _getOpenAPISchemaFilter(basePath, propertyDefinitionsMap);
-		}
-
-		return null;
+		return _getOpenAPISchemaFilter(basePath, propertyDefinitionsMap);
 	}
 
 	private OpenAPISchemaFilter _getOpenAPISchemaFilter(
@@ -956,7 +943,16 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 
 				Components components = openAPI.getComponents();
 
-				Map<String, Schema> schemas = components.getSchemas();
+				Map<String, Schema> schemas = null;
+
+				if (components != null) {
+					schemas = components.getSchemas();
+				}
+
+				if (MapUtil.isEmpty(schemas)) {
+					return super.filterOpenAPI(
+						openAPI, params, cookies, headers);
+				}
 
 				for (Map.Entry<String, String> entry :
 						schemaMappings.entrySet()) {
