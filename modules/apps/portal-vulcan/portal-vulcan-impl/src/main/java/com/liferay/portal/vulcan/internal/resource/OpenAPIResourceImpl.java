@@ -86,7 +86,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -679,7 +678,7 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 			return null;
 		}
 
-		Object value = extensions.get(_FEATURE_FLAG_EXTENSION_NAME);
+		Object value = extensions.get("x-feature-flag");
 
 		if (value instanceof Map) {
 			Map<?, ?> map = (Map<?, ?>)value;
@@ -732,8 +731,6 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 			});
 
 		OpenAPI openAPI = openApiContext.read();
-
-		_removeFeatureFlaggedOperations(openAPI);
 
 		OpenAPISchemaFilter mergedOpenAPISchemaFilter =
 			_mergeOpenAPISchemaFilters(
@@ -890,40 +887,6 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 		return mergedOpenAPISchemaFilter;
 	}
 
-	private void _removeFeatureFlaggedOperations(OpenAPI openAPI) {
-		Paths paths = openAPI.getPaths();
-
-		if (MapUtil.isEmpty(paths)) {
-			return;
-		}
-
-		Iterator<Map.Entry<String, PathItem>> iterator = paths.entrySet(
-		).iterator();
-
-		while (iterator.hasNext()) {
-			Map.Entry<String, PathItem> entry = iterator.next();
-
-			PathItem pathItem = entry.getValue();
-
-			boolean removed = false;
-
-			for (Map.Entry<PathItem.HttpMethod, Operation> operationEntry :
-					pathItem.readOperationsMap(
-					).entrySet()) {
-
-				if (_isFeatureFlagDisabled(operationEntry.getValue())) {
-					pathItem.operation(operationEntry.getKey(), null);
-
-					removed = true;
-				}
-			}
-
-			if (removed && ListUtil.isEmpty(pathItem.readOperations())) {
-				iterator.remove();
-			}
-		}
-	}
-
 	private OpenAPISpecFilter _toOpenAPISpecFilter(
 		OpenAPISchemaFilter openAPISchemaFilter) {
 
@@ -999,7 +962,9 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 						CompanyThreadLocal.getCompanyId(), _configurationAdmin,
 						openAPISchemaFilter.getApplicationPath());
 
-				if (excludedOperationIds.contains(operationId)) {
+				if (excludedOperationIds.contains(operationId) ||
+					_isFeatureFlagDisabled(operation)) {
+
 					return Optional.empty();
 				}
 
@@ -1511,8 +1476,6 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 			}
 		}
 	}
-
-	private static final String _FEATURE_FLAG_EXTENSION_NAME = "x-feature-flag";
 
 	private static final Pattern _pattern = Pattern.compile(
 		"\\{(.*)(:.*)(/?)\\}");
