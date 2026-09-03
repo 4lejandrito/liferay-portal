@@ -1063,3 +1063,355 @@ When you rename a local, propagate the new name to every call site, every parame
 -some-key=Alpha of the bravo
 +some-key=Alpha of the Bravo
 ```
+
+### Rule 49: Do Not Chain Method Calls
+
+**Why:** Extracting each intermediate result to a named local makes every step's type and source visible at a glance, and gives the reader a searchable name for each intermediate value.
+
+**Examples:**
+
+```diff
+-String type = DBManagerUtil.getDB().getDBType();
++DB db = DBManagerUtil.getDB();
++String type = db.getDBType();
+```
+
+```diff
+-Thread.currentThread().interrupt();
++Thread currentThread = Thread.currentThread();
++currentThread.interrupt();
+```
+
+Builder APIs (`.put(...).put(...)`, `.name(...).build()`) and fluent stream pipelines (`.filter(...).map(...).collect(...)`) are exempt — they form a single declarative expression.
+
+Rule 12 (inline single-use locals) defers to this rule: when inlining a local would produce a two-call chain, keep the intermediate local.
+
+### Rule 50: Test Method Names Mirror the Method Under Test
+
+**Why:** A test named after the method it exercises makes jump-to-test unambiguous and signals which production method broke when the test fails.
+
+**Examples:**
+
+```diff
+-public void testFooWhenBarBazIsNull() throws Exception {
++public void testFoo() throws Exception {
+```
+
+```diff
+-public void testProcessRequestWithAuthentication() throws Exception {
++public void testProcessRequest() throws Exception {
+```
+
+When multiple scenarios must be tested for the same method, put them all in one `testFoo()` method and separate them with `//` section comments. Rule 10 governs predicate-clause phrasing for private helper methods (e.g., `_testFooWhenBarBazIsNull`) where a descriptive suffix is still needed.
+
+### Rule 51: Functional-Type Variables Include the Type Suffix
+
+**Why:** A `Function`, `Predicate`, `Consumer`, or `Supplier` variable named only by its domain role reads as a plain value at a glance; the type word signals that it must be called, not just read.
+
+**Examples:**
+
+```diff
+-Function<Object, Object[]> argsExtractor
++Function<Object, Object[]> argsExtractorFunction
+```
+
+```diff
+-private static final Function<Object, String> _EMPTY_PROVIDER =
++private static final Function<Object, String> _EMPTY_PROVIDER_FUNCTION =
+```
+
+This is an exception to Rule 5's pattern of avoiding type suffixes for collection variables: `Function`, `Predicate`, `Consumer`, and `Supplier` types are exempt because the type itself conveys the calling convention.
+
+### Rule 52: Use Ordinal English for Sequence Variables
+
+**Why:** `firstEvent` reads as natural English; `event1` reads as an array index, even when neither is an array element.
+
+**Examples:**
+
+```diff
+-Event event1 = createEvent();
+-Event event2 = createEvent();
++Event firstEvent = createEvent();
++Event secondEvent = createEvent();
+```
+
+```diff
+-Account account1 = createAccount("alpha");
+-Account account2 = createAccount("beta");
++Account firstAccount = createAccount("alpha");
++Account secondAccount = createAccount("beta");
+```
+
+### Rule 53: Sort if/else-if Chains When Discriminating on String Literals
+
+**Why:** When a chain of `if (...equals("x"))` branches has no inherent ordering, alphabetical order turns it into a look-up table that is easy to scan and audit for completeness.
+
+**Examples:**
+
+```diff
+-if (name.equals("gamma")) { ... }
+-else if (name.equals("alpha")) { ... }
+-else if (name.equals("beta")) { ... }
++if (name.equals("alpha")) { ... }
++else if (name.equals("beta")) { ... }
++else if (name.equals("gamma")) { ... }
+```
+
+### Rule 54: Log Messages Use Liferay Prose Conventions
+
+**Why:** Sentence-style prose is readable in isolation; `key=value` fragments and comma-spliced clauses are not.
+
+**Examples:**
+
+Do not use `key=value` pairs — use sentence form:
+
+```diff
+-_log.info("POST update: id=" + id + ", body=" + json);
++_log.info("Updated entry " + id);
+```
+
+Failure messages begin with `"Unable to <verb>"` (see Rule 18):
+
+```diff
+-_log.warn("Error updating entry " + id);
++_log.warn("Unable to update entry " + id);
+```
+
+Use one sentence fragment — no comma-joined clauses:
+
+```diff
+-_log.warn("Query " + id + ", which has run for " + seconds + " seconds, is locked.");
++_log.warn("Locked query " + id + " running for " + seconds + " seconds");
+```
+
+Do not embed camelCase identifiers — spell them out as words:
+
+```diff
+-_log.info("Skipping restorePhase reset.");
++_log.info("Skipping restore phase reset.");
+```
+
+### Rule 55: Build JSON Programmatically With JSONUtil, Not String Literals
+
+**Why:** Raw escaped JSON string literals break silently on spacing or key-ordering changes and are opaque in diffs; `JSONUtil.put(...)` produces structured, readable output.
+
+**Examples:**
+
+```diff
+-String json = "{\"backURL\": true, \"link\": \"/web/view\"}";
++String json = String.valueOf(
++	JSONUtil.put(
++		"backURL", true
++	).put(
++		"link", "/web/view"));
+```
+
+When the builder grows beyond two or three levels, extract intermediate objects to named locals:
+
+```diff
+-JSONUtil.put("outer", JSONUtil.put("inner", JSONUtil.put("leaf", value)));
++JSONObject leafJSONObject = JSONUtil.put("leaf", value);
++JSONObject innerJSONObject = JSONUtil.put("inner", leafJSONObject);
++JSONUtil.put("outer", innerJSONObject);
+```
+
+The rule applies equally to production code and test fixtures.
+
+### Rule 56: Extract a String Constant Only When It Appears Three or More Times
+
+**Why:** A constant used once or twice is clearer as an inline literal — the reader sees the value directly, without jumping to a declaration block.
+
+**Examples:**
+
+Two uses: keep the literal inline.
+
+```diff
+-private static final String _FOO_KEY = "foo";
+-
+ public void methodA() {
+-	map.put(_FOO_KEY, value);
++	map.put("foo", value);
+ }
+
+ public void methodB() {
+-	return map.get(_FOO_KEY);
++	return map.get("foo");
+ }
+```
+
+Three or more uses: promote to a constant.
+
+```diff
++private static final String _GROUP_DISPLAY_URL = "groupDisplayURL";
++
+ Mockito.when(serviceA.getUrl()).thenReturn(_GROUP_DISPLAY_URL);
+ Mockito.when(serviceB.getUrl()).thenReturn(_GROUP_DISPLAY_URL);
+ Mockito.when(serviceC.getUrl()).thenReturn(_GROUP_DISPLAY_URL);
+```
+
+### Rule 57: Method Name Includes the Concrete Return Type
+
+**Why:** When the return type is `RunningQuery`, the method name should include `RunningQuery` — the reader can predict the return type from the name without checking the signature.
+
+**Examples:**
+
+```diff
+-public List<AccountMetric> getAccountOverview() {
++public List<AccountMetric> getAccountMetrics() {
+```
+
+```diff
+-public RunningQuery getLockedQuery() {
++public RunningQuery getLockedRunningQuery() {
+```
+
+Rule 25 is a corollary: when the return type is a collection, the name is plural. This rule generalizes it — the method name must include the concrete type name, not a synonym or abstraction.
+
+### Rule 58: Merge Sequential Independent try-with-resources Blocks
+
+**Why:** Two nested `try` blocks for unrelated `AutoCloseable` resources double the indentation for no benefit; a single `try (r1; r2)` block is flatter and reads as one unit.
+
+**Examples:**
+
+```diff
+-try (LogCapture logCapture = LoggerTestUtil.configureLevel()) {
+-	try (ContextUserReplace contextUserReplace = new ContextUserReplace(user)) {
+-		doWork();
+-	}
+-}
++try (
++	LogCapture logCapture = LoggerTestUtil.configureLevel();
++	ContextUserReplace contextUserReplace = new ContextUserReplace(user)) {
++
++	doWork();
++}
+```
+
+Reserve nesting for the case where the second resource genuinely depends on the first — see Rule 43 for the blank-line separator that marks that dependency.
+
+### Rule 59: Inline Section Header Comments Use Sentence Case
+
+**Why:** Inline section headers are prose, not titles; only the first word is capitalized.
+
+**Examples:**
+
+```diff
+-// Commerce Shipment
++// Commerce shipment
+```
+
+```diff
+-// Commerce Shipment Items
++// Commerce shipment items
+```
+
+### Rule 60: No Blank Lines Within a Consecutive Setter or Assertion Block
+
+**Why:** All setter calls on the same target form one logical step; a blank line between them implies a paragraph boundary that does not exist.
+
+**Examples:**
+
+Setter block on the same object:
+
+```diff
+ foo.setAlpha(alpha);
+-
+ foo.setBeta(beta);
+ foo.setGamma(gamma);
+```
+
+Consecutive assertions in the same verification block:
+
+```diff
+ Assert.assertEquals("alpha", result.getAlpha());
+-
+ Assert.assertEquals("beta", result.getBeta());
+```
+
+This is a clarification of Rule 23: the blank-line rule that separates paragraphs does not apply inside a single setter or assertion block.
+
+### Rule 61: A String Variable Holding JSON, HTML, or XML Drops the "String" Suffix
+
+**Why:** When a variable name already ends in `JSON`, `HTML`, or `XML`, the content type is fully expressed; appending `String` restates what the declared type already conveys.
+
+**Examples:**
+
+```diff
+-String statusJSONString = fetchStatus();
++String statusJSON = fetchStatus();
+```
+
+```diff
+-String responseJSONString = client.get(url);
++String responseJSON = client.get(url);
+```
+
+This is a carve-out from Rule 5: the general `String` suffix rule applies when the variable name is a plain domain noun (`fooString`); it does not apply when the name already contains a content-type token (`JSON`, `HTML`, `XML`) that makes the format self-evident.
+
+### Rule 62: Shell Scripts Wrap Top-Level Logic in `function main()`
+
+**Why:** Top-level variables in a shell script are global by default; wrapping the body in `function main()` confines them to function scope without requiring `local` declarations on every variable.
+
+**Examples:**
+
+```diff
+-for test in "${tests[@]}"; do
+-	run_test "${test}"
+-done
++function main() {
++	for test in "${tests[@]}"; do
++		run_test "${test}"
++	done
++}
++
++main "$@"
+```
+
+When the script also needs fail-fast guards, the call site is a subshell wrapper:
+
+```bash
+( set -o errexit; set -o nounset; set -o pipefail; main "${@}" ) || exit 1
+```
+
+### Rule 63: Shell, SVG, and CSS Filenames Use Underscores as Word Separators
+
+**Why:** Existing shell scripts, SVG icons, and CSS files in the codebase use `_`; hyphens diverge from the established convention and signal AI-generated naming.
+
+**Examples:**
+
+```diff
+-my-script.sh
++my_script.sh
+```
+
+```diff
+-my-icon-name.svg
++my_icon_name.svg
+```
+
+### Rule 64: Log Messages Do Not Contain Jira Ticket IDs
+
+**Why:** Ticket IDs in log output are noise for anyone without Jira access, and the reference becomes stale once the ticket is closed.
+
+**Examples:**
+
+```diff
+-_log.warn("Unable to process request (LPD-12345)");
++_log.warn("Unable to process request");
+```
+
+### Rule 65: Log Messages Spell Out Internal Identifiers as Human-Readable Words
+
+**Why:** Java field-name syntax (`classNameId`, `classPK`) is code, not English; readers of log output expect natural language.
+
+**Examples:**
+
+```diff
+-_log.warn("Entry not found for classNameId " + classNameId);
++_log.warn("Entry not found for class name ID " + classNameId);
+```
+
+```diff
+-_log.warn("Entry not found for classPK " + classPK);
++_log.warn("Entry not found for class primary key " + classPK);
+```
