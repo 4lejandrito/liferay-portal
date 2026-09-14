@@ -143,6 +143,11 @@ public class VulcanBatchEngineTaskItemDelegateAdaptor<T>
 	}
 
 	@Override
+	public boolean isBatchModeEnabled() {
+		return _vulcanBatchEngineTaskItemDelegate.isBatchModeEnabled();
+	}
+
+	@Override
 	public Page<T> read(
 			Filter filter, Pagination pagination, Sort[] sorts,
 			Map<String, Serializable> parameters, String search)

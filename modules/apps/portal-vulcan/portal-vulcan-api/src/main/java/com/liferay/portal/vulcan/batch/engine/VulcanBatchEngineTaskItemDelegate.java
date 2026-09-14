@@ -74,6 +74,17 @@ public interface VulcanBatchEngineTaskItemDelegate<T> {
 		return "v1.0";
 	}
 
+	/**
+	 * Returns <code>true</code> if the items of this delegate must run in
+	 * batch mode. Batch mode defers search indexing and makes model listeners
+	 * skip work that is redone once the import finishes, which suits importing
+	 * plain records in bulk. Return <code>false</code> when a single item is a
+	 * composite operation that depends on those listeners and on indexing.
+	 */
+	public default boolean isBatchModeEnabled() {
+		return true;
+	}
+
 	public Page<T> read(
 			Filter filter, Pagination pagination, Sort[] sorts,
 			Map<String, Serializable> parameters, String search)

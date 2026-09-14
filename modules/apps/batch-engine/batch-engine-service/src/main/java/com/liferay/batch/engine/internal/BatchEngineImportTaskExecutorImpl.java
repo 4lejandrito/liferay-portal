@@ -141,8 +141,8 @@ public class BatchEngineImportTaskExecutorImpl
 			return;
 		}
 
-		try (SafeCloseable safeCloseable2 = SearchContext.openBatchMode()) {
-			BatchEngineThreadLocal.setBatchImportInProcess(true);
+		try (SafeCloseable safeCloseable2 = _openBatchMode(
+				batchEngineTaskItemDelegate)) {
 
 			batchEngineImportTask.setExecuteStatus(
 				BatchEngineTaskExecuteStatus.STARTED.toString());
@@ -611,6 +611,24 @@ public class BatchEngineImportTaskExecutorImpl
 		}
 
 		return value;
+	}
+
+	private SafeCloseable _openBatchMode(
+		BatchEngineTaskItemDelegate<?> batchEngineTaskItemDelegate) {
+
+		// A delegate whose items are composite operations opts out of batch
+		// mode, because deferring indexing and making model listeners skip
+		// work leaves the items it creates in a different state than the
+		// synchronous operation produces.
+
+		if (!batchEngineTaskItemDelegate.isBatchModeEnabled()) {
+			return () -> {
+			};
+		}
+
+		BatchEngineThreadLocal.setBatchImportInProcess(true);
+
+		return SearchContext.openBatchMode();
 	}
 
 	private Map<String, Object> _processFieldNameValueMap(
