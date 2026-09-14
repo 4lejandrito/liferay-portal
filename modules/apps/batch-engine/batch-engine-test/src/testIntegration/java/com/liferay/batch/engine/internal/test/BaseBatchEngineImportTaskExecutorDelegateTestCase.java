@@ -23,6 +23,9 @@ import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.kernel.transaction.Propagation;
+import com.liferay.portal.kernel.transaction.TransactionConfig;
+import com.liferay.portal.kernel.transaction.TransactionInvokerUtil;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
@@ -65,6 +68,7 @@ public abstract class BaseBatchEngineImportTaskExecutorDelegateTestCase {
 				BatchEngineThreadLocal.isBatchImportInProcess();
 			_batchMode = SearchContext.isBatchMode();
 			_createItemInvoked = true;
+			_transactionActive = _isTransactionActive();
 
 			return blogPosting;
 		}
@@ -86,6 +90,10 @@ public abstract class BaseBatchEngineImportTaskExecutorDelegateTestCase {
 			return _createItemInvoked;
 		}
 
+		public boolean isTransactionActive() {
+			return _transactionActive;
+		}
+
 		@Override
 		public Page<BlogPosting> read(
 			Filter filter, Pagination pagination, Sort[] sorts,
@@ -94,9 +102,31 @@ public abstract class BaseBatchEngineImportTaskExecutorDelegateTestCase {
 			return Page.of(Collections.emptyList(), pagination, 0);
 		}
 
+		private boolean _isTransactionActive() {
+
+			// Propagation.MANDATORY fails when no transaction is active, which
+			// is the only way to observe from inside an item whether the
+			// executor wrapped it in one.
+
+			try {
+				TransactionInvokerUtil.invoke(
+					_mandatoryTransactionConfig, () -> null);
+
+				return true;
+			}
+			catch (Throwable throwable) {
+				return false;
+			}
+		}
+
+		private static final TransactionConfig _mandatoryTransactionConfig =
+			TransactionConfig.Factory.create(
+				Propagation.MANDATORY, new Class<?>[] {Exception.class});
+
 		private boolean _batchImportInProcess;
 		private boolean _batchMode;
 		private boolean _createItemInvoked;
+		private boolean _transactionActive;
 
 	}
 
@@ -159,6 +189,7 @@ public abstract class BaseBatchEngineImportTaskExecutorDelegateTestCase {
 
 			return byteArrayOutputStream.toByteArray();
 		}
+
 	}
 
 	private static final int _BATCH_SIZE = 10;

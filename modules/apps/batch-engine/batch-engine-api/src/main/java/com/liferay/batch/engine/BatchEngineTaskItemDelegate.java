@@ -13,6 +13,7 @@ import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.filter.Filter;
+import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.odata.entity.EntityModel;
 
 import jakarta.ws.rs.core.UriInfo;
@@ -49,6 +50,17 @@ public interface BatchEngineTaskItemDelegate<T> {
 
 	public default Class<T> getItemClass() {
 		return null;
+	}
+
+	/**
+	 * Returns the transaction propagation each item of this delegate runs
+	 * under. The default nested savepoint lets a failing item roll back
+	 * without poisoning the shared connection. Return
+	 * {@link Propagation#NOT_SUPPORTED} when an item issues DDL, because an
+	 * implicit commit discards the savepoint the executor relies on.
+	 */
+	public default Propagation getTransactionPropagation() {
+		return Propagation.NESTED;
 	}
 
 	public default String getVersion() {

@@ -15,6 +15,7 @@ import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ResourceActionLocalService;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
 import com.liferay.portal.kernel.service.RoleLocalService;
+import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.odata.entity.EntityModel;
 import com.liferay.portal.vulcan.fields.NestedFieldsContext;
 import com.liferay.portal.vulcan.pagination.Page;
@@ -68,6 +69,17 @@ public interface VulcanBatchEngineTaskItemDelegate<T> {
 
 	public default String getResourceName() {
 		return null;
+	}
+
+	/**
+	 * Returns the transaction propagation each item of this delegate runs
+	 * under. The default nested savepoint lets a failing item roll back
+	 * without poisoning the shared connection. Return
+	 * {@link Propagation#NOT_SUPPORTED} when an item issues DDL, because an
+	 * implicit commit discards the savepoint the executor relies on.
+	 */
+	public default Propagation getTransactionPropagation() {
+		return Propagation.NESTED;
 	}
 
 	public default String getVersion() {
