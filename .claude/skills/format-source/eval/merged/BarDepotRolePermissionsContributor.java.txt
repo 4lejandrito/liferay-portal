@@ -1,0 +1,69 @@
+package com.liferay.example.internal.security.permission.contributor;
+
+import com.liferay.depot.constants.DepotRolesConstants;
+import com.liferay.depot.role.DepotRolePermission;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.util.ListUtil;
+
+import java.util.List;
+
+import org.osgi.service.component.annotations.Component;
+
+/**
+ * @author Example Author
+ */
+@Component(service = DepotRolePermissionsContributor.class)
+public class BarDepotRolePermissionsContributor
+	implements DepotRolePermissionsContributor {
+
+	@Override
+	public List<DepotRolePermission> getDepotRolePermissions() {
+		return ListUtil.fromArray(
+			new DepotRolePermission(
+				DepotRolesConstants.DESIGN_LIBRARY_ADMINISTRATOR,
+				BarConstants.RESOURCE_NAME, BarActionKeys.ADD_BAR_COLLECTION,
+				BarActionKeys.ADD_BAR_ENTRY),
+			new DepotRolePermission(
+				DepotRolesConstants.DESIGN_LIBRARY_ADMINISTRATOR,
+				Bar.class.getName(), ActionKeys.UPDATE),
+			new DepotRolePermission(
+				DepotRolesConstants.DESIGN_LIBRARY_ADMINISTRATOR,
+				BarCollection.class.getName(), ActionKeys.DELETE,
+				ActionKeys.UPDATE),
+			new DepotRolePermission(
+				DepotRolesConstants.DESIGN_LIBRARY_ADMINISTRATOR,
+				BarEntry.class.getName(), ActionKeys.DELETE,
+				ActionKeys.UPDATE),
+			new DepotRolePermission(
+				DepotRolesConstants.DESIGN_LIBRARY_CONTENT_REVIEWER,
+				BarConstants.RESOURCE_NAME, BarActionKeys.ADD_BAR_COLLECTION,
+				BarActionKeys.ADD_BAR_ENTRY),
+			new DepotRolePermission(
+				DepotRolesConstants.DESIGN_LIBRARY_CONTENT_REVIEWER,
+				Bar.class.getName(), ActionKeys.UPDATE),
+			new DepotRolePermission(
+				DepotRolesConstants.DESIGN_LIBRARY_CONTENT_REVIEWER,
+				BarCollection.class.getName(), ActionKeys.DELETE,
+				ActionKeys.UPDATE),
+			new DepotRolePermission(
+				DepotRolesConstants.DESIGN_LIBRARY_CONTENT_REVIEWER,
+				BarEntry.class.getName(), ActionKeys.DELETE,
+				ActionKeys.UPDATE),
+			new DepotRolePermission(
+				DepotRolesConstants.DESIGN_LIBRARY_OWNER,
+				BarConstants.RESOURCE_NAME, BarActionKeys.ADD_BAR_COLLECTION,
+				BarActionKeys.ADD_BAR_ENTRY),
+			new DepotRolePermission(
+				DepotRolesConstants.DESIGN_LIBRARY_OWNER,
+				Bar.class.getName(), ActionKeys.UPDATE),
+			new DepotRolePermission(
+				DepotRolesConstants.DESIGN_LIBRARY_OWNER,
+				BarCollection.class.getName(), ActionKeys.DELETE,
+				ActionKeys.UPDATE),
+			new DepotRolePermission(
+				DepotRolesConstants.DESIGN_LIBRARY_OWNER,
+				BarEntry.class.getName(), ActionKeys.DELETE,
+				ActionKeys.UPDATE));
+	}
+
+}
