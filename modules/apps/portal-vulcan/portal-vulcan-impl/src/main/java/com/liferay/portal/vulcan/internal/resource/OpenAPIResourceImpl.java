@@ -690,30 +690,33 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 		long companyId = CompanyThreadLocal.getCompanyId();
 
 		for (Class<?> resourceClass : resourceClasses) {
-			for (Method method : resourceClass.getMethods()) {
-				Method resourceMethod = _getResourceMethod(
-					resourceClass, method);
+			FeatureFlag classFeatureFlag = resourceClass.getAnnotation(
+				FeatureFlag.class);
 
-				if (resourceMethod == null) {
-					continue;
-				}
+			for (Class<?> currentClass = resourceClass; currentClass != null;
+				 currentClass = currentClass.getSuperclass()) {
 
-				FeatureFlag featureFlag = resourceMethod.getAnnotation(
-					FeatureFlag.class);
+				for (Method method : currentClass.getDeclaredMethods()) {
+					if (!_isResourceMethod(method)) {
+						continue;
+					}
 
-				if (featureFlag == null) {
-					featureFlag = resourceClass.getAnnotation(
+					FeatureFlag featureFlag = method.getAnnotation(
 						FeatureFlag.class);
+
+					if (featureFlag == null) {
+						featureFlag = classFeatureFlag;
+					}
+
+					if ((featureFlag == null) ||
+						FeatureFlagManagerUtil.isEnabled(
+							companyId, featureFlag.value())) {
+
+						continue;
+					}
+
+					operationIds.add(_getOperationId(method));
 				}
-
-				if ((featureFlag == null) ||
-					FeatureFlagManagerUtil.isEnabled(
-						companyId, featureFlag.value())) {
-
-					continue;
-				}
-
-				operationIds.add(_getOperationId(resourceMethod));
 			}
 		}
 
@@ -885,32 +888,17 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 		return resourceMethod.getName();
 	}
 
-	private Method _getResourceMethod(Class<?> resourceClass, Method method) {
-		for (Class<?> currentClass = resourceClass; currentClass != null;
-			 currentClass = currentClass.getSuperclass()) {
+	private boolean _isResourceMethod(Method method) {
+		for (Annotation annotation : method.getAnnotations()) {
+			Class<? extends Annotation> annotationType =
+				annotation.annotationType();
 
-			for (Method declaredMethod : currentClass.getDeclaredMethods()) {
-				if (!Objects.equals(
-						declaredMethod.getName(), method.getName()) ||
-					!Arrays.equals(
-						declaredMethod.getParameterTypes(),
-						method.getParameterTypes())) {
-
-					continue;
-				}
-
-				for (Annotation annotation : declaredMethod.getAnnotations()) {
-					Class<? extends Annotation> annotationType =
-						annotation.annotationType();
-
-					if (annotationType.isAnnotationPresent(HttpMethod.class)) {
-						return declaredMethod;
-					}
-				}
+			if (annotationType.isAnnotationPresent(HttpMethod.class)) {
+				return true;
 			}
 		}
 
-		return null;
+		return false;
 	}
 
 	private OpenAPISchemaFilter _mergeOpenAPISchemaFilters(
