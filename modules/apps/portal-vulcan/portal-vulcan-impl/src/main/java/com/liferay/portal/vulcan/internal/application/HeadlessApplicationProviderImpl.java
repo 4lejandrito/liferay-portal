@@ -404,27 +404,9 @@ public class HeadlessApplicationProviderImpl
 				OpenAPIDocumentImpl openAPIDocumentImpl =
 					new OpenAPIDocumentImpl(this, path);
 
-				ServiceReferenceServiceTuple<Object, Object>
-					serviceReferenceServiceTuple =
-						openAPIDocumentImpl._getServiceReferenceServiceTuple();
-
-				if (serviceReferenceServiceTuple != null) {
-					Object service = serviceReferenceServiceTuple.getService();
-
-					Class<?> clazz = service.getClass();
-
-					FeatureFlag featureFlag = clazz.getAnnotation(
-						FeatureFlag.class);
-
-					if ((featureFlag != null) &&
-						!FeatureFlagManagerUtil.isEnabled(
-							companyId, featureFlag.value())) {
-
-						continue;
-					}
+				if (openAPIDocumentImpl._isFeatureFlagEnabled(companyId)) {
+					openAPIDocuments.add(openAPIDocumentImpl);
 				}
-
-				openAPIDocuments.add(openAPIDocumentImpl);
 			}
 
 			openAPIDocuments.sort(
@@ -665,6 +647,34 @@ public class HeadlessApplicationProviderImpl
 			}
 
 			return null;
+		}
+
+		private boolean _isFeatureFlagEnabled(long companyId) {
+			ServiceReferenceServiceTuple<Object, Object>
+				serviceReferenceServiceTuple =
+					_getServiceReferenceServiceTuple();
+
+			if (serviceReferenceServiceTuple == null) {
+				return true;
+			}
+
+			Object service = serviceReferenceServiceTuple.getService();
+
+			if (service == null) {
+				return true;
+			}
+
+			Class<?> serviceClass = service.getClass();
+
+			FeatureFlag featureFlag = serviceClass.getAnnotation(
+				FeatureFlag.class);
+
+			if (featureFlag == null) {
+				return true;
+			}
+
+			return FeatureFlagManagerUtil.isEnabled(
+				companyId, featureFlag.value());
 		}
 
 		private final ApplicationImpl _applicationImpl;
