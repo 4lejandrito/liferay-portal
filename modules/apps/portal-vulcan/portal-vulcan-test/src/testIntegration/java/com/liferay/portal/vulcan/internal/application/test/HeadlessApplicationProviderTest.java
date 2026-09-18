@@ -162,7 +162,7 @@ public class HeadlessApplicationProviderTest {
 	}
 
 	@Test
-	public void testGetApplications() {
+	public void testGetApplications() throws Exception {
 		HeadlessApplicationProvider.Application application = _getApplication(
 			"/test-vulcan-application");
 
@@ -308,10 +308,12 @@ public class HeadlessApplicationProviderTest {
 	}
 
 	private HeadlessApplicationProvider.Application _getApplication(
-		String basePath) {
+			String basePath)
+		throws Exception {
 
 		for (HeadlessApplicationProvider.Application application :
-				_headlessApplicationProvider.getApplications()) {
+				_headlessApplicationProvider.getApplications(
+					TestPropsValues.getCompanyId())) {
 
 			if (basePath.equals(application.getBasePath())) {
 				return application;
