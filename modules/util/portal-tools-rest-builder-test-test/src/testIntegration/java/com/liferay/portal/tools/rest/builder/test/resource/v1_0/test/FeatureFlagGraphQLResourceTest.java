@@ -33,19 +33,31 @@ public class FeatureFlagGraphQLResourceTest {
 	public static final AggregateTestRule aggregateTestRule =
 		new LiferayIntegrationTestRule();
 
-	@FeatureFlag(enable = false, value = _FEATURE_FLAG_KEY)
+	@FeatureFlag(enable = false, value = _FEATURE_FLAG_KEY_API)
 	@Test
-	public void testMethodFeatureFlagDisabled() throws Exception {
-		JSONObject dataJSONObject = JSONUtil.getValueAsJSONObject(
-			_invoke("query {featureFlagMethodTestEntities {totalCount}}"),
-			"JSONObject/data");
-
-		Assert.assertTrue(dataJSONObject.isNull(_QUERY_FIELD));
-
-		Assert.assertEquals(404, _getErrno(_invoke(_DELETE_MUTATION)));
+	public void testAPIFeatureFlagDisabled() throws Exception {
+		_assertQueryFieldIsNull(_QUERY_FIELD_API);
 	}
 
-	@FeatureFlag(enable = false, value = _FEATURE_FLAG_KEY)
+	@FeatureFlag(_FEATURE_FLAG_KEY_API)
+	@Test
+	public void testAPIFeatureFlagEnabled() throws Exception {
+		Assert.assertEquals(0, _getTotalCount(_QUERY_FIELD_API));
+	}
+
+	@FeatureFlag(enable = false, value = _FEATURE_FLAG_KEY_METHOD)
+	@Test
+	public void testMethodFeatureFlagDisabled() throws Exception {
+		_assertQueryFieldIsNull(_QUERY_FIELD_METHOD);
+
+		JSONObject exceptionJSONObject = JSONUtil.getValueAsJSONObject(
+			_invoke(_DELETE_MUTATION), "JSONArray/errors", "Object/0",
+			"JSONObject/extensions", "JSONObject/exception");
+
+		Assert.assertEquals(404, exceptionJSONObject.getInt("errno"));
+	}
+
+	@FeatureFlag(enable = false, value = _FEATURE_FLAG_KEY_METHOD)
 	@Test
 	public void testMethodFeatureFlagDoesNotGuardSiblingOperation()
 		throws Exception {
@@ -60,28 +72,28 @@ public class FeatureFlagGraphQLResourceTest {
 			dataJSONObject.isNull("createFeatureFlagMethodTestEntity"));
 	}
 
-	@FeatureFlag(_FEATURE_FLAG_KEY)
+	@FeatureFlag(_FEATURE_FLAG_KEY_METHOD)
 	@Test
 	public void testMethodFeatureFlagEnabled() throws Exception {
-		Assert.assertEquals(
-			0,
-			JSONUtil.getValueAsLong(
-				_invoke("query {featureFlagMethodTestEntities {totalCount}}"),
-				"JSONObject/data", "JSONObject/" + _QUERY_FIELD,
-				"Object/totalCount"));
+		Assert.assertEquals(0, _getTotalCount(_QUERY_FIELD_METHOD));
 		Assert.assertTrue(
 			JSONUtil.getValueAsBoolean(
 				_invoke(_DELETE_MUTATION), "JSONObject/data",
 				"Object/deleteFeatureFlagMethodTestEntity"));
 	}
 
-	private int _getErrno(JSONObject jsonObject) {
-		return JSONUtil.getValueAsJSONObject(
-			jsonObject, "JSONArray/errors", "Object/0", "JSONObject/extensions",
-			"JSONObject/exception"
-		).getInt(
-			"errno"
-		);
+	private void _assertQueryFieldIsNull(String queryField) throws Exception {
+		JSONObject dataJSONObject = JSONUtil.getValueAsJSONObject(
+			_invoke("query {" + queryField + " {totalCount}}"),
+			"JSONObject/data");
+
+		Assert.assertTrue(dataJSONObject.isNull(queryField));
+	}
+
+	private long _getTotalCount(String queryField) throws Exception {
+		return JSONUtil.getValueAsLong(
+			_invoke("query {" + queryField + " {totalCount}}"),
+			"JSONObject/data", "JSONObject/" + queryField, "Object/totalCount");
 	}
 
 	private JSONObject _invoke(String query) throws Exception {
@@ -108,8 +120,13 @@ public class FeatureFlagGraphQLResourceTest {
 		"mutation {deleteFeatureFlagMethodTestEntity(" +
 			"featureFlagMethodTestEntityId: 1)}";
 
-	private static final String _FEATURE_FLAG_KEY = "METHOD-123";
+	private static final String _FEATURE_FLAG_KEY_API = "API-123";
 
-	private static final String _QUERY_FIELD = "featureFlagMethodTestEntities";
+	private static final String _FEATURE_FLAG_KEY_METHOD = "METHOD-123";
+
+	private static final String _QUERY_FIELD_API = "featureFlagAPITestEntities";
+
+	private static final String _QUERY_FIELD_METHOD =
+		"featureFlagMethodTestEntities";
 
 }
