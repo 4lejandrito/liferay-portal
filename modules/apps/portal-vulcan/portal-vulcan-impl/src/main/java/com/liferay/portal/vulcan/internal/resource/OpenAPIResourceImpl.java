@@ -953,6 +953,11 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 		List<DTOProperty> dtoProperties =
 			openAPISchemaFilter.getDTOProperties();
 
+		Set<String> excludedOperationIds =
+			ConfigurationUtil.getExcludedOperationIds(
+				CompanyThreadLocal.getCompanyId(), _configurationAdmin,
+				openAPISchemaFilter.getApplicationPath());
+
 		Set<String> featureFlagDisabledOperationIds =
 			_getFeatureFlagDisabledOperationIds(resourceClasses);
 
@@ -1019,11 +1024,6 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 				Map<String, List<String>> headers) {
 
 				String operationId = operation.getOperationId();
-
-				Set<String> excludedOperationIds =
-					ConfigurationUtil.getExcludedOperationIds(
-						CompanyThreadLocal.getCompanyId(), _configurationAdmin,
-						openAPISchemaFilter.getApplicationPath());
 
 				if (excludedOperationIds.contains(operationId) ||
 					featureFlagDisabledOperationIds.contains(operationId)) {
