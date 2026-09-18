@@ -10,6 +10,7 @@ import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.HashMapDictionaryBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.test.rule.FeatureFlag;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.vulcan.application.HeadlessApplicationProvider;
@@ -153,6 +154,37 @@ public class HeadlessApplicationProviderTest {
 					"(osgi.jaxrs.name=Liferay.Vulcan)"
 				).put(
 					"osgi.jaxrs.name", "Test.Vulcan.OtherCompany"
+				).build()),
+			_bundleContext.registerService(
+				Application.class, new TestApplication(),
+				HashMapDictionaryBuilder.<String, Object>put(
+					"liferay.auth.verifier", true
+				).put(
+					"liferay.oauth2", false
+				).put(
+					"osgi.jaxrs.application.base",
+					"/test-vulcan-application-feature-flag"
+				).put(
+					"osgi.jaxrs.extension.select",
+					"(osgi.jaxrs.name=Liferay.Vulcan)"
+				).put(
+					"osgi.jaxrs.name", "Test.Vulcan.FeatureFlag"
+				).build()),
+			_bundleContext.registerService(
+				FeatureFlagTestResource_v1_0.class,
+				new FeatureFlagTestResource_v1_0(),
+				HashMapDictionaryBuilder.<String, Object>put(
+					"api.version", "v1.0"
+				).put(
+					"openapi.resource", "true"
+				).put(
+					"openapi.resource.path",
+					"/test-vulcan-application-feature-flag"
+				).put(
+					"osgi.jaxrs.application.select",
+					"(osgi.jaxrs.name=Test.Vulcan.FeatureFlag)"
+				).put(
+					"osgi.jaxrs.resource", "true"
 				).build()));
 	}
 
@@ -247,6 +279,41 @@ public class HeadlessApplicationProviderTest {
 		}
 
 		Assert.assertNull(_getApplication("/test-vulcan-application-added"));
+	}
+
+	@FeatureFlag(enable = false, value = _FEATURE_FLAG_KEY)
+	@Test
+	public void testGetApplicationsWhenFeatureFlagIsDisabled()
+		throws Exception {
+
+		Assert.assertNull(
+			_getApplication("/test-vulcan-application-feature-flag"));
+	}
+
+	@FeatureFlag(_FEATURE_FLAG_KEY)
+	@Test
+	public void testGetApplicationsWhenFeatureFlagIsEnabled() throws Exception {
+		HeadlessApplicationProvider.Application application = _getApplication(
+			"/test-vulcan-application-feature-flag");
+
+		Assert.assertEquals(
+			ListUtil.fromArray("v1.0"),
+			TransformUtil.transform(
+				application.getOpenAPIDocuments(),
+				HeadlessApplicationProvider.OpenAPIDocument::getVersion));
+	}
+
+	@com.liferay.portal.vulcan.feature.flag.FeatureFlag(_FEATURE_FLAG_KEY)
+	@Path("/v1.0")
+	public static class FeatureFlagTestResource_v1_0 {
+
+		@GET
+		@Path("/openapi.{type:json|yaml}")
+		@Produces(MediaType.APPLICATION_JSON)
+		public String getOpenAPI(@PathParam("type") String type) {
+			return type;
+		}
+
 	}
 
 	public static class TestApplication extends Application {
@@ -350,6 +417,8 @@ public class HeadlessApplicationProviderTest {
 
 		return null;
 	}
+
+	private static final String _FEATURE_FLAG_KEY = "CLASS-123";
 
 	private BundleContext _bundleContext;
 
