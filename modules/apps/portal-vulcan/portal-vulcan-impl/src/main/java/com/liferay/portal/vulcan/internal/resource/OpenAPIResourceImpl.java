@@ -20,6 +20,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.MapUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.TextFormatter;
 import com.liferay.portal.kernel.util.Validator;
@@ -545,6 +546,19 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 			_getUpdatedSchemaReference(schema.get$ref(), schemaPrefix));
 	}
 
+	private String _getApplicationPath(UriInfo uriInfo) {
+		if (uriInfo == null) {
+			return null;
+		}
+
+		URI baseURI = uriInfo.getBaseUri();
+
+		String applicationPath = StringUtil.removeFirst(
+			baseURI.getPath(), Portal.PATH_MODULE);
+
+		return StringUtil.replaceLast(applicationPath, '/', "");
+	}
+
 	private String _getBasePath(
 		HttpServletRequest httpServletRequest, UriInfo uriInfo) {
 
@@ -766,7 +780,7 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 			_mergeOpenAPISchemaFilters(
 				openAPISchemaFilter,
 				_getOpenAPISchemaFilter(
-					_getBasePath(null, uriInfo), _extensionProviderRegistry,
+					_getApplicationPath(uriInfo), _extensionProviderRegistry,
 					resourceClasses));
 
 		Map<String, List<String>> queryParameters = null;
@@ -822,7 +836,7 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 	}
 
 	private OpenAPISchemaFilter _getOpenAPISchemaFilter(
-			String basePath,
+			String applicationPath,
 			ExtensionProviderRegistry extensionProviderRegistry,
 			Set<Class<?>> resourceClasses)
 		throws Exception {
@@ -842,7 +856,7 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 			}
 		}
 
-		return _getOpenAPISchemaFilter(basePath, propertyDefinitionsMap);
+		return _getOpenAPISchemaFilter(applicationPath, propertyDefinitionsMap);
 	}
 
 	private OpenAPISchemaFilter _getOpenAPISchemaFilter(
