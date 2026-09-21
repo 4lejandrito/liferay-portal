@@ -74,13 +74,11 @@ import io.swagger.v3.oas.models.tags.Tag;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 import java.net.URI;
@@ -100,6 +98,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.cxf.jaxrs.utils.AnnotationUtils;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -697,7 +697,7 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 				 currentClass = currentClass.getSuperclass()) {
 
 				for (Method method : currentClass.getDeclaredMethods()) {
-					if (!_isResourceMethod(method)) {
+					if (AnnotationUtils.getHttpMethodValue(method) == null) {
 						continue;
 					}
 
@@ -886,19 +886,6 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 		}
 
 		return resourceMethod.getName();
-	}
-
-	private boolean _isResourceMethod(Method method) {
-		for (Annotation annotation : method.getAnnotations()) {
-			Class<? extends Annotation> annotationType =
-				annotation.annotationType();
-
-			if (annotationType.isAnnotationPresent(HttpMethod.class)) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	private OpenAPISchemaFilter _mergeOpenAPISchemaFilters(
