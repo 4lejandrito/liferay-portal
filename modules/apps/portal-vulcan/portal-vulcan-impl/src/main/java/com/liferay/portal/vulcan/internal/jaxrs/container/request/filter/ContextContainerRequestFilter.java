@@ -174,49 +174,6 @@ public class ContextContainerRequestFilter
 		}
 	}
 
-	private void _filterFeatureFlags(
-			ContainerRequestContext containerRequestContext,
-			HttpServletRequest httpServletRequest, Message message)
-		throws Exception {
-
-		Exchange exchange = message.getExchange();
-
-		OperationResourceInfo operationResourceInfo = exchange.get(
-			OperationResourceInfo.class);
-
-		if (operationResourceInfo == null) {
-			return;
-		}
-
-		Method method = operationResourceInfo.getAnnotatedMethod();
-
-		FeatureFlag featureFlag = method.getAnnotation(FeatureFlag.class);
-
-		if (featureFlag == null) {
-			ClassResourceInfo classResourceInfo =
-				operationResourceInfo.getClassResourceInfo();
-
-			Class<?> serviceClass = classResourceInfo.getServiceClass();
-
-			featureFlag = serviceClass.getAnnotation(FeatureFlag.class);
-		}
-
-		if (featureFlag == null) {
-			return;
-		}
-
-		Company company = _portal.getCompany(httpServletRequest);
-
-		if (!FeatureFlagManagerUtil.isEnabled(
-				company.getCompanyId(), featureFlag.value())) {
-
-			containerRequestContext.abortWith(
-				Response.status(
-					Response.Status.NOT_FOUND
-				).build());
-		}
-	}
-
 	private void _handleMessage(
 			ContainerRequestContext containerRequestContext, Message message)
 		throws Exception {
@@ -230,10 +187,16 @@ public class ContextContainerRequestFilter
 		HttpServletRequest httpServletRequest =
 			ContextProviderUtil.getHttpServletRequest(message);
 
-		_filterExcludedOperationIds(
-			containerRequestContext, httpServletRequest, message);
+		if (_isFeatureFlagDisabled(httpServletRequest, message)) {
+			containerRequestContext.abortWith(
+				Response.status(
+					Response.Status.NOT_FOUND
+				).build());
 
-		_filterFeatureFlags(
+			return;
+		}
+
+		_filterExcludedOperationIds(
 			containerRequestContext, httpServletRequest, message);
 
 		ContextDataInjector contextDataInjector =
@@ -275,6 +238,42 @@ public class ContextContainerRequestFilter
 			).build();
 
 		contextDataInjector.inject(instance);
+	}
+
+	private boolean _isFeatureFlagDisabled(
+			HttpServletRequest httpServletRequest, Message message)
+		throws Exception {
+
+		Exchange exchange = message.getExchange();
+
+		OperationResourceInfo operationResourceInfo = exchange.get(
+			OperationResourceInfo.class);
+
+		if (operationResourceInfo == null) {
+			return false;
+		}
+
+		Method method = operationResourceInfo.getAnnotatedMethod();
+
+		FeatureFlag featureFlag = method.getAnnotation(FeatureFlag.class);
+
+		if (featureFlag == null) {
+			ClassResourceInfo classResourceInfo =
+				operationResourceInfo.getClassResourceInfo();
+
+			Class<?> serviceClass = classResourceInfo.getServiceClass();
+
+			featureFlag = serviceClass.getAnnotation(FeatureFlag.class);
+		}
+
+		if (featureFlag == null) {
+			return false;
+		}
+
+		Company company = _portal.getCompany(httpServletRequest);
+
+		return !FeatureFlagManagerUtil.isEnabled(
+			company.getCompanyId(), featureFlag.value());
 	}
 
 	private final ConfigurationAdmin _configurationAdmin;
