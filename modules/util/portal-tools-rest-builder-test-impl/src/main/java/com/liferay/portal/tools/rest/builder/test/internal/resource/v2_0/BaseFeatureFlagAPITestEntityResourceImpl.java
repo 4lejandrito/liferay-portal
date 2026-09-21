@@ -73,7 +73,6 @@ public abstract class BaseFeatureFlagAPITestEntityResourceImpl
 	 *
 	 * curl -X 'GET' 'http://localhost:8080/o/portal-tools-rest-builder-test/v2.0/feature-flag-api-test-entities'  -u 'test@liferay.com:test'
 	 */
-	@com.liferay.portal.vulcan.feature.flag.FeatureFlag("API-123")
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -109,7 +108,6 @@ public abstract class BaseFeatureFlagAPITestEntityResourceImpl
 	 *
 	 * curl -X 'POST' 'http://localhost:8080/o/portal-tools-rest-builder-test/v2.0/feature-flag-api-test-entities/export-batch'  -u 'test@liferay.com:test'
 	 */
-	@com.liferay.portal.vulcan.feature.flag.FeatureFlag("API-123")
 	@io.swagger.v3.oas.annotations.Parameters(
 		value = {
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -833,4 +831,4 @@ public abstract class BaseFeatureFlagAPITestEntityResourceImpl
 		LogFactoryUtil.getLog(BaseFeatureFlagAPITestEntityResourceImpl.class);
 
 }
-// LIFERAY-REST-BUILDER-HASH:-83964880
+// LIFERAY-REST-BUILDER-HASH:1549221240
