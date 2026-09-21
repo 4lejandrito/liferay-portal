@@ -13,7 +13,6 @@ import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory
 import com.liferay.osgi.util.ServiceTrackerFactory;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.ListUtil;
@@ -21,7 +20,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.remote.jaxrs.whiteboard.lifecycle.JAXRSLifecycle;
 import com.liferay.portal.vulcan.application.HeadlessApplicationProvider;
-import com.liferay.portal.vulcan.feature.flag.FeatureFlag;
+import com.liferay.portal.vulcan.internal.feature.flag.FeatureFlagUtil;
 
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -661,17 +660,8 @@ public class HeadlessApplicationProviderImpl
 				return true;
 			}
 
-			Class<?> serviceClass = service.getClass();
-
-			FeatureFlag featureFlag = serviceClass.getAnnotation(
-				FeatureFlag.class);
-
-			if (featureFlag == null) {
-				return true;
-			}
-
-			return FeatureFlagManagerUtil.isEnabled(
-				_applicationImpl._companyId, featureFlag.value());
+			return FeatureFlagUtil.isEnabled(
+				_applicationImpl._companyId, service.getClass());
 		}
 
 		private final ApplicationImpl _applicationImpl;

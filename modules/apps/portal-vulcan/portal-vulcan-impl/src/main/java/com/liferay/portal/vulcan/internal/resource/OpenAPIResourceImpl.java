@@ -13,7 +13,6 @@ import com.liferay.osgi.service.tracker.collections.map.ServiceTrackerMapFactory
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.util.CamelCaseUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -28,8 +27,8 @@ import com.liferay.portal.vulcan.extension.EntityExtensionHandler;
 import com.liferay.portal.vulcan.extension.ExtensionProviderRegistry;
 import com.liferay.portal.vulcan.extension.PropertyDefinition;
 import com.liferay.portal.vulcan.extension.util.ExtensionUtil;
-import com.liferay.portal.vulcan.feature.flag.FeatureFlag;
 import com.liferay.portal.vulcan.internal.configuration.util.ConfigurationUtil;
+import com.liferay.portal.vulcan.internal.feature.flag.FeatureFlagUtil;
 import com.liferay.portal.vulcan.openapi.DTOProperty;
 import com.liferay.portal.vulcan.openapi.OpenAPIContext;
 import com.liferay.portal.vulcan.openapi.OpenAPISchemaFilter;
@@ -704,27 +703,13 @@ public class OpenAPIResourceImpl implements OpenAPIResource {
 		long companyId = CompanyThreadLocal.getCompanyId();
 
 		for (Class<?> resourceClass : resourceClasses) {
-			FeatureFlag classFeatureFlag = resourceClass.getAnnotation(
-				FeatureFlag.class);
-
 			for (Class<?> currentClass = resourceClass; currentClass != null;
 				 currentClass = currentClass.getSuperclass()) {
 
 				for (Method method : currentClass.getDeclaredMethods()) {
-					if (AnnotationUtils.getHttpMethodValue(method) == null) {
-						continue;
-					}
-
-					FeatureFlag featureFlag = method.getAnnotation(
-						FeatureFlag.class);
-
-					if (featureFlag == null) {
-						featureFlag = classFeatureFlag;
-					}
-
-					if ((featureFlag == null) ||
-						FeatureFlagManagerUtil.isEnabled(
-							companyId, featureFlag.value())) {
+					if ((AnnotationUtils.getHttpMethodValue(method) == null) ||
+						FeatureFlagUtil.isEnabled(
+							companyId, method, resourceClass)) {
 
 						continue;
 					}

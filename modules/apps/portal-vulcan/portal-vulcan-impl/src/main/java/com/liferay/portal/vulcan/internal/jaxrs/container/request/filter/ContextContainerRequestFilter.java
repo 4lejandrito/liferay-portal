@@ -5,7 +5,6 @@
 
 package com.liferay.portal.vulcan.internal.jaxrs.container.request.filter;
 
-import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.search.filter.Filter;
@@ -20,9 +19,9 @@ import com.liferay.portal.odata.filter.FilterParserProvider;
 import com.liferay.portal.odata.sort.SortParserProvider;
 import com.liferay.portal.vulcan.batch.engine.resource.VulcanBatchEngineExportTaskResourceFactory;
 import com.liferay.portal.vulcan.batch.engine.resource.VulcanBatchEngineImportTaskResourceFactory;
-import com.liferay.portal.vulcan.feature.flag.FeatureFlag;
 import com.liferay.portal.vulcan.internal.accept.language.AcceptLanguageImpl;
 import com.liferay.portal.vulcan.internal.configuration.util.ConfigurationUtil;
+import com.liferay.portal.vulcan.internal.feature.flag.FeatureFlagUtil;
 import com.liferay.portal.vulcan.internal.jaxrs.context.provider.ContextProviderUtil;
 import com.liferay.portal.vulcan.jaxrs.context.ContextDataInjector;
 import com.liferay.portal.vulcan.jaxrs.context.ContextDataInjectorBuilderFactory;
@@ -253,27 +252,13 @@ public class ContextContainerRequestFilter
 			return false;
 		}
 
-		Method method = operationResourceInfo.getAnnotatedMethod();
+		ClassResourceInfo classResourceInfo =
+			operationResourceInfo.getClassResourceInfo();
 
-		FeatureFlag featureFlag = method.getAnnotation(FeatureFlag.class);
-
-		if (featureFlag == null) {
-			ClassResourceInfo classResourceInfo =
-				operationResourceInfo.getClassResourceInfo();
-
-			Class<?> serviceClass = classResourceInfo.getServiceClass();
-
-			featureFlag = serviceClass.getAnnotation(FeatureFlag.class);
-		}
-
-		if (featureFlag == null) {
-			return false;
-		}
-
-		Company company = _portal.getCompany(httpServletRequest);
-
-		return !FeatureFlagManagerUtil.isEnabled(
-			company.getCompanyId(), featureFlag.value());
+		return !FeatureFlagUtil.isEnabled(
+			_portal.getCompanyId(httpServletRequest),
+			operationResourceInfo.getAnnotatedMethod(),
+			classResourceInfo.getServiceClass());
 	}
 
 	private final ConfigurationAdmin _configurationAdmin;
