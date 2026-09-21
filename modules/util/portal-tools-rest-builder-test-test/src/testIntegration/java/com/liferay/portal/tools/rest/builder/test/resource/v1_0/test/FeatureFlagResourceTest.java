@@ -6,7 +6,6 @@
 package com.liferay.portal.tools.rest.builder.test.resource.v1_0.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
-import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.HTTPTestUtil;
 import com.liferay.portal.kernel.util.Http;
@@ -14,6 +13,7 @@ import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.test.rule.FeatureFlag;
 import com.liferay.portal.test.rule.FeatureFlags;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
+import com.liferay.portal.tools.rest.builder.test.util.OpenAPITestUtil;
 
 import org.junit.Assert;
 import org.junit.ClassRule;
@@ -37,9 +37,10 @@ public class FeatureFlagResourceTest {
 	public void testClassFeatureFlagDisabled() throws Exception {
 		Assert.assertEquals(404, _getHttpCode(_CLASS_PATH));
 
-		Assert.assertFalse(_hasOperation(_CLASS_PATH, "get"));
+		Assert.assertFalse(OpenAPITestUtil.hasOperation("get", _CLASS_PATH));
 		Assert.assertFalse(
-			_hasOperation(_CLASS_PATH + "/export-batch", "post"));
+			OpenAPITestUtil.hasOperation(
+				"post", _CLASS_PATH + "/export-batch"));
 	}
 
 	@FeatureFlag(_FEATURE_FLAG_KEY_CLASS)
@@ -47,8 +48,10 @@ public class FeatureFlagResourceTest {
 	public void testClassFeatureFlagEnabled() throws Exception {
 		Assert.assertEquals(200, _getHttpCode(_CLASS_PATH));
 
-		Assert.assertTrue(_hasOperation(_CLASS_PATH, "get"));
-		Assert.assertTrue(_hasOperation(_CLASS_PATH + "/export-batch", "post"));
+		Assert.assertTrue(OpenAPITestUtil.hasOperation("get", _CLASS_PATH));
+		Assert.assertTrue(
+			OpenAPITestUtil.hasOperation(
+				"post", _CLASS_PATH + "/export-batch"));
 		Assert.assertFalse(_hasFeatureFlagExtension());
 	}
 
@@ -57,7 +60,7 @@ public class FeatureFlagResourceTest {
 	public void testMethodFeatureFlagDisabled() throws Exception {
 		Assert.assertEquals(404, _getHttpCode(_METHOD_PATH));
 
-		Assert.assertFalse(_hasOperation(_METHOD_PATH, "get"));
+		Assert.assertFalse(OpenAPITestUtil.hasOperation("get", _METHOD_PATH));
 	}
 
 	@FeatureFlag(enable = false, value = _FEATURE_FLAG_KEY_METHOD)
@@ -65,7 +68,7 @@ public class FeatureFlagResourceTest {
 	public void testMethodFeatureFlagDoesNotGuardSiblingOperation()
 		throws Exception {
 
-		Assert.assertTrue(_hasOperation(_METHOD_PATH, "post"));
+		Assert.assertTrue(OpenAPITestUtil.hasOperation("post", _METHOD_PATH));
 	}
 
 	@FeatureFlag(_FEATURE_FLAG_KEY_METHOD)
@@ -73,7 +76,7 @@ public class FeatureFlagResourceTest {
 	public void testMethodFeatureFlagEnabled() throws Exception {
 		Assert.assertEquals(200, _getHttpCode(_METHOD_PATH));
 
-		Assert.assertTrue(_hasOperation(_METHOD_PATH, "get"));
+		Assert.assertTrue(OpenAPITestUtil.hasOperation("get", _METHOD_PATH));
 		Assert.assertFalse(_hasFeatureFlagExtension());
 	}
 
@@ -83,17 +86,17 @@ public class FeatureFlagResourceTest {
 		throws Exception {
 
 		Assert.assertEquals(404, _getHttpCode(_METHOD_PATH));
-		Assert.assertFalse(_hasOperation(_METHOD_PATH, "get"));
+		Assert.assertFalse(OpenAPITestUtil.hasOperation("get", _METHOD_PATH));
 
 		PropsUtil.set(_FEATURE_FLAG_PROPERTY_KEY, Boolean.TRUE.toString());
 
 		Assert.assertEquals(200, _getHttpCode(_METHOD_PATH));
-		Assert.assertTrue(_hasOperation(_METHOD_PATH, "get"));
+		Assert.assertTrue(OpenAPITestUtil.hasOperation("get", _METHOD_PATH));
 
 		PropsUtil.set(_FEATURE_FLAG_PROPERTY_KEY, Boolean.FALSE.toString());
 
 		Assert.assertEquals(404, _getHttpCode(_METHOD_PATH));
-		Assert.assertFalse(_hasOperation(_METHOD_PATH, "get"));
+		Assert.assertFalse(OpenAPITestUtil.hasOperation("get", _METHOD_PATH));
 	}
 
 	@FeatureFlags(
@@ -106,7 +109,7 @@ public class FeatureFlagResourceTest {
 	public void testUnguardedResourceMethodIsUnaffected() throws Exception {
 		Assert.assertEquals(200, _getHttpCode("test-entities"));
 
-		Assert.assertTrue(_hasOperation("test-entities", "get"));
+		Assert.assertTrue(OpenAPITestUtil.hasOperation("get", "test-entities"));
 	}
 
 	private int _getHttpCode(String path) throws Exception {
@@ -114,34 +117,12 @@ public class FeatureFlagResourceTest {
 			null, _BASE_PATH + path, Http.Method.GET);
 	}
 
-	private JSONObject _getOpenAPIJSONObject() throws Exception {
-		return HTTPTestUtil.invokeToJSONObject(
-			null, _BASE_PATH + "openapi.json", Http.Method.GET);
-	}
-
 	private boolean _hasFeatureFlagExtension() throws Exception {
-		String json = String.valueOf(_getOpenAPIJSONObject());
+		String json = String.valueOf(
+			HTTPTestUtil.invokeToJSONObject(
+				null, _BASE_PATH + "openapi.json", Http.Method.GET));
 
 		return json.contains("x-feature-flag");
-	}
-
-	private boolean _hasOperation(String path, String httpMethod)
-		throws Exception {
-
-		JSONObject jsonObject = _getOpenAPIJSONObject();
-
-		JSONObject pathsJSONObject = jsonObject.getJSONObject("paths");
-
-		String versionedPath = "/v1.0/" + path;
-
-		if (!pathsJSONObject.has(versionedPath)) {
-			return false;
-		}
-
-		JSONObject pathJSONObject = pathsJSONObject.getJSONObject(
-			versionedPath);
-
-		return pathJSONObject.has(httpMethod);
 	}
 
 	private static final String _BASE_PATH =
