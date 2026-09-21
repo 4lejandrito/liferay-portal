@@ -96,7 +96,7 @@ public class PropertiesFeatureFlagsCheck extends BaseFileCheck {
 				"**/portal-tools-rest-builder-test-impl/**", "**/test/**"
 			},
 			new String[] {
-				"**/bnd.bnd", "**/rest-openapi.yaml", "**/*.java", "**/*.js",
+				"**/bnd.bnd", "**/rest-openapi*.yaml", "**/*.java", "**/*.js",
 				"**/*.json", "**/*.jsp", "**/*.jspf", "**/*.jsx", "**/*.ts",
 				"**/*.tsx"
 			},
@@ -136,7 +136,7 @@ public class PropertiesFeatureFlagsCheck extends BaseFileCheck {
 					_getFeatureFlagKeysByMapUtilSingletonDictionaryCall(
 						fileContent));
 			}
-			else if (fileName.endsWith("rest-openapi.yaml")) {
+			else if (fileName.endsWith(".yaml")) {
 				featureFlagKeys.addAll(
 					_getFeatureFlagKeys(fileContent, _featureFlagPattern6));
 			}
