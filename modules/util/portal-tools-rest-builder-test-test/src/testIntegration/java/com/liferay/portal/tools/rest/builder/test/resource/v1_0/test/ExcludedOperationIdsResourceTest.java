@@ -62,14 +62,24 @@ public class ExcludedOperationIdsResourceTest {
 		Assert.assertTrue(OpenAPITestUtil.hasOperation("post", _METHOD_PATH));
 	}
 
+	@FeatureFlag(enable = false, value = _FEATURE_FLAG_KEY)
+	@Test
+	public void testExcludedOperationIdIsNotFoundWhenFeatureFlagIsDisabled()
+		throws Exception {
+
+		Assert.assertEquals(404, _getHttpCode());
+	}
+
 	@FeatureFlag(_FEATURE_FLAG_KEY)
 	@Test
 	public void testExcludedOperationIdIsRejected() throws Exception {
-		Assert.assertEquals(
-			409,
-			HTTPTestUtil.invokeToHttpCode(
-				null, "portal-tools-rest-builder-test/v1.0/" + _METHOD_PATH,
-				Http.Method.GET));
+		Assert.assertEquals(409, _getHttpCode());
+	}
+
+	private int _getHttpCode() throws Exception {
+		return HTTPTestUtil.invokeToHttpCode(
+			null, "portal-tools-rest-builder-test/v1.0/" + _METHOD_PATH,
+			Http.Method.GET);
 	}
 
 	private static final String _FEATURE_FLAG_KEY = "METHOD-123";
