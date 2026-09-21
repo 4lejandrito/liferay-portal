@@ -41,10 +41,10 @@ public class FeatureFlagAPIResourceTest {
 	@FeatureFlag(enable = false, value = _FEATURE_FLAG_KEY)
 	@Test
 	public void testFeatureFlagDisabled() throws Exception {
-		Assert.assertEquals(404, _getHttpCode("v2.0/openapi.json"));
+		Assert.assertEquals(200, _getHttpCode("v1.0/openapi.json"));
 		Assert.assertEquals(
 			404, _getHttpCode("v2.0/feature-flag-api-test-entities"));
-		Assert.assertEquals(200, _getHttpCode("v1.0/openapi.json"));
+		Assert.assertEquals(404, _getHttpCode("v2.0/openapi.json"));
 
 		Assert.assertEquals(
 			Collections.singletonList("v1.0"), _getOpenAPIDocumentVersions());
@@ -53,9 +53,9 @@ public class FeatureFlagAPIResourceTest {
 	@FeatureFlag(_FEATURE_FLAG_KEY)
 	@Test
 	public void testFeatureFlagEnabled() throws Exception {
-		Assert.assertEquals(200, _getHttpCode("v2.0/openapi.json"));
 		Assert.assertEquals(
 			200, _getHttpCode("v2.0/feature-flag-api-test-entities"));
+		Assert.assertEquals(200, _getHttpCode("v2.0/openapi.json"));
 
 		Assert.assertEquals(
 			Arrays.asList("v1.0", "v2.0"), _getOpenAPIDocumentVersions());

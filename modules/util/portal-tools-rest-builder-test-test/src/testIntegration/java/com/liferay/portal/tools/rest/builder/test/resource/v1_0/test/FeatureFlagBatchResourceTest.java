@@ -37,10 +37,9 @@ public class FeatureFlagBatchResourceTest {
 
 		Assert.assertEquals(404, _getHttpCode(_EXPORT_BATCH_PATH));
 
+		Assert.assertFalse(OpenAPITestUtil.hasOperation("delete", _BATCH_PATH));
 		Assert.assertFalse(
 			OpenAPITestUtil.hasOperation("post", _EXPORT_BATCH_PATH));
-		Assert.assertFalse(OpenAPITestUtil.hasOperation("delete", _BATCH_PATH));
-
 		Assert.assertTrue(OpenAPITestUtil.hasOperation("post", _BATCH_PATH));
 	}
 
@@ -49,10 +48,10 @@ public class FeatureFlagBatchResourceTest {
 	public void testDerivedBatchEndpointsFeatureFlagEnabled() throws Exception {
 		Assert.assertEquals(202, _getHttpCode(_EXPORT_BATCH_PATH));
 
-		Assert.assertTrue(
-			OpenAPITestUtil.hasOperation("post", _EXPORT_BATCH_PATH));
 		Assert.assertTrue(OpenAPITestUtil.hasOperation("delete", _BATCH_PATH));
 		Assert.assertTrue(OpenAPITestUtil.hasOperation("post", _BATCH_PATH));
+		Assert.assertTrue(
+			OpenAPITestUtil.hasOperation("post", _EXPORT_BATCH_PATH));
 	}
 
 	private int _getHttpCode(String path) throws Exception {

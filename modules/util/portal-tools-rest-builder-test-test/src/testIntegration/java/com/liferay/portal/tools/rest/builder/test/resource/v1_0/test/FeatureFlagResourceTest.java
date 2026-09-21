@@ -48,11 +48,11 @@ public class FeatureFlagResourceTest {
 	public void testClassFeatureFlagEnabled() throws Exception {
 		Assert.assertEquals(200, _getHttpCode(_CLASS_PATH));
 
+		Assert.assertFalse(_hasFeatureFlagExtension());
 		Assert.assertTrue(OpenAPITestUtil.hasOperation("get", _CLASS_PATH));
 		Assert.assertTrue(
 			OpenAPITestUtil.hasOperation(
 				"post", _CLASS_PATH + "/export-batch"));
-		Assert.assertFalse(_hasFeatureFlagExtension());
 	}
 
 	@FeatureFlag(enable = false, value = _FEATURE_FLAG_KEY_METHOD)
@@ -76,8 +76,8 @@ public class FeatureFlagResourceTest {
 	public void testMethodFeatureFlagEnabled() throws Exception {
 		Assert.assertEquals(200, _getHttpCode(_METHOD_PATH));
 
-		Assert.assertTrue(OpenAPITestUtil.hasOperation("get", _METHOD_PATH));
 		Assert.assertFalse(_hasFeatureFlagExtension());
+		Assert.assertTrue(OpenAPITestUtil.hasOperation("get", _METHOD_PATH));
 	}
 
 	@FeatureFlag(enable = false, value = _FEATURE_FLAG_KEY_METHOD)
