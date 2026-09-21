@@ -6,6 +6,7 @@
 package com.liferay.portal.tools.rest.builder.test.resource.v2_0.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.util.HTTPTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
@@ -15,7 +16,6 @@ import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.vulcan.application.HeadlessApplicationProvider;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -78,15 +78,9 @@ public class FeatureFlagAPIResourceTest {
 				continue;
 			}
 
-			List<String> versions = new ArrayList<>();
-
-			for (HeadlessApplicationProvider.OpenAPIDocument openAPIDocument :
-					application.getOpenAPIDocuments()) {
-
-				versions.add(openAPIDocument.getVersion());
-			}
-
-			return versions;
+			return TransformUtil.transform(
+				application.getOpenAPIDocuments(),
+				HeadlessApplicationProvider.OpenAPIDocument::getVersion);
 		}
 
 		return Collections.emptyList();
