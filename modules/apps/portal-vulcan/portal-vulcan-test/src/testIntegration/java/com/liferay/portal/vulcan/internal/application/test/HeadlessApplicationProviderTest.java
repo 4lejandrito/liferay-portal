@@ -97,29 +97,6 @@ public class HeadlessApplicationProviderTest {
 			_bundleContext.registerService(
 				Application.class, new TestApplication(),
 				HashMapDictionaryBuilder.<String, Object>put(
-					"liferay.auth.verifier", true
-				).put(
-					"liferay.oauth2", false
-				).put(
-					"osgi.jaxrs.application.base",
-					"/test-vulcan-application-unversioned"
-				).put(
-					"osgi.jaxrs.extension.select",
-					"(osgi.jaxrs.name=Liferay.Vulcan)"
-				).put(
-					"osgi.jaxrs.name", "Test.Vulcan.Unversioned"
-				).build()),
-			_bundleContext.registerService(
-				TestResource.class, new TestResource(),
-				HashMapDictionaryBuilder.<String, Object>put(
-					"osgi.jaxrs.application.select",
-					"(osgi.jaxrs.name=Test.Vulcan.Unversioned)"
-				).put(
-					"osgi.jaxrs.resource", "true"
-				).build()),
-			_bundleContext.registerService(
-				Application.class, new TestApplication(),
-				HashMapDictionaryBuilder.<String, Object>put(
 					"companyId",
 					Collections.singletonList(
 						String.valueOf(TestPropsValues.getCompanyId()))
@@ -135,25 +112,6 @@ public class HeadlessApplicationProviderTest {
 					"(osgi.jaxrs.name=Liferay.Vulcan)"
 				).put(
 					"osgi.jaxrs.name", "Test.Vulcan.Company"
-				).build()),
-			_bundleContext.registerService(
-				Application.class, new TestApplication(),
-				HashMapDictionaryBuilder.<String, Object>put(
-					"companyId",
-					Collections.singletonList(
-						String.valueOf(TestPropsValues.getCompanyId() + 1))
-				).put(
-					"liferay.auth.verifier", true
-				).put(
-					"liferay.oauth2", false
-				).put(
-					"osgi.jaxrs.application.base",
-					"/test-vulcan-application-other-company"
-				).put(
-					"osgi.jaxrs.extension.select",
-					"(osgi.jaxrs.name=Liferay.Vulcan)"
-				).put(
-					"osgi.jaxrs.name", "Test.Vulcan.OtherCompany"
 				).build()),
 			_bundleContext.registerService(
 				Application.class, new TestApplication(),
@@ -183,6 +141,48 @@ public class HeadlessApplicationProviderTest {
 				).put(
 					"osgi.jaxrs.application.select",
 					"(osgi.jaxrs.name=Test.Vulcan.FeatureFlag)"
+				).put(
+					"osgi.jaxrs.resource", "true"
+				).build()),
+			_bundleContext.registerService(
+				Application.class, new TestApplication(),
+				HashMapDictionaryBuilder.<String, Object>put(
+					"companyId",
+					Collections.singletonList(
+						String.valueOf(TestPropsValues.getCompanyId() + 1))
+				).put(
+					"liferay.auth.verifier", true
+				).put(
+					"liferay.oauth2", false
+				).put(
+					"osgi.jaxrs.application.base",
+					"/test-vulcan-application-other-company"
+				).put(
+					"osgi.jaxrs.extension.select",
+					"(osgi.jaxrs.name=Liferay.Vulcan)"
+				).put(
+					"osgi.jaxrs.name", "Test.Vulcan.OtherCompany"
+				).build()),
+			_bundleContext.registerService(
+				Application.class, new TestApplication(),
+				HashMapDictionaryBuilder.<String, Object>put(
+					"liferay.auth.verifier", true
+				).put(
+					"liferay.oauth2", false
+				).put(
+					"osgi.jaxrs.application.base",
+					"/test-vulcan-application-unversioned"
+				).put(
+					"osgi.jaxrs.extension.select",
+					"(osgi.jaxrs.name=Liferay.Vulcan)"
+				).put(
+					"osgi.jaxrs.name", "Test.Vulcan.Unversioned"
+				).build()),
+			_bundleContext.registerService(
+				TestResource.class, new TestResource(),
+				HashMapDictionaryBuilder.<String, Object>put(
+					"osgi.jaxrs.application.select",
+					"(osgi.jaxrs.name=Test.Vulcan.Unversioned)"
 				).put(
 					"osgi.jaxrs.resource", "true"
 				).build()));
