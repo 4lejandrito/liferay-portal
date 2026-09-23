@@ -108,11 +108,11 @@ exit ${_EXIT_CODE}
 - Replace `<test commands>` with the actual commands discovered during selection.
 - Suffix every command with `|| _EXIT_CODE=1` so failures are recorded without halting execution. The `||` recovery neutralizes `errexit` on test failures while keeping the strict-mode block in place for unrecovered errors. The script exits with `${_EXIT_CODE}` at the end — `0` when all tests pass, `1` when any fail.
 - Use `./gradlew --project-dir ./modules` for Gradle tasks (the script's `cd` puts the repository root as the working directory).
-- Use `npx --prefix ./modules/test/playwright playwright test` for Playwright.
-- All test types (Unit, Integration, Playwright, Poshi) run directly — the portal is assumed to be running.
+- Use `(cd modules/test/playwright && npx playwright test tests/<module-web>/...)` for Playwright. Playwright only loads `playwright.config.ts` from the working directory, so a command run from the repository root has no `baseURL` and every test fails on its first navigation.
+- All test types (Unit, Integration, Playwright, Poshi) run directly — the portal is assumed to be running. Playwright targets `http://localhost:8080` unless `PORTAL_URL` is set.
 - Precede each command with a single-line comment explaining why it was selected. State the rationale; do not restate the test name or module.
 
-After writing the script, mark it executable with `chmod +x test.sh` and instruct the user to run it via `./test.sh`.
+After writing the script, mark it executable with `chmod +x test.sh` and instruct the user to run it via `./test.sh`, or via `PORTAL_URL=http://localhost:<port> ./test.sh` when the portal is not on port 8080.
 
 ## Guidelines
 
