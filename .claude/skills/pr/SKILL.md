@@ -19,6 +19,26 @@ Create a GitHub PR for the current branch, transition the linked Jira tickets to
 
 - The `pr-check` skill must pass. Skip only when `${ARGUMENTS}` contains `--skip-pr-check`. A skip requires a reason: take it from the text following the flag when present, otherwise prompt the user for one. The reason is recorded in the **PR Check** section, which is written for a skip rather than omitted.
 
+## Squash Check
+
+Before doing anything else, compute the branch base and analyse the commit history:
+
+```bash
+BASE_SHA=$(git merge-base HEAD master)
+git log "${BASE_SHA}..HEAD" --oneline | awk '{print $1}' | while read sha; do
+    git show --name-only --format="" "$sha"
+done | sort | uniq -c | sort -rn | head -20
+```
+
+Suggest squashing when either of these is true:
+
+- Any file appears in **3 or more** commits (the `uniq -c` count is ≥ 3).
+- The branch has **10 or more** commits total.
+
+When the threshold is met, tell the user how many commits the branch has and which files are touched most often, then ask: "Would you like to squash commits by area first? (recommended before review)" If the user says yes, invoke the `squash-by-area` skill and wait for it to complete before continuing. If the user says no, continue with the PR as-is.
+
+When neither threshold is met, skip this check silently and continue.
+
 ## Input
 
 ### Branch
