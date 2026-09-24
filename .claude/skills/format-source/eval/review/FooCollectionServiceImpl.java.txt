@@ -1,0 +1,55 @@
+package com.liferay.example.service.impl;
+
+import com.liferay.portal.aop.AopService;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.util.ListUtil;
+
+import java.util.List;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+/**
+ * @author Example Author
+ */
+@Component(property = "model.class.name=com.liferay.example.model.FooCollection", service = AopService.class)
+public class FooCollectionServiceImpl extends FooCollectionServiceBaseImpl {
+
+	@Override
+	public FooCollection addFooCollection(
+			long groupId, String name, ServiceContext serviceContext)
+		throws PortalException {
+
+		String externalReferenceCode = serviceContext.getUuid();
+
+		_fooCollectionModelResourcePermission.check(
+			getPermissionChecker(), groupId, ActionKeys.ADD_FOO_COLLECTION);
+
+		return fooCollectionLocalService.addFooCollection(
+			externalReferenceCode, getUserId(), groupId, name, serviceContext);
+	}
+
+	@Override
+	public List<FooCollection> getFooCollections(long groupId)
+		throws PortalException {
+
+		List<FooCollection> fooCollections =
+			fooCollectionLocalService.getFooCollections(groupId);
+		return ListUtil.filter(
+			fooCollections, fooCollection -> _visible(fooCollection));
+	}
+
+	private boolean _visible(FooCollection fooCollection) {
+		if (fooCollection.isDraft()) {
+			return false;
+		}
+
+		return true;
+	}
+
+	@Reference
+	private ModelResourcePermission<FooCollection>
+		_fooCollectionModelResourcePermission;
+
+}

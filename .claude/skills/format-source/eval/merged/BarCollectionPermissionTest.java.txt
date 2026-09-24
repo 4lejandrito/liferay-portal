@@ -1,0 +1,62 @@
+package com.liferay.example.service.test;
+
+import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.portal.kernel.test.util.GroupTestUtil;
+import com.liferay.portal.kernel.test.util.RandomTestUtil;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+/**
+ * @author Example Author
+ */
+@RunWith(Arquillian.class)
+public class BarCollectionPermissionTest {
+
+	@ClassRule
+	@Rule
+	public static final AggregateTestRule aggregateTestRule =
+		new LiferayIntegrationTestRule();
+
+	@Before
+	public void setUp() throws Exception {
+		_group = GroupTestUtil.addGroup();
+	}
+
+	@Test
+	public void testAddBarCollection() throws Exception {
+		BarCollection barCollection = _addBarCollection();
+
+		Assert.assertEquals("delta", barCollection.getName());
+		Assert.assertEquals("charlie", barCollection.getDescription());
+	}
+
+	@Test
+	public void testAddBarCollectionGrantsOwnerPermission() throws Exception {
+		BarCollection barCollection = _addBarCollection();
+
+		PermissionChecker permissionChecker =
+			PermissionThreadLocal.getPermissionChecker();
+
+		Assert.assertTrue(
+			_barCollectionModelResourcePermission.contains(
+				permissionChecker, barCollection, ActionKeys.UPDATE));
+	}
+
+	private BarCollection _addBarCollection() throws Exception {
+		return _barCollectionLocalService.addBarCollection(
+			RandomTestUtil.randomString(), TestPropsValues.getUserId(),
+			_group.getGroupId(), "delta", ServiceContextTestUtil.getServiceContext(
+				_group.getGroupId()));
+	}
+
+	private Group _group;
+
+	@Inject
+	private BarCollectionLocalService _barCollectionLocalService;
+
+}

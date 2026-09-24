@@ -25,7 +25,7 @@ cd <repo-root>/portal-impl && ant format-source-current-branch
 
 In both cases, if there are issues to be fixed, the formatter will list them. Fix them.
 
-In addition to the automatic formatter, there is a set of manual rules that the formatter does not catch. The full workflow is to run the formatter, apply the manual rules, then rerun the formatter to clean up any fallout from the manual edits. When a manual rule conflicts with the automatic formatter, the formatter wins; leave the formatted code as it stands.
+In addition to the automatic formatter, there is a set of manual rules that the formatter does not catch. The full workflow is to run the formatter, apply the manual rules, then rerun the formatter to clean up any fallout from the manual edits. When a manual rule conflicts with the automatic formatter, the formatter wins; leave the formatted code as it stands. Apply the manual rules one file at a time, and check the merged code a file was modelled on before applying any of them, as "Existing Code Wins" below sets out.
 
 Skip generated files. The automatic formatter already does this via `BaseSourceProcessor.hasGeneratedTag`; apply the same rule to manual edits. A file is generated when it contains any of these unquoted markers:
 
@@ -105,6 +105,16 @@ cd <go-module-root> && gofmt -l .
 When a rule and `gofmt` disagree, `gofmt` wins; leave the formatted code as it stands.
 
 Skip generated Go files. Beyond the marker line listed above, a Go file whose name contains `zz_generated` is generated output that the next `go generate` rewrites.
+
+## Existing Code Wins
+
+Apply the manual rules one file at a time: read a file, apply every rule below to it, then move on to the next. A single pass over a wide diff thins out as it goes, so the last files get a weaker reading than the first.
+
+Before applying a manual rule, look at the merged code the file was modelled on. New code is often a copy of an existing class or test written for a neighbouring entity, and the construct a rule would rewrite is frequently already written that way in that merged counterpart. Locate it by the shared name suffix, such as a new `FooEntryContributorImplTest` beside a merged `BarEntryContributorImplTest`, or by the class the file was copied from.
+
+When the merged counterpart writes the construct the same way, it wins: leave the code as it stands and do not report it. Rewriting one half of a matched pair costs more in divergence than the rule buys, so consistency with the code already in `master` outranks every rule below, in the same way the automatic formatter does.
+
+For example, Rule 20 drops the `L` suffix from a `0L` passed to a `long` parameter. In a new `FooEntryContributorImplTest` whose merged counterpart stubs the same call with `0L, 0L`, leave the suffix as it is.
 
 ## Rules
 
