@@ -1,0 +1,104 @@
+package com.liferay.example.internal.test;
+
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.test.util.RandomTestUtil;
+import com.liferay.portal.kernel.test.util.ReflectionTestUtil;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.mockito.Mockito;
+
+/**
+ * @author Example Author
+ */
+public class FooSetResourceTest {
+
+	@Test
+	public void testGetFooSet() throws Exception {
+		FooSet fooSet = _addFooSet();
+
+		Assert.assertEquals("alpha", fooSet.getKey());
+		Assert.assertEquals("gamma", fooSet.getTitle());
+		Assert.assertEquals("beta", fooSet.getName());
+	}
+
+	@Test
+	public void testGetFooSetActions() throws Exception {
+		Map<String, String> data = _getFooSetData();
+
+		Assert.assertEquals("add", data.get("action"));
+
+		Assert.assertTrue(data.containsKey("addFooSetURL"));
+	}
+
+	@Test
+	public void testGetFooSetDefaultRedirect() throws Exception {
+		FooDisplayContext fooDisplayContext = Mockito.mock(
+			FooDisplayContext.class);
+
+		ReflectionTestUtil.setFieldValue(
+			fooDisplayContext, "httpServletRequest", _httpServletRequest);
+
+		ThemeDisplay themeDisplay = Mockito.mock(ThemeDisplay.class);
+
+		Group group = Mockito.mock(Group.class);
+
+		Mockito.when(
+			themeDisplay.getScopeGroup()
+		).thenReturn(
+			group
+		);
+
+		Assert.assertEquals(_urlCurrent, fooDisplayContext.getRedirect());
+	}
+
+	@Test
+	public void testGetFooSetPermissions() throws Exception {
+		_assertResourcePermissions("com.liferay.foo", "MANAGE_FOO_ENTRIES");
+		_assertResourcePermissions(
+			FooCollection.class.getName(), ActionKeys.DELETE);
+		_assertResourcePermissions(
+			FooEntry.class.getName(), ActionKeys.DELETE);
+		_assertResourcePermissions(Layout.class.getName(), ActionKeys.UPDATE);
+		_assertResourcePermissions(
+			"com.liferay.style.book", "MANAGE_STYLE_BOOK_ENTRIES");
+	}
+
+	@Test
+	public void testGetFooSetURL() throws Exception {
+		Mockito.when(
+			_portal.getControlPanelPortletURL(
+				_httpServletRequest, _group, "com.liferay.foo", 0L, 0L,
+				PortletRequest.RENDER_PHASE)
+		).thenReturn(
+			_portletURL
+		);
+
+		Assert.assertEquals(_portletURL.toString(), _getFooSetURL());
+	}
+
+	@Test
+	public void testGetFooSetWithFeatureFlagDisabled() throws Exception {
+		Group group = _depotEntry.getGroup();
+		FooCollection fooCollection = _addFooCollection(group);
+
+		try (PropsTemporarySwapper propsTemporarySwapper =
+				new PropsTemporarySwapper("feature.flag.LPD-0000", "false")) {
+
+			Assert.assertNull(_getFooSet(fooCollection.getKey()));
+		}
+	}
+
+	private String _getFooSetExternalReferenceCode() {
+		Group group = _depotEntry.getGroup();
+
+		return group.getExternalReferenceCode();
+	}
+
+	private DepotEntry _depotEntry;
+	private Group _group;
+	private HttpServletRequest _httpServletRequest;
+
+}

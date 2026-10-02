@@ -1,0 +1,74 @@
+package com.liferay.example.internal.test;
+
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.test.util.RandomTestUtil;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.mockito.Mockito;
+
+/**
+ * @author Example Author
+ */
+public class BarSetResourceTest {
+
+	@Test
+	public void testGetBarSet() throws Exception {
+		BarSet barSet = _addBarSet();
+
+		Assert.assertEquals("alpha", barSet.getKey());
+		Assert.assertEquals("beta", barSet.getName());
+		Assert.assertEquals("gamma", barSet.getTitle());
+	}
+
+	@Test
+	public void testGetBarSetPermissions() throws Exception {
+		_assertResourcePermissions(
+			BarCollection.class.getName(), ActionKeys.DELETE);
+		_assertResourcePermissions(
+			BarEntry.class.getName(), ActionKeys.DELETE);
+		_assertResourcePermissions(Layout.class.getName(), ActionKeys.UPDATE);
+
+		_assertResourcePermissions("com.liferay.bar", "MANAGE_BAR_ENTRIES");
+		_assertResourcePermissions(
+			"com.liferay.style.book", "MANAGE_STYLE_BOOK_ENTRIES");
+	}
+
+	@Test
+	public void testGetBarSetWithFeatureFlagDisabled() throws Exception {
+		try (PropsTemporarySwapper propsTemporarySwapper =
+				new PropsTemporarySwapper("feature.flag.LPD-0000", "false")) {
+
+			Group group = _depotEntry.getGroup();
+			BarCollection barCollection = _addBarCollection(group);
+
+			Assert.assertNull(_getBarSet(barCollection.getKey()));
+		}
+	}
+
+	@Test
+	public void testGetBarSetURL() throws Exception {
+		Mockito.when(
+			_portal.getControlPanelPortletURL(
+				_httpServletRequest, _group, "com.liferay.bar", 0L, 0L,
+				PortletRequest.RENDER_PHASE)
+		).thenReturn(
+			_portletURL
+		);
+
+		Assert.assertEquals(_portletURL.toString(), _getBarSetURL());
+	}
+
+	private String _getBarSetExternalReferenceCode() {
+		Group group = _depotEntry.getGroup();
+
+		return group.getExternalReferenceCode();
+	}
+
+	private DepotEntry _depotEntry;
+	private Group _group;
+	private HttpServletRequest _httpServletRequest;
+
+}

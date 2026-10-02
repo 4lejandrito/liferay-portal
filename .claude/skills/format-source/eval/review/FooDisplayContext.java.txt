@@ -1,0 +1,90 @@
+package com.liferay.example.web.internal.display.context;
+
+import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.HashMapBuilder;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @author Example Author
+ */
+public class FooDisplayContext {
+
+	public FooDisplayContext(
+		HttpServletRequest httpServletRequest, ThemeDisplay themeDisplay) {
+
+		_httpServletRequest = httpServletRequest;
+		_themeDisplay = themeDisplay;
+	}
+
+	public List<NavigationItem> getNavigationItems() {
+		Group group = _themeDisplay.getScopeGroup();
+
+		if (group.isCompany()) {
+			return ListUtil.fromArray();
+		}
+
+		StagingGroupHelper stagingGroupHelper =
+			StagingGroupHelperUtil.getStagingGroupHelper();
+
+		boolean remoteLiveGroup = stagingGroupHelper.isRemoteLiveGroup(group);
+		boolean localLiveGroup = stagingGroupHelper.isLocalLiveGroup(group);
+
+		return NavigationItemListBuilder.add(
+			() -> !(localLiveGroup || remoteLiveGroup),
+			navigationItem -> navigationItem.setLabel("foos")
+		).build();
+	}
+
+	public String getTitle() {
+		String title = _defaultTitle();
+
+		return title;
+	}
+
+	public String readDescription(Group depotGroup) {
+		try (SafeCloseable safeCloseable = _openReader()) {
+			return safeCloseable.read(depotGroup.getDescription());
+		}
+	}
+
+	private String _defaultTitle() {
+		return LanguageUtil.get(_httpServletRequest, "foos");
+	}
+
+	private Map<String, Object> _getBaseModuleProps(
+		HttpServletRequest httpServletRequest, Group depotGroup,
+		String backURL) {
+
+		return HashMapBuilder.<String, Object>put(
+			"backURL", backURL
+		).put(
+			"groupId", depotGroup.getGroupId()
+		).build();
+	}
+
+	private CreationItem _newCreationItem(
+		HttpServletRequest httpServletRequest, String id, String languageKey,
+		Map<String, Object> baseModuleProps) {
+
+		return new CreationItem(
+			id, LanguageUtil.get(httpServletRequest, languageKey),
+			baseModuleProps);
+	}
+
+	private static final String _FOO_LABEL = "foo";
+
+	private static final long _TIMEOUT = 300000L;
+
+	private static final String _FOO_PREFIX = "foo-";
+
+	private final HttpServletRequest _httpServletRequest;
+	private final ThemeDisplay _themeDisplay;
+
+}

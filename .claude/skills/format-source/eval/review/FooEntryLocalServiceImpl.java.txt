@@ -1,0 +1,69 @@
+package com.liferay.example.service.impl;
+
+import com.liferay.portal.aop.AopService;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.service.ServiceContext;
+
+import java.util.Date;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+/**
+ * @author Example Author
+ */
+@Component(property = "model.class.name=com.liferay.example.model.FooEntry", service = AopService.class)
+public class FooEntryLocalServiceImpl extends FooEntryLocalServiceBaseImpl {
+
+	@Override
+	public FooEntry addFooEntry(
+			long userId, long groupId, String name,
+			ServiceContext serviceContext)
+		throws PortalException {
+
+		FooEntry fooEntry = fooEntryPersistence.create(
+			counterLocalService.increment());
+
+		fooEntry.setGroupId(groupId);
+		fooEntry.setCompanyId(serviceContext.getCompanyId());
+		fooEntry.setUserId(userId);
+		fooEntry.setCreateDate(new Date());
+		fooEntry.setName(name);
+
+		fooEntry = fooEntryPersistence.update(fooEntry);
+
+		_reindexFooEntry(fooEntry);
+
+		return fooEntry;
+	}
+
+	@Override
+	public SearchResponse searchFooEntries(long groupId, String keywords) {
+		long[] currentGroupIds = _getInheritedGroupIds(groupId);
+
+		return _searcher.search(
+			_searchRequestBuilderFactory.builder(
+			).groupIds(
+				currentGroupIds
+			).queryString(
+				keywords
+			).entryClassNames(
+				FooEntry.class.getName()
+			).build());
+	}
+
+	private long[] _getInheritedGroupIds(long groupId) {
+		return _groupLocalService.getInheritedGroupIds(groupId);
+	}
+
+	void _reindexFooEntry(FooEntry fooEntry) {
+		Indexer<FooEntry> fooEntryIndexer =
+			IndexerRegistryUtil.nullSafeGetIndexer(FooEntry.class);
+
+		fooEntryIndexer.reindex(fooEntry);
+	}
+
+	@Reference
+	private GroupLocalService _groupLocalService;
+
+}

@@ -1,0 +1,53 @@
+package com.liferay.example.internal.model.listener;
+
+import com.liferay.portal.kernel.exception.ModelListenerException;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.BaseModelListener;
+import com.liferay.portal.kernel.model.ModelListener;
+import com.liferay.portal.kernel.search.Indexer;
+import com.liferay.portal.kernel.search.IndexerRegistryUtil;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+/**
+ * @author Example Author
+ */
+@Component(service = ModelListener.class)
+public class FooEntryModelListener extends BaseModelListener<FooEntry> {
+
+	@Override
+	public void onAfterCreate(FooEntry fooEntry)
+		throws ModelListenerException {
+
+		_indexFooEntry(fooEntry);
+	}
+
+	public void onBeforeRemove(FooEntry fooEntry)
+		throws ModelListenerException {
+
+		_removeFooEntryResources(fooEntry);
+	}
+
+	private void _indexFooEntry(FooEntry fooEntry) {
+		Indexer<FooEntry> fooEntryIndexer =
+			IndexerRegistryUtil.nullSafeGetIndexer(FooEntry.class);
+
+		fooEntryIndexer.reindex(fooEntry);
+	}
+
+	private void _removeFooEntryResources(FooEntry fooEntry) {
+		try {
+			_resourceLocalService.deleteResource(
+				fooEntry.getCompanyId(), FooEntry.class.getName(),
+				ResourceConstants.SCOPE_INDIVIDUAL, fooEntry.getFooEntryId());
+		}
+		catch (PortalException portalException) {
+			throw new ModelListenerException(portalException);
+		}
+	}
+
+	@Reference
+	private ResourceLocalService _resourceLocalService;
+
+}

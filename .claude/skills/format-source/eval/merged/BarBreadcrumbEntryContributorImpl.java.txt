@@ -1,0 +1,72 @@
+package com.liferay.example.web.internal.servlet.taglib;
+
+import com.liferay.portal.kernel.portlet.PortletProvider;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.PortletKeys;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.List;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+/**
+ * @author Example Author
+ */
+@Component(service = BreadcrumbEntryContributor.class)
+public class BarBreadcrumbEntryContributorImpl
+	implements BreadcrumbEntryContributor {
+
+	@Override
+	public List<BreadcrumbEntry> getBreadcrumbEntries(
+		HttpServletRequest httpServletRequest) {
+
+		ThemeDisplay themeDisplay =
+			(ThemeDisplay)httpServletRequest.getAttribute(
+				WebKeys.THEME_DISPLAY);
+
+		BarCollection barCollection = _getBarCollection(httpServletRequest);
+
+		if (barCollection == null) {
+			return ListUtil.fromArray();
+		}
+
+		return ListUtil.fromArray(
+			_createBarCollectionBreadcrumbEntry(
+				barCollection, httpServletRequest, themeDisplay));
+	}
+
+	private BreadcrumbEntry _createBarCollectionBreadcrumbEntry(
+		BarCollection barCollection, HttpServletRequest httpServletRequest,
+		ThemeDisplay themeDisplay) {
+
+		BreadcrumbEntry breadcrumbEntry = new BreadcrumbEntry();
+
+		breadcrumbEntry.setTitle(barCollection.getName());
+		breadcrumbEntry.setURL(
+			_portal.getControlPanelPortletURL(
+				httpServletRequest, themeDisplay.getScopeGroup(),
+				PortletKeys.BAR_ADMIN, 0L, 0L,
+				PortletRequest.RENDER_PHASE
+			).toString());
+
+		return breadcrumbEntry;
+	}
+
+	private BarCollection _getBarCollection(
+		HttpServletRequest httpServletRequest) {
+
+		return _barCollectionLocalService.fetchBarCollection(
+			ParamUtil.getLong(httpServletRequest, "barCollectionId"));
+	}
+
+	private static final String _BAR_ADMIN_LABEL = "bar-admin";
+
+	private static final String _BAR_ADMIN_PREFIX = "bar-admin-";
+
+	@Reference
+	private Portal _portal;
+
+}

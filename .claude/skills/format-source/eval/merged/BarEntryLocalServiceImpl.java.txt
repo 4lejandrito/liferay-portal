@@ -1,0 +1,69 @@
+package com.liferay.example.service.impl;
+
+import com.liferay.portal.aop.AopService;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.service.ServiceContext;
+
+import java.util.Date;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+/**
+ * @author Example Author
+ */
+@Component(property = "model.class.name=com.liferay.example.model.BarEntry", service = AopService.class)
+public class BarEntryLocalServiceImpl extends BarEntryLocalServiceBaseImpl {
+
+	@Override
+	public BarEntry addBarEntry(
+			long userId, long groupId, String name,
+			ServiceContext serviceContext)
+		throws PortalException {
+
+		BarEntry barEntry = barEntryPersistence.create(
+			counterLocalService.increment());
+
+		barEntry.setGroupId(groupId);
+		barEntry.setCompanyId(serviceContext.getCompanyId());
+		barEntry.setUserId(userId);
+		barEntry.setCreateDate(new Date());
+		barEntry.setName(name);
+
+		barEntry = barEntryPersistence.update(barEntry);
+
+		_reindexBarEntry(barEntry);
+
+		return barEntry;
+	}
+
+	@Override
+	public SearchResponse searchBarEntries(long groupId, String keywords) {
+		long[] inheritedGroupIds = _getInheritedGroupIds(groupId);
+
+		return _searcher.search(
+			_searchRequestBuilderFactory.builder(
+			).entryClassNames(
+				BarEntry.class.getName()
+			).groupIds(
+				inheritedGroupIds
+			).queryString(
+				keywords
+			).build());
+	}
+
+	private long[] _getInheritedGroupIds(long groupId) {
+		return _groupLocalService.getInheritedGroupIds(groupId);
+	}
+
+	private void _reindexBarEntry(BarEntry barEntry) {
+		Indexer<BarEntry> barEntryIndexer =
+			IndexerRegistryUtil.nullSafeGetIndexer(BarEntry.class);
+
+		barEntryIndexer.reindex(barEntry);
+	}
+
+	@Reference
+	private GroupLocalService _groupLocalService;
+
+}
