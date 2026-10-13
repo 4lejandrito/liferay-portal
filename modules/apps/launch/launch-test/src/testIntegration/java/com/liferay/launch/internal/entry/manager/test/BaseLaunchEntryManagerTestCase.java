@@ -37,6 +37,7 @@ import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 
 import java.io.Serializable;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -256,6 +257,14 @@ public abstract class BaseLaunchEntryManagerTestCase {
 		Assert.assertEquals(
 			classPK,
 			launchEntryManager.getClassPK(getSelectedItemData(classPK)));
+
+		for (Map<String, String> selectedItemData :
+				getUnbranchableSelectedItemsData(classPK)) {
+
+			Assert.assertEquals(
+				selectedItemData.toString(), 0,
+				launchEntryManager.getClassPK(selectedItemData));
+		}
 	}
 
 	@Test
@@ -485,6 +494,13 @@ public abstract class BaseLaunchEntryManagerTestCase {
 
 	protected abstract Map<String, String> getSelectedItemData(long classPK)
 		throws Exception;
+
+	protected List<Map<String, String>> getUnbranchableSelectedItemsData(
+			long classPK)
+		throws Exception {
+
+		return Collections.emptyList();
+	}
 
 	protected LaunchEntryManager.Version getVersion(
 		long classPK, String versionKey) {

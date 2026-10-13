@@ -10,7 +10,7 @@ import {clickAndExpectToBeVisible} from '../../utils/clickAndExpectToBeVisible';
 import {PORTLET_URLS} from '../../utils/portletUrls';
 import {waitForPageToBeLoaded} from '../../utils/waitForPageToBeLoaded';
 
-export type LaunchEntryManagerLabel = 'Web Content';
+export type LaunchEntryManagerLabel = 'Fragment' | 'Page' | 'Web Content';
 
 export class LaunchesPage {
 	readonly page: Page;
@@ -62,7 +62,11 @@ export class LaunchesPage {
 		typeLabel: LaunchEntryManagerLabel
 	): Promise<FrameLocator> {
 		await clickAndExpectToBeVisible({
-			target: this.page.locator(`iframe[title="${typeLabel}"]`),
+			autoClick: true,
+			target: this.page.getByRole('menuitem', {
+				exact: true,
+				name: typeLabel,
+			}),
 			trigger: this.newEntryButton,
 		});
 
