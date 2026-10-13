@@ -17,6 +17,7 @@ import com.liferay.journal.service.JournalArticleResourceLocalService;
 import com.liferay.launch.entry.manager.LaunchEntryManager;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactory;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -304,8 +305,8 @@ public class JournalArticleLaunchEntryManager implements LaunchEntryManager {
 			}
 
 			@Override
-			public Serializable getPreviewPrimaryKey() {
-				return journalArticle.getId();
+			public BaseModel<?> getPreviewBaseModel() {
+				return journalArticle;
 			}
 
 			@Override
@@ -339,8 +340,8 @@ public class JournalArticleLaunchEntryManager implements LaunchEntryManager {
 			}
 
 			@Override
-			public Serializable getPreviewPrimaryKey() {
-				return journalArticle.getId();
+			public BaseModel<?> getPreviewBaseModel() {
+				return journalArticle;
 			}
 
 			@Override
