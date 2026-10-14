@@ -254,8 +254,12 @@ components:
                     type: string
             type: object
         PreviewAssetLibrary:
+            description:
+                An asset library that can be exported from the instance or that a file to import contains.
             properties:
                 descriptiveName:
+                    description:
+                        The asset library's name.
                     readOnly: true
                     type: string
                 existsInInstance:
@@ -264,8 +268,13 @@ components:
                     readOnly: true
                     type: boolean
                 externalReferenceCode:
+                    description:
+                        The asset library's external reference code.
                     readOnly: true
                     type: string
+            required:
+                - descriptiveName
+                - externalReferenceCode
             type: object
         PreviewPortletDataHandler:
             properties:
