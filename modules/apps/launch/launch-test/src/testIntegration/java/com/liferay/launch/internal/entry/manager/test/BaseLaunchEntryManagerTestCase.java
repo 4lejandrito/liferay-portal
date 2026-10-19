@@ -34,6 +34,7 @@ import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 
 import java.io.Serializable;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -111,17 +112,21 @@ public abstract class BaseLaunchEntryManagerTestCase {
 
 		LaunchEntryManager launchEntryManager = getLaunchEntryManager();
 
-		Assert.assertEquals(
-			entryTitle,
-			getDraftTitle(
-				launchEntryManager.addDraft(
-					classPK, publishedVersion.getVersionKey())));
+		if (hasVersionHistory()) {
+			Assert.assertEquals(
+				entryTitle,
+				getDraftTitle(
+					launchEntryManager.addDraft(
+						classPK, RandomTestUtil.randomLong(),
+						publishedVersion.getVersionKey())));
+		}
 
 		Assert.assertEquals(title3, getDraftTitle(addDraft(classPK)));
 
 		try {
 			launchEntryManager.addDraft(
-				classPK, String.valueOf(draft1.getDraftId()));
+				classPK, RandomTestUtil.randomLong(),
+				String.valueOf(draft1.getDraftId()));
 
 			Assert.fail();
 		}
@@ -185,13 +190,13 @@ public abstract class BaseLaunchEntryManagerTestCase {
 	public void testFetchItem() throws Exception {
 		long classPK = addEntry();
 
-		String entryTitle = getEntryTitle(classPK);
+		String itemTitle = getItemTitle(classPK);
 
 		LaunchEntryManager.Item item = getItem(classPK);
 
 		Assert.assertEquals(group.getGroupId(), item.getGroupId());
 		Assert.assertEquals(
-			entryTitle, item.getTitle(LocaleUtil.getSiteDefault()));
+			itemTitle, item.getTitle(LocaleUtil.getSiteDefault()));
 		Assert.assertNotNull(item.getTypeName(LocaleUtil.getSiteDefault()));
 
 		List<Serializable> listedPrimaryKeys = getListedPrimaryKeys(classPK);
@@ -205,7 +210,7 @@ public abstract class BaseLaunchEntryManagerTestCase {
 		item = getItem(classPK);
 
 		Assert.assertEquals(
-			entryTitle, item.getTitle(LocaleUtil.getSiteDefault()));
+			itemTitle, item.getTitle(LocaleUtil.getSiteDefault()));
 
 		LaunchEntryManager launchEntryManager = getLaunchEntryManager();
 
@@ -262,6 +267,14 @@ public abstract class BaseLaunchEntryManagerTestCase {
 		Assert.assertEquals(
 			classPK,
 			launchEntryManager.getClassPK(getSelectedItemData(classPK)));
+
+		for (Map<String, String> selectedItemData :
+				getUnbranchableSelectedItemsData(classPK)) {
+
+			Assert.assertEquals(
+				selectedItemData.toString(), 0,
+				launchEntryManager.getClassPK(selectedItemData));
+		}
 	}
 
 	@Test
@@ -296,7 +309,7 @@ public abstract class BaseLaunchEntryManagerTestCase {
 
 		draft1 = getDraft(classPK, draft1.getDraftId());
 
-		try (SafeCloseable safeCloseable = _setPreviewIdWithSafeCloseable(
+		try (SafeCloseable safeCloseable = setPreviewIdWithSafeCloseable(
 				classPK, draft1.getPreviewPrimaryKey())) {
 
 			Assert.assertEquals(title1, getEntryTitle(classPK));
@@ -304,7 +317,7 @@ public abstract class BaseLaunchEntryManagerTestCase {
 
 		draft2 = getDraft(classPK, draft2.getDraftId());
 
-		try (SafeCloseable safeCloseable = _setPreviewIdWithSafeCloseable(
+		try (SafeCloseable safeCloseable = setPreviewIdWithSafeCloseable(
 				classPK, draft2.getPreviewPrimaryKey())) {
 
 			Assert.assertEquals(title2, getEntryTitle(classPK));
@@ -319,16 +332,20 @@ public abstract class BaseLaunchEntryManagerTestCase {
 
 		launchEntryManager.publishDraft(classPK, draft2.getDraftId());
 
+		Assert.assertEquals(title2, getEntryTitle(classPK));
+
+		if (!hasVersionHistory()) {
+			return;
+		}
+
 		LaunchEntryManager.Version version1 = getVersion(
 			classPK, publishedVersion1.getVersionKey());
 
-		try (SafeCloseable safeCloseable = _setPreviewIdWithSafeCloseable(
+		try (SafeCloseable safeCloseable = setPreviewIdWithSafeCloseable(
 				classPK, version1.getPreviewPrimaryKey())) {
 
 			Assert.assertEquals(title1, getEntryTitle(classPK));
 		}
-
-		Assert.assertEquals(title2, getEntryTitle(classPK));
 	}
 
 	@Test
@@ -371,7 +388,9 @@ public abstract class BaseLaunchEntryManagerTestCase {
 			Assert.assertEquals(versionKey, version.getVersionKey());
 
 			Assert.assertNotNull(
-				versionKey, launchEntryManager.addDraft(classPK, versionKey));
+				versionKey,
+				launchEntryManager.addDraft(
+					classPK, RandomTestUtil.randomLong(), versionKey));
 		}
 	}
 
@@ -425,7 +444,8 @@ public abstract class BaseLaunchEntryManagerTestCase {
 			classPK);
 
 		return launchEntryManager.addDraft(
-			classPK, publishedVersion.getVersionKey());
+			classPK, RandomTestUtil.randomLong(),
+			publishedVersion.getVersionKey());
 	}
 
 	protected abstract long addEntry() throws Exception;
@@ -458,6 +478,10 @@ public abstract class BaseLaunchEntryManagerTestCase {
 		return item;
 	}
 
+	protected String getItemTitle(long classPK) throws Exception {
+		return getEntryTitle(classPK);
+	}
+
 	protected LaunchEntryManager getLaunchEntryManager() {
 		Class<?> modelClass = getModelClass();
 
@@ -484,6 +508,13 @@ public abstract class BaseLaunchEntryManagerTestCase {
 	protected abstract Map<String, String> getSelectedItemData(long classPK)
 		throws Exception;
 
+	protected List<Map<String, String>> getUnbranchableSelectedItemsData(
+			long classPK)
+		throws Exception {
+
+		return Collections.emptyList();
+	}
+
 	protected LaunchEntryManager.Version getVersion(
 		long classPK, String versionKey) {
 
@@ -495,6 +526,36 @@ public abstract class BaseLaunchEntryManagerTestCase {
 		Assert.assertNotNull(versionKey, version);
 
 		return version;
+	}
+
+	protected boolean hasVersionHistory() {
+		return true;
+	}
+
+	protected SafeCloseable setPreviewIdWithSafeCloseable(
+		long classPK, Serializable previewPrimaryKey) {
+
+		Long previewId = PreviewableResolverUtil.addPreviewableMap(
+			HashMapBuilder.<Class<?>, Map<Serializable, Serializable>>put(
+				getModelClass(),
+				HashMapBuilder.<Serializable, Serializable>put(
+					() -> {
+						LaunchEntryManager.Item item = getItem(classPK);
+
+						return item.getPrimaryKey();
+					},
+					previewPrimaryKey
+				).build()
+			).build());
+
+		SafeCloseable safeCloseable =
+			PreviewableResolverUtil.setPreviewIdWithSafeCloseable(previewId);
+
+		return () -> {
+			safeCloseable.close();
+
+			PreviewableResolverUtil.removePreviewableMap(previewId);
+		};
 	}
 
 	protected abstract void updateDraft(
@@ -514,9 +575,12 @@ public abstract class BaseLaunchEntryManagerTestCase {
 		throws Exception {
 
 		Assert.assertEquals(title, getEntryTitle(classPK));
-		Assert.assertNotEquals(
-			previousPublishedVersion.getVersionKey(),
-			publishedVersion.getVersionKey());
+
+		if (hasVersionHistory()) {
+			Assert.assertNotEquals(
+				previousPublishedVersion.getVersionKey(),
+				publishedVersion.getVersionKey());
+		}
 
 		LaunchEntryManager.Version currentPublishedVersion =
 			getPublishedVersion(classPK);
@@ -560,32 +624,6 @@ public abstract class BaseLaunchEntryManagerTestCase {
 		return draft.getEditURL(
 			_REDIRECT,
 			RequestBackedPortletURLFactoryUtil.create(mockHttpServletRequest));
-	}
-
-	private SafeCloseable _setPreviewIdWithSafeCloseable(
-		long classPK, Serializable previewPrimaryKey) {
-
-		Long previewId = PreviewableResolverUtil.addPreviewableMap(
-			HashMapBuilder.<Class<?>, Map<Serializable, Serializable>>put(
-				getModelClass(),
-				HashMapBuilder.<Serializable, Serializable>put(
-					() -> {
-						LaunchEntryManager.Item item = getItem(classPK);
-
-						return item.getPrimaryKey();
-					},
-					previewPrimaryKey
-				).build()
-			).build());
-
-		SafeCloseable safeCloseable =
-			PreviewableResolverUtil.setPreviewIdWithSafeCloseable(previewId);
-
-		return () -> {
-			safeCloseable.close();
-
-			PreviewableResolverUtil.removePreviewableMap(previewId);
-		};
 	}
 
 	private static final String _REDIRECT =
