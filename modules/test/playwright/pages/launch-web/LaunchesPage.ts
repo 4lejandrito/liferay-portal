@@ -77,6 +77,17 @@ export class LaunchesPage {
 		return iframe;
 	}
 
+	async addPageEntry(siteName: string, pageName: string) {
+		const iframe = await this.openEntrySelector('Page');
+
+		await this.selectScope(iframe, siteName);
+
+		await this.selectEntry(
+			iframe.getByText(pageName, {exact: true}).first(),
+			pageName
+		);
+	}
+
 	async addWebContentEntry(siteName: string, title: string) {
 		const iframe = await this.openEntrySelector('Web Content');
 
