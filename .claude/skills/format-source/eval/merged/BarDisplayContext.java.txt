@@ -1,0 +1,78 @@
+package com.liferay.example.web.internal.display.context;
+
+import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.HashMapBuilder;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @author Example Author
+ */
+public class BarDisplayContext {
+
+	public BarDisplayContext(
+		HttpServletRequest httpServletRequest, ThemeDisplay themeDisplay) {
+
+		_httpServletRequest = httpServletRequest;
+		_themeDisplay = themeDisplay;
+	}
+
+	public List<NavigationItem> getNavigationItems() {
+		Group group = _themeDisplay.getScopeGroup();
+
+		if (group.isCompany()) {
+			return ListUtil.fromArray();
+		}
+
+		StagingGroupHelper stagingGroupHelper =
+			StagingGroupHelperUtil.getStagingGroupHelper();
+
+		boolean localLiveGroup = stagingGroupHelper.isLocalLiveGroup(group);
+		boolean remoteLiveGroup = stagingGroupHelper.isRemoteLiveGroup(group);
+
+		return NavigationItemListBuilder.add(
+			() -> !(localLiveGroup || remoteLiveGroup),
+			navigationItem -> navigationItem.setLabel("bars")
+		).build();
+	}
+
+	public String getTitle() {
+		return LanguageUtil.get(_httpServletRequest, "bars");
+	}
+
+	private Map<String, Object> _getBaseModuleProps(
+		HttpServletRequest httpServletRequest, Group depotGroup,
+		String backURL) {
+
+		return HashMapBuilder.<String, Object>put(
+			"backURL", backURL
+		).put(
+			"groupId", depotGroup.getGroupId()
+		).build();
+	}
+
+	private CreationItem _newCreationItem(
+		HttpServletRequest httpServletRequest, String id, String languageKey,
+		Map<String, Object> baseModuleProps) {
+
+		return new CreationItem(
+			id, LanguageUtil.get(httpServletRequest, languageKey),
+			baseModuleProps);
+	}
+
+	private static final String _BAR_LABEL = "bar";
+
+	private static final String _BAR_PREFIX = "bar-";
+
+	private static final long _TIMEOUT = 300000;
+
+	private final HttpServletRequest _httpServletRequest;
+	private final ThemeDisplay _themeDisplay;
+
+}

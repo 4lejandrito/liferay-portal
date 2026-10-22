@@ -1,0 +1,74 @@
+package com.liferay.example.web.internal.servlet.taglib;
+
+import com.liferay.portal.kernel.portlet.PortletProvider;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.PortletKeys;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.List;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+/**
+ * @author Example Author
+ */
+@Component(service = BreadcrumbEntryContributor.class)
+public class FooBreadcrumbEntryContributorImpl
+	implements BreadcrumbEntryContributor {
+
+	@Override
+	public List<BreadcrumbEntry> getBreadcrumbEntries(
+		HttpServletRequest httpServletRequest) {
+
+		ThemeDisplay themeDisplay =
+			(ThemeDisplay)httpServletRequest.getAttribute(
+				WebKeys.THEME_DISPLAY);
+
+		FooCollection fooCollection = _getFooCollection(httpServletRequest);
+
+		if (fooCollection == null) {
+			return ListUtil.fromArray();
+		}
+
+		return ListUtil.fromArray(
+			_createFooCollectionBreadcrumbEntry(
+				httpServletRequest, fooCollection, themeDisplay));
+	}
+
+	private BreadcrumbEntry _createFooCollectionBreadcrumbEntry(
+		HttpServletRequest httpServletRequest, FooCollection fooCollection,
+		ThemeDisplay themeDisplay) {
+
+		BreadcrumbEntry breadcrumbEntry = new BreadcrumbEntry();
+
+		breadcrumbEntry.setURL(
+			_portal.getControlPanelPortletURL(
+				httpServletRequest, themeDisplay.getScopeGroup(),
+				PortletKeys.FOO_ADMIN, 0L, 0L,
+				PortletRequest.RENDER_PHASE
+			).toString());
+		breadcrumbEntry.setTitle(fooCollection.getName());
+
+		return breadcrumbEntry;
+	}
+
+	private FooCollection _getFooCollection(
+		HttpServletRequest httpServletRequest) {
+
+		long fooCollectionId = ParamUtil.getLong(
+			httpServletRequest, "fooCollectionId");
+
+		return _fooCollectionLocalService.fetchFooCollection(fooCollectionId);
+	}
+
+	private static final String _FOO_ADMIN_PREFIX = "foo-admin-";
+
+	private static final String _FOO_ADMIN_LABEL = "foo-admin";
+
+	@Reference
+	private Portal _portal;
+
+}

@@ -1,0 +1,67 @@
+package com.liferay.example.service.test;
+
+import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.portal.kernel.test.util.GroupTestUtil;
+import com.liferay.portal.kernel.test.util.RandomTestUtil;
+
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+/**
+ * @author Example Author
+ */
+@RunWith(Arquillian.class)
+public class FooCollectionPermissionTest {
+
+	@ClassRule
+	@Rule
+	public static final AggregateTestRule aggregateTestRule =
+		new LiferayIntegrationTestRule();
+
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+		_group = GroupTestUtil.addGroup();
+	}
+
+	@Test
+	public void testAddFooCollection() throws Exception {
+		FooCollection fooCollection = _addFooCollection();
+
+		Assert.assertNotNull(fooCollection);
+		Assert.assertEquals("delta", fooCollection.getName());
+		Assert.assertEquals("charlie", fooCollection.getDescription());
+	}
+
+	@Test
+	public void testAddFooCollectionGrantsOwnerPermission() throws Exception {
+		FooCollection fooCollection = _addFooCollection();
+
+		PermissionChecker permissionChecker =
+			PermissionThreadLocal.getPermissionChecker();
+
+		Assert.assertTrue(
+			StringBundler.concat(
+				"The owner of foo collection ",
+				fooCollection.getFooCollectionId(),
+				" must hold the UPDATE permission on it"),
+			_fooCollectionModelResourcePermission.contains(
+				permissionChecker, fooCollection, ActionKeys.UPDATE));
+	}
+
+	private FooCollection _addFooCollection() throws Exception {
+		return _fooCollectionLocalService.addFooCollection(
+			RandomTestUtil.randomString(), TestPropsValues.getUserId(),
+			_group.getGroupId(), "delta", ServiceContextTestUtil.getServiceContext(
+				_group.getGroupId()));
+	}
+
+	private static Group _group;
+
+	@Inject
+	private FooCollectionLocalService _fooCollectionLocalService;
+
+}

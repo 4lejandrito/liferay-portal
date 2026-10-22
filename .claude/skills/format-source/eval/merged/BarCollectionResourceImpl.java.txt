@@ -1,0 +1,54 @@
+package com.liferay.example.internal.resource.v1_0;
+
+import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.vulcan.pagination.Page;
+import com.liferay.portal.vulcan.pagination.Pagination;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+/**
+ * @author Example Author
+ */
+@Component(service = BarCollectionResource.class)
+public class BarCollectionResourceImpl extends BaseBarCollectionResourceImpl {
+
+	@Override
+	public Page<BarCollection> getSiteBarCollectionsPage(
+			Long siteId, Pagination pagination)
+		throws Exception {
+
+		return Page.of(
+			getBarCollections(siteId), pagination,
+			_barCollectionService.getBarCollectionsCount(siteId));
+	}
+
+	private List<BarCollection> getBarCollections(long siteId)
+		throws Exception {
+
+		List<BarCollection> barCollections = new ArrayList<>();
+
+		for (BarCollection barCollection :
+				_barCollectionService.getBarCollections(siteId)) {
+
+			if ((barCollection == null) || barCollection.isDraft()) {
+				continue;
+			}
+
+			barCollection.setSiteId(siteId);
+
+			barCollections.add(barCollection);
+		}
+
+		ListUtil.sort(barCollections, new BarCollectionNameComparator());
+
+		return barCollections;
+	}
+
+	@Reference
+	private BarCollectionService _barCollectionService;
+
+}
