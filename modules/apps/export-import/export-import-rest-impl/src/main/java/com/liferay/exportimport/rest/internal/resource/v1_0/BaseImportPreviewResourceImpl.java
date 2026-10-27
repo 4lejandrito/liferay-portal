@@ -1117,6 +1117,8 @@ public abstract class BaseImportPreviewResourceImpl
 		)
 		public String file;
 
+		public String fileURL;
+
 	}
 
 	private class PostImportPreviewRequestBody {
@@ -1125,6 +1127,8 @@ public abstract class BaseImportPreviewResourceImpl
 			description = "File", format = "binary", type = "string"
 		)
 		public String file;
+
+		public String fileURL;
 
 	}
 
@@ -1135,7 +1139,9 @@ public abstract class BaseImportPreviewResourceImpl
 		)
 		public String file;
 
+		public String fileURL;
+
 	}
 
 }
-// LIFERAY-REST-BUILDER-HASH:-1985711980
+// LIFERAY-REST-BUILDER-HASH:-1446788086
