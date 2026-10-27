@@ -6,6 +6,7 @@
 package com.liferay.exportimport.rest.resource.v1_0.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.exportimport.kernel.background.task.BackgroundTaskExecutorNames;
 import com.liferay.exportimport.kernel.configuration.ExportImportConfigurationSettingsMapFactoryUtil;
 import com.liferay.exportimport.kernel.configuration.constants.ExportImportConfigurationConstants;
 import com.liferay.exportimport.kernel.lar.PortletDataHandlerKeys;
@@ -18,6 +19,7 @@ import com.liferay.exportimport.rest.client.dto.v1_0.PortletDataHandlerControl;
 import com.liferay.exportimport.rest.client.dto.v1_0.Site;
 import com.liferay.exportimport.rest.client.http.HttpInvoker;
 import com.liferay.exportimport.rest.client.resource.v1_0.ImportPreviewResource;
+import com.liferay.exportimport.rest.client.serdes.v1_0.ImportPreviewSerDes;
 import com.liferay.layout.admin.constants.LayoutAdminPortletKeys;
 import com.liferay.layout.test.util.LayoutTestUtil;
 import com.liferay.object.constants.ObjectDefinitionConstants;
@@ -31,7 +33,11 @@ import com.liferay.object.service.ObjectDefinitionSettingLocalService;
 import com.liferay.object.service.ObjectEntryLocalService;
 import com.liferay.object.test.util.ObjectDefinitionTestUtil;
 import com.liferay.petra.function.UnsafeFunction;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.background.task.model.BackgroundTask;
+import com.liferay.portal.background.task.service.BackgroundTaskLocalService;
+import com.liferay.portal.configuration.test.util.CompanyConfigurationTemporarySwapper;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.model.Layout;
@@ -50,8 +56,11 @@ import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.HashMapDictionaryBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.PropsValues;
+import com.liferay.portal.kernel.util.URLCodec;
 import com.liferay.portal.test.log.LogCapture;
 import com.liferay.portal.test.log.LoggerTestUtil;
 import com.liferay.portal.test.rule.FeatureFlag;
@@ -228,6 +237,7 @@ public class ImportPreviewResourceTest
 				objectDefinition);
 		}
 
+		_testPostImportPreviewWithFileURL();
 		_testPostImportPreviewWithoutSites();
 		_testPostImportPreviewWithSiteMissingFromInstance();
 		_testPostImportPreviewWithSites();
@@ -389,6 +399,22 @@ public class ImportPreviewResourceTest
 		return portletDataHandler.getAdditionCount();
 	}
 
+	private CompanyConfigurationTemporarySwapper
+			_getCompanyConfigurationTemporarySwapper(
+				String[] urlHostsAllowed, boolean urlLocalNetworkAccessEnabled)
+		throws Exception {
+
+		return new CompanyConfigurationTemporarySwapper(
+			testCompany.getCompanyId(),
+			"com.liferay.portal.security.configuration." +
+				"URLFetchSecurityCompanyConfiguration",
+			HashMapDictionaryBuilder.<String, Object>put(
+				"urlHostsAllowed", urlHostsAllowed
+			).put(
+				"urlLocalNetworkAccessEnabled", urlLocalNetworkAccessEnabled
+			).build());
+	}
+
 	private Map<String, String[]> _getExportLayoutParameterMap(
 		Group... groups) {
 
@@ -461,6 +487,37 @@ public class ImportPreviewResourceTest
 			).build());
 	}
 
+	private HttpInvoker.HttpResponse _postImportPreviewHttpResponse(
+			File file, String fileURL)
+		throws Exception {
+
+		HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
+
+		httpInvoker.httpMethod(HttpInvoker.HttpMethod.POST);
+		httpInvoker.multipart();
+
+		if (file != null) {
+			httpInvoker.part("file", file);
+		}
+
+		if (fileURL != null) {
+			httpInvoker.part("fileURL", fileURL);
+		}
+
+		httpInvoker.path(
+			StringBundler.concat(
+				"http://", testCompany.getVirtualHostname(), ":",
+				PortalUtil.getPortalServerPort(false),
+				"/o/export-import/v1.0/import-preview"));
+
+		User user = UserTestUtil.getAdminUser(testCompany.getCompanyId());
+
+		httpInvoker.userNameAndPassword(
+			user.getEmailAddress() + ":" + PropsValues.DEFAULT_ADMIN_PASSWORD);
+
+		return httpInvoker.invoke();
+	}
+
 	private ObjectDefinition _publishObjectDefinitionWithEntries(
 			long groupId, String scope)
 		throws Exception {
@@ -486,6 +543,113 @@ public class ImportPreviewResourceTest
 		_addObjectEntry(groupId, objectDefinition);
 
 		return objectDefinition;
+	}
+
+	private void _testPostImportPreviewWithFileURL() throws Exception {
+		Group companyGroup = _stagingGroupHelper.fetchCompanyGroup(
+			testCompany.getCompanyId());
+
+		File file = _exportLayoutAsFile(companyGroup.getGroupId());
+
+		BackgroundTask backgroundTask = null;
+
+		try (LogCapture logCapture1 = LoggerTestUtil.configureLog4JLogger(
+				"com.liferay.exportimport.internal.staging.StagingImpl",
+				LoggerTestUtil.WARN);
+			LogCapture logCapture2 = LoggerTestUtil.configureLog4JLogger(
+				"com.liferay.portal.background.task.internal.messaging." +
+					"BackgroundTaskMessageListener",
+				LoggerTestUtil.WARN)) {
+
+			backgroundTask = _backgroundTaskLocalService.addBackgroundTask(
+				TestPropsValues.getUserId(), companyGroup.getGroupId(),
+				RandomTestUtil.randomString(),
+				BackgroundTaskExecutorNames.
+					LAYOUT_EXPORT_BACKGROUND_TASK_EXECUTOR,
+				HashMapBuilder.<String, Serializable>put(
+					"exportImportConfigurationId", RandomTestUtil.randomLong()
+				).build(),
+				null);
+		}
+
+		_backgroundTaskLocalService.addBackgroundTaskAttachment(
+			TestPropsValues.getUserId(), backgroundTask.getBackgroundTaskId(),
+			RandomTestUtil.randomString(), file);
+
+		String path = StringBundler.concat(
+			testCompany.getVirtualHostname(), ":",
+			PortalUtil.getPortalServerPort(false),
+			"/o/export-import/v1.0/export-processes/",
+			backgroundTask.getBackgroundTaskId(), "/content");
+
+		User user = UserTestUtil.getAdminUser(testCompany.getCompanyId());
+
+		String fileURL = StringBundler.concat(
+			"http://", URLCodec.encodeURL(user.getEmailAddress()), ":",
+			PropsValues.DEFAULT_ADMIN_PASSWORD, "@", path);
+
+		try (LogCapture logCapture = LoggerTestUtil.configureLog4JLogger(
+				"com.liferay.portal.vulcan.internal.jaxrs.exception.mapper." +
+					"WebApplicationExceptionMapper",
+				LoggerTestUtil.WARN)) {
+
+			assertHttpResponseStatusCode(
+				400, _postImportPreviewHttpResponse(file, fileURL));
+			assertHttpResponseStatusCode(
+				400,
+				_postImportPreviewHttpResponse(null, "file:///etc/passwd"));
+			assertHttpResponseStatusCode(
+				400, _postImportPreviewHttpResponse(null, null));
+
+			try (CompanyConfigurationTemporarySwapper
+					companyConfigurationTemporarySwapper =
+						_getCompanyConfigurationTemporarySwapper(
+							new String[0], false)) {
+
+				assertHttpResponseStatusCode(
+					400, _postImportPreviewHttpResponse(null, fileURL));
+			}
+
+			try (CompanyConfigurationTemporarySwapper
+					companyConfigurationTemporarySwapper =
+						_getCompanyConfigurationTemporarySwapper(
+							new String[] {RandomTestUtil.randomString()},
+							true)) {
+
+				assertHttpResponseStatusCode(
+					400, _postImportPreviewHttpResponse(null, fileURL));
+			}
+
+			try (CompanyConfigurationTemporarySwapper
+					companyConfigurationTemporarySwapper =
+						_getCompanyConfigurationTemporarySwapper(
+							new String[0], true)) {
+
+				assertHttpResponseStatusCode(
+					400,
+					_postImportPreviewHttpResponse(
+						null,
+						StringBundler.concat(
+							"http://",
+							URLCodec.encodeURL(user.getEmailAddress()), ":",
+							RandomTestUtil.randomString(), "@", path)));
+
+				HttpInvoker.HttpResponse httpResponse =
+					_postImportPreviewHttpResponse(null, fileURL);
+
+				assertHttpResponseStatusCode(200, httpResponse);
+
+				ImportPreview importPreview = ImportPreviewSerDes.toDTO(
+					httpResponse.getContent());
+
+				Assert.assertEquals("content", importPreview.getFileName());
+				Assert.assertEquals(
+					Long.valueOf(file.length()), importPreview.getFileSize());
+			}
+		}
+		finally {
+			_backgroundTaskLocalService.deleteBackgroundTask(backgroundTask);
+		}
 	}
 
 	private void _testPostImportPreviewWithInvalidFile(
@@ -644,6 +808,9 @@ public class ImportPreviewResourceTest
 
 		_objectDefinitionLocalService.deleteObjectDefinition(objectDefinition);
 	}
+
+	@Inject
+	private BackgroundTaskLocalService _backgroundTaskLocalService;
 
 	@Inject
 	private GroupLocalService _groupLocalService;
