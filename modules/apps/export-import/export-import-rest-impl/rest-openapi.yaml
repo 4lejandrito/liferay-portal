@@ -995,6 +995,10 @@ paths:
                                 file:
                                     format: binary
                                     type: string
+                                fileURL:
+                                    description:
+                                        The URL of a LAR to download instead of uploading a file. User information in the URL (user:password@) is sent as HTTP Basic authentication.
+                                    type: string
                             type: object
             responses:
                 200:
@@ -1422,6 +1426,10 @@ paths:
                             properties:
                                 file:
                                     format: binary
+                                    type: string
+                                fileURL:
+                                    description:
+                                        The URL of a LAR to download instead of uploading a file. User information in the URL (user:password@) is sent as HTTP Basic authentication.
                                     type: string
                             type: object
             responses:
@@ -2050,6 +2058,10 @@ paths:
                             properties:
                                 file:
                                     format: binary
+                                    type: string
+                                fileURL:
+                                    description:
+                                        The URL of a LAR to download instead of uploading a file. User information in the URL (user:password@) is sent as HTTP Basic authentication.
                                     type: string
                             type: object
             responses:
