@@ -21,6 +21,8 @@ import com.liferay.exportimport.rest.internal.util.LayoutUtil;
 import com.liferay.exportimport.rest.internal.util.PermissionUtil;
 import com.liferay.exportimport.rest.internal.util.PortletDataHandlerUtil;
 import com.liferay.exportimport.rest.resource.v1_0.ImportPreviewResource;
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.configuration.module.configuration.ConfigurationProvider;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -31,12 +33,30 @@ import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.service.LayoutService;
 import com.liferay.portal.kernel.service.PortletLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.servlet.HttpHeaders;
+import com.liferay.portal.kernel.util.ArrayUtil;
+import com.liferay.portal.kernel.util.Base64;
+import com.liferay.portal.kernel.util.FileUtil;
+import com.liferay.portal.kernel.util.Http;
+import com.liferay.portal.kernel.util.InetAddressUtil;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.security.configuration.URLFetchSecurityCompanyConfiguration;
 import com.liferay.portal.vulcan.multipart.BinaryFile;
 import com.liferay.portal.vulcan.multipart.MultipartBody;
 
 import jakarta.ws.rs.BadRequestException;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
+
+import java.nio.charset.StandardCharsets;
 
 import java.util.HashMap;
 import java.util.List;
@@ -125,7 +145,23 @@ public class ImportPreviewResourceImpl extends BaseImportPreviewResourceImpl {
 			long groupId, MultipartBody multipartBody)
 		throws Exception {
 
-		BinaryFile binaryFile = multipartBody.getBinaryFile("file");
+		BinaryFile binaryFile = null;
+		String fileURL = null;
+
+		if (multipartBody != null) {
+			binaryFile = multipartBody.getBinaryFile("file");
+			fileURL = multipartBody.getValueAsString("fileURL");
+		}
+
+		if ((binaryFile == null) && Validator.isBlank(fileURL)) {
+			throw new BadRequestException(
+				"Either a file or a file URL must be provided");
+		}
+
+		if ((binaryFile != null) && !Validator.isBlank(fileURL)) {
+			throw new BadRequestException(
+				"Unable to import both a file and a file URL");
+		}
 
 		String folderName = ImportPreviewResource.class.getName();
 
@@ -137,9 +173,109 @@ public class ImportPreviewResourceImpl extends BaseImportPreviewResourceImpl {
 				groupId, folderName, tempFileEntryName);
 		}
 
-		return _layoutService.addTempFileEntry(
-			groupId, folderName, binaryFile.getFileName(),
-			binaryFile.getInputStream(), binaryFile.getContentType());
+		if (binaryFile != null) {
+			return _layoutService.addTempFileEntry(
+				groupId, folderName, binaryFile.getFileName(),
+				binaryFile.getInputStream(), binaryFile.getContentType());
+		}
+
+		URI uri = null;
+
+		try {
+			uri = new URI(fileURL);
+		}
+		catch (URISyntaxException uriSyntaxException) {
+			throw new BadRequestException(
+				"The file URL is invalid: " + uriSyntaxException.getReason());
+		}
+
+		String host = uri.getHost();
+
+		if (Validator.isBlank(host) ||
+			(!StringUtil.equalsIgnoreCase(uri.getScheme(), Http.HTTP) &&
+			 !StringUtil.equalsIgnoreCase(uri.getScheme(), Http.HTTPS))) {
+
+			throw new BadRequestException(
+				"The file URL must have a host and use HTTP or HTTPS. " +
+					"Characters such as \"@\" in the user information must " +
+						"be encoded.");
+		}
+
+		URLFetchSecurityCompanyConfiguration
+			urlFetchSecurityCompanyConfiguration =
+				_configurationProvider.getCompanyConfiguration(
+					URLFetchSecurityCompanyConfiguration.class,
+					contextCompany.getCompanyId());
+
+		String[] urlHostsAllowed =
+			urlFetchSecurityCompanyConfiguration.urlHostsAllowed();
+
+		if (ArrayUtil.isNotEmpty(urlHostsAllowed) &&
+			!ArrayUtil.contains(urlHostsAllowed, host, true)) {
+
+			throw new BadRequestException(
+				"The host \"" + host + "\" is not allowed");
+		}
+
+		if (!urlFetchSecurityCompanyConfiguration.
+				urlLocalNetworkAccessEnabled()) {
+
+			InetAddress inetAddress = null;
+
+			try {
+				inetAddress = InetAddressUtil.getInetAddressByName(host);
+			}
+			catch (UnknownHostException unknownHostException) {
+				throw new BadRequestException(
+					"The host \"" + host + "\" is unknown",
+					unknownHostException);
+			}
+
+			if ((inetAddress == null) ||
+				InetAddressUtil.isLocalInetAddress(inetAddress)) {
+
+				throw new BadRequestException(
+					StringBundler.concat(
+						"The host \"", host,
+						"\" is not allowed because it resolves to a local ",
+						"network address"));
+			}
+		}
+
+		Http.Options options = new Http.Options();
+
+		String userInfo = uri.getUserInfo();
+
+		if (userInfo != null) {
+			options.addHeader(
+				HttpHeaders.AUTHORIZATION,
+				"Basic " +
+					Base64.encode(userInfo.getBytes(StandardCharsets.UTF_8)));
+		}
+
+		options.setFollowRedirects(false);
+		options.setLocation(fileURL);
+
+		try (InputStream inputStream = _http.URLtoInputStream(options)) {
+			Http.Response response = options.getResponse();
+
+			int responseCode = response.getResponseCode();
+
+			if ((responseCode < 200) || (responseCode >= 300)) {
+				throw new BadRequestException(
+					"Unable to download the file URL because the server " +
+						"responded with status " + responseCode);
+			}
+
+			return _layoutService.addTempFileEntry(
+				groupId, folderName, FileUtil.getShortFileName(uri.getPath()),
+				inputStream, response.getContentType());
+		}
+		catch (IOException ioException) {
+			throw new BadRequestException(
+				"Unable to download the file URL from host \"" + host + "\"",
+				ioException);
+		}
 	}
 
 	private ImportPreview _getImportPreview(
@@ -266,6 +402,9 @@ public class ImportPreviewResourceImpl extends BaseImportPreviewResourceImpl {
 	}
 
 	@Reference
+	private ConfigurationProvider _configurationProvider;
+
+	@Reference
 	private ExportImportConfigurationLocalService
 		_exportImportConfigurationLocalService;
 
@@ -274,6 +413,9 @@ public class ImportPreviewResourceImpl extends BaseImportPreviewResourceImpl {
 
 	@Reference
 	private ExportImportLocalService _exportImportLocalService;
+
+	@Reference
+	private Http _http;
 
 	@Reference
 	private LayoutService _layoutService;
