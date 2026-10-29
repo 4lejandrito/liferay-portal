@@ -12,7 +12,10 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagListener;
 import com.liferay.portal.kernel.feature.flag.constants.FeatureFlagConstants;
+import com.liferay.portal.kernel.model.CompanyConstants;
 import com.liferay.portal.kernel.module.util.SystemBundleUtil;
+import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.PropsUtil;
 
 import java.util.HashMap;
@@ -54,16 +57,70 @@ public class FeatureFlagTestUtil {
 		for (String key : keys) {
 			String featureFlagKey = FeatureFlagConstants.getKey(key);
 
-			previousValues.put(featureFlagKey, PropsUtil.get(featureFlagKey));
+			String previousValue = PropsUtil.get(featureFlagKey);
+
+			previousValues.put(key, previousValue);
 
 			PropsUtil.set(featureFlagKey, String.valueOf(enabled));
+
+			if (GetterUtil.getBoolean(previousValue) == enabled) {
+				continue;
+			}
+
+			_invokeWildcardFeatureFlagListeners(enabled, key);
 		}
 
 		return () -> {
 			for (Map.Entry<String, String> entry : previousValues.entrySet()) {
-				PropsUtil.set(entry.getKey(), entry.getValue());
+				PropsUtil.set(
+					FeatureFlagConstants.getKey(entry.getKey()),
+					entry.getValue());
+
+				boolean previousEnabled = GetterUtil.getBoolean(
+					entry.getValue());
+
+				if (previousEnabled == enabled) {
+					continue;
+				}
+
+				_invokeWildcardFeatureFlagListeners(
+					previousEnabled, entry.getKey());
 			}
 		};
+	}
+
+	private static void _invokeWildcardFeatureFlagListeners(
+		boolean enabled, String key) {
+
+		try (ServiceTrackerList<FeatureFlagListener> featureFlagListeners =
+				ServiceTrackerListFactory.open(
+					SystemBundleUtil.getBundleContext(),
+					FeatureFlagListener.class,
+					StringBundler.concat(
+						"(feature.flag.key=",
+						SystemBundleUtil.escapeFilterValue(StringPool.STAR),
+						")"))) {
+
+			if (featureFlagListeners.isEmpty()) {
+				return;
+			}
+
+			CompanyLocalServiceUtil.forEachCompanyId(
+				companyId -> {
+					for (FeatureFlagListener featureFlagListener :
+							featureFlagListeners) {
+
+						featureFlagListener.onValue(companyId, key, enabled);
+					}
+				});
+
+			for (FeatureFlagListener featureFlagListener :
+					featureFlagListeners) {
+
+				featureFlagListener.onValue(
+					CompanyConstants.SYSTEM, key, enabled);
+			}
+		}
 	}
 
 }
