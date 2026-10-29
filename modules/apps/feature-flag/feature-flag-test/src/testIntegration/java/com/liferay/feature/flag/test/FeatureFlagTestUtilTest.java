@@ -70,8 +70,8 @@ public class FeatureFlagTestUtilTest {
 
 			_keyTestFeatureFlagListener.assertInvocations();
 			_wildcardTestFeatureFlagListener.assertInvocations(
-				_valuesToString(CompanyConstants.SYSTEM, true),
-				_valuesToString(_companyId, true));
+				_getInvocationString(CompanyConstants.SYSTEM, true),
+				_getInvocationString(_companyId, true));
 
 			try (SafeCloseable nestedSafeCloseable =
 					FeatureFlagTestUtil.setFeatureFlagsWithSafeCloseable(
@@ -85,11 +85,11 @@ public class FeatureFlagTestUtilTest {
 
 		_keyTestFeatureFlagListener.assertInvocations();
 		_wildcardTestFeatureFlagListener.assertInvocations(
-			_valuesToString(CompanyConstants.SYSTEM, false),
-			_valuesToString(_companyId, false));
+			_getInvocationString(CompanyConstants.SYSTEM, false),
+			_getInvocationString(_companyId, false));
 	}
 
-	private String _valuesToString(long companyId, boolean enabled) {
+	private String _getInvocationString(long companyId, boolean enabled) {
 		return StringBundler.concat(companyId, " ", _key, " ", enabled);
 	}
 
@@ -114,14 +114,15 @@ public class FeatureFlagTestUtilTest {
 				).build());
 		}
 
-		public void assertInvocations(String... expectedStrings) {
-			Arrays.sort(expectedStrings);
+		public void assertInvocations(String... expectedInvocationStrings) {
+			Arrays.sort(expectedInvocationStrings);
 
-			_strings.sort(null);
+			_invocationStrings.sort(null);
 
-			Assert.assertEquals(Arrays.asList(expectedStrings), _strings);
+			Assert.assertEquals(
+				Arrays.asList(expectedInvocationStrings), _invocationStrings);
 
-			_strings.clear();
+			_invocationStrings.clear();
 		}
 
 		@Override
@@ -137,13 +138,14 @@ public class FeatureFlagTestUtilTest {
 				 (companyId == _companyId)) &&
 				featureFlagKey.equals(_key)) {
 
-				_strings.add(_valuesToString(companyId, enabled));
+				_invocationStrings.add(
+					_getInvocationString(companyId, enabled));
 			}
 		}
 
+		private final List<String> _invocationStrings = new ArrayList<>();
 		private final ServiceRegistration<FeatureFlagListener>
 			_serviceRegistration;
-		private final List<String> _strings = new ArrayList<>();
 
 	}
 

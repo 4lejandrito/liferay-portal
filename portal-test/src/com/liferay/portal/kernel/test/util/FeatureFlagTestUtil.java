@@ -90,7 +90,7 @@ public class FeatureFlagTestUtil {
 	}
 
 	private static void _invokeWildcardFeatureFlagListeners(
-		boolean enabled, String key) {
+		boolean enabled, String featureFlagKey) {
 
 		try (ServiceTrackerList<FeatureFlagListener> featureFlagListeners =
 				ServiceTrackerListFactory.open(
@@ -110,7 +110,8 @@ public class FeatureFlagTestUtil {
 					for (FeatureFlagListener featureFlagListener :
 							featureFlagListeners) {
 
-						featureFlagListener.onValue(companyId, key, enabled);
+						featureFlagListener.onValue(
+							companyId, featureFlagKey, enabled);
 					}
 				});
 
@@ -118,7 +119,7 @@ public class FeatureFlagTestUtil {
 					featureFlagListeners) {
 
 				featureFlagListener.onValue(
-					CompanyConstants.SYSTEM, key, enabled);
+					CompanyConstants.SYSTEM, featureFlagKey, enabled);
 			}
 		}
 	}
