@@ -148,7 +148,8 @@ exit ${_EXIT_CODE}
 
 - Replace each `<test commands>` block with the actual commands. Start every command with `_run`. The script exits with `${_EXIT_CODE}` at the end — `0` when all tests pass, `1` when any fail.
 - Use `./gradlew --project-dir ./modules` for Gradle tasks (the script's `cd` puts the repository root as the working directory).
-- Use `npx --prefix ./modules/test/playwright playwright test` for Playwright.
+- Use `bash -c 'cd modules/test/playwright && npx playwright test tests/<module-web>/...'` for Playwright. Playwright reads `playwright.config.ts` and `.env` only from its working directory, so a command run from the repository root does not run the tests.
+- Playwright uses `http://localhost:8080` unless `PORTAL_URL` is set. When the portal is on a different port, add `export PORTAL_URL=http://localhost:<port>` before the `# Required` comment.
 - Precede each command with a single line comment explaining why it is in the plan. State the rationale; do not restate the test name or module.
 - When nothing is required, write `# Nothing required` under the `# Required` comment. Do not leave the comment out.
 - List every dropped candidate with its reason under `# Dropped:` in the script's header comment.
