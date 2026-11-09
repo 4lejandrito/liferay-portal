@@ -15,7 +15,7 @@ A violation is a `@Test` method that a change adds to a class that already has a
  public void testFoo() throws Exception {
  	_assertFoo(bar);
 -}
- 
+
 -@Test
 -@TestInfo("LPD-2")
 -public void testFooWithBaz() throws Exception {
