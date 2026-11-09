@@ -10,7 +10,7 @@ A violation is a call in a test that sets or pushes a thread local, such as `Per
 
 ```diff
  ServiceContextThreadLocal.pushServiceContext(serviceContext);
- 
+
 -_fooLocalService.deleteFoo(fooId);
 +try {
 +	_fooLocalService.deleteFoo(fooId);

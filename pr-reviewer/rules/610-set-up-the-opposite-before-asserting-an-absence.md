@@ -15,10 +15,10 @@ A violation is an assertion that a permission, entry, value, or access is absent
 +	).put(
  		roleId + "_ACTION_VIEW", "true"
  	).build());
- 
+
 +_assertHasPermission(ActionKeys.FOO, true, roleId);
 +
  _removePermissions(roleId);
- 
+
  _assertHasPermission(ActionKeys.FOO, false, roleId);
 ```
