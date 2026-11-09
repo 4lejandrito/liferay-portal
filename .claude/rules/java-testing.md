@@ -16,7 +16,7 @@ Read the nearest existing test in the same package first and match its idiom: na
 
 ## Extend the Subject's Existing Test
 
-Add coverage to the existing test class of the subject, such as `<Model>ServiceTest`, `<Model>StagingTest`, `<Model>StagedModelDataHandlerTest`, or `<Command>MVCActionCommandTest`, and follow its structure. Create a new class only when the subject has none, and name it after the subject (rule 604), never after the scenario or the Poshi testcase it replaces. In an integration test, get services through `@Inject` fields rather than `*ServiceUtil` calls.
+Add coverage to the existing test class of the subject, such as `<Model>ServiceTest`, `<Model>StagingTest`, `<Model>StagedModelDataHandlerTest`, or `<Command>MVCActionCommandTest`, and follow its structure. When the class already tests the method, add the case to that test method, as a commented section or a `_test<Method><Qualifier>` helper it calls, and add the ticket to its `@TestInfo`, rather than a new `@Test` method beside it (rule 613). Create a new class only when the subject has none, and name it after the subject (rule 604), never after the scenario or the Poshi testcase it replaces. In an integration test, get services through `@Inject` fields rather than `*ServiceUtil` calls.
 
 ## Mock Only What the Assertions Exercise
 
