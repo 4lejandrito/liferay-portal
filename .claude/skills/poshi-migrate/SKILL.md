@@ -134,6 +134,8 @@ When a test is **Skip**, propose what the missing endpoint should look like (HTT
 
 	When `componentNamePlaywrightModules` does not list the source `@component-name`, ask the user which Playwright modules to scan before continuing. Do not skip this step.
 
+	Coverage is not only Playwright. Also check the subject's existing unit and integration tests, and the tests this migration itself adds: a Poshi test whose check another of them already makes is **Already covered**. Treat checks that test no behavior of the component as **Drop** too, such as a CSS color, a tooltip, a page heading after navigation, a configuration screen that only opens, or a matrix that repeats a permission check for each role type when the permission checker, not the component, owns that logic.
+
 1. For every test whose `@description` references an LPS or LPD ticket, recover the original code change and use its diff as the primary signal for the layer decision. From the repo root:
 
 	```bash
@@ -358,6 +360,8 @@ When the Poshi test has no ticket in its `@description` block and no LPS or LPD 
 #### Java Integration
 
 1. Place the new test under `<module-root>/src/testIntegration/java`, in the same package as the class under test.
+
+1. Add it to the subject's existing test class (`<Model>ServiceTest`, `<Model>StagingTest`, `<Model>StagedModelDataHandlerTest`, `<Command>MVCActionCommandTest`) when one exists, following that class's structure. Never create a class named after the Poshi testcase. Get services through `@Inject` fields, not `*ServiceUtil` calls.
 
 1. Follow the team conventions for Liferay integration tests: autocleanup via test rules and annotations rather than `@After` or manual deletion, `@FeatureFlags` per method when needed, trigger artifacts through real listeners.
 
