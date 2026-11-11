@@ -4,11 +4,118 @@ Pull a single Testray case result through the REST API at `https://testray.lifer
 
 ## Preconditions
 
-`${TESTRAY_CLIENT_ID}` and `${TESTRAY_CLIENT_SECRET}` must be set in the environment. Without them, abort and surface the reason.
+`${TESTRAY_CLIENT_ID}` and `${TESTRAY_CLIENT_SECRET}` are the standard authentication method. When they are not set, a pre-set `${ACCESS_TOKEN}` is accepted. When neither is available, follow the **Browser Cookie Fallback** below before aborting.
 
 ## Authentication
 
-Obtain a bearer token once per run through the OAuth2 client credentials grant at `https://testray.liferay.com/o/oauth2/token`, authenticating with `${TESTRAY_CLIENT_ID}` and `${TESTRAY_CLIENT_SECRET}` as HTTP Basic credentials. Read the `access_token` from the JSON response, store it in `${ACCESS_TOKEN}`, and present it as a `Bearer` token on every subsequent request.
+Run the following shell block once per run to resolve auth. All subsequent API calls use `testray_curl` (defined below) instead of raw `curl`.
+
+```bash
+if [ -n "${TESTRAY_CLIENT_ID}" ] && [ -n "${TESTRAY_CLIENT_SECRET}" ]; then
+	ACCESS_TOKEN=$(curl \
+		--data "grant_type=client_credentials" \
+		--silent \
+		--url "https://testray.liferay.com/o/oauth2/token" \
+		--user "${TESTRAY_CLIENT_ID}:${TESTRAY_CLIENT_SECRET}" \
+		| python3 -c "import json,sys; print(json.load(sys.stdin)['access_token'])")
+	TESTRAY_COOKIE=""
+	CSRF=""
+	echo "Authenticated via OAuth2 client credentials."
+elif [ -n "${ACCESS_TOKEN}" ]; then
+	TESTRAY_COOKIE=""
+	CSRF=""
+	echo "Using pre-set ACCESS_TOKEN."
+elif [ -n "${TESTRAY_COOKIE}" ]; then
+	CSRF=$(curl \
+		--compressed \
+		--header 'Accept: text/html' \
+		--header "Cookie: ${TESTRAY_COOKIE}" \
+		--header 'Referer: https://testray.liferay.com/' \
+		--silent \
+		--url 'https://testray.liferay.com/web/testray' \
+		| grep -oP "Liferay\.authToken = '\K[^']+")
+	echo "CSRF: ${CSRF}"
+else
+	echo "No Testray credentials — see Browser Cookie Fallback below."
+fi
+export ACCESS_TOKEN CSRF TESTRAY_COOKIE
+
+testray_curl() {
+	if [ -n "${ACCESS_TOKEN}" ]; then
+		curl --header "Authorization: Bearer ${ACCESS_TOKEN}" "$@"
+	else
+		curl \
+			--compressed \
+			--header "Cookie: ${TESTRAY_COOKIE}" \
+			--header "x-csrf-token: ${CSRF}" \
+			"$@"
+	fi
+}
+export -f testray_curl
+```
+
+Use `testray_curl` in place of `curl` for every Testray API call. In Python scripts, read auth from the environment the same way:
+
+```python
+import json, os, subprocess
+
+def testray_fetch(url):
+	token  = os.environ.get('ACCESS_TOKEN', '')
+	cookie = os.environ.get('TESTRAY_COOKIE', '')
+	csrf   = os.environ.get('CSRF', '')
+	if token:
+		auth = ['--header', f'Authorization: Bearer {token}']
+	else:
+		auth = ['--compressed',
+		        '--header', f'Cookie: {cookie}',
+		        '--header', f'x-csrf-token: {csrf}']
+	r = subprocess.run(
+		['curl', '--header', 'Accept: application/json', '--silent', '--url', url] + auth,
+		capture_output=True, text=True)
+	return json.loads(r.stdout)
+```
+
+### Browser Cookie Fallback
+
+When OAuth2 credentials and a pre-set token are both unavailable, ask the user to paste the curl for the testflow page from their browser Network tab. The page navigation request (with the `Cookie` header) is sufficient — a CSRF token is auto-fetched from the page HTML.
+
+> **To get a Testray session curl from your browser:**
+>
+> 1. Open **https://testray.liferay.com** and log in.
+> 1. Open DevTools (`F12` or `Cmd+Option+I`) → **Network** tab.
+> 1. Right-click the first request in the list (the page load) → **Copy** → **Copy as cURL**.
+> 1. Paste the copied command here.
+>
+> Session cookies expire when you log out — if you get 403/401 errors mid-run, repeat these steps.
+
+When the user pastes a curl command, extract the cookie and auto-fetch the CSRF token:
+
+```bash
+PASTED_CURL='<pasted-curl-command>'
+
+if [ -z "${TASK_ID}" ]; then
+	TASK_ID=$(echo "${PASTED_CURL}" | grep -oP 'testflow/\K[0-9]+' | head -1)
+	echo "Task ID: ${TASK_ID}"
+fi
+
+TESTRAY_COOKIE=$(echo "${PASTED_CURL}" | grep -oP "(?<=-H 'Cookie: )[^']+")
+
+CSRF=$(curl \
+	--compressed \
+	--header 'Accept: text/html' \
+	--header "Cookie: ${TESTRAY_COOKIE}" \
+	--header 'Referer: https://testray.liferay.com/' \
+	--silent \
+	--url 'https://testray.liferay.com/web/testray' \
+	| grep -oP "Liferay\.authToken = '\K[^']+")
+
+echo "Cookie: ${#TESTRAY_COOKIE} chars"
+echo "CSRF  : ${CSRF}"
+
+export CSRF TESTRAY_COOKIE
+```
+
+If `${CSRF}` is empty after this, the session has expired — ask the user to log in to Testray and paste a fresh curl. Then continue without asking the user to do anything else.
 
 ## Resolve a Test Name to a Case Result ID
 
