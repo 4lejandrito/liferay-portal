@@ -6,7 +6,7 @@ Write prose in American English spelling. This covers comments, Javadoc, Markdow
 
 A violation is a British or Commonwealth spelling in prose added or changed by the pull request. Do not flag text quoted verbatim from another source, such as a third party error message or a cited document, an existing identifier or API name, such as a method, field, property key, or file name that already uses the British form, or a `Language_<locale>.properties` translation other than English.
 
-**Example:** commit f80c725 changed `behaviour` to `behavior`, `labelled` to `labeled`, `neighbour` to `neighbor`, and `afterwards` to `afterward` in skill Markdown.
+**Example:** commit `f80c725` changed `behaviour` to `behavior`, `labelled` to `labeled`, `neighbour` to `neighbor`, and `afterwards` to `afterward` in skill Markdown.
 
 ```diff
 -Diagnose from the behaviour instead, and bounce Tomcat afterwards.
