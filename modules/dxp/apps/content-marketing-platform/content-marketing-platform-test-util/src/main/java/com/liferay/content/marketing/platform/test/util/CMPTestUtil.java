@@ -158,6 +158,15 @@ public class CMPTestUtil {
 			ObjectEntry cmpProjectObjectEntry, int workflowAction)
 		throws PortalException {
 
+		return addCMPTaskObjectEntry(
+			cmpProjectObjectEntry, Collections.emptyMap(), workflowAction);
+	}
+
+	public static ObjectEntry addCMPTaskObjectEntry(
+			ObjectEntry cmpProjectObjectEntry, Map<String, Serializable> values,
+			int workflowAction)
+		throws PortalException {
+
 		ObjectDefinition cmpTaskObjectDefinition =
 			ObjectDefinitionLocalServiceUtil.
 				getObjectDefinitionByExternalReferenceCode(
@@ -177,6 +186,8 @@ public class CMPTestUtil {
 				cmpProjectObjectEntry.getObjectEntryId()
 			).put(
 				"title", RandomTestUtil.randomString()
+			).putAll(
+				values
 			).build(),
 			serviceContext);
 	}
@@ -298,10 +309,8 @@ public class CMPTestUtil {
 
 		PrincipalThreadLocal.setName(user.getUserId());
 
-		ServiceContext serviceContext =
-			ServiceContextTestUtil.getServiceContext(group.getGroupId());
-
-		ServiceContextThreadLocal.pushServiceContext(serviceContext);
+		ServiceContextThreadLocal.pushServiceContext(
+			ServiceContextTestUtil.getServiceContext(group.getGroupId()));
 
 		try (SafeCloseable safeCloseable =
 				CompanyThreadLocal.setCompanyIdWithSafeCloseable(
