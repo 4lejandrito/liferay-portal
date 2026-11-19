@@ -235,14 +235,6 @@ public class LiferayGlobalObjectPreAUIDynamicInclude
 		return dateFormatPattern;
 	}
 
-	private long _getEditLaunchSetId() {
-		if (LaunchThreadLocal.isEdit()) {
-			return LaunchThreadLocal.getLaunchSetId();
-		}
-
-		return 0;
-	}
-
 	private LiferayGlobalObjectConfiguration
 		_getLiferayGlobalObjectConfiguration(
 			HttpServletRequest httpServletRequest) {
@@ -641,7 +633,10 @@ public class LiferayGlobalObjectPreAUIDynamicInclude
 		_renderMethod(
 			"getDoAsUserIdEncoded", sb,
 			UnicodeFormatter.toString(themeDisplay.getDoAsUserId()));
-		_renderMethod("getEditLaunchSetId", sb, _getEditLaunchSetId());
+		_renderMethod(
+			"getEditLaunchSetId", sb,
+			LaunchThreadLocal.isEdit() ? LaunchThreadLocal.getLaunchSetId() :
+				0);
 		_renderMethod(
 			"getLanguageId", sb, _language.getLanguageId(httpServletRequest));
 		_renderMethod("getParentGroupId", sb, themeDisplay.getSiteGroupId());
