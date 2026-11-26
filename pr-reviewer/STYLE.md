@@ -96,6 +96,7 @@ Simplicity never outranks safety: when the two trade off, choose the safer form.
 - In Markdown, put each paragraph on a single line and let the editor wrap it. [708]
 - Wrap a literal token in a message in escaped double quotes [709], keep the linking verb in a status or error message (`Foo is not allowed`, not `Foo not allowed`) [710], put one space after a period [711], and write `cleanup` as the noun and `clean up` as the verb [712].
 - A `Language.properties` value names a product, feature, or field by its full official name, identically everywhere it appears [713].
+- Use American spelling in prose (`behavior`, `labeled`, `neighbor`, `afterward`), leaving quoted text and existing identifiers as they are [714].
 - Taste: expand code identifiers into plain English in prose (`DDM` becomes "dynamic data mapping", `classNameId` becomes "class name ID").
 
 ## Visibility and structure
