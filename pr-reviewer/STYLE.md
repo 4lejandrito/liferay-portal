@@ -86,6 +86,7 @@ Simplicity never outranks safety: when the two trade off, choose the safer form.
 - Remove an `assertNotNull` whose next line already dereferences or asserts something stronger. [501]
 - Name a test helper after what it asserts. A method called from one place is `private`. [801]
 - Consolidate sibling `@Ignore`d test methods on one subject into one `@Test` with private `_test*` helpers [606], set up state in `@Before` and `@After` rather than their class level counterparts [607], and compare a boxed actual value against a boxed expected value instead of unboxing it [608].
+- Write each test case as its own call rather than looping over a literal array or a small fixed count [609], set up the opposite state before asserting an absence [610], assert the expected value rather than one it should not be [611], restore every thread local a test sets [612], and add a case to the existing test of a method rather than a new test method beside it [613].
 
 ## Prose and user facing text ("Wordsmith")
 

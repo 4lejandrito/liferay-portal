@@ -108,6 +108,11 @@ Use these utilities from `modules/test/playwright/utils`:
 - `waitForAlert(page, message)` — waits for a Liferay alert to appear.
 - `waitForPageToBeLoaded`, `waitForSPAToBeLoaded` — waits for full JS readiness.
 
+Wait for the UI to settle before acting on something it is about to replace:
+
+- `clickAndExpectToBeVisible` gives each try 100 ms by default. When the trigger is a toggle, such as a dropdown menu button, pass a longer `timeout` (for example `2000`), or a retry fires while the menu is still opening and closes it again.
+- After submitting a search, assert the results summary (for example `getByText(/Results? Found for/)`) before clicking a result, since the list that was on screen before the search may already contain a matching row that is about to be replaced.
+
 For arbitrary retry, wrap a block in `expect(async () => { ... }).toPass()` (built into Playwright, not custom). Use it when no canned helper fits. Always pass an explicit `timeout` to every action and assertion inside the block — otherwise each call uses Playwright's 30s default and the retry never kicks in.
 
 ## Locators
@@ -122,6 +127,8 @@ A single-class `page.locator('.treeview-link', {hasText: 'Text'})` is also fine 
 
 Pass `exact: true` whenever the text could collide with another element.
 
+Every locator must match exactly one element in any environment the test may run in, not only in the local one. Hidden duplicates, such as the same label in a collapsed info panel, and rows left by other tests are the usual collisions: scope the locator to its container (`getByTestId('row')`, a dialog, a frame) or filter it with `{visible: true}`.
+
 ## Feature Flags
 
 Tests that depend on a feature flag use the `featureFlagsTest` fixture, which enables the flag before the test and disables it after:
@@ -133,3 +140,5 @@ const test = mergeTests(
 	...
 );
 ```
+
+Declare every flag the test needs this way, and set every widget configuration it depends on, such as an Asset Publisher's selection style, instead of relying on the defaults of the bundle it was written on. A local bundle often has extra flags in `portal-ext.properties` and data from earlier runs, so a spec that passes there can still fail in CI. Before sending, run new specs once against a fresh database with only the default flags.
