@@ -48,6 +48,14 @@ Then list the backport branches that exist already: `git ls-remote <remote> 'ref
 
 **When given a BPR ticket** (e.g. `BPR-90239`), both values come from it. Fetch the BPR ticket through the Jira Cloud REST API (`liferay.atlassian.net`, authenticated with `${JIRA_API_USER}` / `${JIRA_API_TOKEN}`); its summary follows the form `<target> <ORIGINAL-TICKET> | <description>` - e.g. `release-2026.q1 LPD-94368 | Only 20 picklists...` yields target `release-2026.q1` and ticket `LPD-94368`. Use the original ticket to locate the fix commits in Locate the Fix Commits.
 
+**When given an LPD with BPR tickets**, read its `is related to` links. Each BPR is one release branch.
+
+- Backport only the BPRs with the label `auto-backport-failed`.
+- Skip a BPR that is In Review with the label `auto-backported-by-lbm`. LBM backported it already.
+- Before the first pick, assign each BPR to the user: `PUT issue/<BPR>/assignee`.
+- Move each BPR that you backport to In Progress: the transition `Start Progress` (`POST issue/<BPR>/transitions`).
+- Read the status again after each call.
+
 ## Choose the Target Branches
 
 Backport a fix only to master and to the branch of the client version.
